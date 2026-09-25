@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "version": "0.1.0",
+  "run_id": "20260925T090441Z_5b7c669b",
+  "scenario": {
+    "schema_version": 1,
+    "scenario_id": "single_smoke",
+    "origin": {
+      "lat": 37.50505899,
+      "lon": 122.1660365,
+      "alt_msl_m": 12
+    },
+    "takeoff_alt_m": 8,
+    "record_hz": 10,
+    "min_separation_m": 5,
+    "max_gap_s": 0.5,
+    "timeout_s": 180,
+    "ready_timeout_s": 90,
+    "vehicles": [
+      {
+        "id": "uav_01",
+        "sysid": 1,
+        "east_m": 0,
+        "north_m": 0,
+        "heading_deg": 0
+      }
+    ],
+    "phases": [
+      {
+        "name": "north",
+        "targets": {
+          "uav_01": {
+            "east_m": 0,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          }
+        }
+      },
+      {
+        "name": "return",
+        "targets": {
+          "uav_01": {
+            "east_m": 0,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          }
+        }
+      }
+    ]
+  },
+  "status": "completed",
+  "host": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:20:11) [MSC v.1938 64 bit (AMD64)]",
+  "pymavlink": "2.4.50",
+  "run_epoch_monotonic_s": 25777.656,
+  "started_utc": "2026-09-25T09:04:41.816134+00:00",
+  "scenario_sha256": "e86256bac65d5151b9714d8ec3a4d191c1a3907b4c6e14c4c88acf3e2c9ab579",
+  "clock": "host monotonic; speedup=1; phase release barrier, no lockstep",
+  "source_sha256": {
+    "processes.py": "87f5bdd4ea066187bdb27a23436ce186fd2831cd6577006f95d419f6454b4ac1",
+    "recording.py": "54b5d5e37dcfeb4ba54f467bbcfde70ed4646c5b09f30f0984e129f0e54c68b0",
+    "runner.py": "6634eaed5f7faaaf60f7676a3c5b57ca40ff97af2ec8eb9ef83ee489e050d02e",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "vehicle.py": "c0ff1f075fac74806948ca4cb781f76369e6a2a81552c97041770a2f69fd599e",
+    "__init__.py": "9e772aad5e9b7401814b9779c99152cd2499674e037b4b73c239579b3dbb6d9d"
+  },
+  "sitl": {
+    "binary": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+    "sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+    "instances": [
+      {
+        "id": "uav_01",
+        "sysid": 1,
+        "pid": 46588,
+        "url": "tcp:127.0.0.1:19100",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1660365000,12,0",
+          "--base-port",
+          "19100",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19108",
+          "--sim-port-in",
+          "19106",
+          "--sim-port-out",
+          "19107",
+          "--irlock-port",
+          "19109",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\single_smoke_20260925T090441Z_5b7c669b\\sitl\\uav_01"
+      }
+    ],
+    "speedup": 1
+  },
+  "flight_epoch_monotonic_s": 25829.720999999998,
+  "mission_end_monotonic_s": 25851.406,
+  "elapsed_s": 92.68700000000172,
+  "cleanup": {
+    "uav_01": 1
+  },
+  "phase_start_spread_s": {
+    "north": 0.0,
+    "return": 0.0
+  }
+}

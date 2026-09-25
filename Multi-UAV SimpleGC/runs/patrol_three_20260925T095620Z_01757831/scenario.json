@@ -1,0 +1,224 @@
+{
+  "origin": {
+    "lat": 37.50505899,
+    "lon": 122.1660365,
+    "alt_msl_m": 12
+  },
+  "timeout_s": 240,
+  "takeoff_alt_m": 8,
+  "vehicles": [
+    {
+      "id": "uav_01",
+      "sysid": 1,
+      "east_m": 0,
+      "north_m": 0,
+      "heading_deg": 0
+    },
+    {
+      "id": "uav_02",
+      "sysid": 2,
+      "east_m": 16,
+      "north_m": 0,
+      "heading_deg": 0
+    },
+    {
+      "id": "uav_03",
+      "sysid": 3,
+      "east_m": 32,
+      "north_m": 0,
+      "heading_deg": 0
+    }
+  ],
+  "schema_version": 1,
+  "scenario_id": "patrol_three",
+  "phases": [
+    {
+      "name": "leg_000",
+      "targets": {
+        "uav_01": {
+          "east_m": 0,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_02": {
+          "east_m": 16,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_03": {
+          "east_m": 32,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        }
+      }
+    },
+    {
+      "name": "leg_001",
+      "targets": {
+        "uav_01": {
+          "east_m": 6,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_02": {
+          "east_m": 22,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_03": {
+          "east_m": 38,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        }
+      }
+    },
+    {
+      "name": "leg_002",
+      "targets": {
+        "uav_01": {
+          "east_m": 6,
+          "north_m": 8,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_02": {
+          "east_m": 22,
+          "north_m": 8,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_03": {
+          "east_m": 38,
+          "north_m": 8,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        }
+      }
+    },
+    {
+      "name": "leg_003",
+      "targets": {
+        "uav_01": {
+          "east_m": 0,
+          "north_m": 8,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_02": {
+          "east_m": 16,
+          "north_m": 8,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_03": {
+          "east_m": 32,
+          "north_m": 8,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        }
+      }
+    },
+    {
+      "name": "leg_004",
+      "targets": {
+        "uav_01": {
+          "east_m": 0,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_02": {
+          "east_m": 16,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        },
+        "uav_03": {
+          "east_m": 32,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        }
+      }
+    }
+  ],
+  "record_hz": 10,
+  "min_separation_m": 5,
+  "ready_timeout_s": 90,
+  "max_gap_s": 0.5,
+  "task_spec": {
+    "schema_version": 1,
+    "task_id": "patrol_three",
+    "family_id": "patrol_rectangle_family_a",
+    "origin": {
+      "lat": 37.50505899,
+      "lon": 122.1660365,
+      "alt_msl_m": 12
+    },
+    "timeout_s": 240,
+    "takeoff_alt_m": 8,
+    "vehicles": [
+      {
+        "id": "uav_01",
+        "sysid": 1,
+        "east_m": 0,
+        "north_m": 0
+      },
+      {
+        "id": "uav_02",
+        "sysid": 2,
+        "east_m": 16,
+        "north_m": 0
+      },
+      {
+        "id": "uav_03",
+        "sysid": 3,
+        "east_m": 32,
+        "north_m": 0
+      }
+    ],
+    "task": {
+      "type": "rectangle_patrol",
+      "width_m": 6,
+      "height_m": 8,
+      "cycles": 1,
+      "speed_m_s": 3,
+      "dwell_s": 1,
+      "tolerance_m": 2
+    }
+  },
+  "family_id": "patrol_rectangle_family_a",
+  "planning": {
+    "backend": "AUTO",
+    "reference_time_semantics": "event_driven_no_prescribed_arrival_times",
+    "path_length_m": {
+      "uav_01": 28.0,
+      "uav_02": 28.0,
+      "uav_03": 28.0
+    },
+    "mission_time_lower_bound_s": 14.333333333333332,
+    "nominal_phase_path_clearance_m": 10.0,
+    "feasibility_scope": "geometry and speed lower bound only; no dynamics, obstacles, endurance or tracking guarantee"
+  }
+}

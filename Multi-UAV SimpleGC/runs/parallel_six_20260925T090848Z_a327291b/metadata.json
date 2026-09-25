@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "version": "0.1.0",
+  "run_id": "20260925T090848Z_a327291b",
+  "scenario": {
+    "schema_version": 1,
+    "scenario_id": "parallel_six",
+    "origin": {
+      "lat": 37.50505899,
+      "lon": 122.1660365,
+      "alt_msl_m": 12
+    },
+    "takeoff_alt_m": 8,
+    "record_hz": 10,
+    "min_separation_m": 5,
+    "max_gap_s": 0.5,
+    "timeout_s": 180,
+    "ready_timeout_s": 90,
+    "vehicles": [
+      {
+        "sysid": 1,
+        "north_m": 0,
+        "east_m": 0,
+        "heading_deg": 0,
+        "id": "uav_01"
+      },
+      {
+        "sysid": 2,
+        "north_m": 0,
+        "east_m": 12,
+        "heading_deg": 0,
+        "id": "uav_02"
+      },
+      {
+        "sysid": 3,
+        "north_m": 0,
+        "east_m": 24,
+        "heading_deg": 0,
+        "id": "uav_03"
+      },
+      {
+        "sysid": 4,
+        "north_m": 0,
+        "east_m": 36,
+        "heading_deg": 0,
+        "id": "uav_04"
+      },
+      {
+        "sysid": 5,
+        "north_m": 0,
+        "east_m": 48,
+        "heading_deg": 0,
+        "id": "uav_05"
+      },
+      {
+        "sysid": 6,
+        "north_m": 0,
+        "east_m": 60,
+        "heading_deg": 0,
+        "id": "uav_06"
+      }
+    ],
+    "phases": [
+      {
+        "name": "north",
+        "targets": {
+          "uav_02": {
+            "east_m": 12,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          },
+          "uav_05": {
+            "east_m": 48,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          },
+          "uav_01": {
+            "east_m": 0,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          },
+          "uav_04": {
+            "east_m": 36,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          },
+          "uav_06": {
+            "east_m": 60,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          },
+          "uav_03": {
+            "east_m": 24,
+            "north_m": 20,
+            "up_m": 8,
+            "speed_m_s": 4,
+            "hold_s": 2
+          }
+        }
+      },
+      {
+        "name": "return",
+        "targets": {
+          "uav_02": {
+            "east_m": 12,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          },
+          "uav_05": {
+            "east_m": 48,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          },
+          "uav_01": {
+            "east_m": 0,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          },
+          "uav_04": {
+            "east_m": 36,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          },
+          "uav_06": {
+            "east_m": 60,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          },
+          "uav_03": {
+            "east_m": 24,
+            "north_m": 0,
+            "up_m": 8,
+            "speed_m_s": 3,
+            "hold_s": 1
+          }
+        }
+      }
+    ]
+  },
+  "status": "failed",
+  "host": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:20:11) [MSC v.1938 64 bit (AMD64)]",
+  "pymavlink": "2.4.50",
+  "run_epoch_monotonic_s": 26024.5700859,
+  "started_utc": "2026-09-25T09:08:48.705862+00:00",
+  "scenario_sha256": "24b85ee1365d8f19d628f46347f69742c5dc76cfccd7c2ef2f50a73583f00c5d",
+  "clock": "host monotonic; speedup=1; phase release barrier, no lockstep",
+  "source_sha256": {
+    "processes.py": "87f5bdd4ea066187bdb27a23436ce186fd2831cd6577006f95d419f6454b4ac1",
+    "recording.py": "8be0cfd35e459fc9cc1b1c9ca6bdfb2f7df148c9adf258b49fd63913b738fc6e",
+    "runner.py": "dc537c4f7b1a5c1503f8018d846365fc51d05bdb54b8618fe54f9e4ca52f26e7",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "vehicle.py": "22d02c325c3fa04b162ac82523eb77cff1fd036832525ac1697b7e193a8ef146",
+    "__init__.py": "9e772aad5e9b7401814b9779c99152cd2499674e037b4b73c239579b3dbb6d9d"
+  },
+  "sitl": {
+    "binary": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+    "sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+    "instances": [
+      {
+        "id": "uav_01",
+        "sysid": 1,
+        "pid": 51680,
+        "url": "tcp:127.0.0.1:19100",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1660365000,12,0",
+          "--base-port",
+          "19100",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19108",
+          "--sim-port-in",
+          "19106",
+          "--sim-port-out",
+          "19107",
+          "--irlock-port",
+          "19109",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_01"
+      },
+      {
+        "id": "uav_02",
+        "sysid": 2,
+        "pid": 41016,
+        "url": "tcp:127.0.0.1:19110",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1661722167,12,0",
+          "--base-port",
+          "19110",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19118",
+          "--sim-port-in",
+          "19116",
+          "--sim-port-out",
+          "19117",
+          "--irlock-port",
+          "19119",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_02"
+      },
+      {
+        "id": "uav_03",
+        "sysid": 3,
+        "pid": 71280,
+        "url": "tcp:127.0.0.1:19120",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1663079334,12,0",
+          "--base-port",
+          "19120",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19128",
+          "--sim-port-in",
+          "19126",
+          "--sim-port-out",
+          "19127",
+          "--irlock-port",
+          "19129",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_03"
+      },
+      {
+        "id": "uav_04",
+        "sysid": 4,
+        "pid": 20936,
+        "url": "tcp:127.0.0.1:19130",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1664436501,12,0",
+          "--base-port",
+          "19130",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19138",
+          "--sim-port-in",
+          "19136",
+          "--sim-port-out",
+          "19137",
+          "--irlock-port",
+          "19139",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_04"
+      },
+      {
+        "id": "uav_05",
+        "sysid": 5,
+        "pid": 50612,
+        "url": "tcp:127.0.0.1:19140",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1665793668,12,0",
+          "--base-port",
+          "19140",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19148",
+          "--sim-port-in",
+          "19146",
+          "--sim-port-out",
+          "19147",
+          "--irlock-port",
+          "19149",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_05"
+      },
+      {
+        "id": "uav_06",
+        "sysid": 6,
+        "pid": 18840,
+        "url": "tcp:127.0.0.1:19150",
+        "argv": [
+          "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+          "--model",
+          "quad",
+          "--home",
+          "37.5050589900,122.1667150835,12,0",
+          "--base-port",
+          "19150",
+          "--instance",
+          "0",
+          "--uartA",
+          "tcp:0",
+          "--rc-in-port",
+          "19158",
+          "--sim-port-in",
+          "19156",
+          "--sim-port-out",
+          "19157",
+          "--irlock-port",
+          "19159",
+          "--defaults",
+          "defaults.parm",
+          "--speedup",
+          "1",
+          "--wipe",
+          "--disable-fgview"
+        ],
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_06"
+      }
+    ],
+    "speedup": 1
+  },
+  "flight_epoch_monotonic_s": 26078.4970556,
+  "mission_end_monotonic_s": 26100.2022901,
+  "error": "RuntimeError: uav_04 SITL exited (1); see F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\parallel_six_20260925T090848Z_a327291b\\sitl\\uav_04/console.log",
+  "elapsed_s": 89.27135760000237,
+  "cleanup": {
+    "uav_01": 1,
+    "uav_02": 1,
+    "uav_03": 1,
+    "uav_04": 1,
+    "uav_05": 1,
+    "uav_06": 1
+  },
+  "phase_start_spread_s": {
+    "north": 0.0002162000018870458,
+    "return": 0.00019040000188397244
+  }
+}

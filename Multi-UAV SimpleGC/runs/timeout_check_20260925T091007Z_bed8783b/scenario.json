@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "scenario_id": "timeout_check",
+  "origin": {
+    "lat": 37.50505899,
+    "lon": 122.1660365,
+    "alt_msl_m": 12
+  },
+  "takeoff_alt_m": 8,
+  "record_hz": 10,
+  "min_separation_m": 5,
+  "max_gap_s": 0.5,
+  "timeout_s": 10,
+  "ready_timeout_s": 90,
+  "vehicles": [
+    {
+      "id": "uav_01",
+      "sysid": 1,
+      "east_m": 0,
+      "north_m": 0,
+      "heading_deg": 0
+    }
+  ],
+  "phases": [
+    {
+      "name": "north",
+      "targets": {
+        "uav_01": {
+          "east_m": 0,
+          "north_m": 20,
+          "up_m": 8,
+          "speed_m_s": 4,
+          "hold_s": 2
+        }
+      }
+    },
+    {
+      "name": "return",
+      "targets": {
+        "uav_01": {
+          "east_m": 0,
+          "north_m": 0,
+          "up_m": 8,
+          "speed_m_s": 3,
+          "hold_s": 1
+        }
+      }
+    }
+  ]
+}
