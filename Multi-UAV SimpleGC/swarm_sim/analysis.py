@@ -76,7 +76,13 @@ def analyze_run(directory):
                         values = [*geo_to_enu(message["lat"] / 1e7, message["lon"] / 1e7, message["alt"] / 1000, scene["origin"]),
                                   message["vy"] / 100, message["vx"] / 100, -message["vz"] / 100]
                         # Reject startup zero/invalid positions in this explicitly bounded local world.
+                        # Enhanced validation: position bounds, altitude range, velocity sanity check
                         if not all(math.isfinite(v) for v in values) or max(abs(values[0]), abs(values[1])) > 2500 or not -100 <= values[2] <= 200:
+                            dropped += 1
+                            continue
+                        # Deep defense: reject physically unreasonable velocities (>50 m/s horizontal, >30 m/s vertical)
+                        horizontal_speed = math.sqrt(values[3]**2 + values[4]**2)
+                        if horizontal_speed > 50 or abs(values[5]) > 30:
                             dropped += 1
                             continue
                         observations.append((message["time_boot_ms"] / 1000, host - epoch, values))
@@ -125,10 +131,12 @@ def analyze_run(directory):
     observed_separation = assess_separation(traces, scene["min_separation_m"])
     actual_separation = assess_separation(truth_traces, scene["min_separation_m"])
     separation = observed_separation["status"]
-    clock_ok = all(m["available"] and m["receive_residual_abs_p95_s"] <= 0.05 for m in clocks.values())
+    # Tightened threshold from 50ms to 20ms (0.2 sampling periods at 10Hz)
+    # to improve time alignment quality and filter out rate anomalies
+    clock_ok = all(m["available"] and m["receive_residual_abs_p95_s"] <= 0.02 for m in clocks.values())
     quality = dict(schema_version=2, frames=count, observation_valid_fraction=fraction,
                    truth_valid_fraction=truth_fraction, timing_diagnostic_pass=clock_ok,
-                   timing_residual_threshold_s=0.05, minimum_separation_m=observed_separation["minimum_m"],
+                   timing_residual_threshold_s=0.02, minimum_separation_m=observed_separation["minimum_m"],
                    separation_status=separation, unassessed_pair_intervals=observed_separation["unassessed_pair_intervals"],
                    risk_pair_intervals=observed_separation["risk_pair_intervals"], truth_separation=actual_separation,
                    data_quality_pass=count > 0 and all(v >= 0.99 for v in fraction.values()),

@@ -114,6 +114,7 @@ def export_dataset(directory, metadata):
     if epoch is None or end is None or end <= epoch:
         return {"available": False, "reason": "no completed flight window"}
     data, stamps = {}, {}
+    dropped_unreasonable = {agent: 0 for agent in (v["id"] for v in scenario["vehicles"])}
     for vehicle in scenario["vehicles"]:
         agent = vehicle["id"]
         samples = []
@@ -124,8 +125,13 @@ def export_dataset(directory, metadata):
                 if message.get("mavpackettype") == "GLOBAL_POSITION_INT":
                     enu = geo_to_enu(message["lat"] / 1e7, message["lon"] / 1e7,
                                      message["alt"] / 1000, scenario["origin"])
-                    samples.append((packet["recv_monotonic_s"], [*enu, message["vy"] / 100,
-                                                                message["vx"] / 100, -message["vz"] / 100]))
+                    velocities = [message["vy"] / 100, message["vx"] / 100, -message["vz"] / 100]
+                    # Deep defense: reject physically unreasonable velocities
+                    horizontal_speed = math.sqrt(velocities[0]**2 + velocities[1]**2)
+                    if horizontal_speed > 50 or abs(velocities[2]) > 30:
+                        dropped_unreasonable[agent] += 1
+                        continue
+                    samples.append((packet["recv_monotonic_s"], [*enu, *velocities]))
         data[agent] = samples
         stamps[agent] = [s[0] for s in samples]
     ids = list(data)
@@ -157,6 +163,7 @@ def export_dataset(directory, metadata):
     return dict(available=True, time_basis="host_receive_monotonic; not source-clock synchronized",
                 frames=count, vehicles=len(ids), features=6, missing_by_agent=missing,
                 valid_fraction={agent: 1 - missing[agent] / count for agent in ids},
+                dropped_unreasonable_velocity=dropped_unreasonable,
                 minimum_separation_m=minimum, collision_risk=bool(risk_intervals),
                 risk_pair_intervals=risk_intervals,
                 separation_check="piecewise-linear approximation; missing intervals unassessed")
