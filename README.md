@@ -12,6 +12,7 @@
 ## 使用入口
 
 优先阅读 [多机框架 README](Multi-UAV%20SimpleGC/README.md) 与
+[v0.2.2 补丁说明](Multi-UAV%20SimpleGC/v0.2.2补丁说明.md)。完整任务架构见
 [第二轮迭代方案与验证说明](Multi-UAV%20SimpleGC/第二轮迭代方案与验证说明.md)。
 
 在 Windows PowerShell 7 中进入多机工程，使用项目 `.conda-env` 指定的环境：

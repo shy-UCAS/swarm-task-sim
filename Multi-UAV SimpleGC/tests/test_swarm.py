@@ -80,7 +80,7 @@ class DatasetTests(unittest.TestCase):
             for t in (10, 10.2, 11):
                 packets.append(dict(recv_monotonic_s=t, message=dict(mavpackettype="GLOBAL_POSITION_INT",
                     lat=round(scenario["origin"]["lat"] * 1e7), lon=round(scenario["origin"]["lon"] * 1e7),
-                    alt=20000, vx=100, vy=200, vz=-300)))
+                    alt=20000, vx=100, vy=200, vz=-300, time_boot_ms=round(t * 1000))))
             (root / "raw/uav_01.jsonl").write_text("\n".join(json.dumps(p) for p in packets), encoding="utf-8")
             quality = export_dataset(root, dict(scenario=scenario, flight_epoch_monotonic_s=10,
                                                 mission_end_monotonic_s=11))

@@ -1,0 +1,88 @@
+{
+  "schema_version": 2,
+  "analysis_version": "0.2.2",
+  "run_id": "20260929T175200Z_be434da5",
+  "simulator_version": "0.2.2",
+  "analysis_schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "evaluation_context": {
+    "record_hz": 10,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5
+  },
+  "scenario_id": "point_visit_three",
+  "family_id": "point_parallel_family_a",
+  "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\point_visit_three_20260929T175200Z_be434da5",
+  "run_status": "completed",
+  "partial_window": false,
+  "time_epoch_host_s": 14072.264008499998,
+  "duration_s": 8.936648800001421,
+  "time_semantics": "per-agent passive piecewise source-to-host-receive fit; affine trend and heldout residuals audited; fallback marked",
+  "reference_semantics": "event-driven waypoints, not a timed reference trajectory",
+  "observation_contract": "cooperative FCU telemetry with known identity; no radar/camera detection, occlusion, clutter or identity uncertainty",
+  "source_sha256": {
+    "raw\\uav_01.jsonl": "52b663360180ab9d345c85682acb813f81d7b7488c6d707e06d879f31b20943d",
+    "sitl\\uav_01\\logs\\00000001.BIN": "e1ac583d059da0ee011bd1d666712231527628aba699317d2666e18c619712f4",
+    "raw\\uav_02.jsonl": "1031eba6c97a1c0fa3dca9d98e0dbfc3255d5de158ec33e0ca15c5efad238576",
+    "sitl\\uav_02\\logs\\00000001.BIN": "1f67e295184a2dc47029b40c6f738d4f88ee0b47fd5a6bd0729b9706cbccf801",
+    "raw\\uav_03.jsonl": "de037782cf86496e9826218864f4a757c27f200a533d4cb1442318cd299def8b",
+    "sitl\\uav_03\\logs\\00000001.BIN": "9cb7344f68bd91788321f82634a3600b7a41e92d7d6da09d986b8fc9fb9d89ae",
+    "metadata.json": "67d1a8f61c1533150104b9f5d7f6ecc2411332e5e93efab2e0f6417263ac585f",
+    "scenario.json": "a22c0ffa43f5726286b609ab60c8434dbc951339253a85b546a30a17a11e8194",
+    "events.jsonl": "ac3d2995159396b7be035adb5d4a1a1f7154ec090574724267b4642b0bdd1d94"
+  },
+  "analysis_source_sha256": {
+    "analysis.py": "0e36abb13bbff574a605581935fa1115e31e21c7fb04820d945053d46dd75e28",
+    "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+    "dataset.py": "1edd531c8cf30669efb8f285a321217c9950e111c3709cdcea8400661d182fff",
+    "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+    "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+    "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+    "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+    "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+    "runner.py": "22d3905036868d70e6155614982797286e4e03039e769837c991f17360c33464",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "tasks.py": "487ec29c28821356f9fb4d39d5b208be56a8969b07e16559ed3dd57d03ea7ac4",
+    "truth.py": "7249eb15e89f2aa2f63410ac00e62268e450d458f79058fe34f040f37b2a2c6a",
+    "vehicle.py": "54c10ca3e0b2679778ffda60a8974e0a6e6dd1fcf8affc1b3bfcb80eb8a7423b",
+    "__init__.py": "f4fef3f44cddecc81b9b7a9e722dd79b1e415c4f67fa3750bc4cad7645af9c91"
+  },
+  "benchmark_eligible": true,
+  "strict_benchmark_eligible": false,
+  "clock_quality": {
+    "overall": "acceptable",
+    "per_agent": {
+      "uav_01": "acceptable",
+      "uav_02": "acceptable",
+      "uav_03": "acceptable"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "artifact_sha256": {
+    "clock_models.json": "5a4f66b8fdd38ba618ed5f5001adf31ecf66e2b0ed6b131a023e91f3e85e2475",
+    "estimation_error.csv": "c09d15b6543d4bb78ccb8dd792b28e5d64e5327a7199625f43b60808da812e59",
+    "labels.json": "99105aa43f9edaf8c177da19408786f1e18b3cfbb387e1095e8050d72d316807",
+    "logged_parameters.json": "ade9f497e40b5e28930db6c0dc09af9f2cbf60aed09a400cdd1f8190cc9b0ee4",
+    "observations.csv": "2bb7fb83141c575a41e5f033321ce4f9e76a46b3752c500cce862700c837858a",
+    "quality.json": "2b1e8244b7a797104bd0a259f583c6a81ea033e68003fe7353989ce760ef46f0",
+    "reference_waypoints.csv": "d12b3d7b246da95dee8a71ae546a22b8e72884002c7aed9c7fb5b1301171858e",
+    "task.json": "45f9bc1020e8dbae94e7d2a665e1f92dd4753620331bc78c44f59be34f72afdb",
+    "truth.csv": "892e6c46ad2ea3449e9a0f6237527590838b6b48f4df6cb669c95075c87cb9d9",
+    "truth_provenance.json": "e18dc2687f6ba6cd1aee3b8f0d10b08946262cbdb2f3cb2cf6881eb23f129e25",
+    "truth_source.csv": "8170c2c8f05d3a55a72fedb97dc8257a0810a7f44b04f9207bf49630c5ed9e9b"
+  }
+}

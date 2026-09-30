@@ -11,6 +11,7 @@ import statistics
 from pathlib import Path
 
 from .scenario import geo_to_enu
+from .observations import finite_number
 
 
 def percentile(values, fraction):
@@ -27,6 +28,8 @@ def fit_clock(pairs):
     info = dict(method="passive_SYSTEM_TIME_piecewise_1s_medians_with_heldout_audit", available=False,
                 transport_delay_identified=False, absolute_alignment_bound_s=None,
                 warning="residuals include scheduling/transport jitter; not a clock accuracy bound")
+    if any(not finite_number(source) or source < 0 or not finite_number(host) for source, host in pairs):
+        return dict(info, reason="invalid source/receive clock value")
     if any(b[0] < a[0] or b[1] < a[1] for a, b in zip(pairs, pairs[1:])):
         return dict(info, reason="source or receive clock reset/nonmonotonic")
     if any(b[0] - a[0] > 2 or b[1] - a[1] > 2 for a, b in zip(pairs, pairs[1:])):
@@ -38,6 +41,8 @@ def fit_clock(pairs):
         bins.setdefault(math.floor(source), []).append((source, host))
     centers = [(statistics.median(p[0] for p in group), statistics.median(p[1] for p in group))
                for group in bins.values()]
+    if len(centers) < 2:
+        return dict(info, reason="insufficient independent clock bins")
     mx, my = statistics.mean(p[0] for p in centers), statistics.mean(p[1] for p in centers)
     denominator = sum((x - mx) ** 2 for x, _ in centers)
     slope = sum((x - mx) * (y - my) for x, y in centers) / denominator
@@ -50,6 +55,8 @@ def fit_clock(pairs):
     model = dict(knots=centers, available=True)
     heldout = [abs(host - clock_to_host(source, model)) for source, host in pairs[1::2]
                if centers[0][0] <= source <= centers[-1][0]]
+    if not heldout:
+        return dict(info, reason="no held-out clock evidence within fit range")
     return dict(info, available=True, samples=len(pairs), bins=len(centers), slope=slope,
                 offset_s=offset, rate_difference_ppm=(slope - 1) * 1e6,
                 affine_receive_residual_abs_p95_s=percentile([abs(r) for r in residuals], 0.95),

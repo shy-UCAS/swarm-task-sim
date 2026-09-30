@@ -10,8 +10,9 @@ from pathlib import Path
 
 from . import __version__
 from .evaluation import evaluate_task
-from .recording import interpolate, segment_distance, write_json
-from .scenario import geo_to_enu
+from .recording import resample, segment_distance, write_json
+from .observations import ObservationStream, finite_number
+from .quality import eligibility, policy_hash, resolve_policy, summarize_clocks
 from .tasks import validate_task_binding
 from .truth import clock_to_host, fit_clock, percentile, read_truth, write_csv
 
@@ -41,14 +42,16 @@ def assess_separation(traces, threshold):
                 method="piecewise-linear relative motion on passively aligned positions")
 
 
-def analyze_run(directory):
+def analyze_run(directory, quality_policy=None):
     directory = Path(directory).resolve()
     metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
     scene = metadata["scenario"]
     validate_task_binding(scene)
+    policy = resolve_policy(quality_policy)
     epoch = metadata.get("flight_epoch_monotonic_s", metadata["run_epoch_monotonic_s"])
     end = metadata.get("mission_end_monotonic_s", metadata["run_epoch_monotonic_s"] + metadata["elapsed_s"])
-    output = directory / ("analysis_v02_" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_") + uuid.uuid4().hex[:8])
+    output = directory / ("analysis_v" + __version__.replace(".", "") + "_" +
+                          datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_") + uuid.uuid4().hex[:8])
     output.mkdir()
     events = [json.loads(line) for line in (directory / "events.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     traces, truth_traces, clocks, truth_info, parameters, source_hashes = {}, {}, {}, {}, {}, {}
@@ -57,51 +60,41 @@ def analyze_run(directory):
     observation_rows, truth_rows, error_rows = [], [], []
     raw_truth_rows = []
     estimate_errors = {}
+    filters, timeline_errors = {}, {}
     for vehicle in scene["vehicles"]:
         agent = vehicle["id"]
         raw_path = directory / "raw" / f"{agent}.jsonl"
-        pairs, observations = [], []
-        dropped = 0
+        pairs = []
+        stream = ObservationStream(scene["origin"], policy, epoch, end)
+        invalid_clock_messages = 0
         if raw_path.exists():
             source_hashes[str(raw_path.relative_to(directory))] = digest(raw_path)
             with raw_path.open(encoding="utf-8") as file:
                 for line in file:
                     packet = json.loads(line)
                     message = packet["message"]
-                    host = packet["recv_monotonic_s"]
+                    host = packet.get("recv_monotonic_s")
                     kind = message.get("mavpackettype")
-                    if kind == "SYSTEM_TIME" and epoch - 2 <= host <= end + 2:
-                        pairs.append((message["time_boot_ms"] / 1000, host - epoch))
+                    if kind == "SYSTEM_TIME":
+                        boot = message.get("time_boot_ms")
+                        if not finite_number(host) or host < 0:
+                            invalid_clock_messages += 1
+                        elif epoch - 2 <= host <= end + 2:
+                            if finite_number(boot) and boot >= 0:
+                                pairs.append((boot / 1000, host - epoch))
+                            else:
+                                invalid_clock_messages += 1
                     elif kind == "GLOBAL_POSITION_INT":
-                        values = [*geo_to_enu(message["lat"] / 1e7, message["lon"] / 1e7, message["alt"] / 1000, scene["origin"]),
-                                  message["vy"] / 100, message["vx"] / 100, -message["vz"] / 100]
-                        # Reject startup zero/invalid positions in this explicitly bounded local world.
-                        # Enhanced validation: position bounds, altitude range, velocity sanity check
-                        if not all(math.isfinite(v) for v in values) or max(abs(values[0]), abs(values[1])) > 2500 or not -100 <= values[2] <= 200:
-                            dropped += 1
-                            continue
-                        # Deep defense: reject physically unreasonable velocities (>50 m/s horizontal, >30 m/s vertical)
-                        horizontal_speed = math.sqrt(values[3]**2 + values[4]**2)
-                        if horizontal_speed > 50 or abs(values[5]) > 30:
-                            dropped += 1
-                            continue
-                        observations.append((message["time_boot_ms"] / 1000, host - epoch, values))
+                        stream.append(packet)
         model = fit_clock(pairs)
-        model["dropped_invalid_positions"] = dropped
+        model["invalid_clock_messages"] = invalid_clock_messages
+        if invalid_clock_messages:
+            model.update(available=False, reason="invalid clock message in fit evidence")
         clocks[agent] = model
-        if model["available"]:
-            samples = [(clock_to_host(source, model), values) for source, _, values in observations
-                       if model["source_range_s"][0] <= source <= model["source_range_s"][1]]
-            basis = "passive_piecewise_source_clock_fit"
-        else:
-            samples = [(host, values) for _, host, values in observations]
-            basis = "host_receive_fallback"
-        # Never interpolate across a source-clock restart or unordered packets.
-        if any(b[0] <= a[0] for a, b in zip(samples, samples[1:])):
-            samples = []
-            model["observation_error"] = "duplicate/nonmonotonic position timestamps"
-        times = [s[0] for s in samples]
-        traces[agent] = [(t, interpolate(samples, times, t, scene["max_gap_s"])) for t in grid]
+        filters[agent], timeline_errors[agent] = stream.statistics, stream.timeline_error
+        samples = stream.samples(model, epoch)
+        basis = "passive_piecewise_source_clock_fit" if model["available"] else "host_receive_fallback"
+        traces[agent] = resample(samples, grid, scene["max_gap_s"])
         for t, values in traces[agent]:
             observation_rows.append([t, agent, int(values is not None), basis, *(values or [""] * 6)])
         truth, params, info = read_truth(directory, agent, scene["origin"])
@@ -114,8 +107,7 @@ def analyze_run(directory):
         if model["available"]:
             aligned_truth = [(clock_to_host(source, model), values[:3]) for source, values in truth
                              if model["source_range_s"][0] <= source <= model["source_range_s"][1]]
-        times = [s[0] for s in aligned_truth]
-        truth_traces[agent] = [(t, interpolate(aligned_truth, times, t, scene["max_gap_s"])) for t in grid]
+        truth_traces[agent] = resample(aligned_truth, grid, scene["max_gap_s"])
         errors = []
         for (t, actual), (_, estimated) in zip(truth_traces[agent], traces[agent]):
             truth_rows.append([t, agent, int(actual is not None), *(actual or [""] * 3)])
@@ -131,22 +123,22 @@ def analyze_run(directory):
     observed_separation = assess_separation(traces, scene["min_separation_m"])
     actual_separation = assess_separation(truth_traces, scene["min_separation_m"])
     separation = observed_separation["status"]
-    # Tightened threshold from 50ms to 20ms (0.2 sampling periods at 10Hz)
-    # to improve time alignment quality and filter out rate anomalies
-    clock_ok = all(m["available"] and m["receive_residual_abs_p95_s"] <= 0.02 for m in clocks.values())
+    clock_quality = summarize_clocks(clocks, policy)
+    clock_ok = clock_quality["overall"] in ("strict", "acceptable")
+    context = {key: scene[key] for key in ("record_hz", "max_gap_s", "min_separation_m")}
     quality = dict(schema_version=2, frames=count, observation_valid_fraction=fraction,
                    truth_valid_fraction=truth_fraction, timing_diagnostic_pass=clock_ok,
-                   timing_residual_threshold_s=0.02, minimum_separation_m=observed_separation["minimum_m"],
+                   clock_quality=clock_quality, quality_policy=policy, quality_policy_sha256=policy_hash(policy),
+                   evaluation_context=context, observation_filter=filters, observation_timeline_errors=timeline_errors,
+                   timing_residual_threshold_s=policy["clock_acceptable_p95_s"], minimum_separation_m=observed_separation["minimum_m"],
                    separation_status=separation, unassessed_pair_intervals=observed_separation["unassessed_pair_intervals"],
                    risk_pair_intervals=observed_separation["risk_pair_intervals"], truth_separation=actual_separation,
-                   data_quality_pass=count > 0 and all(v >= 0.99 for v in fraction.values()),
-                   truth_available_pass=count > 0 and all(v >= 0.99 for v in truth_fraction.values()),
+                   data_quality_pass=count > 0 and all(v >= policy["min_observation_valid_fraction"] for v in fraction.values()),
+                   truth_available_pass=count > 0 and all(v >= policy["min_truth_valid_fraction"] for v in truth_fraction.values()),
                    run_completed=metadata["status"] == "completed", estimation_error=estimate_errors,
                    estimation_error_note="FCU vs BIN SIM source-time comparison; internal FCU filtering latency remains; passive fit is not absolute synchronization")
     labels = evaluate_task(scene, traces, events, metadata, epoch, clocks)
-    quality["benchmark_eligible"] = (quality["data_quality_pass"] and quality["truth_available_pass"] and clock_ok
-        and quality["run_completed"] and separation == "clear_observed" and actual_separation["status"] == "clear_observed"
-        and labels["mission_success"] is True)
+    quality.update(eligibility(quality, labels["mission_success"]))
     fields = ["t_s", "agent_id", "valid"]
     write_csv(output / "observations.csv", fields + ["time_basis", "east_m", "north_m", "up_m", "ve_m_s", "vn_m_s", "vu_m_s"], observation_rows)
     write_csv(output / "truth.csv", fields + ["east_m", "north_m", "up_m"], truth_rows)
@@ -162,6 +154,8 @@ def analyze_run(directory):
         if (directory / filename).exists():
             source_hashes[filename] = digest(directory / filename)
     manifest = dict(schema_version=2, analysis_version=__version__, run_id=metadata["run_id"],
+                    simulator_version=metadata.get("version"), analysis_schema_version=2,
+                    quality_policy=policy, quality_policy_sha256=policy_hash(policy), evaluation_context=context,
                     scenario_id=scene["scenario_id"], family_id=scene.get("family_id"),
                     run_directory=str(directory), run_status=metadata["status"],
                     partial_window="mission_end_monotonic_s" not in metadata,
@@ -171,7 +165,8 @@ def analyze_run(directory):
                     observation_contract="cooperative FCU telemetry with known identity; no radar/camera detection, occlusion, clutter or identity uncertainty",
                     source_sha256=source_hashes,
                     analysis_source_sha256={p.name: digest(p) for p in Path(__file__).parent.glob("*.py")},
-                    benchmark_eligible=quality["benchmark_eligible"])
+                    benchmark_eligible=quality["benchmark_eligible"],
+                    strict_benchmark_eligible=quality["strict_benchmark_eligible"], clock_quality=clock_quality)
     manifest["artifact_sha256"] = {p.name: digest(p) for p in output.iterdir() if p.is_file()}
     write_json(output / "manifest.json", manifest)
     write_json(directory / "analysis_latest.json", dict(directory=output.name, manifest_sha256=digest(output / "manifest.json")))

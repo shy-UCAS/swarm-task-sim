@@ -1,8 +1,8 @@
 # Multi-UAV SimpleGC
 
-基于本机 ArduCopter SITL 的多无人机实验框架。当前版本 **0.2.0**，支持 1～6 架飞机独立启动、分阶段并行任务、驻留确认、自动降落，以及任务规划、SIM 真值、时间对齐诊断和按任务族导出数据集。
+基于本机 ArduCopter SITL 的多无人机实验框架。当前版本 **0.2.2**，支持 1～6 架飞机独立启动、分阶段并行任务、驻留确认、自动降落，以及任务规划、SIM 真值、时间对齐诊断和按任务族导出数据集。
 
-当前架构、能力、验证结果和下一步计划见 [第二轮迭代方案与验证说明.md](第二轮迭代方案与验证说明.md)。[改进方案与验证说明.md](改进方案与验证说明.md) 是 0.1 版记录；复制时保留的 `框架架构与仿真能力说明.md` 描述改造前版本。
+最新质量策略、异常过滤、验证结果和下一步计划见 [v0.2.2补丁说明.md](v0.2.2补丁说明.md)。完整任务架构见 [第二轮迭代方案与验证说明.md](第二轮迭代方案与验证说明.md)，其中实跑结果保留为 0.2.0 的历史记录。[改进方案与验证说明.md](改进方案与验证说明.md) 是 0.1 版记录；复制时保留的 `框架架构与仿真能力说明.md` 描述改造前版本。
 
 ## 0.2 任务数据生成
 
@@ -16,13 +16,19 @@ conda run -n llm --no-capture-output python main.py run scenarios/task_coverage_
 conda run -n llm --no-capture-output python main.py plan tasks/patrol_3uav.json --output scenarios/my_patrol.json
 ```
 
-任务运行结束会自动导出版本化分析：`observations.csv`、`truth.csv`、`clock_models.json`、`labels.json`、`quality.json` 等。`analyze <run目录>` 可重分析历史数据；`dataset <多个run目录> --output <新目录>` 按 `family_id` 整组划分并保留失败样本。标签、数据质量和飞行是否完整结束分别记录。任务模式的退出成功要求通过新版门槛，详见第二轮说明。
+任务运行结束会自动导出版本化分析：`observations.csv`、`truth.csv`、`clock_models.json`、`labels.json`、`quality.json` 等。`analyze <run目录>` 可重分析历史数据；`dataset <多个run目录> --output <新目录>` 按 `family_id` 整组划分并保留失败样本。标签、数据质量和飞行是否完整结束分别记录。任务模式的退出成功要求通过 `benchmark_eligible` 门槛。
+
+0.2.2 将时钟残差划分为 `strict`（不超过 20 ms）、`acceptable`（不超过 50 ms）、`failed` 和 `unknown`。默认合格集接受前两档，但仍要求任务、数据、真值、执行状态和间距检查全部通过；`strict_benchmark_eligible` 提供更严格的子集。这些残差不是绝对同步精度保证。
+
+`run/batch/analyze` 支持 `--quality-policy quality_policies/default_v022.json`。策略内容及 SHA256 随分析和数据集保存。旧分析缺少策略信息时，需要显式重新分析；不同策略的结果不能混合导出。重新分析会新建目录并更新 `analysis_latest.json`，保留原始运行元数据和旧分析。直接运行 `analyze` 使用当前默认策略，复现实验时应明确指定策略文件。
 
 时钟处理是被动估计，参考仍为事件驱动 AUTO 航点。观测是已知身份的合作式飞控遥测，几何覆盖不代表真实相机或雷达探测。
 
 ## 环境
 
-项目 `.conda-env` 指定 `llm`。当前验证环境为 Windows、Python 3.12.3、pymavlink 2.4.50。SITL EXE 和 DLL 已随工程提供；本次改造没有安装依赖。
+项目 `.conda-env` 指定 `llm`。当前验证环境为 Windows、Python 3.12.3、pymavlink 2.4.50。SITL EXE 和 DLL 已随工程提供；本次改造没有安装依赖。`requirements.txt` 声明 pymavlink，`requirements-dev.txt` 额外提供可选的 pytest；标准库 `unittest` 可直接运行全部测试。当前项目验证过的路径不要求直接安装 NumPy。
+
+仓库已配置 Windows / Python 3.12 的 GitHub Actions 逻辑测试，尚未验证远端执行结果；它不启动真实 SITL。
 
 ## 快速开始
 
@@ -77,10 +83,12 @@ CLI 退出码：`run/batch` 的 0 表示通过门槛，1 表示执行、质量�
 | `metadata.json` | 执行状态、参数、版本、源码/固件摘要、端口、PID、阶段发送偏差、进程回收结果 |
 | `events.jsonl` | 连接、准备、阶段释放、完成、降落和失败事件 |
 | `raw/<agent>.jsonl` | 原始 MAVLink 消息、源时间字段和高精度本机接收时间 |
-| `samples.csv` | 按共同主机时间采样的多机位置、速度、姿态、消息年龄和有效标记 |
+| `samples.csv` | 按共同主机时间采样的多机位置、速度、姿态、消息年龄、有效标记和 `position_invalid_reason` |
 | `processed.csv` | 飞行阶段统一采样的 ENU 位置/速度，长表格式和缺失掩码 |
 | `quality.json` | 覆盖率、最近距离、接近风险、是否满足基础质量门槛 |
 | `sitl/<agent>/` | 独立参数、日志和持久化状态 |
+
+`analysis_latest.json` 指向最新 `analysis_v022_*` 目录，其 `quality.json` 才是本次离线分析的完整质量报告。它包含时钟分级、默认/严格合格标记，以及按原始消息统计的异常原因（全程和评估窗口分别统计）。三个观测出口使用相同的内容过滤规则；离线插值不会跨过被拒绝的样本或超长缺口。运行根目录的 `quality.json` 是运行时结果，历史重分析不会回写它。
 
 失败运行保留已有原始数据和错误信息。准备阶段失败时不生成 `processed.csv`；任务阶段全部完成、但后续降落失败时可以导出已完成的飞行窗口，`usable` 仍为 false。
 

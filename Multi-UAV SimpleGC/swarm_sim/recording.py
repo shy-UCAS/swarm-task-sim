@@ -8,7 +8,8 @@ import threading
 import time
 from itertools import combinations
 
-from .scenario import geo_to_enu
+from .observations import ObservationStream, finite_number, live_observation
+from .quality import policy_hash, resolve_policy
 
 
 def write_json(path, value):
@@ -18,9 +19,10 @@ def write_json(path, value):
 
 
 class Recorder:
-    def __init__(self, directory, vehicles, origin, epoch, hz, max_age):
+    def __init__(self, directory, vehicles, origin, epoch, hz, max_age, quality_policy=None):
         self.directory, self.vehicles, self.origin = directory, vehicles, origin
         self.epoch, self.hz, self.max_age = epoch, hz, max_age
+        self.policy = resolve_policy(quality_policy)
         self.stop = threading.Event()
         self.error = None
         self.thread = threading.Thread(target=self._run, name="swarm-recorder", daemon=True)
@@ -29,7 +31,7 @@ class Recorder:
         self.thread.start()
 
     def _run(self):
-        fields = ["t", "agent_id", "valid_position", "valid_attitude", "position_age_s",
+        fields = ["t", "agent_id", "valid_position", "position_invalid_reason", "valid_attitude", "position_age_s",
                   "attitude_age_s", "position_boot_ms", "attitude_boot_ms", "east_m", "north_m", "up_m",
                   "ve_m_s", "vn_m_s", "vu_m_s", "lat", "lon", "alt_msl_m", "relative_alt_m",
                   "roll_rad", "pitch_rad", "yaw_rad", "p_rad_s", "q_rad_s", "r_rad_s", "armed", "mode"]
@@ -51,15 +53,20 @@ class Recorder:
                             if kind not in state:
                                 continue
                             received, message = state[kind]
-                            age = now - received
-                            row[f"{prefix}_age_s"] = age
-                            row[f"{prefix}_boot_ms"] = message.time_boot_ms
-                            row[f"valid_{prefix}"] = int(age <= self.max_age)
-                            if age > self.max_age:
+                            age = now - received if finite_number(received) and received >= 0 else None
+                            row[f"{prefix}_age_s"] = age if age is not None else ""
+                            row[f"{prefix}_boot_ms"] = getattr(message, "time_boot_ms", "")
+                            row[f"valid_{prefix}"] = int(age is not None and age <= self.max_age)
+                            if prefix == "position":
+                                values, reason = live_observation(message, received, now, self.max_age, self.origin, self.policy)
+                                row["valid_position"] = int(values is not None)
+                                row["position_invalid_reason"] = reason or ""
+                                if values is None:
+                                    continue
+                            if age is None or age > self.max_age:
                                 continue
                             if prefix == "position":
-                                east, north, up = geo_to_enu(message.lat / 1e7, message.lon / 1e7,
-                                                            message.alt / 1000, self.origin)
+                                east, north, up = values[:3]
                                 row.update(east_m=east, north_m=north, up_m=up, ve_m_s=message.vy / 100,
                                            vn_m_s=message.vx / 100, vu_m_s=-message.vz / 100,
                                            lat=message.lat / 1e7, lon=message.lon / 1e7,
@@ -92,10 +99,35 @@ def interpolate(samples, stamps, stamp, max_gap):
         return None
     a, b = samples[index - 1], samples[index]
     gap = b[0] - a[0]
-    if gap <= 0 or gap > max_gap:
+    if a[1] is None or b[1] is None or gap <= 0 or gap > max_gap:
         return None
     weight = (stamp - a[0]) / gap
     return [x + weight * (y - x) for x, y in zip(a[1], b[1])]
+
+
+def resample(samples, grid, max_gap):
+    """Conservative mask also breaks unsafe spans between output grid ticks.
+
+    A rejected packet at 0.05 s must break the 0.0 -> 0.1 s segment even when
+    both grid endpoints coincide with good packets. No downstream dwell,
+    coverage or distance validator may reconnect that interval.
+    """
+    stamps = [sample[0] for sample in samples]
+    if any(b <= a for a, b in zip(stamps, stamps[1:])):
+        return [(t, None) for t in grid]
+    unsafe = [(a[0], b[0]) for a, b in zip(samples, samples[1:])
+              if a[1] is None or b[1] is None or b[0] - a[0] > max_gap]
+    result, cursor, previous = [], 0, None
+    for t in grid:
+        values = interpolate(samples, stamps, t, max_gap)
+        if previous is not None:
+            while cursor < len(unsafe) and unsafe[cursor][1] <= previous:
+                cursor += 1
+            if cursor < len(unsafe) and unsafe[cursor][0] < t and unsafe[cursor][1] > previous:
+                values = None
+        result.append((t, values))
+        previous = t
+    return result
 
 
 def segment_distance(left0, right0, left1, right1):
@@ -107,35 +139,30 @@ def segment_distance(left0, right0, left1, right1):
     return math.sqrt(sum((a + fraction * b) ** 2 for a, b in zip(r, delta)))
 
 
-def export_dataset(directory, metadata):
+def export_dataset(directory, metadata, quality_policy=None):
     scenario = metadata["scenario"]
+    policy = resolve_policy(quality_policy)
     epoch = metadata.get("flight_epoch_monotonic_s")
     end = metadata.get("mission_end_monotonic_s")
     if epoch is None or end is None or end <= epoch:
         return {"available": False, "reason": "no completed flight window"}
-    data, stamps = {}, {}
-    dropped_unreasonable = {agent: 0 for agent in (v["id"] for v in scenario["vehicles"])}
+    data, filters, timeline_errors = {}, {}, {}
     for vehicle in scenario["vehicles"]:
         agent = vehicle["id"]
-        samples = []
+        stream = ObservationStream(scenario["origin"], policy, epoch, end)
         with (directory / "raw" / f"{agent}.jsonl").open(encoding="utf-8") as file:
             for line in file:
                 packet = json.loads(line)
                 message = packet["message"]
                 if message.get("mavpackettype") == "GLOBAL_POSITION_INT":
-                    enu = geo_to_enu(message["lat"] / 1e7, message["lon"] / 1e7,
-                                     message["alt"] / 1000, scenario["origin"])
-                    velocities = [message["vy"] / 100, message["vx"] / 100, -message["vz"] / 100]
-                    # Deep defense: reject physically unreasonable velocities
-                    horizontal_speed = math.sqrt(velocities[0]**2 + velocities[1]**2)
-                    if horizontal_speed > 50 or abs(velocities[2]) > 30:
-                        dropped_unreasonable[agent] += 1
-                        continue
-                    samples.append((packet["recv_monotonic_s"], [*enu, *velocities]))
-        data[agent] = samples
-        stamps[agent] = [s[0] for s in samples]
+                    stream.append(packet)
+        data[agent] = stream.samples()
+        filters[agent] = stream.statistics
+        timeline_errors[agent] = stream.timeline_error
     ids = list(data)
     count = math.floor((end - epoch) * scenario["record_hz"]) + 1
+    grid = [epoch + tick / scenario["record_hz"] for tick in range(count)]
+    data = {agent: resample(samples, grid, scenario["max_gap_s"]) for agent, samples in data.items()}
     missing = {agent: 0 for agent in ids}
     minimum = None
     risk_intervals = 0
@@ -147,7 +174,7 @@ def export_dataset(directory, metadata):
             t = tick / scenario["record_hz"]
             row = {}
             for agent in ids:
-                values = interpolate(data[agent], stamps[agent], epoch + t, scenario["max_gap_s"])
+                values = data[agent][tick][1]
                 row[agent] = values
                 missing[agent] += int(values is None)
                 writer.writerow([t, agent, int(values is not None), *(values or [""] * 6)])
@@ -163,7 +190,8 @@ def export_dataset(directory, metadata):
     return dict(available=True, time_basis="host_receive_monotonic; not source-clock synchronized",
                 frames=count, vehicles=len(ids), features=6, missing_by_agent=missing,
                 valid_fraction={agent: 1 - missing[agent] / count for agent in ids},
-                dropped_unreasonable_velocity=dropped_unreasonable,
+                quality_policy=policy, quality_policy_sha256=policy_hash(policy),
+                observation_filter=filters, observation_timeline_errors=timeline_errors,
                 minimum_separation_m=minimum, collision_risk=bool(risk_intervals),
                 risk_pair_intervals=risk_intervals,
                 separation_check="piecewise-linear approximation; missing intervals unassessed")

@@ -1,0 +1,88 @@
+{
+  "schema_version": 2,
+  "analysis_version": "0.2.2",
+  "run_id": "20260925T094936Z_2df76660",
+  "simulator_version": "0.2.0",
+  "analysis_schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "evaluation_context": {
+    "record_hz": 10,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5
+  },
+  "scenario_id": "point_visit_three",
+  "family_id": "point_parallel_family_a",
+  "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\point_visit_three_20260925T094936Z_2df76660",
+  "run_status": "completed",
+  "partial_window": false,
+  "time_epoch_host_s": 28524.8486977,
+  "duration_s": 7.765795600000274,
+  "time_semantics": "per-agent passive piecewise source-to-host-receive fit; affine trend and heldout residuals audited; fallback marked",
+  "reference_semantics": "event-driven waypoints, not a timed reference trajectory",
+  "observation_contract": "cooperative FCU telemetry with known identity; no radar/camera detection, occlusion, clutter or identity uncertainty",
+  "source_sha256": {
+    "raw\\uav_01.jsonl": "87313097559275281496eb601615d999df8a826116ab485ccad86077b760265b",
+    "sitl\\uav_01\\logs\\00000001.BIN": "421b6f93975b6c545d954fe186d432b308e592ae3bbcb8e821acbc6ba3fce092",
+    "raw\\uav_02.jsonl": "22cfd63e39596535b5fd37fce9354ee4bc1fd1b021f8dd2244a3829d0bfbffc2",
+    "sitl\\uav_02\\logs\\00000001.BIN": "96c9bf594bdd6146f5ec2cb4c7e4cc2b14894251dcf3dc1b1c86c5fe96c6086c",
+    "raw\\uav_03.jsonl": "f0af690fdb6804825a9ecad9c49b3c319548de2bdf3b3b0eadc2c0dbe86f643c",
+    "sitl\\uav_03\\logs\\00000001.BIN": "8697d1980118d18925f06fac065061e00abe22d9e592a56f1cd0ccf5a5cd3ff8",
+    "metadata.json": "8534894b125a7f52a1a701887f765e313e36417548e2d77c8462b0a3d1e1e3de",
+    "scenario.json": "a22c0ffa43f5726286b609ab60c8434dbc951339253a85b546a30a17a11e8194",
+    "events.jsonl": "fa873efdf0d5d0a47bec53e6e5b1e343fe7b71aec32023120620c37aeea454c4"
+  },
+  "analysis_source_sha256": {
+    "analysis.py": "0e36abb13bbff574a605581935fa1115e31e21c7fb04820d945053d46dd75e28",
+    "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+    "dataset.py": "1edd531c8cf30669efb8f285a321217c9950e111c3709cdcea8400661d182fff",
+    "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+    "observations.py": "b18dacde1a95bc07d0d903a741fae2f6b7a493647f5b66b090c98ce11aac8eef",
+    "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+    "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+    "recording.py": "7e305a884a0c429da73121f51f6850bf7b2fceefa2a204ab4c777e0f4860b970",
+    "runner.py": "22d3905036868d70e6155614982797286e4e03039e769837c991f17360c33464",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "tasks.py": "487ec29c28821356f9fb4d39d5b208be56a8969b07e16559ed3dd57d03ea7ac4",
+    "truth.py": "7249eb15e89f2aa2f63410ac00e62268e450d458f79058fe34f040f37b2a2c6a",
+    "vehicle.py": "54c10ca3e0b2679778ffda60a8974e0a6e6dd1fcf8affc1b3bfcb80eb8a7423b",
+    "__init__.py": "f4fef3f44cddecc81b9b7a9e722dd79b1e415c4f67fa3750bc4cad7645af9c91"
+  },
+  "benchmark_eligible": true,
+  "strict_benchmark_eligible": false,
+  "clock_quality": {
+    "overall": "acceptable",
+    "per_agent": {
+      "uav_01": "acceptable",
+      "uav_02": "acceptable",
+      "uav_03": "acceptable"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "artifact_sha256": {
+    "clock_models.json": "cfbb9348382e773955bccf69a92fb748b0ee35b166de7ace254c8b260360db26",
+    "estimation_error.csv": "6f0393ab886dd9242d3ed67a405c3a5f099b9cec70db747c16e6e6f1294522a3",
+    "labels.json": "fdf757551aeeb35ada92b3877f28ff7e9b9dca1cedddb7504ed3e17abb03a9a3",
+    "logged_parameters.json": "085344cf35a08b2a2773f779e3ab0ec557925f713f6dea40eb5f8b6db129c3f5",
+    "observations.csv": "99e82a7be2d95c1a3028ddd6c52cc8d80b72ae83efe4b06d004ae55427ce3240",
+    "quality.json": "5765787065247a867fa37fd5942c5adbacbb1c5a0d67c4e9b36b20f760381ab1",
+    "reference_waypoints.csv": "d12b3d7b246da95dee8a71ae546a22b8e72884002c7aed9c7fb5b1301171858e",
+    "task.json": "45f9bc1020e8dbae94e7d2a665e1f92dd4753620331bc78c44f59be34f72afdb",
+    "truth.csv": "960971dd427214b580b7accb33081df1840209fdaf77e1a7edb0452458a70b72",
+    "truth_provenance.json": "cb38ea6466f5f857035d1adb07eb26e16f34841f4d766f13062db63f77874701",
+    "truth_source.csv": "a0c6cb85237bf8ec1f76208e2345a4f1c0816f70929095545c3a03d99ddbf045"
+  }
+}

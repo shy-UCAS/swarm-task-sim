@@ -1,0 +1,88 @@
+{
+  "schema_version": 2,
+  "analysis_version": "0.2.2",
+  "run_id": "20260925T100409Z_7f2e5b46",
+  "simulator_version": "0.2.0",
+  "analysis_schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "evaluation_context": {
+    "record_hz": 10,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5
+  },
+  "scenario_id": "coverage_three",
+  "family_id": "coverage_lawnmower_family_a",
+  "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\coverage_three_20260925T100409Z_7f2e5b46",
+  "run_status": "completed",
+  "partial_window": false,
+  "time_epoch_host_s": 29397.5664391,
+  "duration_s": 49.516014600001654,
+  "time_semantics": "per-agent passive piecewise source-to-host-receive fit; affine trend and heldout residuals audited; fallback marked",
+  "reference_semantics": "event-driven waypoints, not a timed reference trajectory",
+  "observation_contract": "cooperative FCU telemetry with known identity; no radar/camera detection, occlusion, clutter or identity uncertainty",
+  "source_sha256": {
+    "raw\\uav_01.jsonl": "9c04b44de4775647d18baef1df2ca42aacecef9826a071138cd5c6d6fd7e9d26",
+    "sitl\\uav_01\\logs\\00000001.BIN": "6a1cdc67bfba120a34efb4a66ac083046668bafd144564b456ae523abf802bfc",
+    "raw\\uav_02.jsonl": "fb2a1a2b5d58a807ffbf664a66df1cdd546c44a050189c376b3b078503d942e6",
+    "sitl\\uav_02\\logs\\00000001.BIN": "0a54fa9351033db8567217bf9db91339667f89994b833783f296ba9a74b22599",
+    "raw\\uav_03.jsonl": "648f6939fefe73d6615cb29e0433831449a7f3cbdd732b3407e489c7f71904ef",
+    "sitl\\uav_03\\logs\\00000001.BIN": "e6a2e8fbd83e9a096da31527426f3a4a0e364d4723bca80008464901489a4b92",
+    "metadata.json": "2a0304c394305cf5a9cddb388db29be340e9fdda0b3221e1e6da2778e73989cd",
+    "scenario.json": "07c25f90d1ff0385d52b0b426cc5654f6e330020ea1e33186ae19f6265d83ba9",
+    "events.jsonl": "b07c21ce01f99c3e7e08e43e8699e175e82af59755ce0e6010ab5b0549d28ceb"
+  },
+  "analysis_source_sha256": {
+    "analysis.py": "0e36abb13bbff574a605581935fa1115e31e21c7fb04820d945053d46dd75e28",
+    "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+    "dataset.py": "1edd531c8cf30669efb8f285a321217c9950e111c3709cdcea8400661d182fff",
+    "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+    "observations.py": "b18dacde1a95bc07d0d903a741fae2f6b7a493647f5b66b090c98ce11aac8eef",
+    "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+    "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+    "recording.py": "7e305a884a0c429da73121f51f6850bf7b2fceefa2a204ab4c777e0f4860b970",
+    "runner.py": "22d3905036868d70e6155614982797286e4e03039e769837c991f17360c33464",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "tasks.py": "487ec29c28821356f9fb4d39d5b208be56a8969b07e16559ed3dd57d03ea7ac4",
+    "truth.py": "7249eb15e89f2aa2f63410ac00e62268e450d458f79058fe34f040f37b2a2c6a",
+    "vehicle.py": "54c10ca3e0b2679778ffda60a8974e0a6e6dd1fcf8affc1b3bfcb80eb8a7423b",
+    "__init__.py": "f4fef3f44cddecc81b9b7a9e722dd79b1e415c4f67fa3750bc4cad7645af9c91"
+  },
+  "benchmark_eligible": true,
+  "strict_benchmark_eligible": false,
+  "clock_quality": {
+    "overall": "acceptable",
+    "per_agent": {
+      "uav_01": "acceptable",
+      "uav_02": "acceptable",
+      "uav_03": "acceptable"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "artifact_sha256": {
+    "clock_models.json": "bfdd2211affe8ca60a1223bfac1d5de5e64729796cc65c290326aff4a5afb089",
+    "estimation_error.csv": "ba4e147b8909621c614266362568f17f5eb08e30ef167e528234eead19ed730d",
+    "labels.json": "098bf08d05d1578b7befabdde1bfff38e0be89496702f1627477253014e26666",
+    "logged_parameters.json": "46e0a5115d17d9d3f9245eac62fd09e8e50e181dd9ff21ca81506c245cb80310",
+    "observations.csv": "3fb3697dcd22a832a0c7b70dfb47b804897b4cf473e3b759eebfb7bdae00d2e7",
+    "quality.json": "17e5f14b4083b7fcba4349ccc36c8181a0d62e5800c31a8139ed2605cebbe32a",
+    "reference_waypoints.csv": "b8132b93a4cd52350c8ad6746d21d3f68af09a3bae244946212a56e800ff73fd",
+    "task.json": "39e2b43e79654e5c0ba08ab8736445435398d9d82ed3f76b121b66dceccbb4eb",
+    "truth.csv": "eeb666dda356ca32ca3c4335c40a67701f894f099df60fa2db9125a7a155bb2a",
+    "truth_provenance.json": "215ef328eb8ee8a0d277d074311766e8995823ebe18288782eed12f782b5b892",
+    "truth_source.csv": "0794d24309a074772849e18848233ae448e40aedfc536a68cd405da20a9b9876"
+  }
+}

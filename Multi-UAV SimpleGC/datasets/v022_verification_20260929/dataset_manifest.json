@@ -1,0 +1,186 @@
+{
+  "schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "mixed_quality_policies": false,
+  "split_salt": "simplegc-v02",
+  "split_method": "SHA256 of family_id; target proportions 70/15/15, not balanced on small sets",
+  "identity_policy": "all derived variants/retries/windows must inherit the originating family_id before splitting",
+  "missing_family_policy": "retained, unassigned, ineligible; never infer family from run_id",
+  "training_input": "episodes/<run_id>/observations.csv only: ENU position/velocity and valid mask; group by t_s and agent_id",
+  "privileged_outputs": "task, reference, truth, labels and metadata must not be fed as observation features",
+  "episodes": [
+    {
+      "run_id": "20260925T095405Z_6cb65388",
+      "scenario_id": "coverage_three",
+      "family_id": "coverage_lawnmower_family_a",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\coverage_three_20260925T095405Z_6cb65388",
+      "analysis_manifest_sha256": "ca72ee8723a6f41ce3a837d0948926539e80244a7a809d5c6d9aa78c3f91b5f4",
+      "directory": "episodes/20260925T095405Z_6cb65388"
+    },
+    {
+      "run_id": "20260925T100409Z_7f2e5b46",
+      "scenario_id": "coverage_three",
+      "family_id": "coverage_lawnmower_family_a",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\coverage_three_20260925T100409Z_7f2e5b46",
+      "analysis_manifest_sha256": "21eea731d3654dac0f1c6643922d0d55fded545e87aac1f82e538188235fbf4a",
+      "directory": "episodes/20260925T100409Z_7f2e5b46"
+    },
+    {
+      "run_id": "20260925T095145Z_5a3915d1",
+      "scenario_id": "patrol_three",
+      "family_id": "patrol_rectangle_family_a",
+      "split": "train",
+      "benchmark_eligible": false,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\patrol_three_20260925T095145Z_5a3915d1",
+      "analysis_manifest_sha256": "40e1dbbfdf097c6d1b8b76a85ec7ab5cfd459ed87cf9bcc715ddc87364cb056c",
+      "directory": "episodes/20260925T095145Z_5a3915d1"
+    },
+    {
+      "run_id": "20260925T095620Z_01757831",
+      "scenario_id": "patrol_three",
+      "family_id": "patrol_rectangle_family_a",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\patrol_three_20260925T095620Z_01757831",
+      "analysis_manifest_sha256": "316005acb197ae37da9440630821f60e6ca9e8b906404bf082468b964e7cca95",
+      "directory": "episodes/20260925T095620Z_01757831"
+    },
+    {
+      "run_id": "20260925T094936Z_2df76660",
+      "scenario_id": "point_visit_three",
+      "family_id": "point_parallel_family_a",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\point_visit_three_20260925T094936Z_2df76660",
+      "analysis_manifest_sha256": "6fe7dc7a368b1c5f2fc627fcf51450ead511e959ccaa553038fd7ec380e52587",
+      "directory": "episodes/20260925T094936Z_2df76660"
+    },
+    {
+      "run_id": "20260925T100252Z_328cb383",
+      "scenario_id": "point_visit_three",
+      "family_id": "point_parallel_family_a",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\point_visit_three_20260925T100252Z_328cb383",
+      "analysis_manifest_sha256": "7c8167006302b8b3a53b493faab5bf51c31b03817088290040f4c336c7b7c1ed",
+      "directory": "episodes/20260925T100252Z_328cb383"
+    },
+    {
+      "run_id": "20260925T091007Z_bed8783b",
+      "scenario_id": "timeout_check",
+      "family_id": null,
+      "split": null,
+      "benchmark_eligible": false,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "unknown",
+        "per_agent": {
+          "uav_01": "unknown"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "run_status": "failed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\timeout_check_20260925T091007Z_bed8783b",
+      "analysis_manifest_sha256": "71274e8c7f9b0fd1ee34bfba93109b6fdb6861df7c3a8f4d81192272ac39288c",
+      "directory": "episodes/20260925T091007Z_bed8783b"
+    }
+  ],
+  "counts": {
+    "total": 7,
+    "eligible": 5,
+    "strict_eligible": 0,
+    "failed_runs": 1
+  },
+  "limitation": "no automatic task-family discovery, sliding windows, text generation or sensor simulation"
+}

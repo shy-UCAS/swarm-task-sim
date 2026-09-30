@@ -17,6 +17,7 @@ def main(argv=None):
     plan.add_argument("--output", type=Path, required=True)
     analyze = sub.add_parser("analyze", help="Write a new, versioned analysis of an existing run")
     analyze.add_argument("run_directory", type=Path)
+    analyze.add_argument("--quality-policy", type=Path, help="JSON quality policy overrides; never changes historical run metadata")
     dataset = sub.add_parser("dataset", help="Export analyzed runs with whole-family splits; retain failures")
     dataset.add_argument("runs", nargs="+", type=Path)
     dataset.add_argument("--output", type=Path, required=True)
@@ -28,6 +29,7 @@ def main(argv=None):
         child = sub.add_parser(command)
         child.add_argument("scenario", type=Path)
         if command != "validate":
+            child.add_argument("--quality-policy", type=Path)
             child.add_argument("--output", type=Path, default=ROOT / "runs")
             child.add_argument("--base-port", type=int, default=19100)
             child.add_argument("--sitl", type=Path, default=ROOT / "ArducopterSITL" / "arducopter.exe")
@@ -36,6 +38,9 @@ def main(argv=None):
             child.add_argument("--repeat", type=int, default=2)
     args = parser.parse_args(argv)
     try:
+        from swarm_sim.quality import resolve_policy
+        policy_path = getattr(args, "quality_policy", None)
+        policy = resolve_policy(json.loads(policy_path.read_text(encoding="utf-8-sig")) if policy_path else None)
         if args.command == "plan":
             from swarm_sim.tasks import compile_task
             from swarm_sim.recording import write_json
@@ -48,7 +53,7 @@ def main(argv=None):
             return 0
         if args.command == "analyze":
             from swarm_sim.analysis import analyze_run
-            output, quality, labels = analyze_run(args.run_directory)
+            output, quality, labels = analyze_run(args.run_directory, policy)
             print(json.dumps(dict(output=str(output), quality=quality, mission_success=labels["mission_success"]), indent=2))
             return 0
         if args.command == "dataset":
@@ -73,7 +78,7 @@ def main(argv=None):
             raise ValueError("repeat must be in [1, 100]")
         failed = False
         for _ in range(count):
-            _, metadata, quality = run_scene(scenario, args.output, args.sitl, args.parameters, args.base_port)
+            _, metadata, quality = run_scene(scenario, args.output, args.sitl, args.parameters, args.base_port, policy)
             failed |= not quality["usable"]
             if metadata["status"] == "interrupted":
                 break

@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "date_utc": "2026-09-29",
+  "environment": "Windows; Conda llm; Python 3.12.3; pymavlink 2.4.50",
+  "dependencies_installed_this_iteration": false,
+  "unit_tests": {
+    "command": "conda run -n llm --no-capture-output python -m unittest discover -s tests -v",
+    "passed": 63,
+    "failed": 0
+  },
+  "historical_reanalysis": {
+    "report": "datasets/v022_release_verification_20260929/verification_report.json",
+    "dataset_manifest": "datasets/v022_release_verification_20260929/dataset_manifest.json",
+    "total": 7,
+    "eligible": 5,
+    "strict_eligible": 0,
+    "execution_failures": 1,
+    "completed_but_mission_failed": 1,
+    "original_evidence_preserved": true
+  },
+  "new_sitl_integration": {
+    "command": "conda run -n llm --no-capture-output python main.py run scenarios/task_point_visit_3uav.json --quality-policy quality_policies/default_v022.json",
+    "exit_code": 0,
+    "run_directory": "runs/point_visit_three_20260929T175200Z_be434da5",
+    "analysis_directory": "analysis_v022_20260929T175314Z_3c230328",
+    "status": "completed",
+    "mission_success": true,
+    "benchmark_eligible": true,
+    "strict_benchmark_eligible": false,
+    "clock_quality": "acceptable",
+    "elapsed_s": 73.84164500000043,
+    "all_agent_observation_valid_fraction": 1.0,
+    "all_agent_truth_valid_fraction": 1.0,
+    "clock_p95_s": {
+      "uav_01": 0.033554578999445715,
+      "uav_02": 0.021059065577469695,
+      "uav_03": 0.027272032863850288
+    },
+    "owned_sitl_processes_exited": true,
+    "included_in_historical_dataset": false
+  },
+  "remote_ci": "configured; not executed or verified this iteration",
+  "limitations": "One new three-UAV point-visit run; patrol and coverage checked with historical logs only; no large-scale or long-duration validation."
+}

@@ -1,5 +1,7 @@
 # Multi-UAV SimpleGC P1 改进摘要
 
+> 历史记录与勘误（2026-09-29）：当前代码为 [v0.2.2](Multi-UAV%20SimpleGC/v0.2.2补丁说明.md)，下文保留 v0.2.1 的改进记录。被动时钟拟合的接收残差包含传输和调度抖动，不能直接等同于绝对时钟误差或帧间错配；当前按 20/50 ms 分级。当前 `llm` 未安装 pytest，实际用 unittest 验证 63 项通过；NumPy 不再列作已验证路径的直接必需依赖。旧版统计字段和后续计划以 v0.2.2 文档为准。
+
 **改进日期**: 2026-09-25  
 **基础版本**: v0.2.0  
 **改进版本**: v0.2.1  
@@ -186,10 +188,10 @@ python -m pytest tests/ -v
 
 ```bash
 cd "Multi-UAV SimpleGC"
-python main.py run scenarios/patrol_three.json
-python main.py run scenarios/coverage_three.json
+python main.py run scenarios/task_patrol_3uav.json
+python main.py run scenarios/task_coverage_3uav.json
 
-# 检查 quality.json 中的 clock_quality_pass 字段
+# 根据 analysis_latest.json，检查最新分析 quality.json 的 timing_diagnostic_pass 字段
 # 预期: 部分任务可能不再通过更严格门槛
 ```
 

@@ -18,11 +18,13 @@ from .recording import Recorder, export_dataset, write_json
 from .scenario import mission_for, validate
 from .vehicle import Vehicle
 from .tasks import validate_task_binding
+from .quality import policy_hash, resolve_policy
 
 
-def run_scene(scenario, output_root, binary, parameters, base_port=19100):
+def run_scene(scenario, output_root, binary, parameters, base_port=19100, quality_policy=None):
     scenario = validate(scenario)
     validate_task_binding(scenario)
+    policy = resolve_policy(quality_policy)
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid.uuid4().hex[:8]
     directory = Path(output_root).resolve() / f"{scenario['scenario_id']}_{run_id}"
     directory.mkdir(parents=True, exist_ok=False)
@@ -42,6 +44,7 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100):
         print(f"[{packet['t']:7.2f}s] {agent or 'swarm'}: {kind} {fields or ''}", flush=True)
 
     metadata = dict(schema_version=1, version=__version__, run_id=run_id, scenario=scenario,
+                    quality_policy=policy, quality_policy_sha256=policy_hash(policy),
                     status="running", host=platform.platform(), python=sys.version,
                     pymavlink=importlib.metadata.version("pymavlink"), run_epoch_monotonic_s=epoch,
                     started_utc=datetime.now(timezone.utc).isoformat(),
@@ -78,7 +81,7 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100):
                    for instance in instances]
         parallel(lambda client, vehicle: client.connect())
         recorder = Recorder(directory, clients, scenario["origin"], epoch,
-                            scenario["record_hz"], scenario["max_gap_s"])
+                            scenario["record_hz"], scenario["max_gap_s"], policy)
         recorder.start()
         parallel(lambda client, vehicle: client.prepare_airborne(scenario["takeoff_alt_m"], scenario["ready_timeout_s"]))
         for phase in scenario["phases"]:
@@ -124,7 +127,7 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100):
                 metadata["phase_start_spread_s"][phase["name"]] = max(starts) - min(starts)
         write_json(directory / "metadata.json", metadata)
     try:
-        quality = export_dataset(directory, metadata)
+        quality = export_dataset(directory, metadata, policy)
     except Exception as exc:
         quality = dict(available=False, error=f"{type(exc).__name__}: {exc}")
         metadata.update(status="failed", error=f"dataset export failed: {exc}")
@@ -132,14 +135,17 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100):
     quality["run_status"] = metadata["status"]
     quality["usable"] = (metadata["status"] == "completed" and quality.get("available", False)
                          and not quality.get("collision_risk", True)
-                         and all(value >= 0.99 for value in quality.get("valid_fraction", {}).values()))
+                         and all(value >= policy["min_observation_valid_fraction"] for value in quality.get("valid_fraction", {}).values()))
+    quality.update(quality_policy=policy, quality_policy_sha256=policy_hash(policy), strict_benchmark_eligible=False)
     write_json(directory / "quality.json", quality)
     # Offline analysis runs only after all owned SITL processes and log writers close.
     try:
         from .analysis import analyze_run
-        analysis_path, analysis_quality, labels = analyze_run(directory)
+        analysis_path, analysis_quality, labels = analyze_run(directory, policy)
         quality["analysis_directory"] = analysis_path.name
         quality["benchmark_eligible"] = analysis_quality["benchmark_eligible"]
+        quality["strict_benchmark_eligible"] = analysis_quality["strict_benchmark_eligible"]
+        quality["clock_quality"] = analysis_quality["clock_quality"]
         quality["mission_success"] = labels["mission_success"]
         if "task_spec" in scenario:
             quality["usable"] = analysis_quality["benchmark_eligible"]
