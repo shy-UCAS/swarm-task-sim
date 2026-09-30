@@ -22,7 +22,7 @@ class ManagedTCP(mavutil.mavtcp):
 
 
 class Vehicle:
-    def __init__(self, instance, raw_path, cancel, event):
+    def __init__(self, instance, raw_path, cancel, event, record_lifecycle=False):
         self.instance = instance
         self.id = instance["id"]
         self.sysid = instance["sysid"]
@@ -39,6 +39,17 @@ class Vehicle:
         self.thread = None
         self.raw_path = raw_path
         self.target_component = 1
+        self.record_lifecycle = record_lifecycle
+
+    def lifecycle_event(self, kind):
+        if not self.record_lifecycle:
+            return
+        sample = self.snapshot().get("GLOBAL_POSITION_INT")
+        fields = {}
+        if sample:
+            fields = dict(source_boot_s=sample[1].time_boot_ms / 1000,
+                          source_sample_age_s=time.perf_counter() - sample[0])
+        self.event(kind, self.id, **fields)
 
     def connect(self, timeout=40):
         deadline = time.perf_counter() + timeout
@@ -183,6 +194,8 @@ class Vehicle:
                 self.cancel.wait(1)
         self.wait_state(lambda s: "HEARTBEAT" in s and s["HEARTBEAT"][1].base_mode & 128,
                         10, "arming was not confirmed")
+        self.lifecycle_event("armed_confirmed")
+        self.lifecycle_event("takeoff_command_sent")
         self.command(mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, 0, altitude)
         stable_since = None
         def airborne(state):
@@ -198,11 +211,11 @@ class Vehicle:
                 stable_since = time.perf_counter()
             return time.perf_counter() - stable_since >= 1
         self.wait_state(airborne, timeout, "takeoff did not stabilize")
-        self.mode("LOITER")
+        self.mode("BRAKE" if self.record_lifecycle else "LOITER")
         self.event("airborne_ready", self.id)
 
     def upload(self, mission, timeout=20):
-        self.mode("LOITER")
+        self.mode("BRAKE" if self.record_lifecycle else "LOITER")
         cursor = self.cursor()
         self.send("mission_clear_all_send", self.sysid, self.target_component)
         ack = self.wait_message(["MISSION_ACK"], after=cursor, timeout=5)
@@ -254,15 +267,20 @@ class Vehicle:
         self.wait_message(["MISSION_ITEM_REACHED"], lambda m: m.seq == mission_count - 1,
                           after=cursor, timeout=timeout)
         self.event("phase_finished", self.id, phase=phase)
-        self.mode("LOITER")
+        # Shared missions keep the AUTO waypoint controller active until the
+        # independent geometric dwell succeeds. LOITER accepts pilot throttle;
+        # SITL's default low throttle would descend during a scheduling barrier.
+        if not self.record_lifecycle:
+            self.mode("LOITER")
 
     def land(self, timeout=60):
+        self.lifecycle_event("landing_started")
         self.mode("LAND")
         self.wait_state(lambda s: "HEARTBEAT" in s and not (s["HEARTBEAT"][1].base_mode & 128),
                         timeout, "landing/disarming timed out")
         self.event("landed", self.id)
 
-    def confirm_target(self, target, origin, tolerance, dwell_s, phase, timeout=20):
+    def confirm_target(self, target, origin, tolerance, dwell_s, phase, timeout=20, max_gap=0.5, quality_policy=None):
         """After AUTO/LOITER, require fresh geometric evidence in FCU source time.
 
         This deliberately adds a verification dwell; the mission ACK alone does
@@ -282,8 +300,13 @@ class Vehicle:
                 received, message = self.latest["GLOBAL_POSITION_INT"]
             source = message.time_boot_ms / 1000
             actual = geo_to_enu(message.lat / 1e7, message.lon / 1e7, message.alt / 1000, origin)
-            inside = math.dist(actual, position) <= tolerance and time.perf_counter() - received <= 0.5
-            continuous = previous is not None and 0 < source - previous <= 0.5
+            content_valid = True
+            if quality_policy is not None:
+                from .observations import live_observation
+                values, _ = live_observation(message, received, time.perf_counter(), max_gap, origin, quality_policy)
+                content_valid = values is not None
+            inside = content_valid and math.dist(actual, position) <= tolerance and time.perf_counter() - received <= max_gap
+            continuous = previous is not None and 0 < source - previous <= max_gap
             if not inside:
                 since = None
             elif since is None or not continuous:

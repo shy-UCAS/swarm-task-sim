@@ -1,0 +1,909 @@
+{
+  "schema_version": 1,
+  "document": "v0.3 guidance logical-test evidence matrix",
+  "scope": "Only local unittest/synthetic evidence. This JSON makes no SITL integration or pilot-run success claims.",
+  "guide_source": "C:/Users/shy/Downloads/swarm-task-sim_v0.3_Codex实现指导.md",
+  "suite_evidence": "docs/v03_tests_final.txt",
+  "suite_count": 140,
+  "suite_result": "PASS",
+  "baseline_test_count": 63,
+  "status_meaning": {
+    "PASS": "Listed assertions cover the guide requirement at the logical/synthetic-test level and all listed tests appear as ok in the recorded suite.",
+    "PARTIAL": "Listed tests passed but at least one explicitly named subcase has no dedicated test.",
+    "NOT_RUN": "No execution evidence exists for this requirement."
+  },
+  "rows": [
+    {
+      "id": "C01",
+      "requirement": "原有 v1 三类任务编译回归",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.tasks.compile_task",
+        "swarm_sim.tasks.compile_task_v1"
+      ],
+      "unittest_names": [
+        "test_v03_integration.DispatchTests.test_C01_legacy_compilation_matches_frozen_examples",
+        "test_research.PlanningTests.test_all_three_task_types_compile_and_preserve_family"
+      ],
+      "expected_and_asserted": "任务目录三类 v1 TaskSpec 编译结果逐对象等于已保存的 task_*.json 执行场景。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "C02",
+      "requirement": "v1 原有全部逻辑测试",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.tasks.compile_task_v1",
+        "swarm_sim.scenario.validate",
+        "swarm_sim.vehicle.Vehicle",
+        "swarm_sim.recording.export_dataset",
+        "swarm_sim.quality.eligibility",
+        "swarm_sim.analysis.analyze_run",
+        "swarm_sim.dataset.build_dataset"
+      ],
+      "unittest_names": [
+        "test_fly_control.FlyControlTests.test_build_mission_plan_adds_takeoff_before_waypoints",
+        "test_fly_control.FlyControlTests.test_build_status_frame_uses_data_example_shape",
+        "test_fly_control.FlyControlTests.test_save_task_record_writes_task_named_csv",
+        "test_fly_control.FlyControlTests.test_build_task_completion_message_with_next_task",
+        "test_fly_control.FlyControlTests.test_build_task_completion_message_for_last_task",
+        "test_fly_control.FlyControlTests.test_build_record_progress_message",
+        "test_fly_control.FlyControlTests.test_upload_mission_replies_to_float_mission_request_with_float_item",
+        "test_fly_control.FlyControlTests.test_upload_mission_marks_first_item_current",
+        "test_fly_control.FlyControlTests.test_get_start_mission_seq_skips_home_item",
+        "test_fly_control.FlyControlTests.test_set_current_mission_waits_for_vehicle_confirmation",
+        "test_fly_control.FlyControlTests.test_wait_until_armed_times_out_instead_of_waiting_forever",
+        "test_fly_control.FlyControlTests.test_wait_until_armed_reports_statustext_on_timeout",
+        "test_load_waypoint.LoadWaypointTests.test_loads_trajectories_agents_as_mission_tasks",
+        "test_load_waypoint.LoadWaypointTests.test_loads_raw_coordinate_agents_as_mission_tasks",
+        "test_load_waypoint.LoadWaypointTests.test_uses_default_relative_alt_when_trajectory_alt_is_missing",
+        "test_main.MainTests.test_read_connection_urls_ignores_blank_lines",
+        "test_main.MainTests.test_get_connection_url_supports_one_based_index",
+        "test_main.MainTests.test_build_telemetry_snapshot_converts_units",
+        "test_quality.PolicyTests.test_clock_boundaries_unknown_and_nonfinite",
+        "test_quality.PolicyTests.test_all_vehicles_must_satisfy_grade_and_strict_requires_other_checks",
+        "test_quality.PolicyTests.test_policy_rejects_bad_overrides_and_hashes_effective_thresholds",
+        "test_quality.ObservationTests.test_axis_conversion_and_exact_sanity_boundaries",
+        "test_quality.ObservationTests.test_nonfinite_missing_and_invalid_fields_have_primary_reasons",
+        "test_quality.ObservationTests.test_raw_counts_conserve_messages_with_explicit_window",
+        "test_quality.ObservationTests.test_unplaceable_or_reset_timestamps_cannot_leave_a_valid_timeline",
+        "test_quality.ObservationTests.test_live_recorder_and_both_offline_exports_agree_on_content",
+        "test_quality.BarrierTests.test_rejected_packet_between_grid_ticks_breaks_dwell_and_coverage",
+        "test_quality.BarrierTests.test_sparse_grid_cannot_hide_long_source_gap",
+        "test_quality.BarrierTests.test_both_exporters_preserve_a_subgrid_rejection",
+        "test_quality.DatasetPolicyTests.test_legacy_policy_requires_reanalysis_and_version_records_do_not_relabel_history",
+        "test_quality.DatasetPolicyTests.test_mixed_policies_refused_without_creating_output_and_defaults_propagate",
+        "test_research.PlanningTests.test_all_three_task_types_compile_and_preserve_family",
+        "test_research.PlanningTests.test_missing_family_and_mismatched_labels_rejected",
+        "test_research.PlanningTests.test_crossing_and_arbitrary_progress_clearance",
+        "test_research.PlanningTests.test_unreachable_timeout_and_bad_coverage_rejected",
+        "test_research.PlanningTests.test_unsupported_constraint_is_not_silently_ignored",
+        "test_research.ClockTests.test_known_affine_offset_and_rate_recovered",
+        "test_research.ClockTests.test_insufficient_data_and_source_reset_are_unknown",
+        "test_research.ClockTests.test_variable_simulation_rate_and_no_clock_extrapolation",
+        "test_research.ClockTests.test_clock_evidence_gaps_are_not_hidden_by_interpolation",
+        "test_research.SemanticTests.test_online_dwell_restarts_after_source_gap",
+        "test_research.SemanticTests.test_dwell_does_not_bridge_invalid_samples",
+        "test_research.SemanticTests.test_coverage_does_not_draw_across_gaps_or_wrong_altitude",
+        "test_research.SemanticTests.test_assignment_survives_failed_or_unknown_execution",
+        "test_research.SemanticTests.test_complete_evidence_can_disprove_assignment_success",
+        "test_research.OfflineTests.test_missing_separation_is_unknown_and_inter_sample_collision_detected",
+        "test_research.OfflineTests.test_failed_run_exports_unknown_truth_and_is_retained",
+        "test_swarm.ScenarioTests.test_duplicate_identity_and_path_injection_rejected",
+        "test_swarm.ScenarioTests.test_incomplete_phase_and_impossible_speed_rejected",
+        "test_swarm.ScenarioTests.test_spawn_separation_checked",
+        "test_swarm.ScenarioTests.test_common_projection_roundtrip_and_height_datum",
+        "test_swarm.ScenarioTests.test_speed_and_hold_are_real_mission_parameters",
+        "test_swarm.DatasetTests.test_no_extrapolation_or_interpolation_across_long_gaps",
+        "test_swarm.DatasetTests.test_crossing_between_samples_is_detected",
+        "test_swarm.DatasetTests.test_raw_export_velocity_axes_masks_and_coverage",
+        "test_swarm.LinkTests.test_control_inbox_does_not_consume_other_waiters_messages",
+        "test_swarm.LinkTests.test_old_ack_is_not_accepted_for_new_command",
+        "test_swarm.LinkTests.test_command_rejection_is_propagated",
+        "test_swarm.LinkTests.test_retransmitted_mission_item_does_not_complete_upload_early",
+        "test_swarm.LinkTests.test_cancel_interrupts_wait",
+        "test_swarm.LinkTests.test_tcp_eof_and_disconnect_fail_immediately",
+        "test_swarm.LinkTests.test_legacy_mission_start_uses_param1_not_confirmation",
+        "test_swarm.LifecycleTests.test_launch_failure_preserves_failure_record_without_overwrite"
+      ],
+      "expected_and_asserted": "原有 6 个测试模块的 63 项测试在同一份 140 项全套记录中全部为 ok。",
+      "limitations": [
+        "本项是逻辑/模拟回归；不把旧运行日志或缺失二进制的受控启动失败写成新 SITL 实飞。"
+      ],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "C03",
+      "requirement": "v2 合法配置",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_schema.normalize_mission",
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.MissionSchemaTests.test_c03_c07_canonical_compile_and_input_unchanged",
+        "test_v03_integration.DispatchTests.test_v2_plan_validate_and_launch_failure_keep_mission_identity"
+      ],
+      "expected_and_asserted": "合法示例规范化幂等、输入不被修改，执行场景 schema=1、TaskSpec=2，12 阶段和 1620 个名义覆盖单元符合独立预期；plan/validate 接线通过。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "C04",
+      "requirement": "v2 各层未知字段、NaN/Inf、bool 数值、非法枚举",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_schema.normalize_mission"
+      ],
+      "unittest_names": [
+        "test_mission_planning.MissionSchemaTests.test_c04_unknown_fields_at_every_object_layer",
+        "test_mission_planning.MissionSchemaTests.test_c04_every_numeric_leaf_rejects_bool_and_nonfinite",
+        "test_mission_planning.MissionSchemaTests.test_c04_nonfinite_bool_enums_missing_and_wrong_shapes"
+      ],
+      "expected_and_asserted": "对所有对象层注入未知字段，对每个数值叶注入 bool/NaN/Inf，以及错误枚举/形状/缺失项，均在规范化阶段抛 ValueError。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "C05",
+      "requirement": "非空禁区、未知目标区域、重复 agent/sysid",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_schema.normalize_mission"
+      ],
+      "unittest_names": [
+        "test_mission_planning.MissionSchemaTests.test_c05_unsupported_regions_identities_and_world_bounds"
+      ],
+      "expected_and_asserted": "禁区非空、区域不存在、agent/sysid 重复、空参与者、零面积和越界拒绝；地面生成点不误用巡航最低高度。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "C06",
+      "requirement": "修改编译后的航点、分区、区域或语义映射",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.tasks.validate_task_binding"
+      ],
+      "unittest_names": [
+        "test_v03_integration.DispatchTests.test_C06_binding_protects_v2_execution_and_semantics",
+        "test_v03_integration.SemanticExportTests.test_D01_reanalysis_rejects_contradictory_scenario_sources_before_writing",
+        "test_v03_integration.DispatchTests.test_C06_direct_partition_region_and_service_mutations_rejected"
+      ],
+      "expected_and_asserted": "直接修改航点、责任区宽度、TaskSpec 共享区域位置、具体 agent 服务开启标记及 planning/semantic_plan 内容，均触发重新编译绑定失败；scenario 与 metadata 分歧在分析写入前拒绝。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "C07",
+      "requirement": "重复编译、输入 dict 顺序改变",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_schema.normalize_mission",
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.MissionSchemaTests.test_c03_c07_canonical_compile_and_input_unchanged"
+      ],
+      "expected_and_asserted": "同一输入重复编译、JSON 键重排以及 vehicle 列表反转均产生相同规范化任务和编译场景。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P01",
+      "requirement": "N=1/2/3/6 的矩形分割",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_planning.partition_region",
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p01_partition_union_positive_no_interior_overlap"
+      ],
+      "expected_and_asserted": "两个分割轴与 1/2/3/6 机组合均验证正面积、连续边界、面积相等、首末边界相等和名义覆盖 1.0。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P02",
+      "requirement": "平移共享目标区域",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p02_shared_region_translation_and_p03_spawn_independence"
+      ],
+      "expected_and_asserted": "仅将共享矩形东移 7m、北移 5m，每机 observe 航点对应移动 7m/5m。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P03",
+      "requirement": "单独改变无人机生成点",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p02_shared_region_translation_and_p03_spawn_independence"
+      ],
+      "expected_and_asserted": "仅将一架生成点向南移动 5m，区域分区及每机 observe 路线保持一致。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P04",
+      "requirement": "打乱 vehicles 顺序",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_schema.normalize_mission",
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p04_assignment_order_and_stable_id_tie_break",
+        "test_mission_planning.MissionSchemaTests.test_c03_c07_canonical_compile_and_input_unchanged"
+      ],
+      "expected_and_asserted": "反转车辆列表不改变编译结果；将最西侧 agent 改名 zzz 后仍按物理顺序分配第一分区。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P05",
+      "requirement": "东西/南北两扫描方向",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_planning.compile_shared_mission_v2",
+        "swarm_sim.mission_planning.lawnmower_route"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p05_sweep_axis_and_optional_return",
+        "test_mission_planning.SharedPlanningTests.test_p01_partition_union_positive_no_interior_overlap"
+      ],
+      "expected_and_asserted": "两轴路线首扫描段的常量/变化坐标符合预期，名义覆盖满足要求，mission intent 均为 reconnaissance；关闭返回少一个阶段。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P06",
+      "requirement": "不同路径长度、终点驻留填充",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_planning.compile_execution_phases",
+        "swarm_sim.capability.nominal_capability",
+        "swarm_sim.tasks.target_confirmation"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p06_padding_is_safe_stationary_and_not_service",
+        "test_v03_integration.DispatchTests.test_v2_driver_confirmation_is_numeric_and_idle_does_not_add_service_dwell"
+      ],
+      "expected_and_asserted": "手工缩短一机路线后产生 4 个 idle，所有阶段包含全部 agent；填充坐标保持末点，服务关闭，额外确认驻留为 0。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P07",
+      "requirement": "进入/返回路径交叉、等待点危险",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.capability.nominal_capability",
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p07_crossing_approach_return_and_active_vs_wait_rejected"
+      ],
+      "expected_and_asserted": "对换 approach/return 终点、活动航段经过静止邻机、生成间距不足均拒绝。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P08",
+      "requirement": "过小区域、过细扫描导致超过阶段上限",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_planning.compile_shared_mission_v2"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p08_small_strips_and_phase_explosion_rejected"
+      ],
+      "expected_and_asserted": "6 机分割过小宽度被拒绝；0.1m 扫描间距造成超过 100 个阶段被拒绝。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P09",
+      "requirement": "指令速度超限、路径/时间预算超限",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.capability.nominal_capability",
+        "swarm_sim.mission_planning.compile_shared_mission_v2",
+        "swarm_sim.mission_schema.normalize_mission"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p09_speed_path_airborne_and_timeout_budgets"
+      ],
+      "expected_and_asserted": "平台速度/执行接口速度、路径预算、留空预算、超时分别拒绝；预算独立断言包含双驻留、起降路径和生命周期估计。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "P10",
+      "requirement": "平台加速度字段存在但无时间参考",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.capability.nominal_capability",
+        "swarm_sim.execution_constraints.evaluate_execution_constraints"
+      ],
+      "unittest_names": [
+        "test_mission_planning.SharedPlanningTests.test_p10_capability_does_not_claim_dynamics_proof",
+        "test_mission_evaluation.LifecycleConstraintsTests.test_acceleration_proxy_not_hard_gate_and_gap_barrier"
+      ],
+      "expected_and_asserted": "预检的 executed_limits/proxy_dynamics 为 not_verified，明确 acceleration 未验证且非硬门槛；执行后代理不会跨异常段。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V01",
+      "requirement": "两机各覆盖互补的一半",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation._evaluate_channel"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V01_complementary_halves_union"
+      ],
+      "expected_and_asserted": "独立手工 2 个网格中心、两机各覆盖 1 个；每机 0.5、并集 1.0、去除任一机损失 0.5。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V02",
+      "requirement": "两机重复覆盖同一半",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation._evaluate_channel"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V02_duplicate_half_not_double_counted"
+      ],
+      "expected_and_asserted": "两机同轨迹覆盖同一个网格中心：全局 0.5、重复比 0.5、边际贡献 0、任务失败。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V03",
+      "requirement": "一机局部未完成、另一机补齐全局",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation._evaluate_channel"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V03_one_agent_compensates_for_other"
+      ],
+      "expected_and_asserted": "手工让第一架穿过两个网格中心、第二架位于区域外，任务成功且第二架覆盖贡献为 0。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V04",
+      "requirement": "全部输入只有计划路线，无实际执行证据",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V04_only_planned_geometry_is_unknown"
+      ],
+      "expected_and_asserted": "即使 planning 写入名义成功，清除实际轨迹和事件后 mission_success=null，指派意图保留，split 未验证。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V05",
+      "requirement": "实际轨迹完整，但覆盖低于阈值",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V05_completed_run_with_insufficient_coverage_fails",
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V02_duplicate_half_not_double_counted"
+      ],
+      "expected_and_asserted": "metadata.status=completed 且实际有效证据完整，但覆盖只有一半时 mission_success=false。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V06",
+      "requirement": "阈值未达且缺失关键区间",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation.window_evidence"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V06_missing_evidence_prevents_negative_conclusion"
+      ],
+      "expected_and_asserted": "中间异常屏障且已证覆盖 0.5 时，任务结果为 null，不能作完整失败或插值补齐成功。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V07",
+      "requirement": "已有有效覆盖达标，但另有数据缺失",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.quality.eligibility",
+        "swarm_sim.analysis.analyze_run",
+        "swarm_sim.dataset.build_dataset"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V07_coverage_monotonic_despite_missing_data",
+        "test_quality.PolicyTests.test_all_vehicles_must_satisfy_grade_and_strict_requires_other_checks",
+        "test_v03_integration.FinalEligibilityTests.test_V07_final_analysis_keeps_coverage_success_but_rejects_missing_observations"
+      ],
+      "expected_and_asserted": "手工几何全覆盖下，完整证据控制样本实际 analyze_run 后合格；插入 51m/s 异常观测包后双通道 mission_success 仍 true，数据有效率低于 0.99，最终默认/严格资格、落盘 quality 和导出 episode 资格均 false。",
+      "limitations": [
+        "完整分析入口读取手工合成 FCU 消息写出的 JSONL，执行真实文件读取、时钟拟合、重采样和验证逻辑；DFReader 二进制读包接口由手工 SIM 数据替代，没有启动 SITL。"
+      ],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V08",
+      "requirement": "超高度、服务未开启、idle padding",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation._evaluate_channel"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V08_height_disabled_service_idle_excluded"
+      ],
+      "expected_and_asserted": "超出高度容差、service_enabled=false、idle_padding 三种情况均移除该机贡献，只剩 0.5 全局覆盖。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V09",
+      "requirement": "子网格异常点、长缺口、窗口跨边界",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation.window_evidence",
+        "swarm_sim.recording.resample",
+        "swarm_sim.truth.read_truth",
+        "swarm_sim.analysis.analyze_run"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V09_gaps_barriers_and_service_boundary",
+        "test_v03_integration.TruthBarrierTests.test_V09_SIM_invalid_sample_cannot_reconnect_grid_endpoints",
+        "test_quality.BarrierTests.test_rejected_packet_between_grid_ticks_breaks_dwell_and_coverage",
+        "test_quality.BarrierTests.test_both_exporters_preserve_a_subgrid_rejection",
+        "test_quality.BarrierTests.test_sparse_grid_cannot_hide_long_source_gap",
+        "test_mission_evaluation.SemanticEndBracketTests.test_analyze_invalid_or_missing_outside_support_remains_unknown"
+      ],
+      "expected_and_asserted": "手工屏障/长缺口/观察边界不能补覆盖；FCU 两出口和 SIM 时间戳在采样网格间的无效记录保留屏障。 任务末端的网格外支撑点缺失或无效时，即使导出网格有效率为 1，返回证据仍为未知，禁止外推补成功。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V10",
+      "requirement": "返回要求 true，但未回到本机返回点",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.mission_evaluation._return_result",
+        "swarm_sim.analysis.analyze_run"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V10_return_requires_geometry_and_dwell",
+        "test_mission_evaluation.SemanticEndBracketTests.test_analyze_fractional_return_retains_support_without_exporting_it",
+        "test_mission_evaluation.SemanticEndBracketTests.test_analyze_invalid_or_missing_outside_support_remains_unknown"
+      ],
+      "expected_and_asserted": "正确返回并驻留成功；一机有效轨迹位于返回点外时失败；该返回段缺证据时未知。 在非整点 8.56s 结束事件和 1.1 的 host/source 比率下，保留 8.6s 内部支撑并裁剪到事件边界，驻留为 0.46/1.1；导出仍为 86 帧、末帧 8.5s。支撑无效/缺失仍未知。",
+      "limitations": [
+        "新增末端支撑用例只模拟 DFReader 包流，其余分析链执行；额外支撑不加入模型观测 CSV。"
+      ],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V11",
+      "requirement": "仅命令/确认事件存在，无位置证据",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V11_events_without_positions_do_not_validate"
+      ],
+      "expected_and_asserted": "保留执行/确认事件、清除所有轨迹，任务仍为 null。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V12",
+      "requirement": "SIM 与 FCU 轨迹故意产生不同结果",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission",
+        "swarm_sim.analysis.analyze_run",
+        "swarm_sim.dataset.build_dataset"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V12_truth_observation_disagreement",
+        "test_v03_integration.FinalEligibilityTests.test_V12_final_analysis_rejects_disagreement_despite_other_gates_passing"
+      ],
+      "expected_and_asserted": "原互补/重复手工轨迹验证 truth=false、observation=true、disagree；新增完整分析入口用 truth=true、observation=false，明确断言数据/真值/时钟/运行完成/执行约束/双通道间距均通过，仍因语义分歧使落盘和导出默认/严格资格为 false。",
+      "limitations": [
+        "手工合成 FCU 消息写出 JSONL，实际执行文件读取、时钟拟合、重采样、几何与约束判据；DFReader 包流模拟，不声称实际制造飞控估计偏差。"
+      ],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V13",
+      "requirement": "SIM 缺失，FCU 完整",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation.evaluate_mission"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V13_missing_truth_never_falls_back_to_fcu"
+      ],
+      "expected_and_asserted": "真值为空时 mission_success=null，观测成功为 true、一致性 unknown，不替用 FCU 当真值。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "V14",
+      "requirement": "改变网格分辨率的简单可手算区域",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.mission_evaluation._grid",
+        "swarm_sim.mission_evaluation.evaluate_mission"
+      ],
+      "unittest_names": [
+        "test_mission_evaluation.SharedMissionEvidenceTests.test_V14_declared_discrete_grid_resolution"
+      ],
+      "expected_and_asserted": "2m×1m 区域、半径 0.1m：1m 网格为 2 格且覆盖 1，0.5m 网格为 8 格且覆盖 0，吻合网格中心离散规则。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D01",
+      "requirement": "新语义文件/任务来源被修改",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.analysis.analyze_run",
+        "swarm_sim.dataset.build_dataset",
+        "swarm_sim.tasks.validate_task_binding",
+        "swarm_sim.truth.read_truth"
+      ],
+      "unittest_names": [
+        "test_v03_integration.SemanticExportTests.test_D01_v2_artifacts_are_hashed_and_corruption_is_rejected",
+        "test_v03_integration.SemanticExportTests.test_D01_reanalysis_rejects_contradictory_scenario_sources_before_writing",
+        "test_v03_integration.TruthBarrierTests.test_D01_rejected_SIM_timestamps_still_bind_BIN_source_hash",
+        "test_mission_data.GenerationTests.test_generation_integrity_and_profile_bounds"
+      ],
+      "expected_and_asserted": "7 个新增语义文件均在 artifact SHA 中；篡改语义文件、矛盾场景、被拒绝 SIM 的 BIN 来源以及生成任务源，均拒绝后续导出/分析/执行。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D02",
+      "requirement": "重试和派生变体",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.generation.generate",
+        "scripts.run_mission_list.run_mission_list"
+      ],
+      "unittest_names": [
+        "test_mission_data.GenerationTests.test_d02_d08_variants_share_base_family_but_independent_inputs",
+        "test_mission_data.BatchResumeTests.test_b03_success_skipped_after_validation_and_interrupted_attempt_retained",
+        "test_mission_data.BatchResumeTests.test_only_configured_environment_failure_retries_with_new_attempt"
+      ],
+      "expected_and_asserted": "变体共享 base/family 而输入不同；中断恢复和已配置环境重试使用不同 attempt ID/目录、同 family/任务哈希，旧失败目录保留。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D03",
+      "requirement": "v1 原语与 v2 mission 不兼容协议混合导出",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.dataset.build_dataset",
+        "swarm_sim.protocol.manifest_protocol"
+      ],
+      "unittest_names": [
+        "test_v03_integration.SemanticExportTests.test_D03_D05_incompatible_semantics_rejected_before_export"
+      ],
+      "expected_and_asserted": "旧 point_visit 与 v2 reconnaissance 混合导出抛 incompatible semantic，且不创建目标目录。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D04",
+      "requirement": "不同 quality policy 混合",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.dataset.build_dataset",
+        "swarm_sim.quality.policy_hash"
+      ],
+      "unittest_names": [
+        "test_quality.DatasetPolicyTests.test_mixed_policies_refused_without_creating_output_and_defaults_propagate"
+      ],
+      "expected_and_asserted": "仅速度过滤门槛不同的两份分析也拒绝混合，输出目录未创建；单独导出保留策略与严格资格字段。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D05",
+      "requirement": "任务输入相同而语义验证版本不同",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.dataset.build_dataset",
+        "swarm_sim.protocol.manifest_protocol",
+        "swarm_sim.protocol.validate_artifact_protocol",
+        "swarm_sim.episode_loader.load_episode",
+        "scripts.run_mission_list._verify_result"
+      ],
+      "unittest_names": [
+        "test_v03_integration.SemanticExportTests.test_D03_D05_incompatible_semantics_rejected_before_export",
+        "test_mission_data.LoaderTests.test_loader_rejects_incompatible_or_partial_semantic_protocol",
+        "test_mission_data.LoaderTests.test_D05_rehashed_cross_artifact_protocol_conflicts_rejected_by_all_consumers",
+        "test_v03_integration.SemanticExportTests.test_D05_semantic_and_constraint_versions_agree_across_all_artifacts"
+      ],
+      "expected_and_asserted": "同一 TaskSpec 两次分析的语义版本改为 future 后拒绝混合；加载器拒绝不支持或缺字段协议。 新分析的 manifest、quality、labels schema/provenance/observed behavior、semantic_validation、execution_constraints 版本逐项一致；故意改变其中任一版本并重新计算全部受影响哈希后，导出/加载/恢复三入口仍拒绝跨产物冲突。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D06",
+      "requirement": "加载器接收含标签/真值的目录",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.episode_loader.load_episode"
+      ],
+      "unittest_names": [
+        "test_mission_data.LoaderTests.test_d06_feature_whitelist_targets_separate_and_missing_agents_masked"
+      ],
+      "expected_and_asserted": "CSV 额外标签/真值列及独立特权文件存在时，x 仍逐元素等于预设 6 个观测值，targets 独立。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D07",
+      "requirement": "重复行、缺 agent、非法时间、无效值",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.episode_loader.load_episode"
+      ],
+      "unittest_names": [
+        "test_mission_data.LoaderTests.test_d07_duplicate_unknown_time_and_numeric_corruption_fail",
+        "test_mission_data.LoaderTests.test_d07_missing_feature_columns_and_modified_artifact_fail",
+        "test_mission_data.LoaderTests.test_d06_feature_whitelist_targets_separate_and_missing_agents_masked"
+      ],
+      "expected_and_asserted": "重复 time-agent、未知机、倒序/非有限时间、非有限/缺失有效特征、错误掩码/缺列拒绝；缺行和无效行填 0 且 mask=false。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "D08",
+      "requirement": "同族的失败、重试、窗口、变体",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.dataset.build_dataset",
+        "swarm_sim.dataset.family_split",
+        "swarm_sim.generation.generate",
+        "scripts.run_mission_list.run_mission_list"
+      ],
+      "unittest_names": [
+        "test_mission_data.GenerationTests.test_d02_d08_variants_share_base_family_but_independent_inputs",
+        "test_research.OfflineTests.test_failed_run_exports_unknown_truth_and_is_retained",
+        "test_mission_data.BatchResumeTests.test_b03_success_skipped_after_validation_and_interrupted_attempt_retained",
+        "test_v03_integration.SemanticExportTests.test_D08_manually_supplied_family_groups_failure_retry_variant_and_window"
+      ],
+      "expected_and_asserted": "失败、重试、速度变体及手工声明的派生窗口样本使用独立 run_id，经真实分析/导出后全部保留同一显式 family_id 与 split；生成变体也共享 family，attempt 不重建 family。",
+      "limitations": [
+        "本项验证手工提供派生 family 的导出合同；没有实现或声称验证自动滑动窗口裁剪、窗口提取或自动同源识别。"
+      ],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "B01",
+      "requirement": "相同 profile/seed 重复生成",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.generation.generate",
+        "swarm_sim.generation._sample"
+      ],
+      "unittest_names": [
+        "test_mission_data.GenerationTests.test_b01_same_profile_seed_produces_identical_frozen_bundles"
+      ],
+      "expected_and_asserted": "不同目标目录生成的全部 JSON 文件内容逐字节相同，包含任务、编译场景、候选、冻结 profile/list/manifest。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "B02",
+      "requirement": "有限候选采样失败",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.generation.generate"
+      ],
+      "unittest_names": [
+        "test_mission_data.GenerationTests.test_b02_rejected_candidates_are_finite_and_preserved"
+      ],
+      "expected_and_asserted": "强制预检拒绝时 3 个基础场景×2 次上限恰好调用 6 次编译，保留 6 份候选及原因，接受数为 0。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "B03",
+      "requirement": "批处理人工中断后恢复",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "scripts.run_mission_list.run_mission_list",
+        "scripts.run_mission_list._verify_result"
+      ],
+      "unittest_names": [
+        "test_mission_data.BatchResumeTests.test_b03_success_skipped_after_validation_and_interrupted_attempt_retained",
+        "test_mission_data.BatchResumeTests.test_b03_recovery_uses_frozen_analysis_not_new_latest_pointer",
+        "test_mission_data.BatchResumeTests.test_selected_subset_keeps_list_order_and_requires_same_resume_selection"
+      ],
+      "expected_and_asserted": "模拟第二条 KeyboardInterrupt 后，已验证首条跳过，第二条用新 attempt 恢复；analysis_latest 后续指向改变不替换账本固定分析选择。 --mission-id 的已知子集按原任务清单顺序执行，账本只保留选择项；同一子集可恢复，改变或省略已冻结选择在执行前拒绝。",
+      "limitations": [
+        "KeyboardInterrupt 和 run_scene 均在单元测试中模拟，不是本项证明真实进程被手动中断并恢复。"
+      ],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "B04",
+      "requirement": "目录存在但产物不完整/哈希损坏",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "scripts.run_mission_list.run_mission_list",
+        "scripts.run_mission_list._verify_result"
+      ],
+      "unittest_names": [
+        "test_mission_data.BatchResumeTests.test_b04_running_directory_without_evidence_is_recovered_not_skipped",
+        "test_mission_data.BatchResumeTests.test_b04_corrupted_success_never_silently_skipped",
+        "test_mission_data.BatchResumeTests.test_policy_config_change_rejected_and_semantic_failure_not_retried",
+        "test_mission_data.BatchResumeTests.test_selection_rejects_unknown_duplicate_and_empty_ids_before_output",
+        "test_mission_data.LoaderTests.test_D05_rehashed_cross_artifact_protocol_conflicts_rejected_by_all_consumers"
+      ],
+      "expected_and_asserted": "只有 running 目录无分析证据不会跳过；记录成功的标签哈希损坏会在任何新 run_scene 调用前拒绝；策略变更拒绝恢复。 未知/重复/空选择在输出前拒绝；已重新哈希但跨产物协议冲突的记录也不能被当作可恢复成功。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    },
+    {
+      "id": "B05",
+      "requirement": "只生成一个 mission 类别",
+      "verified_status": "PASS",
+      "implementation_status": "IMPLEMENTED_AND_TESTED",
+      "evidence_type": "local_unittest_or_synthetic_evidence",
+      "source_functions": [
+        "swarm_sim.dataset_audit.audit_dataset"
+      ],
+      "unittest_names": [
+        "test_mission_data.LoaderTests.test_b05_audit_has_explicit_denominators_and_flags_family_leak"
+      ],
+      "expected_and_asserted": "单任务数据体检只给显式分母的资格率、数据统计及泄漏检查，不提供 accuracy 字段。",
+      "limitations": [],
+      "execution_evidence": "docs/v03_tests_final.txt"
+    }
+  ],
+  "summary": {
+    "requirements": 44,
+    "PASS": 44,
+    "PARTIAL": 0,
+    "NOT_RUN": 0
+  },
+  "evidence_integrity": {
+    "suite_sha256": "6a67acc596bef513f361dde68a779fe3985c04fefbfee688615e0ccc1c84eba4",
+    "guide_sha256": "b23f561d363709f85ea01986cb04b92dfaead57b8c1f12d7e2e2e7e09c80b66d",
+    "test_source_sha256": {
+      "tests/test_v03_integration.py": "7c9216a5e53ac3d2df4d57c62b74cd9d7ac724091d86c3c2b9fe2f29be3e47f4",
+      "tests/test_mission_data.py": "c2ff89f6a184b1a2f844770d1289f7b75e1868983c03742713dceefa08bdc7ef",
+      "tests/test_mission_planning.py": "21e47b880946220cb4986af779b835cca8d1c17228c5604c7e56ceab6952829e",
+      "tests/test_quality.py": "92e2ba141b993e66e92a939dd3196390844abd543d513674a2f52b6658fa724f",
+      "tests/test_fly_control.py": "11062485e2fc074819471701ce3a538766234526298f9743c219230a396fceba",
+      "tests/test_main.py": "9c46cbfffaaf019ad7c41b6234905882040ac6c5b601a642c5541e338aa7ddcd",
+      "tests/test_research.py": "f25eed1e324443e7d53143542c5c3e5d3b54f7ea742ee7b72eb737e2843cc1cc",
+      "tests/test_mission_evaluation.py": "d9913810b5dc4d764d7ff461cd01aa9851deae3b210f18c59574a7914d86df65",
+      "tests/test_load_waypoint.py": "df9e543f4e44a75118ca3b04c4aeaa6f1c57f036f44c77223f4ed25c8de6d675",
+      "tests/test_swarm.py": "e5308c51d5b256df083f783c8f2395534ecaf3678e16a260d120c030f9193741"
+    }
+  },
+  "semantic_validation_version": "shared_coverage_v2"
+}

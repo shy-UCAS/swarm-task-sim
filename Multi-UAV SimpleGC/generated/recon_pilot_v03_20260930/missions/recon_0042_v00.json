@@ -1,0 +1,99 @@
+{
+  "execution": {
+    "arrival_tolerance_m": 1.0,
+    "backend": "AUTO",
+    "confirmation_dwell_s": 0.5,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "ready_timeout_s": 90.0,
+    "record_hz": 10.0,
+    "speed_m_s": 2.0,
+    "takeoff_alt_m": 8.0,
+    "timeout_s": 1200.0,
+    "waypoint_hold_s": 0.5
+  },
+  "family_id": "recon_34ef52ab00d3859aca23",
+  "mission": {
+    "coverage_required": 0.9,
+    "intent": "reconnaissance",
+    "objective": "area_coverage",
+    "observation_model": {
+      "activation": "observe_phase_only",
+      "grid_m": 1.0,
+      "height_tolerance_m": 1.0,
+      "radius_m": 4.0,
+      "type": "ideal_horizontal_disk"
+    },
+    "return_required": true,
+    "target_region_id": "R1"
+  },
+  "planner": {
+    "assignment": "monotone_entry_order",
+    "lane_spacing_m": 4.0,
+    "name": "equal_strip_lawnmower_v1",
+    "partition_axis": "east",
+    "tracking_margin_m": 1.0
+  },
+  "platform": {
+    "dynamics_validation": "execution_proxy_only",
+    "id": "basic_multirotor_nominal_v1",
+    "max_airborne_time_s": 900.0,
+    "max_climb_rate_m_s": 2.0,
+    "max_horizontal_accel_m_s2": 3.0,
+    "max_path_length_m": 1000.0,
+    "max_speed_m_s": 6.0,
+    "reserve_time_s": 60.0
+  },
+  "scenario": {
+    "origin": {
+      "alt_msl_m": 12.0,
+      "lat": 30.0,
+      "lon": 120.0
+    },
+    "regions": [
+      {
+        "height_m": 9.781135235292439,
+        "id": "R1",
+        "min_east_m": -15.165114824996873,
+        "min_north_m": -0.3808006460239213,
+        "type": "rectangle",
+        "width_m": 31.019904199203893
+      }
+    ],
+    "restricted_regions": [],
+    "scene_id": "base_0042",
+    "vehicles": [
+      {
+        "east_m": -7.4101387751959,
+        "heading_deg": 0.0,
+        "id": "uav_01",
+        "north_m": -14.37246711976112,
+        "sysid": 1
+      },
+      {
+        "east_m": 8.099813324406046,
+        "heading_deg": 0.0,
+        "id": "uav_02",
+        "north_m": -14.37246711976112,
+        "sysid": 2
+      }
+    ],
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    }
+  },
+  "schema_version": 2,
+  "seed": 8354828957394371938,
+  "task_id": "recon_0042_v00"
+}

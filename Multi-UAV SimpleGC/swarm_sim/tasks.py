@@ -27,6 +27,15 @@ def segment_clearance(a, b, c, d):
 
 
 def compile_task(spec):
+    if not isinstance(spec, dict) or isinstance(spec.get("schema_version"), bool):
+        raise ValueError("TaskSpec must be an object with an integer schema_version")
+    if spec.get("schema_version") == 2:
+        from .mission_planning import compile_shared_mission_v2
+        return compile_shared_mission_v2(spec)
+    return compile_task_v1(spec)
+
+
+def compile_task_v1(spec):
     spec = copy.deepcopy(spec)
     unknown = set(spec) - {"schema_version", "task_id", "family_id", "origin", "vehicles", "task",
                            "takeoff_alt_m", "record_hz", "max_gap_s", "min_separation_m", "timeout_s", "ready_timeout_s"}
@@ -114,3 +123,14 @@ def compile_task(spec):
 def validate_task_binding(scene):
     if "task_spec" in scene and compile_task(scene["task_spec"]) != scene:
         raise ValueError("compiled scenario differs from task_spec; edit the task and recompile")
+
+
+def target_confirmation(scene, phase, agent_id):
+    """Numerical control requirements; intent semantics stay outside the driver."""
+    spec = scene["task_spec"]
+    if spec["schema_version"] == 1:
+        return dict(tolerance_m=spec["task"]["tolerance_m"], dwell_s=spec["task"]["dwell_s"], role="legacy")
+    execution = spec["execution"]
+    role = scene["semantic_plan"]["execution_phases"][phase["name"]]["agents"][agent_id]["role"]
+    return dict(tolerance_m=execution["arrival_tolerance_m"],
+                dwell_s=0 if role == "idle_padding" else execution["confirmation_dwell_s"], role=role)

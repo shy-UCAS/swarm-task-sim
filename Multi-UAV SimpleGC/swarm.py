@@ -15,6 +15,14 @@ def main(argv=None):
     plan = sub.add_parser("plan", help="Compile an explicit TaskSpec to event-driven AUTO phases")
     plan.add_argument("task", type=Path)
     plan.add_argument("--output", type=Path, required=True)
+    generate = sub.add_parser("generate", help="Generate bounded deterministic mission candidates without launching SITL")
+    generate.add_argument("profile", type=Path)
+    generate.add_argument("--output", type=Path, required=True)
+    inspect = sub.add_parser("inspect-dataset", help="Validate observation loading and summarize a frozen dataset")
+    inspect.add_argument("dataset_directory", type=Path)
+    inspect.add_argument("--generation-manifest", type=Path)
+    inspect.add_argument("--attempt-ledger", type=Path)
+    inspect.add_argument("--output", type=Path, required=True)
     analyze = sub.add_parser("analyze", help="Write a new, versioned analysis of an existing run")
     analyze.add_argument("run_directory", type=Path)
     analyze.add_argument("--quality-policy", type=Path, help="JSON quality policy overrides; never changes historical run metadata")
@@ -41,6 +49,21 @@ def main(argv=None):
         from swarm_sim.quality import resolve_policy
         policy_path = getattr(args, "quality_policy", None)
         policy = resolve_policy(json.loads(policy_path.read_text(encoding="utf-8-sig")) if policy_path else None)
+        if args.command == "generate":
+            from swarm_sim.generation import generate
+            result = generate(args.profile, args.output)
+            print(json.dumps(dict(output=str(args.output), counts=result["counts"]), indent=2))
+            return 0
+        if args.command == "inspect-dataset":
+            from swarm_sim.dataset_audit import audit_dataset
+            from swarm_sim.recording import write_json
+            if args.output.exists():
+                raise ValueError("audit output already exists; choose a new filename")
+            report = audit_dataset(args.dataset_directory, args.generation_manifest, args.attempt_ledger)
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            write_json(args.output, report)
+            print(json.dumps(dict(output=str(args.output), counts=report["counts"], issues=report["issues"]), indent=2))
+            return 0 if not report["issues"] else 1
         if args.command == "plan":
             from swarm_sim.tasks import compile_task
             from swarm_sim.recording import write_json

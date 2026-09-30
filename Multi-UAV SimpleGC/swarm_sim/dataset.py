@@ -9,6 +9,7 @@ from pathlib import Path
 from .analysis import digest
 from .recording import write_json
 from .quality import policy_hash, resolve_policy
+from .protocol import manifest_protocol, validate_artifact_protocol
 
 
 def family_split(family_id, salt="simplegc-v02"):
@@ -22,6 +23,7 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
     entries = []
     seen = set()
     policies = {}
+    protocols = {}
     for path in run_paths:
         root = Path(path).resolve()
         pointer = json.loads((root / "analysis_latest.json").read_text(encoding="utf-8"))
@@ -32,6 +34,10 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
         if digest(manifest_path) != pointer["manifest_sha256"]:
             raise ValueError(f"analysis manifest changed: {analysis}")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        protocol = manifest_protocol(manifest)
+        protocols[json.dumps(protocol, sort_keys=True)] = protocol
+        if len(protocols) > 1:
+            raise ValueError("incompatible semantic/eligibility protocols: export separate datasets")
         if "quality_policy" not in manifest or "quality_policy_sha256" not in manifest:
             raise ValueError(f"analysis has no quality policy; reanalyze legacy run: {root}")
         policy = resolve_policy(manifest["quality_policy"])
@@ -54,12 +60,14 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
             candidate = (analysis / name).resolve()
             if candidate.parent != analysis or digest(candidate) != expected:
                 raise ValueError(f"analysis artifact changed: {name}")
+        validate_artifact_protocol(manifest, analysis)
         for name, expected in manifest["source_sha256"].items():
             candidate = (root / name).resolve()
             if not candidate.is_relative_to(root) or digest(candidate) != expected:
                 raise ValueError(f"run source changed since analysis: {name}")
         family = manifest.get("family_id")
         entries.append((analysis, dict(run_id=manifest["run_id"], scenario_id=manifest["scenario_id"],
+            semantic_protocol=protocol, agent_ids=manifest.get("agent_ids"), source_analysis_directory=analysis.name,
             family_id=family, split=family_split(family, salt) if family else None,
             benchmark_eligible=bool(family) and manifest["benchmark_eligible"],
             strict_benchmark_eligible=bool(family) and manifest.get("strict_benchmark_eligible", False),
@@ -81,6 +89,7 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
         entry["directory"] = relative.as_posix()
     fingerprint, policy = next(iter(policies.items()))
     result = dict(schema_version=2, quality_policy=policy, quality_policy_sha256=fingerprint,
+        semantic_protocol=next(iter(protocols.values())), mixed_semantic_protocols=False,
         mixed_quality_policies=False, split_salt=salt, split_method="SHA256 of family_id; target proportions 70/15/15, not balanced on small sets",
         identity_policy="all derived variants/retries/windows must inherit the originating family_id before splitting",
         missing_family_policy="retained, unassigned, ineligible; never infer family from run_id",

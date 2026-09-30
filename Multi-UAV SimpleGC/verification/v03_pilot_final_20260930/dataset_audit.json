@@ -1,0 +1,746 @@
+{
+  "schema_version": 1,
+  "audit_version": "mission_dataset_audit_v1",
+  "dataset_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_final_20260930\\dataset",
+  "counts": {
+    "episodes": 10,
+    "families": 10,
+    "base_scenes": 100,
+    "attempts": 10,
+    "attempt_count_basis": "ledger",
+    "semantic_unknown": 0
+  },
+  "rates": {
+    "planning": {
+      "numerator": 100,
+      "denominator": 100,
+      "fraction": 1.0,
+      "denominator_basis": "all sampled candidates; unavailable without generation manifest"
+    },
+    "execution_completed": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "ledger attempts"
+    },
+    "semantic_pass": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "all exported analyzed episodes, including unknown"
+    },
+    "semantic_pass_known_only": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "episodes with true/false semantic outcome"
+    },
+    "default_eligible": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "all exported analyzed episodes"
+    },
+    "strict_eligible": {
+      "numerator": 0,
+      "denominator": 10,
+      "fraction": 0.0,
+      "denominator_basis": "all exported analyzed episodes"
+    }
+  },
+  "splits": {
+    "train": {
+      "episodes": 7,
+      "families": 7
+    },
+    "validation": {
+      "episodes": 1,
+      "families": 1
+    },
+    "test": {
+      "episodes": 2,
+      "families": 2
+    }
+  },
+  "metrics": {
+    "episode_duration_s": {
+      "count": 10,
+      "min": 50.05209239999749,
+      "median": 63.84309150000081,
+      "p95": 72.73657459999959,
+      "max": 72.73657459999959
+    },
+    "observation_valid_fraction": {
+      "count": 43,
+      "min": 1.0,
+      "median": 1.0,
+      "p95": 1.0,
+      "max": 1.0
+    },
+    "truth_valid_fraction": {
+      "count": 43,
+      "min": 1.0,
+      "median": 1.0,
+      "p95": 1.0,
+      "max": 1.0
+    },
+    "global_coverage_ratio": {
+      "count": 10,
+      "min": 1.0,
+      "median": 1.0,
+      "p95": 1.0,
+      "max": 1.0
+    },
+    "repeated_coverage_cell_ratio": {
+      "count": 10,
+      "min": 0.14285714285714285,
+      "median": 0.22440898345153665,
+      "p95": 0.32142857142857145,
+      "max": 0.32142857142857145
+    },
+    "executed_path_length_m": {
+      "count": 43,
+      "min": 77.79852604383028,
+      "median": 96.39789617577964,
+      "p95": 124.9805283024016,
+      "max": 125.81010544369339
+    },
+    "airborne_time_s": {
+      "count": 43,
+      "min": 76.9744198135394,
+      "median": 89.99273299651493,
+      "p95": 96.99444387427678,
+      "max": 99.05063228607179
+    },
+    "executed_stage_count": {
+      "count": 10,
+      "min": 9.0,
+      "median": 10.0,
+      "p95": 10.0,
+      "max": 10.0
+    },
+    "barrier_wait_s": {
+      "count": 409,
+      "min": 0.0,
+      "median": 0.0552218000011635,
+      "p95": 0.3626936000000569,
+      "max": 0.6717400999987149
+    },
+    "scheduling_wait_s": {
+      "count": 366,
+      "min": 0.3804935999978625,
+      "median": 0.5133158499993442,
+      "p95": 0.7119209000011324,
+      "max": 0.9528116000001319
+    },
+    "region_width_m": {
+      "count": 10,
+      "min": 8.709959541125366,
+      "median": 27.925737848943704,
+      "p95": 93.84281053884581,
+      "max": 93.84281053884581
+    },
+    "region_height_m": {
+      "count": 10,
+      "min": 9.15521091427868,
+      "median": 11.903663804102266,
+      "p95": 89.98190216366193,
+      "max": 89.98190216366193
+    },
+    "speed_m_s": {
+      "count": 10,
+      "min": 2.0,
+      "median": 2.5,
+      "p95": 3.0,
+      "max": 3.0
+    },
+    "spawn_east_span_m": {
+      "count": 10,
+      "min": 0.0,
+      "median": 13.962868924471854,
+      "p95": 78.20234211570484,
+      "max": 78.20234211570484
+    },
+    "spawn_north_span_m": {
+      "count": 10,
+      "min": 0.0,
+      "median": 0.0,
+      "p95": 74.98491846971828,
+      "max": 74.98491846971828
+    }
+  },
+  "diversity": {
+    "vehicle_counts": {
+      "6": 5,
+      "2": 2,
+      "3": 3
+    },
+    "partition_axes": {
+      "north": 4,
+      "east": 6
+    },
+    "return_required": {
+      "false": 4,
+      "true": 6
+    },
+    "coarse_template_counts": {
+      "(6, 'north', 1, 9, False)": 2,
+      "(2, 'east', 3, 1, True)": 2,
+      "(6, 'east', 9, 1, True)": 1,
+      "(3, 'east', 5, 1, True)": 1,
+      "(6, 'east', 8, 1, True)": 1,
+      "(6, 'north', 1, 8, False)": 1,
+      "(3, 'east', 4, 1, False)": 1,
+      "(3, 'north', 1, 5, True)": 1
+    },
+    "largest_coarse_template_fraction": 0.2
+  },
+  "clock_grades": {
+    "acceptable": 10
+  },
+  "protocols": {
+    "c01514dae8e87ec2b7702b0195a4f9d24de736963550e54c3a40dc8722291311": 10
+  },
+  "duplicates": {
+    "normalized_input_groups": {},
+    "identity_fields_excluded": [
+      "task_id",
+      "family_id",
+      "seed",
+      "scene_id"
+    ]
+  },
+  "family_split_leaks": {},
+  "issues": [],
+  "episodes": [
+    {
+      "run_id": "20260930T153623Z_af3f4fcd",
+      "family_id": "recon_d30e405969398e0c2f76",
+      "split": "train",
+      "frames": 570,
+      "agents": 6,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 186,
+          "coverage_ratio": 0.19435736677115986,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1249,
+          "leave_one_out_coverage_drop": 0.13793103448275862
+        },
+        "uav_02": {
+          "covered_cells": 209,
+          "coverage_ratio": 0.21839080459770116,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1249,
+          "leave_one_out_coverage_drop": 0.11598746081504702
+        },
+        "uav_03": {
+          "covered_cells": 208,
+          "coverage_ratio": 0.2173458725182863,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1255,
+          "leave_one_out_coverage_drop": 0.11494252873563218
+        },
+        "uav_04": {
+          "covered_cells": 209,
+          "coverage_ratio": 0.21839080459770116,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1249,
+          "leave_one_out_coverage_drop": 0.11598746081504702
+        },
+        "uav_05": {
+          "covered_cells": 207,
+          "coverage_ratio": 0.21630094043887146,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1252,
+          "leave_one_out_coverage_drop": 0.11494252873563218
+        },
+        "uav_06": {
+          "covered_cells": 187,
+          "coverage_ratio": 0.19540229885057472,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1255,
+          "leave_one_out_coverage_drop": 0.1400208986415883
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T153848Z_46d1aaa3",
+      "family_id": "recon_84c2c6a3142980347cdd",
+      "split": "train",
+      "frames": 728,
+      "agents": 2,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 176,
+          "coverage_ratio": 0.5714285714285714,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1306,
+          "leave_one_out_coverage_drop": 0.42857142857142855
+        },
+        "uav_02": {
+          "covered_cells": 176,
+          "coverage_ratio": 0.5714285714285714,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1312,
+          "leave_one_out_coverage_drop": 0.42857142857142855
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T154116Z_ed102766",
+      "family_id": "recon_b8970909708e3819eb24",
+      "split": "train",
+      "frames": 646,
+      "agents": 6,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 175,
+          "coverage_ratio": 0.18617021276595744,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1225,
+          "leave_one_out_coverage_drop": 0.13829787234042554
+        },
+        "uav_02": {
+          "covered_cells": 200,
+          "coverage_ratio": 0.2127659574468085,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1231,
+          "leave_one_out_coverage_drop": 0.12234042553191489
+        },
+        "uav_03": {
+          "covered_cells": 200,
+          "coverage_ratio": 0.2127659574468085,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1219,
+          "leave_one_out_coverage_drop": 0.1276595744680851
+        },
+        "uav_04": {
+          "covered_cells": 198,
+          "coverage_ratio": 0.21063829787234042,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1216,
+          "leave_one_out_coverage_drop": 0.11702127659574468
+        },
+        "uav_05": {
+          "covered_cells": 200,
+          "coverage_ratio": 0.2127659574468085,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1219,
+          "leave_one_out_coverage_drop": 0.11914893617021277
+        },
+        "uav_06": {
+          "covered_cells": 180,
+          "coverage_ratio": 0.19148936170212766,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1231,
+          "leave_one_out_coverage_drop": 0.14893617021276595
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T155237Z_12275488",
+      "family_id": "recon_4df4c9fc027cc4be09e6",
+      "split": "train",
+      "frames": 543,
+      "agents": 6,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 153,
+          "coverage_ratio": 0.18888888888888888,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1174,
+          "leave_one_out_coverage_drop": 0.14444444444444443
+        },
+        "uav_02": {
+          "covered_cells": 171,
+          "coverage_ratio": 0.2111111111111111,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1177,
+          "leave_one_out_coverage_drop": 0.12222222222222222
+        },
+        "uav_03": {
+          "covered_cells": 171,
+          "coverage_ratio": 0.2111111111111111,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1168,
+          "leave_one_out_coverage_drop": 0.12222222222222222
+        },
+        "uav_04": {
+          "covered_cells": 171,
+          "coverage_ratio": 0.2111111111111111,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1177,
+          "leave_one_out_coverage_drop": 0.12222222222222222
+        },
+        "uav_05": {
+          "covered_cells": 171,
+          "coverage_ratio": 0.2111111111111111,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1183,
+          "leave_one_out_coverage_drop": 0.12222222222222222
+        },
+        "uav_06": {
+          "covered_cells": 153,
+          "coverage_ratio": 0.18888888888888888,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1174,
+          "leave_one_out_coverage_drop": 0.14444444444444443
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T155457Z_200822e7",
+      "family_id": "recon_0e750d6811e30f18a0f2",
+      "split": "validation",
+      "frames": 704,
+      "agents": 3,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 194,
+          "coverage_ratio": 0.383399209486166,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1282,
+          "leave_one_out_coverage_drop": 0.2826086956521739
+        },
+        "uav_02": {
+          "covered_cells": 213,
+          "coverage_ratio": 0.4209486166007905,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1285,
+          "leave_one_out_coverage_drop": 0.22529644268774704
+        },
+        "uav_03": {
+          "covered_cells": 198,
+          "coverage_ratio": 0.391304347826087,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1267,
+          "leave_one_out_coverage_drop": 0.2964426877470356
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T155726Z_bd656d6a",
+      "family_id": "recon_b406c7255e660ceb981b",
+      "split": "test",
+      "frames": 684,
+      "agents": 6,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 180,
+          "coverage_ratio": 0.19480519480519481,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1372,
+          "leave_one_out_coverage_drop": 0.12987012987012986
+        },
+        "uav_02": {
+          "covered_cells": 216,
+          "coverage_ratio": 0.23376623376623376,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1363,
+          "leave_one_out_coverage_drop": 0.1038961038961039
+        },
+        "uav_03": {
+          "covered_cells": 216,
+          "coverage_ratio": 0.23376623376623376,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1369,
+          "leave_one_out_coverage_drop": 0.1038961038961039
+        },
+        "uav_04": {
+          "covered_cells": 213,
+          "coverage_ratio": 0.2305194805194805,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1375,
+          "leave_one_out_coverage_drop": 0.09090909090909091
+        },
+        "uav_05": {
+          "covered_cells": 216,
+          "coverage_ratio": 0.23376623376623376,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1360,
+          "leave_one_out_coverage_drop": 0.10714285714285714
+        },
+        "uav_06": {
+          "covered_cells": 180,
+          "coverage_ratio": 0.19480519480519481,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1351,
+          "leave_one_out_coverage_drop": 0.14285714285714285
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T160032Z_3eb54ff1",
+      "family_id": "recon_e912e1eaf2cc15d46f11",
+      "split": "test",
+      "frames": 501,
+      "agents": 6,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 144,
+          "coverage_ratio": 0.19753086419753085,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1138,
+          "leave_one_out_coverage_drop": 0.13580246913580246
+        },
+        "uav_02": {
+          "covered_cells": 163,
+          "coverage_ratio": 0.22359396433470508,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1138,
+          "leave_one_out_coverage_drop": 0.1111111111111111
+        },
+        "uav_03": {
+          "covered_cells": 161,
+          "coverage_ratio": 0.22085048010973937,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1150,
+          "leave_one_out_coverage_drop": 0.10973936899862825
+        },
+        "uav_04": {
+          "covered_cells": 162,
+          "coverage_ratio": 0.2222222222222222,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1144,
+          "leave_one_out_coverage_drop": 0.11248285322359397
+        },
+        "uav_05": {
+          "covered_cells": 161,
+          "coverage_ratio": 0.22085048010973937,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1141,
+          "leave_one_out_coverage_drop": 0.1111111111111111
+        },
+        "uav_06": {
+          "covered_cells": 144,
+          "coverage_ratio": 0.19753086419753085,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1147,
+          "leave_one_out_coverage_drop": 0.13717421124828533
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T160246Z_f7b6895d",
+      "family_id": "recon_e198f24a9923a0230227",
+      "split": "train",
+      "frames": 536,
+      "agents": 3,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 185,
+          "coverage_ratio": 0.3854166666666667,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1276,
+          "leave_one_out_coverage_drop": 0.275
+        },
+        "uav_02": {
+          "covered_cells": 216,
+          "coverage_ratio": 0.45,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1252,
+          "leave_one_out_coverage_drop": 0.21458333333333332
+        },
+        "uav_03": {
+          "covered_cells": 192,
+          "coverage_ratio": 0.4,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1267,
+          "leave_one_out_coverage_drop": 0.275
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T160457Z_bcd46846",
+      "family_id": "recon_c7fcebb7f85b59465a21",
+      "split": "train",
+      "frames": 657,
+      "agents": 2,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 165,
+          "coverage_ratio": 0.5689655172413793,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1213,
+          "leave_one_out_coverage_drop": 0.41379310344827586
+        },
+        "uav_02": {
+          "covered_cells": 170,
+          "coverage_ratio": 0.5862068965517241,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1207,
+          "leave_one_out_coverage_drop": 0.43103448275862066
+        }
+      },
+      "reasons": []
+    },
+    {
+      "run_id": "20260930T160719Z_a58405a9",
+      "family_id": "recon_a62d45cc883fdb9864fd",
+      "split": "train",
+      "frames": 632,
+      "agents": 3,
+      "mission_success": true,
+      "default_eligible": true,
+      "strict_eligible": false,
+      "global_coverage_ratio": 1.0,
+      "per_agent_coverage": {
+        "uav_01": {
+          "covered_cells": 180,
+          "coverage_ratio": 0.375,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1252,
+          "leave_one_out_coverage_drop": 0.2916666666666667
+        },
+        "uav_02": {
+          "covered_cells": 200,
+          "coverage_ratio": 0.4166666666666667,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1249,
+          "leave_one_out_coverage_drop": 0.25
+        },
+        "uav_03": {
+          "covered_cells": 180,
+          "coverage_ratio": 0.375,
+          "evidence_complete": true,
+          "service_windows": 8,
+          "missing_service_windows": 0,
+          "valid_service_points": 1249,
+          "leave_one_out_coverage_drop": 0.2916666666666667
+        }
+      },
+      "reasons": []
+    }
+  ],
+  "missing_metrics": [],
+  "limitation": "single mission class; no classification accuracy or claim of intention identifiability; coarse bins do not identify all near-duplicates"
+}

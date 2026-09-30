@@ -1,0 +1,127 @@
+{
+  "execution": {
+    "arrival_tolerance_m": 1.0,
+    "backend": "AUTO",
+    "confirmation_dwell_s": 0.5,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "ready_timeout_s": 90.0,
+    "record_hz": 10.0,
+    "speed_m_s": 2.0,
+    "takeoff_alt_m": 8.0,
+    "timeout_s": 1200.0,
+    "waypoint_hold_s": 0.5
+  },
+  "family_id": "recon_8ef458e2c11e366a5978",
+  "mission": {
+    "coverage_required": 0.9,
+    "intent": "reconnaissance",
+    "objective": "area_coverage",
+    "observation_model": {
+      "activation": "observe_phase_only",
+      "grid_m": 1.0,
+      "height_tolerance_m": 1.0,
+      "radius_m": 4.0,
+      "type": "ideal_horizontal_disk"
+    },
+    "return_required": false,
+    "target_region_id": "R1"
+  },
+  "planner": {
+    "assignment": "monotone_entry_order",
+    "lane_spacing_m": 4.0,
+    "name": "equal_strip_lawnmower_v1",
+    "partition_axis": "east",
+    "tracking_margin_m": 1.0
+  },
+  "platform": {
+    "dynamics_validation": "execution_proxy_only",
+    "id": "basic_multirotor_nominal_v1",
+    "max_airborne_time_s": 900.0,
+    "max_climb_rate_m_s": 2.0,
+    "max_horizontal_accel_m_s2": 3.0,
+    "max_path_length_m": 1000.0,
+    "max_speed_m_s": 6.0,
+    "reserve_time_s": 60.0
+  },
+  "scenario": {
+    "origin": {
+      "alt_msl_m": 12.0,
+      "lat": 30.0,
+      "lon": 120.0
+    },
+    "regions": [
+      {
+        "height_m": 8.337753961262257,
+        "id": "R1",
+        "min_east_m": -17.25930477681832,
+        "min_north_m": -2.5235755754990414,
+        "type": "rectangle",
+        "width_m": 78.10950515446787
+      }
+    ],
+    "restricted_regions": [],
+    "scene_id": "base_0044",
+    "vehicles": [
+      {
+        "east_m": -10.750179347279328,
+        "heading_deg": 0.0,
+        "id": "uav_01",
+        "north_m": -13.068393404093301,
+        "sysid": 1
+      },
+      {
+        "east_m": 2.2680715117986487,
+        "heading_deg": 0.0,
+        "id": "uav_02",
+        "north_m": -13.068393404093301,
+        "sysid": 2
+      },
+      {
+        "east_m": 15.286322370876626,
+        "heading_deg": 0.0,
+        "id": "uav_03",
+        "north_m": -13.068393404093301,
+        "sysid": 3
+      },
+      {
+        "east_m": 28.304573229954606,
+        "heading_deg": 0.0,
+        "id": "uav_04",
+        "north_m": -13.068393404093301,
+        "sysid": 4
+      },
+      {
+        "east_m": 41.322824089032586,
+        "heading_deg": 0.0,
+        "id": "uav_05",
+        "north_m": -13.068393404093301,
+        "sysid": 5
+      },
+      {
+        "east_m": 54.34107494811057,
+        "heading_deg": 0.0,
+        "id": "uav_06",
+        "north_m": -13.068393404093301,
+        "sysid": 6
+      }
+    ],
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    }
+  },
+  "schema_version": 2,
+  "seed": 5071628861124586754,
+  "task_id": "recon_0044_v00"
+}

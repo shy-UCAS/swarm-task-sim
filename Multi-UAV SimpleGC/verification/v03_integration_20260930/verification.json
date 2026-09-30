@@ -1,0 +1,1605 @@
+{
+  "scope": "five local SITL attempts; no automatic retry; failures retained",
+  "cases": [
+    {
+      "case": "three_primary",
+      "expected_failure": false,
+      "passed": true,
+      "task_file_sha256": "f1f326db8a0bf3ac5e2715990643c0b48e8b8079a0462612a778aef5f05dcd03",
+      "scenario_sha256": "b76bae087c8962864f2a189933210fe862525e5092f87887eda1481c2d35bb25",
+      "run_id": "20260930T152031Z_08eff45d",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\analysis_v030_20260930T155150Z_95962f24",
+      "elapsed_s": 193.66940539999996,
+      "run_status": "completed",
+      "error": null,
+      "cli_equivalent_exit_code": 0,
+      "cleanup": {
+        "uav_01": 1,
+        "uav_02": 1,
+        "uav_03": 1
+      },
+      "simulator_version": "0.3.0",
+      "source_sha256": {
+        "analysis.py": "7cd8b492cb29238dd7fe90fc612ce1bfc0f2a2840a069d438bbcd8e6b3705a9a",
+        "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+        "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+        "dataset.py": "289dc19c5867c6bee229dd23e9b005c8da59b49e1329d6f63d959eb2b124362e",
+        "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+        "episode_loader.py": "21d337189d7bef48299899184b9e24172ca14f99f621d2d4465759cb59ba5cc4",
+        "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+        "execution_constraints.py": "ec41dd15e97130c7ceb02f0e3898e734ec8d5d24f9394bc19abf8dddd5c3d6b5",
+        "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+        "mission_evaluation.py": "5209c9ff516c1b19c0a605fc690f10c56d304d70900ba612b2435f8eb64a2c77",
+        "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+        "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+        "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+        "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+        "protocol.py": "d56ed0653ad3d8521639905780e3a3c0c6125ede890a7272b118024ff2231592",
+        "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+        "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+        "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+        "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+        "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+        "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+        "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+        "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+      },
+      "firmware_sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+      "mission_success": true,
+      "mission_success_observation": true,
+      "semantic_consistency": "agree",
+      "mission_metrics": {
+        "truth": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 1620,
+            "nx": 54,
+            "ny": 30,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 1620,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 270,
+            "repeated_coverage_cell_ratio": 0.16666666666666666,
+            "repeated_fraction_of_covered": 0.16666666666666666,
+            "observing_agents": 3,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 600,
+                "coverage_ratio": 0.37037037037037035,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2591,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              },
+              "uav_02": {
+                "covered_cells": 660,
+                "coverage_ratio": 0.4074074074074074,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2552,
+                "leave_one_out_coverage_drop": 0.24074074074074073
+              },
+              "uav_03": {
+                "covered_cells": 630,
+                "coverage_ratio": 0.3888888888888889,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2567,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.5656224077453089,
+                "nearest_m": 0.1821750807928394,
+                "target": [
+                  9.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1007498060241403,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.5833540181199339,
+                "nearest_m": 0.42019771422723917,
+                "target": [
+                  27.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10564516690797632,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_03": {
+                "success": true,
+                "longest_dwell_s": 0.5859412163567015,
+                "nearest_m": 0.18969011380819273,
+                "target": [
+                  45.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10257358245542036,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        },
+        "observation": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 1620,
+            "nx": 54,
+            "ny": 30,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 1620,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 269,
+            "repeated_coverage_cell_ratio": 0.16604938271604938,
+            "repeated_fraction_of_covered": 0.16604938271604938,
+            "observing_agents": 3,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 600,
+                "coverage_ratio": 0.37037037037037035,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2591,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              },
+              "uav_02": {
+                "covered_cells": 660,
+                "coverage_ratio": 0.4074074074074074,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2552,
+                "leave_one_out_coverage_drop": 0.24135802469135803
+              },
+              "uav_03": {
+                "covered_cells": 629,
+                "coverage_ratio": 0.3882716049382716,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2567,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.5656224077453089,
+                "nearest_m": 0.14243466213198236,
+                "target": [
+                  9.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1007498060241403,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.4777088512119576,
+                "nearest_m": 0.3590062124353463,
+                "target": [
+                  27.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10564516690797632,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_03": {
+                "success": true,
+                "longest_dwell_s": 0.48343903860569526,
+                "nearest_m": 0.2070446568859036,
+                "target": [
+                  45.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10257358245542036,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        }
+      },
+      "execution_constraints_pass": true,
+      "clock_quality": "acceptable",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "previous_analysis_results": [
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\analysis_v030_20260930T152345Z_9d73be8c",
+          "passed": true,
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree",
+          "benchmark_eligible": true
+        },
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\analysis_v030_20260930T153523Z_997e79d5",
+          "passed": true,
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree",
+          "benchmark_eligible": true
+        }
+      ],
+      "reanalyzed_cli_equivalent_exit_code": 0
+    },
+    {
+      "case": "three_repeat",
+      "expected_failure": false,
+      "passed": true,
+      "task_file_sha256": "f1f326db8a0bf3ac5e2715990643c0b48e8b8079a0462612a778aef5f05dcd03",
+      "scenario_sha256": "b76bae087c8962864f2a189933210fe862525e5092f87887eda1481c2d35bb25",
+      "run_id": "20260930T152358Z_56f3a95a",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\analysis_v030_20260930T155202Z_0052ab56",
+      "elapsed_s": 193.46015550000084,
+      "run_status": "completed",
+      "error": null,
+      "cli_equivalent_exit_code": 1,
+      "cleanup": {
+        "uav_01": 1,
+        "uav_02": 1,
+        "uav_03": 1
+      },
+      "simulator_version": "0.3.0",
+      "source_sha256": {
+        "analysis.py": "7cd8b492cb29238dd7fe90fc612ce1bfc0f2a2840a069d438bbcd8e6b3705a9a",
+        "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+        "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+        "dataset.py": "289dc19c5867c6bee229dd23e9b005c8da59b49e1329d6f63d959eb2b124362e",
+        "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+        "episode_loader.py": "21d337189d7bef48299899184b9e24172ca14f99f621d2d4465759cb59ba5cc4",
+        "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+        "execution_constraints.py": "ec41dd15e97130c7ceb02f0e3898e734ec8d5d24f9394bc19abf8dddd5c3d6b5",
+        "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+        "mission_evaluation.py": "5209c9ff516c1b19c0a605fc690f10c56d304d70900ba612b2435f8eb64a2c77",
+        "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+        "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+        "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+        "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+        "protocol.py": "d56ed0653ad3d8521639905780e3a3c0c6125ede890a7272b118024ff2231592",
+        "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+        "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+        "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+        "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+        "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+        "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+        "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+        "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+      },
+      "firmware_sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+      "mission_success": true,
+      "mission_success_observation": true,
+      "semantic_consistency": "agree",
+      "mission_metrics": {
+        "truth": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 1620,
+            "nx": 54,
+            "ny": 30,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 1620,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 270,
+            "repeated_coverage_cell_ratio": 0.16666666666666666,
+            "repeated_fraction_of_covered": 0.16666666666666666,
+            "observing_agents": 3,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 600,
+                "coverage_ratio": 0.37037037037037035,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2585,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              },
+              "uav_02": {
+                "covered_cells": 660,
+                "coverage_ratio": 0.4074074074074074,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2561,
+                "leave_one_out_coverage_drop": 0.24074074074074073
+              },
+              "uav_03": {
+                "covered_cells": 630,
+                "coverage_ratio": 0.3888888888888889,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2573,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.583570667064123,
+                "nearest_m": 0.18063474816559033,
+                "target": [
+                  9.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09955390699846589,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.5850840297674154,
+                "nearest_m": 0.4149159075065737,
+                "target": [
+                  27.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10524234072872218,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_03": {
+                "success": true,
+                "longest_dwell_s": 0.6028478640563151,
+                "nearest_m": 0.18818804013702423,
+                "target": [
+                  45.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.0994135790606947,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        },
+        "observation": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 1620,
+            "nx": 54,
+            "ny": 30,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 1620,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 269,
+            "repeated_coverage_cell_ratio": 0.16604938271604938,
+            "repeated_fraction_of_covered": 0.16604938271604938,
+            "observing_agents": 3,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 600,
+                "coverage_ratio": 0.37037037037037035,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2585,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              },
+              "uav_02": {
+                "covered_cells": 660,
+                "coverage_ratio": 0.4074074074074074,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2561,
+                "leave_one_out_coverage_drop": 0.24135802469135803
+              },
+              "uav_03": {
+                "covered_cells": 629,
+                "coverage_ratio": 0.3882716049382716,
+                "evidence_complete": true,
+                "service_windows": 10,
+                "missing_service_windows": 0,
+                "valid_service_points": 2573,
+                "leave_one_out_coverage_drop": 0.2962962962962963
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.4840167600656855,
+                "nearest_m": 0.17017673314766574,
+                "target": [
+                  9.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09955390699846589,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.49429666613255563,
+                "nearest_m": 0.35495439510128163,
+                "target": [
+                  27.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10524234072872218,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_03": {
+                "success": true,
+                "longest_dwell_s": 0.506555131982708,
+                "nearest_m": 0.13461511510323093,
+                "target": [
+                  45.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.0994135790606947,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        }
+      },
+      "execution_constraints_pass": true,
+      "clock_quality": "acceptable",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "previous_analysis_results": [
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\analysis_v030_20260930T152713Z_1f6fe23a",
+          "passed": false,
+          "mission_success": true,
+          "mission_success_observation": null,
+          "semantic_consistency": "unknown",
+          "benchmark_eligible": false
+        },
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\analysis_v030_20260930T153537Z_91a0356b",
+          "passed": true,
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree",
+          "benchmark_eligible": true
+        }
+      ],
+      "reanalyzed_cli_equivalent_exit_code": 0
+    },
+    {
+      "case": "two_north",
+      "expected_failure": false,
+      "passed": true,
+      "task_file_sha256": "930c38f709e07a15dcb6accefa6eedd0b99f7f4e25aeff990d05089a16e44f5e",
+      "scenario_sha256": "26e700a865d1a971c92118d374c42258b62bf6924c8435704cf633e3614d3522",
+      "run_id": "20260930T152726Z_85b2bcb7",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\analysis_v030_20260930T155215Z_9f09eb49",
+      "elapsed_s": 122.0751173000026,
+      "run_status": "completed",
+      "error": null,
+      "cli_equivalent_exit_code": 1,
+      "cleanup": {
+        "uav_01": 1,
+        "uav_02": 1
+      },
+      "simulator_version": "0.3.0",
+      "source_sha256": {
+        "analysis.py": "7cd8b492cb29238dd7fe90fc612ce1bfc0f2a2840a069d438bbcd8e6b3705a9a",
+        "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+        "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+        "dataset.py": "289dc19c5867c6bee229dd23e9b005c8da59b49e1329d6f63d959eb2b124362e",
+        "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+        "episode_loader.py": "21d337189d7bef48299899184b9e24172ca14f99f621d2d4465759cb59ba5cc4",
+        "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+        "execution_constraints.py": "ec41dd15e97130c7ceb02f0e3898e734ec8d5d24f9394bc19abf8dddd5c3d6b5",
+        "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+        "mission_evaluation.py": "5209c9ff516c1b19c0a605fc690f10c56d304d70900ba612b2435f8eb64a2c77",
+        "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+        "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+        "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+        "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+        "protocol.py": "d56ed0653ad3d8521639905780e3a3c0c6125ede890a7272b118024ff2231592",
+        "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+        "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+        "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+        "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+        "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+        "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+        "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+        "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+      },
+      "firmware_sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+      "mission_success": true,
+      "mission_success_observation": true,
+      "semantic_consistency": "agree",
+      "mission_metrics": {
+        "truth": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 192,
+            "nx": 8,
+            "ny": 24,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 192,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 31,
+            "repeated_coverage_cell_ratio": 0.16145833333333334,
+            "repeated_fraction_of_covered": 0.16145833333333334,
+            "observing_agents": 2,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 111,
+                "coverage_ratio": 0.578125,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 813,
+                "leave_one_out_coverage_drop": 0.4166666666666667
+              },
+              "uav_02": {
+                "covered_cells": 112,
+                "coverage_ratio": 0.5833333333333334,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 807,
+                "leave_one_out_coverage_drop": 0.421875
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.632401319821696,
+                "nearest_m": 0.2931292089737691,
+                "target": [
+                  -12.0,
+                  6.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09801685752844946,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.5559912324808636,
+                "nearest_m": 0.3301642730963593,
+                "target": [
+                  -12.0,
+                  18.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09926466796595435,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        },
+        "observation": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 192,
+            "nx": 8,
+            "ny": 24,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 192,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 31,
+            "repeated_coverage_cell_ratio": 0.16145833333333334,
+            "repeated_fraction_of_covered": 0.16145833333333334,
+            "observing_agents": 2,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 111,
+                "coverage_ratio": 0.578125,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 813,
+                "leave_one_out_coverage_drop": 0.4166666666666667
+              },
+              "uav_02": {
+                "covered_cells": 112,
+                "coverage_ratio": 0.5833333333333334,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 807,
+                "leave_one_out_coverage_drop": 0.421875
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.5342237290106908,
+                "nearest_m": 0.2789695116925376,
+                "target": [
+                  -12.0,
+                  6.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09801685752844946,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.456726564514895,
+                "nearest_m": 0.35386649915801344,
+                "target": [
+                  -12.0,
+                  18.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09926466796595435,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        }
+      },
+      "execution_constraints_pass": true,
+      "clock_quality": "acceptable",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "previous_analysis_results": [
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\analysis_v030_20260930T152929Z_15584209",
+          "passed": false,
+          "mission_success": true,
+          "mission_success_observation": null,
+          "semantic_consistency": "unknown",
+          "benchmark_eligible": false
+        },
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\analysis_v030_20260930T153550Z_4cc7fe48",
+          "passed": true,
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree",
+          "benchmark_eligible": true
+        }
+      ],
+      "reanalyzed_cli_equivalent_exit_code": 0
+    },
+    {
+      "case": "six_small",
+      "expected_failure": false,
+      "passed": true,
+      "task_file_sha256": "0973aa9b8f283efc7c69f3f8c530da0c2b1f55e9c7d7728ebd888efa4a87fa39",
+      "scenario_sha256": "423a0ccfb5c1de5742abb2840fc7c7bf0a91f3a6d5ecf28f33b8f85756b19292",
+      "run_id": "20260930T152929Z_faff6f17",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\analysis_v030_20260930T155216Z_19ece1ed",
+      "elapsed_s": 124.9801120000011,
+      "run_status": "completed",
+      "error": null,
+      "cli_equivalent_exit_code": 0,
+      "cleanup": {
+        "uav_01": 1,
+        "uav_02": 1,
+        "uav_03": 1,
+        "uav_04": 1,
+        "uav_05": 1,
+        "uav_06": 1
+      },
+      "simulator_version": "0.3.0",
+      "source_sha256": {
+        "analysis.py": "7cd8b492cb29238dd7fe90fc612ce1bfc0f2a2840a069d438bbcd8e6b3705a9a",
+        "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+        "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+        "dataset.py": "289dc19c5867c6bee229dd23e9b005c8da59b49e1329d6f63d959eb2b124362e",
+        "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+        "episode_loader.py": "21d337189d7bef48299899184b9e24172ca14f99f621d2d4465759cb59ba5cc4",
+        "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+        "execution_constraints.py": "ec41dd15e97130c7ceb02f0e3898e734ec8d5d24f9394bc19abf8dddd5c3d6b5",
+        "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+        "mission_evaluation.py": "5209c9ff516c1b19c0a605fc690f10c56d304d70900ba612b2435f8eb64a2c77",
+        "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+        "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+        "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+        "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+        "protocol.py": "d56ed0653ad3d8521639905780e3a3c0c6125ede890a7272b118024ff2231592",
+        "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+        "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+        "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+        "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+        "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+        "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+        "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+        "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+      },
+      "firmware_sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+      "mission_success": true,
+      "mission_success_observation": true,
+      "semantic_consistency": "agree",
+      "mission_metrics": {
+        "truth": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 576,
+            "nx": 72,
+            "ny": 8,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 576,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 158,
+            "repeated_coverage_cell_ratio": 0.2743055555555556,
+            "repeated_fraction_of_covered": 0.2743055555555556,
+            "observing_agents": 6,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 112,
+                "coverage_ratio": 0.19444444444444445,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 804,
+                "leave_one_out_coverage_drop": 0.1388888888888889
+              },
+              "uav_02": {
+                "covered_cells": 128,
+                "coverage_ratio": 0.2222222222222222,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 822,
+                "leave_one_out_coverage_drop": 0.1111111111111111
+              },
+              "uav_03": {
+                "covered_cells": 128,
+                "coverage_ratio": 0.2222222222222222,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 813,
+                "leave_one_out_coverage_drop": 0.1111111111111111
+              },
+              "uav_04": {
+                "covered_cells": 126,
+                "coverage_ratio": 0.21875,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 819,
+                "leave_one_out_coverage_drop": 0.1111111111111111
+              },
+              "uav_05": {
+                "covered_cells": 128,
+                "coverage_ratio": 0.2222222222222222,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 813,
+                "leave_one_out_coverage_drop": 0.11458333333333333
+              },
+              "uav_06": {
+                "covered_cells": 112,
+                "coverage_ratio": 0.19444444444444445,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 798,
+                "leave_one_out_coverage_drop": 0.1388888888888889
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.528139190770645,
+                "nearest_m": 0.2274275241559933,
+                "target": [
+                  6.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10135702754237741,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.5222584550669609,
+                "nearest_m": 0.3592034635257128,
+                "target": [
+                  18.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09930889360337858,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_03": {
+                "success": true,
+                "longest_dwell_s": 0.5221060083650428,
+                "nearest_m": 0.27679395821762576,
+                "target": [
+                  30.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10584045425575539,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_04": {
+                "success": true,
+                "longest_dwell_s": 0.5334101594481098,
+                "nearest_m": 0.20450370971605114,
+                "target": [
+                  42.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09520092971024496,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_05": {
+                "success": true,
+                "longest_dwell_s": 0.5265420618566168,
+                "nearest_m": 0.32434039085910515,
+                "target": [
+                  54.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.11243540029113319,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_06": {
+                "success": true,
+                "longest_dwell_s": 0.5469672763499318,
+                "nearest_m": 0.337272718306958,
+                "target": [
+                  66.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.0973708315974875,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        },
+        "observation": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 576,
+            "nx": 72,
+            "ny": 8,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 576,
+            "global_coverage_ratio": 1.0,
+            "required_ratio": 0.9,
+            "success": true,
+            "evidence_complete": true,
+            "repeated_cells": 156,
+            "repeated_coverage_cell_ratio": 0.2708333333333333,
+            "repeated_fraction_of_covered": 0.2708333333333333,
+            "observing_agents": 6,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 112,
+                "coverage_ratio": 0.19444444444444445,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 804,
+                "leave_one_out_coverage_drop": 0.1388888888888889
+              },
+              "uav_02": {
+                "covered_cells": 128,
+                "coverage_ratio": 0.2222222222222222,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 822,
+                "leave_one_out_coverage_drop": 0.1111111111111111
+              },
+              "uav_03": {
+                "covered_cells": 128,
+                "coverage_ratio": 0.2222222222222222,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 813,
+                "leave_one_out_coverage_drop": 0.1111111111111111
+              },
+              "uav_04": {
+                "covered_cells": 124,
+                "coverage_ratio": 0.2152777777777778,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 819,
+                "leave_one_out_coverage_drop": 0.1111111111111111
+              },
+              "uav_05": {
+                "covered_cells": 128,
+                "coverage_ratio": 0.2222222222222222,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 813,
+                "leave_one_out_coverage_drop": 0.11805555555555555
+              },
+              "uav_06": {
+                "covered_cells": 112,
+                "coverage_ratio": 0.19444444444444445,
+                "evidence_complete": true,
+                "service_windows": 6,
+                "missing_service_windows": 0,
+                "valid_service_points": 798,
+                "leave_one_out_coverage_drop": 0.1388888888888889
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": true,
+            "per_agent": {
+              "uav_01": {
+                "success": true,
+                "longest_dwell_s": 0.42980036054883897,
+                "nearest_m": 0.22557880367219216,
+                "target": [
+                  6.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10135702754237741,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_02": {
+                "success": true,
+                "longest_dwell_s": 0.4221952783160958,
+                "nearest_m": 0.3483384091163167,
+                "target": [
+                  18.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09930889360337858,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_03": {
+                "success": true,
+                "longest_dwell_s": 0.5221060083650428,
+                "nearest_m": 0.2383826458198608,
+                "target": [
+                  30.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.10584045425575539,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_04": {
+                "success": true,
+                "longest_dwell_s": 0.5334101594481098,
+                "nearest_m": 0.18099460956977478,
+                "target": [
+                  42.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.09520092971024496,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_05": {
+                "success": true,
+                "longest_dwell_s": 0.4364205661963325,
+                "nearest_m": 0.33412223196820784,
+                "target": [
+                  54.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.11243540029113319,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              },
+              "uav_06": {
+                "success": true,
+                "longest_dwell_s": 0.44617391884359847,
+                "nearest_m": 0.32906655167156623,
+                "target": [
+                  66.0,
+                  -12.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.0973708315974875,
+                "time_basis": "FCU_source_seconds",
+                "evidence_complete": true,
+                "source_duration_available": true,
+                "reason": "return_satisfied"
+              }
+            }
+          },
+          "mission_success": true
+        }
+      },
+      "execution_constraints_pass": true,
+      "clock_quality": "acceptable",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "previous_analysis_results": [
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\analysis_v030_20260930T153135Z_9b08bb5d",
+          "passed": true,
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree",
+          "benchmark_eligible": true
+        },
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\analysis_v030_20260930T153551Z_bfda0cf6",
+          "passed": true,
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree",
+          "benchmark_eligible": true
+        }
+      ],
+      "reanalyzed_cli_equivalent_exit_code": 0
+    },
+    {
+      "case": "controlled_ready_timeout",
+      "expected_failure": true,
+      "passed": true,
+      "task_file_sha256": "1b5d994be75a377c0d3c91fbaa62155e715d4ff213e713e716a85ce9b13d8adf",
+      "scenario_sha256": "e7830dc2c217707ee5969688b5b172d31b68b9eb322ae346274cc344c7fe457f",
+      "run_id": "20260930T153556Z_bf2d3529",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\analysis_v030_20260930T155221Z_b977eaf9",
+      "elapsed_s": 11.704216899997846,
+      "run_status": "failed",
+      "error": "TimeoutError: uav_02: GPS/EKF not ready; EKF2 IMU1 tilt alignment complete",
+      "cli_equivalent_exit_code": 1,
+      "cleanup": {
+        "uav_01": 1,
+        "uav_02": 1,
+        "uav_03": 1
+      },
+      "simulator_version": "0.3.0",
+      "source_sha256": {
+        "analysis.py": "f5a2d01bf8afbcacc9c4848d3661d7b473127dd186d2c52d02953753cdb77a45",
+        "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+        "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+        "dataset.py": "289dc19c5867c6bee229dd23e9b005c8da59b49e1329d6f63d959eb2b124362e",
+        "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+        "episode_loader.py": "21d337189d7bef48299899184b9e24172ca14f99f621d2d4465759cb59ba5cc4",
+        "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+        "execution_constraints.py": "ec41dd15e97130c7ceb02f0e3898e734ec8d5d24f9394bc19abf8dddd5c3d6b5",
+        "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+        "mission_evaluation.py": "5209c9ff516c1b19c0a605fc690f10c56d304d70900ba612b2435f8eb64a2c77",
+        "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+        "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+        "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+        "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+        "protocol.py": "bbb53ba6d200fc99975157b8b28ba8d5c0dd0bff40d3de9467f6aa669d6df2fa",
+        "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+        "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+        "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+        "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+        "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+        "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+        "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+        "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+      },
+      "firmware_sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+      "mission_success": null,
+      "mission_success_observation": null,
+      "semantic_consistency": "unknown",
+      "mission_metrics": {
+        "truth": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 1620,
+            "nx": 54,
+            "ny": 30,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 0,
+            "global_coverage_ratio": 0.0,
+            "required_ratio": 0.9,
+            "success": null,
+            "evidence_complete": false,
+            "repeated_cells": 0,
+            "repeated_coverage_cell_ratio": 0.0,
+            "repeated_fraction_of_covered": 0.0,
+            "observing_agents": 0,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 0,
+                "coverage_ratio": 0.0,
+                "evidence_complete": false,
+                "service_windows": 10,
+                "missing_service_windows": 10,
+                "valid_service_points": 0,
+                "leave_one_out_coverage_drop": 0.0
+              },
+              "uav_02": {
+                "covered_cells": 0,
+                "coverage_ratio": 0.0,
+                "evidence_complete": false,
+                "service_windows": 10,
+                "missing_service_windows": 10,
+                "valid_service_points": 0,
+                "leave_one_out_coverage_drop": 0.0
+              },
+              "uav_03": {
+                "covered_cells": 0,
+                "coverage_ratio": 0.0,
+                "evidence_complete": false,
+                "service_windows": 10,
+                "missing_service_windows": 10,
+                "valid_service_points": 0,
+                "leave_one_out_coverage_drop": 0.0
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": null,
+            "per_agent": {
+              "uav_01": {
+                "success": null,
+                "longest_dwell_s": 0.0,
+                "nearest_m": null,
+                "target": [
+                  9.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1,
+                "time_basis": "FCU_source_seconds",
+                "reason": "return_window_missing"
+              },
+              "uav_02": {
+                "success": null,
+                "longest_dwell_s": 0.0,
+                "nearest_m": null,
+                "target": [
+                  27.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1,
+                "time_basis": "FCU_source_seconds",
+                "reason": "return_window_missing"
+              },
+              "uav_03": {
+                "success": null,
+                "longest_dwell_s": 0.0,
+                "nearest_m": null,
+                "target": [
+                  45.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1,
+                "time_basis": "FCU_source_seconds",
+                "reason": "return_window_missing"
+              }
+            }
+          },
+          "mission_success": null
+        },
+        "observation": {
+          "coverage": {
+            "requested_grid_m": 1.0,
+            "cells": 1620,
+            "nx": 54,
+            "ny": 30,
+            "cell_width_m": 1.0,
+            "cell_height_m": 1.0,
+            "discretization": "equal_area_cell_centers",
+            "area_weighting": "uniform",
+            "model": "ideal_horizontal_disk",
+            "model_version": "ideal_horizontal_disk_v1",
+            "covered_cells": 0,
+            "global_coverage_ratio": 0.0,
+            "required_ratio": 0.9,
+            "success": null,
+            "evidence_complete": false,
+            "repeated_cells": 0,
+            "repeated_coverage_cell_ratio": 0.0,
+            "repeated_fraction_of_covered": 0.0,
+            "observing_agents": 0,
+            "per_agent": {
+              "uav_01": {
+                "covered_cells": 0,
+                "coverage_ratio": 0.0,
+                "evidence_complete": false,
+                "service_windows": 10,
+                "missing_service_windows": 10,
+                "valid_service_points": 0,
+                "leave_one_out_coverage_drop": 0.0
+              },
+              "uav_02": {
+                "covered_cells": 0,
+                "coverage_ratio": 0.0,
+                "evidence_complete": false,
+                "service_windows": 10,
+                "missing_service_windows": 10,
+                "valid_service_points": 0,
+                "leave_one_out_coverage_drop": 0.0
+              },
+              "uav_03": {
+                "covered_cells": 0,
+                "coverage_ratio": 0.0,
+                "evidence_complete": false,
+                "service_windows": 10,
+                "missing_service_windows": 10,
+                "valid_service_points": 0,
+                "leave_one_out_coverage_drop": 0.0
+              }
+            }
+          },
+          "return_to_launch": {
+            "required": true,
+            "success": null,
+            "per_agent": {
+              "uav_01": {
+                "success": null,
+                "longest_dwell_s": 0.0,
+                "nearest_m": null,
+                "target": [
+                  9.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1,
+                "time_basis": "FCU_source_seconds",
+                "reason": "return_window_missing"
+              },
+              "uav_02": {
+                "success": null,
+                "longest_dwell_s": 0.0,
+                "nearest_m": null,
+                "target": [
+                  27.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1,
+                "time_basis": "FCU_source_seconds",
+                "reason": "return_window_missing"
+              },
+              "uav_03": {
+                "success": null,
+                "longest_dwell_s": 0.0,
+                "nearest_m": null,
+                "target": [
+                  45.0,
+                  -15.0,
+                  8.0
+                ],
+                "required_dwell_s": 0.5,
+                "dwell_allowance_s": 0.1,
+                "time_basis": "FCU_source_seconds",
+                "reason": "return_window_missing"
+              }
+            }
+          },
+          "mission_success": null
+        }
+      },
+      "execution_constraints_pass": null,
+      "clock_quality": "acceptable",
+      "benchmark_eligible": false,
+      "strict_benchmark_eligible": false,
+      "previous_analysis_results": [
+        {
+          "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\analysis_v030_20260930T153608Z_f0a0113a",
+          "passed": true,
+          "mission_success": null,
+          "mission_success_observation": null,
+          "semantic_consistency": "unknown",
+          "benchmark_eligible": false
+        }
+      ],
+      "reanalyzed_cli_equivalent_exit_code": 1
+    }
+  ],
+  "dataset_counts": {
+    "total": 5,
+    "eligible": 4,
+    "strict_eligible": 0,
+    "failed_runs": 1
+  },
+  "loader": [
+    {
+      "run_id": "20260930T152031Z_08eff45d",
+      "shape": [
+        1188,
+        3,
+        6
+      ],
+      "mask_shape": [
+        1188,
+        3
+      ],
+      "valid": 3564
+    },
+    {
+      "run_id": "20260930T152358Z_56f3a95a",
+      "shape": [
+        1188,
+        3,
+        6
+      ],
+      "mask_shape": [
+        1188,
+        3
+      ],
+      "valid": 3564
+    },
+    {
+      "run_id": "20260930T152726Z_85b2bcb7",
+      "shape": [
+        481,
+        2,
+        6
+      ],
+      "mask_shape": [
+        481,
+        2
+      ],
+      "valid": 962
+    },
+    {
+      "run_id": "20260930T152929Z_faff6f17",
+      "shape": [
+        488,
+        6,
+        6
+      ],
+      "mask_shape": [
+        488,
+        6
+      ],
+      "valid": 2928
+    },
+    {
+      "run_id": "20260930T153556Z_bf2d3529",
+      "shape": [
+        118,
+        3,
+        6
+      ],
+      "mask_shape": [
+        118,
+        3
+      ],
+      "valid": 222
+    }
+  ],
+  "audit_issues": [],
+  "all_cases_passed": true,
+  "all_processes_reaped": true,
+  "dataset_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\dataset_final",
+  "audit_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\dataset_final_audit.json"
+}

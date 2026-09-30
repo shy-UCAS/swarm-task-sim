@@ -8,6 +8,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from swarm_sim import __version__
+
 from swarm_sim.analysis import analyze_run, digest
 from swarm_sim.dataset import build_dataset
 from swarm_sim.evaluation import coverage_ratio, longest_dwell
@@ -206,7 +208,7 @@ class DatasetPolicyTests(unittest.TestCase):
                 output, _, _ = analyze_run(run)
             manifest = json.loads((output / "manifest.json").read_text())
             self.assertEqual(manifest["simulator_version"], "0.2.0")
-            self.assertEqual(manifest["analysis_version"], "0.2.2")
+            self.assertEqual(manifest["analysis_version"], __version__)
             self.assertEqual((run / "metadata.json").read_bytes(), original_metadata)
             del manifest["quality_policy"]
             del manifest["quality_policy_sha256"]

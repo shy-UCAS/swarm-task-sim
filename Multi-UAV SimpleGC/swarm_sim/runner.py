@@ -17,18 +17,24 @@ from .processes import SITLProcesses
 from .recording import Recorder, export_dataset, write_json
 from .scenario import mission_for, validate
 from .vehicle import Vehicle
-from .tasks import validate_task_binding
+from .tasks import target_confirmation, validate_task_binding
 from .quality import policy_hash, resolve_policy
 
 
-def run_scene(scenario, output_root, binary, parameters, base_port=19100, quality_policy=None):
+def run_scene(scenario, output_root, binary, parameters, base_port=19100, quality_policy=None, generation_context=None):
     scenario = validate(scenario)
     validate_task_binding(scenario)
     policy = resolve_policy(quality_policy)
+    shared_mission = scenario.get("task_spec", {}).get("schema_version") == 2
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid.uuid4().hex[:8]
     directory = Path(output_root).resolve() / f"{scenario['scenario_id']}_{run_id}"
     directory.mkdir(parents=True, exist_ok=False)
     (directory / "raw").mkdir()
+    if generation_context is not None:
+        if not isinstance(generation_context, dict) or set(generation_context) != {"generation_profile", "generation_manifest", "generation_entry"}:
+            raise ValueError("generation context must contain exactly profile, manifest and entry evidence")
+        for name, content in generation_context.items():
+            write_json(directory / (name + ".json"), content)
     epoch = time.perf_counter()
     deadline = epoch + scenario["timeout_s"]
     cancel = threading.Event()
@@ -77,7 +83,8 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100, qualit
         instances = processes.start()
         metadata["sitl"] = processes.metadata()
         write_json(directory / "metadata.json", metadata)
-        clients = [Vehicle(instance, directory / "raw" / f"{instance['id']}.jsonl", cancel, event)
+        clients = [Vehicle(instance, directory / "raw" / f"{instance['id']}.jsonl", cancel, event,
+                           record_lifecycle=shared_mission)
                    for instance in instances]
         parallel(lambda client, vehicle: client.connect())
         recorder = Recorder(directory, clients, scenario["origin"], epoch,
@@ -96,12 +103,18 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100, qualit
             parallel(lambda client, vehicle: client.execute(release, len(plans[client.id]),
                                                             max(1, deadline - time.perf_counter()), phase["name"]))
             if "task_spec" in scenario:
-                task = scenario["task_spec"]["task"]
-                parallel(lambda client, vehicle: client.confirm_target(phase["targets"][client.id], scenario["origin"],
-                    task["tolerance_m"], task["dwell_s"], phase["name"],
-                    timeout=min(task["dwell_s"] + 20, max(1, deadline - time.perf_counter()))))
+                def confirm(client, vehicle):
+                    requirement = target_confirmation(scenario, phase, client.id)
+                    options = dict(max_gap=scenario["max_gap_s"], quality_policy=policy) if shared_mission else {}
+                    client.confirm_target(phase["targets"][client.id], scenario["origin"],
+                        requirement["tolerance_m"], requirement["dwell_s"], phase["name"],
+                        timeout=min(requirement["dwell_s"] + 20, max(1, deadline - time.perf_counter())), **options)
+                parallel(confirm)
         metadata["mission_end_monotonic_s"] = time.perf_counter()
         parallel(lambda client, vehicle: client.land())
+        if shared_mission:
+            # Record a short disarmed tail so passive clock knots bracket landing.
+            cancel.wait(2)
         metadata["status"] = "completed"
     except (Exception, KeyboardInterrupt) as exc:
         metadata["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
@@ -147,6 +160,10 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100, qualit
         quality["strict_benchmark_eligible"] = analysis_quality["strict_benchmark_eligible"]
         quality["clock_quality"] = analysis_quality["clock_quality"]
         quality["mission_success"] = labels["mission_success"]
+        if shared_mission:
+            quality["mission_success_observation"] = labels["mission_success_observation"]
+            quality["semantic_consistency"] = labels["semantic_consistency"]
+            quality["execution_constraints_pass"] = analysis_quality["execution_constraints_pass"]
         if "task_spec" in scenario:
             quality["usable"] = analysis_quality["benchmark_eligible"]
     except Exception as exc:

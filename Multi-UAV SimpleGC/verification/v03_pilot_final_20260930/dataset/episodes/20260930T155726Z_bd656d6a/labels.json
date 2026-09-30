@@ -1,0 +1,414 @@
+{
+  "schema_version": 2,
+  "task_kind": "mission_v2",
+  "requested_intent": "reconnaissance",
+  "assigned_intent": "reconnaissance",
+  "objective": "area_coverage",
+  "planned_behaviors": [
+    "area_scan"
+  ],
+  "planned_phases": [
+    "approach",
+    "observe",
+    "return"
+  ],
+  "observed_behaviors": [
+    {
+      "name": "coverage",
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04",
+        "uav_05",
+        "uav_06"
+      ],
+      "status": "verified",
+      "evidence_basis": "SIM_truth_positions",
+      "rule_version": "shared_coverage_v2"
+    }
+  ],
+  "unverified_behaviors": {
+    "split": "not_evaluated",
+    "merge": "not_evaluated",
+    "formation_change": "not_evaluated"
+  },
+  "mission_success": true,
+  "mission_success_observation": true,
+  "semantic_consistency": "agree",
+  "mission_metrics": {
+    "truth": {
+      "coverage": {
+        "requested_grid_m": 1.0,
+        "cells": 924,
+        "nx": 77,
+        "ny": 12,
+        "cell_width_m": 0.9876042813523163,
+        "cell_height_m": 0.9962608983874137,
+        "discretization": "equal_area_cell_centers",
+        "area_weighting": "uniform",
+        "model": "ideal_horizontal_disk",
+        "model_version": "ideal_horizontal_disk_v1",
+        "covered_cells": 924,
+        "global_coverage_ratio": 1.0,
+        "required_ratio": 0.9,
+        "success": true,
+        "evidence_complete": true,
+        "repeated_cells": 297,
+        "repeated_coverage_cell_ratio": 0.32142857142857145,
+        "repeated_fraction_of_covered": 0.32142857142857145,
+        "observing_agents": 6,
+        "per_agent": {
+          "uav_01": {
+            "covered_cells": 180,
+            "coverage_ratio": 0.19480519480519481,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1372,
+            "leave_one_out_coverage_drop": 0.12987012987012986
+          },
+          "uav_02": {
+            "covered_cells": 216,
+            "coverage_ratio": 0.23376623376623376,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1363,
+            "leave_one_out_coverage_drop": 0.1038961038961039
+          },
+          "uav_03": {
+            "covered_cells": 216,
+            "coverage_ratio": 0.23376623376623376,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1369,
+            "leave_one_out_coverage_drop": 0.1038961038961039
+          },
+          "uav_04": {
+            "covered_cells": 213,
+            "coverage_ratio": 0.2305194805194805,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1375,
+            "leave_one_out_coverage_drop": 0.09090909090909091
+          },
+          "uav_05": {
+            "covered_cells": 216,
+            "coverage_ratio": 0.23376623376623376,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1360,
+            "leave_one_out_coverage_drop": 0.10714285714285714
+          },
+          "uav_06": {
+            "covered_cells": 180,
+            "coverage_ratio": 0.19480519480519481,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1351,
+            "leave_one_out_coverage_drop": 0.14285714285714285
+          }
+        }
+      },
+      "return_to_launch": {
+        "required": true,
+        "success": true,
+        "per_agent": {
+          "uav_01": {
+            "success": true,
+            "longest_dwell_s": 0.571400332749505,
+            "nearest_m": 0.2770904163644244,
+            "target": [
+              -3.683551284920757,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09569995850119994,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_02": {
+            "success": true,
+            "longest_dwell_s": 0.6983751009401118,
+            "nearest_m": 0.19168861192950176,
+            "target": [
+              8.990703659100635,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09787726837178923,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_03": {
+            "success": true,
+            "longest_dwell_s": 0.7236297979462591,
+            "nearest_m": 0.25648950393530284,
+            "target": [
+              21.664958603122027,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09384630342800904,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_04": {
+            "success": true,
+            "longest_dwell_s": 0.6657591103080875,
+            "nearest_m": 0.4001298374814178,
+            "target": [
+              34.33921354714342,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.08807757597830346,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_05": {
+            "success": true,
+            "longest_dwell_s": 0.605612014133385,
+            "nearest_m": 0.3024486834505866,
+            "target": [
+              47.01346849116481,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09038821330467783,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_06": {
+            "success": true,
+            "longest_dwell_s": 0.6487487783874002,
+            "nearest_m": 0.20635634956509327,
+            "target": [
+              59.68772343518621,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.08821386785591301,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          }
+        }
+      },
+      "mission_success": true
+    },
+    "observation": {
+      "coverage": {
+        "requested_grid_m": 1.0,
+        "cells": 924,
+        "nx": 77,
+        "ny": 12,
+        "cell_width_m": 0.9876042813523163,
+        "cell_height_m": 0.9962608983874137,
+        "discretization": "equal_area_cell_centers",
+        "area_weighting": "uniform",
+        "model": "ideal_horizontal_disk",
+        "model_version": "ideal_horizontal_disk_v1",
+        "covered_cells": 924,
+        "global_coverage_ratio": 1.0,
+        "required_ratio": 0.9,
+        "success": true,
+        "evidence_complete": true,
+        "repeated_cells": 288,
+        "repeated_coverage_cell_ratio": 0.3116883116883117,
+        "repeated_fraction_of_covered": 0.3116883116883117,
+        "observing_agents": 6,
+        "per_agent": {
+          "uav_01": {
+            "covered_cells": 180,
+            "coverage_ratio": 0.19480519480519481,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1372,
+            "leave_one_out_coverage_drop": 0.1341991341991342
+          },
+          "uav_02": {
+            "covered_cells": 212,
+            "coverage_ratio": 0.22943722943722944,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1363,
+            "leave_one_out_coverage_drop": 0.1038961038961039
+          },
+          "uav_03": {
+            "covered_cells": 216,
+            "coverage_ratio": 0.23376623376623376,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1369,
+            "leave_one_out_coverage_drop": 0.1038961038961039
+          },
+          "uav_04": {
+            "covered_cells": 213,
+            "coverage_ratio": 0.2305194805194805,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1375,
+            "leave_one_out_coverage_drop": 0.09632034632034632
+          },
+          "uav_05": {
+            "covered_cells": 211,
+            "coverage_ratio": 0.22835497835497837,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1360,
+            "leave_one_out_coverage_drop": 0.10714285714285714
+          },
+          "uav_06": {
+            "covered_cells": 180,
+            "coverage_ratio": 0.19480519480519481,
+            "evidence_complete": true,
+            "service_windows": 8,
+            "missing_service_windows": 0,
+            "valid_service_points": 1351,
+            "leave_one_out_coverage_drop": 0.14285714285714285
+          }
+        }
+      },
+      "return_to_launch": {
+        "required": true,
+        "success": true,
+        "per_agent": {
+          "uav_01": {
+            "success": true,
+            "longest_dwell_s": 0.4696692374054976,
+            "nearest_m": 0.30624288945712036,
+            "target": [
+              -3.683551284920757,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09569995850119994,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_02": {
+            "success": true,
+            "longest_dwell_s": 0.6031496535044027,
+            "nearest_m": 0.14189300657535547,
+            "target": [
+              8.990703659100635,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09787726837178923,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_03": {
+            "success": true,
+            "longest_dwell_s": 0.6338271287704345,
+            "nearest_m": 0.23137670629109328,
+            "target": [
+              21.664958603122027,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09384630342800904,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_04": {
+            "success": true,
+            "longest_dwell_s": 0.5649323814947707,
+            "nearest_m": 0.34569219906018844,
+            "target": [
+              34.33921354714342,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.08807757597830346,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_05": {
+            "success": true,
+            "longest_dwell_s": 0.5100005516087549,
+            "nearest_m": 0.2945527007147919,
+            "target": [
+              47.01346849116481,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.09038821330467783,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          },
+          "uav_06": {
+            "success": true,
+            "longest_dwell_s": 0.5605349105314872,
+            "nearest_m": 0.1849935426993308,
+            "target": [
+              59.68772343518621,
+              -30.450672725210758,
+              8.0
+            ],
+            "required_dwell_s": 0.5,
+            "dwell_allowance_s": 0.08821386785591301,
+            "time_basis": "FCU_source_seconds",
+            "evidence_complete": true,
+            "source_duration_available": true,
+            "reason": "return_satisfied"
+          }
+        }
+      },
+      "mission_success": true
+    }
+  },
+  "run_status": "completed",
+  "label_provenance": {
+    "requested_intent": "TaskSpec author; not inferred hidden intent",
+    "mission_success": "SIM_truth_positions with passive source-clock alignment",
+    "mission_success_observation": "FCU estimated positions; independent geometric pass",
+    "semantic_windows": "execution_events + compiled_semantic_plan",
+    "semantic_validation_version": "shared_coverage_v2",
+    "scope": "ideal geometric area observation; no physical detection or inferred tactical intent"
+  }
+}

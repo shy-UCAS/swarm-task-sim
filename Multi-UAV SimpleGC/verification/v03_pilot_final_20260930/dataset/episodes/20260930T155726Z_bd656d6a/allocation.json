@@ -1,0 +1,675 @@
+{
+  "agent_to_partition": {
+    "uav_01": "R1_strip_01",
+    "uav_02": "R1_strip_02",
+    "uav_03": "R1_strip_03",
+    "uav_04": "R1_strip_04",
+    "uav_05": "R1_strip_05",
+    "uav_06": "R1_strip_06"
+  },
+  "allocation_method": "monotone_entry_order",
+  "execution_phase_count": 10,
+  "feasibility_checks": {
+    "command_limits": {
+      "clearance_scope": "independent progress on same-phase line segments, including padding",
+      "max_speed_m_s": 6.0,
+      "pass": true,
+      "required_clearance_m": 7.0,
+      "speed_m_s": 2.0,
+      "world_bounds_pass": true
+    },
+    "executed_limits": {
+      "status": "not_verified"
+    },
+    "nominal_budget": {
+      "airborne_time_estimate_s": 115.53348819319538,
+      "lifecycle_estimate": {
+        "allowance_basis": "fixed uncalibrated engineering allowances; not strict upper bounds",
+        "ground_ready_allowance_s": 90.0,
+        "landing_allowance_s": 30.0,
+        "takeoff_lower_bound_s": 4.0,
+        "takeoff_stabilization_allowance_s": 30.0
+      },
+      "pass": true,
+      "per_agent_horizontal_path_length_m": {
+        "uav_01": 83.06697638639076,
+        "uav_02": 83.06697638639076,
+        "uav_03": 83.06697638639076,
+        "uav_04": 83.06697638639076,
+        "uav_05": 83.06697638639076,
+        "uav_06": 83.06697638639076
+      },
+      "per_agent_nominal_barrier_wait_s": {
+        "uav_01": 5.329070518200751e-15,
+        "uav_02": 6.661338147750939e-15,
+        "uav_03": 5.329070518200751e-15,
+        "uav_04": 3.552713678800501e-15,
+        "uav_05": 1.0658141036401503e-14,
+        "uav_06": 5.329070518200751e-15
+      },
+      "per_agent_path_length_m": {
+        "uav_01": 99.06697638639076,
+        "uav_02": 99.06697638639076,
+        "uav_03": 99.06697638639076,
+        "uav_04": 99.06697638639076,
+        "uav_05": 99.06697638639076,
+        "uav_06": 99.06697638639076
+      },
+      "reserve_time_s": 60.0,
+      "stage_estimates": [
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 8.881784197001252e-16,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 1.7763568394002505e-15,
+            "uav_06": 0.0
+          },
+          "estimated_s": 7.435190513944716,
+          "per_agent_motion_m": {
+            "uav_01": 12.870381027889431,
+            "uav_02": 12.87038102788943,
+            "uav_03": 12.870381027889431,
+            "uav_04": 12.870381027889431,
+            "uav_05": 12.870381027889428,
+            "uav_06": 12.870381027889431
+          },
+          "phase": "leg_000"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "estimated_s": 1.0,
+          "per_agent_motion_m": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "phase": "leg_001"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "estimated_s": 6.977565390324482,
+          "per_agent_motion_m": {
+            "uav_01": 11.955130780648965,
+            "uav_02": 11.955130780648965,
+            "uav_03": 11.955130780648965,
+            "uav_04": 11.955130780648965,
+            "uav_05": 11.955130780648965,
+            "uav_06": 11.955130780648965
+          },
+          "phase": "leg_002"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 4.440892098500626e-16,
+            "uav_02": 8.881784197001252e-16,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 1.7763568394002505e-15,
+            "uav_06": 1.7763568394002505e-15
+          },
+          "estimated_s": 2.584281868002675,
+          "per_agent_motion_m": {
+            "uav_01": 3.168563736005349,
+            "uav_02": 3.168563736005348,
+            "uav_03": 3.16856373600535,
+            "uav_04": 3.16856373600535,
+            "uav_05": 3.1685637360053462,
+            "uav_06": 3.1685637360053462
+          },
+          "phase": "leg_003"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "estimated_s": 6.977565390324482,
+          "per_agent_motion_m": {
+            "uav_01": 11.955130780648965,
+            "uav_02": 11.955130780648965,
+            "uav_03": 11.955130780648965,
+            "uav_04": 11.955130780648965,
+            "uav_05": 11.955130780648965,
+            "uav_06": 11.955130780648965
+          },
+          "phase": "leg_004"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 2.6645352591003757e-15,
+            "uav_02": 3.1086244689504383e-15,
+            "uav_03": 3.552713678800501e-15,
+            "uav_04": 3.552713678800501e-15,
+            "uav_05": 3.552713678800501e-15,
+            "uav_06": 0.0
+          },
+          "estimated_s": 2.5842818680026767,
+          "per_agent_motion_m": {
+            "uav_01": 3.168563736005348,
+            "uav_02": 3.168563736005347,
+            "uav_03": 3.1685637360053462,
+            "uav_04": 3.1685637360053462,
+            "uav_05": 3.1685637360053462,
+            "uav_06": 3.1685637360053533
+          },
+          "phase": "leg_005"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "estimated_s": 6.977565390324482,
+          "per_agent_motion_m": {
+            "uav_01": 11.955130780648965,
+            "uav_02": 11.955130780648965,
+            "uav_03": 11.955130780648965,
+            "uav_04": 11.955130780648965,
+            "uav_05": 11.955130780648965,
+            "uav_06": 11.955130780648965
+          },
+          "phase": "leg_006"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 2.220446049250313e-15,
+            "uav_02": 1.7763568394002505e-15,
+            "uav_03": 1.7763568394002505e-15,
+            "uav_04": 0.0,
+            "uav_05": 3.552713678800501e-15,
+            "uav_06": 3.552713678800501e-15
+          },
+          "estimated_s": 2.5842818680026767,
+          "per_agent_motion_m": {
+            "uav_01": 3.168563736005349,
+            "uav_02": 3.16856373600535,
+            "uav_03": 3.16856373600535,
+            "uav_04": 3.1685637360053533,
+            "uav_05": 3.1685637360053462,
+            "uav_06": 3.1685637360053462
+          },
+          "phase": "leg_007"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "estimated_s": 6.977565390324482,
+          "per_agent_motion_m": {
+            "uav_01": 11.955130780648965,
+            "uav_02": 11.955130780648965,
+            "uav_03": 11.955130780648965,
+            "uav_04": 11.955130780648965,
+            "uav_05": 11.955130780648965,
+            "uav_06": 11.955130780648965
+          },
+          "phase": "leg_008"
+        },
+        {
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "estimated_s": 7.435190513944716,
+          "per_agent_motion_m": {
+            "uav_01": 12.870381027889431,
+            "uav_02": 12.870381027889431,
+            "uav_03": 12.870381027889431,
+            "uav_04": 12.870381027889431,
+            "uav_05": 12.870381027889431,
+            "uav_06": 12.870381027889431
+          },
+          "phase": "leg_009"
+        }
+      ],
+      "stage_time_estimate_s": 51.53348819319539,
+      "time_semantics": "nominal estimate, not an execution guarantee",
+      "total_time_estimate_s": 205.53348819319538
+    },
+    "nominal_min_clearance_m": 9.505691208016039,
+    "proxy_dynamics": {
+      "hard_gate": false,
+      "status": "not_verified"
+    },
+    "unverified_constraints": [
+      "continuous-time acceleration and turn dynamics (no timed reference)",
+      "actual tracking error bounded by tracking_margin_m",
+      "physical collision and battery model",
+      "actual climb rate and flight duration; execution evidence required"
+    ],
+    "version": "nominal_capability_v1"
+  },
+  "idle_padding_steps": {
+    "uav_01": 0,
+    "uav_02": 0,
+    "uav_03": 0,
+    "uav_04": 0,
+    "uav_05": 0,
+    "uav_06": 0
+  },
+  "nominal_global_coverage": {
+    "cell_height_m": 0.9962608983874137,
+    "cell_width_m": 0.9876042813523163,
+    "covered_cells": 924,
+    "model_version": "ideal_horizontal_disk_v1",
+    "ratio": 1.0,
+    "requested_grid_m": 1.0,
+    "source": "planned_reference_only",
+    "total_cells": 924
+  },
+  "nominal_min_clearance_m": 9.505691208016039,
+  "nominal_time_estimate_s": 205.53348819319538,
+  "partition_axis": "east",
+  "per_agent_path_length_m": {
+    "uav_01": 99.06697638639076,
+    "uav_02": 99.06697638639076,
+    "uav_03": 99.06697638639076,
+    "uav_04": 99.06697638639076,
+    "uav_05": 99.06697638639076,
+    "uav_06": 99.06697638639076
+  },
+  "per_agent_reference_routes": {
+    "uav_01": {
+      "approach": [
+        {
+          "east_m": -8.43639688892878,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "observe": [
+        {
+          "east_m": -8.43639688892878,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": -8.43639688892878,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": -5.267833152923431,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": -5.267833152923431,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": -2.0992694169180828,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": -2.0992694169180828,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 1.0692943190872661,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 1.0692943190872661,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "return": [
+        {
+          "east_m": -3.683551284920757,
+          "north_m": -30.450672725210758
+        }
+      ]
+    },
+    "uav_02": {
+      "approach": [
+        {
+          "east_m": 4.237858055092613,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 4.237858055092613,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 4.237858055092613,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 7.406421791097961,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 7.406421791097961,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 10.574985527103308,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 10.574985527103308,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 13.743549263108658,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 13.743549263108658,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "return": [
+        {
+          "east_m": 8.990703659100635,
+          "north_m": -30.450672725210758
+        }
+      ]
+    },
+    "uav_03": {
+      "approach": [
+        {
+          "east_m": 16.912112999114004,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 16.912112999114004,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 16.912112999114004,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 20.080676735119354,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 20.080676735119354,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 23.2492404711247,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 23.2492404711247,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 26.41780420713005,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 26.41780420713005,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "return": [
+        {
+          "east_m": 21.664958603122027,
+          "north_m": -30.450672725210758
+        }
+      ]
+    },
+    "uav_04": {
+      "approach": [
+        {
+          "east_m": 29.586367943135397,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 29.586367943135397,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 29.586367943135397,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 32.754931679140746,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 32.754931679140746,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 35.92349541514609,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 35.92349541514609,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 39.092059151151446,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 39.092059151151446,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "return": [
+        {
+          "east_m": 34.33921354714342,
+          "north_m": -30.450672725210758
+        }
+      ]
+    },
+    "uav_05": {
+      "approach": [
+        {
+          "east_m": 42.26062288715679,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 42.26062288715679,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 42.26062288715679,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 45.42918662316214,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 45.42918662316214,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 48.597750359167485,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 48.597750359167485,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 51.76631409517283,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 51.76631409517283,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "return": [
+        {
+          "east_m": 47.01346849116481,
+          "north_m": -30.450672725210758
+        }
+      ]
+    },
+    "uav_06": {
+      "approach": [
+        {
+          "east_m": 54.934877831178184,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 54.934877831178184,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 54.934877831178184,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 58.10344156718353,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 58.10344156718353,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 61.272005303188884,
+          "north_m": -18.490021970861402
+        },
+        {
+          "east_m": 61.272005303188884,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 64.44056903919423,
+          "north_m": -6.534891190212438
+        },
+        {
+          "east_m": 64.44056903919423,
+          "north_m": -18.490021970861402
+        }
+      ],
+      "return": [
+        {
+          "east_m": 59.68772343518621,
+          "north_m": -30.450672725210758
+        }
+      ]
+    }
+  },
+  "planner_name": "equal_strip_lawnmower_v1",
+  "planner_version": "equal_strip_lawnmower_v1",
+  "reference_time_semantics": "event_driven_no_prescribed_arrival_times",
+  "region_partitions": [
+    {
+      "height_m": 11.955130780648965,
+      "id": "R1_strip_01",
+      "min_east_m": -10.020678756931453,
+      "min_north_m": -18.490021970861402,
+      "type": "rectangle",
+      "width_m": 12.674254944021392
+    },
+    {
+      "height_m": 11.955130780648965,
+      "id": "R1_strip_02",
+      "min_east_m": 2.6535761870899393,
+      "min_north_m": -18.490021970861402,
+      "type": "rectangle",
+      "width_m": 12.674254944021392
+    },
+    {
+      "height_m": 11.955130780648965,
+      "id": "R1_strip_03",
+      "min_east_m": 15.327831131111331,
+      "min_north_m": -18.490021970861402,
+      "type": "rectangle",
+      "width_m": 12.674254944021392
+    },
+    {
+      "height_m": 11.955130780648965,
+      "id": "R1_strip_04",
+      "min_east_m": 28.002086075132723,
+      "min_north_m": -18.490021970861402,
+      "type": "rectangle",
+      "width_m": 12.674254944021392
+    },
+    {
+      "height_m": 11.955130780648965,
+      "id": "R1_strip_05",
+      "min_east_m": 40.676341019154115,
+      "min_north_m": -18.490021970861402,
+      "type": "rectangle",
+      "width_m": 12.674254944021392
+    },
+    {
+      "height_m": 11.955130780648965,
+      "id": "R1_strip_06",
+      "min_east_m": 53.35059596317551,
+      "min_north_m": -18.490021970861402,
+      "type": "rectangle",
+      "width_m": 12.6742549440214
+    }
+  ],
+  "semantic_to_execution_phase_map": {
+    "approach": [
+      "leg_000"
+    ],
+    "observe": [
+      "leg_001",
+      "leg_002",
+      "leg_003",
+      "leg_004",
+      "leg_005",
+      "leg_006",
+      "leg_007",
+      "leg_008"
+    ],
+    "return": [
+      "leg_009"
+    ]
+  },
+  "sweep_axis": "north",
+  "unverified_constraints": [
+    "continuous-time acceleration and turn dynamics (no timed reference)",
+    "actual tracking error bounded by tracking_margin_m",
+    "physical collision and battery model",
+    "actual climb rate and flight duration; execution evidence required"
+  ]
+}

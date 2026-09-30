@@ -1,0 +1,585 @@
+{
+  "planner_name": "equal_strip_lawnmower_v1",
+  "planner_version": "equal_strip_lawnmower_v1",
+  "allocation_method": "monotone_entry_order",
+  "partition_axis": "east",
+  "sweep_axis": "north",
+  "region_partitions": [
+    {
+      "min_east_m": 0.0,
+      "min_north_m": 0.0,
+      "width_m": 12.0,
+      "height_m": 8.0,
+      "id": "R1_strip_01",
+      "type": "rectangle"
+    },
+    {
+      "min_east_m": 12.0,
+      "min_north_m": 0.0,
+      "width_m": 12.0,
+      "height_m": 8.0,
+      "id": "R1_strip_02",
+      "type": "rectangle"
+    },
+    {
+      "min_east_m": 24.0,
+      "min_north_m": 0.0,
+      "width_m": 12.0,
+      "height_m": 8.0,
+      "id": "R1_strip_03",
+      "type": "rectangle"
+    },
+    {
+      "min_east_m": 36.0,
+      "min_north_m": 0.0,
+      "width_m": 12.0,
+      "height_m": 8.0,
+      "id": "R1_strip_04",
+      "type": "rectangle"
+    },
+    {
+      "min_east_m": 48.0,
+      "min_north_m": 0.0,
+      "width_m": 12.0,
+      "height_m": 8.0,
+      "id": "R1_strip_05",
+      "type": "rectangle"
+    },
+    {
+      "min_east_m": 60.0,
+      "min_north_m": 0.0,
+      "width_m": 12.0,
+      "height_m": 8.0,
+      "id": "R1_strip_06",
+      "type": "rectangle"
+    }
+  ],
+  "agent_to_partition": {
+    "uav_01": "R1_strip_01",
+    "uav_02": "R1_strip_02",
+    "uav_03": "R1_strip_03",
+    "uav_04": "R1_strip_04",
+    "uav_05": "R1_strip_05",
+    "uav_06": "R1_strip_06"
+  },
+  "per_agent_reference_routes": {
+    "uav_01": {
+      "approach": [
+        {
+          "east_m": 2.0,
+          "north_m": 0.0
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 2.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 2.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 6.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 6.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 10.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 10.0,
+          "north_m": 8.0
+        }
+      ],
+      "return": [
+        {
+          "east_m": 6.0,
+          "north_m": -12.0
+        }
+      ]
+    },
+    "uav_02": {
+      "approach": [
+        {
+          "east_m": 14.0,
+          "north_m": 0.0
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 14.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 14.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 18.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 18.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 22.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 22.0,
+          "north_m": 8.0
+        }
+      ],
+      "return": [
+        {
+          "east_m": 18.0,
+          "north_m": -12.0
+        }
+      ]
+    },
+    "uav_03": {
+      "approach": [
+        {
+          "east_m": 26.0,
+          "north_m": 0.0
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 26.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 26.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 30.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 30.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 34.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 34.0,
+          "north_m": 8.0
+        }
+      ],
+      "return": [
+        {
+          "east_m": 30.0,
+          "north_m": -12.0
+        }
+      ]
+    },
+    "uav_04": {
+      "approach": [
+        {
+          "east_m": 38.0,
+          "north_m": 0.0
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 38.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 38.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 42.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 42.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 46.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 46.0,
+          "north_m": 8.0
+        }
+      ],
+      "return": [
+        {
+          "east_m": 42.0,
+          "north_m": -12.0
+        }
+      ]
+    },
+    "uav_05": {
+      "approach": [
+        {
+          "east_m": 50.0,
+          "north_m": 0.0
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 50.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 50.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 54.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 54.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 58.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 58.0,
+          "north_m": 8.0
+        }
+      ],
+      "return": [
+        {
+          "east_m": 54.0,
+          "north_m": -12.0
+        }
+      ]
+    },
+    "uav_06": {
+      "approach": [
+        {
+          "east_m": 62.0,
+          "north_m": 0.0
+        }
+      ],
+      "observe": [
+        {
+          "east_m": 62.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 62.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 66.0,
+          "north_m": 8.0
+        },
+        {
+          "east_m": 66.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 70.0,
+          "north_m": 0.0
+        },
+        {
+          "east_m": 70.0,
+          "north_m": 8.0
+        }
+      ],
+      "return": [
+        {
+          "east_m": 66.0,
+          "north_m": -12.0
+        }
+      ]
+    }
+  },
+  "semantic_to_execution_phase_map": {
+    "approach": [
+      "leg_000"
+    ],
+    "observe": [
+      "leg_001",
+      "leg_002",
+      "leg_003",
+      "leg_004",
+      "leg_005",
+      "leg_006"
+    ],
+    "return": [
+      "leg_007"
+    ]
+  },
+  "nominal_global_coverage": {
+    "ratio": 1.0,
+    "covered_cells": 576,
+    "total_cells": 576,
+    "requested_grid_m": 1.0,
+    "cell_width_m": 1.0,
+    "cell_height_m": 1.0,
+    "model_version": "ideal_horizontal_disk_v1",
+    "source": "planned_reference_only"
+  },
+  "per_agent_path_length_m": {
+    "uav_01": 81.04518869504466,
+    "uav_02": 81.04518869504466,
+    "uav_03": 81.04518869504466,
+    "uav_04": 81.04518869504466,
+    "uav_05": 81.04518869504466,
+    "uav_06": 81.04518869504466
+  },
+  "nominal_time_estimate_s": 183.68172956501488,
+  "nominal_min_clearance_m": 8.0,
+  "execution_phase_count": 8,
+  "idle_padding_steps": {
+    "uav_01": 0,
+    "uav_02": 0,
+    "uav_03": 0,
+    "uav_04": 0,
+    "uav_05": 0,
+    "uav_06": 0
+  },
+  "feasibility_checks": {
+    "version": "nominal_capability_v1",
+    "command_limits": {
+      "pass": true,
+      "speed_m_s": 3.0,
+      "max_speed_m_s": 6.0,
+      "world_bounds_pass": true,
+      "required_clearance_m": 7.0,
+      "clearance_scope": "independent progress on same-phase line segments, including padding"
+    },
+    "nominal_budget": {
+      "pass": true,
+      "per_agent_path_length_m": {
+        "uav_01": 81.04518869504466,
+        "uav_02": 81.04518869504466,
+        "uav_03": 81.04518869504466,
+        "uav_04": 81.04518869504466,
+        "uav_05": 81.04518869504466,
+        "uav_06": 81.04518869504466
+      },
+      "per_agent_horizontal_path_length_m": {
+        "uav_01": 65.04518869504466,
+        "uav_02": 65.04518869504466,
+        "uav_03": 65.04518869504466,
+        "uav_04": 65.04518869504466,
+        "uav_05": 65.04518869504466,
+        "uav_06": 65.04518869504466
+      },
+      "per_agent_nominal_barrier_wait_s": {
+        "uav_01": 0.0,
+        "uav_02": 0.0,
+        "uav_03": 0.0,
+        "uav_04": 0.0,
+        "uav_05": 0.0,
+        "uav_06": 0.0
+      },
+      "stage_estimates": [
+        {
+          "phase": "leg_000",
+          "estimated_s": 5.216370213557839,
+          "per_agent_motion_m": {
+            "uav_01": 12.649110640673518,
+            "uav_02": 12.649110640673518,
+            "uav_03": 12.649110640673518,
+            "uav_04": 12.649110640673518,
+            "uav_05": 12.649110640673518,
+            "uav_06": 12.649110640673518
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_001",
+          "estimated_s": 1.0,
+          "per_agent_motion_m": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_002",
+          "estimated_s": 3.6666666666666665,
+          "per_agent_motion_m": {
+            "uav_01": 8.0,
+            "uav_02": 8.0,
+            "uav_03": 8.0,
+            "uav_04": 8.0,
+            "uav_05": 8.0,
+            "uav_06": 8.0
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_003",
+          "estimated_s": 2.333333333333333,
+          "per_agent_motion_m": {
+            "uav_01": 4.0,
+            "uav_02": 4.0,
+            "uav_03": 4.0,
+            "uav_04": 4.0,
+            "uav_05": 4.0,
+            "uav_06": 4.0
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_004",
+          "estimated_s": 3.6666666666666665,
+          "per_agent_motion_m": {
+            "uav_01": 8.0,
+            "uav_02": 8.0,
+            "uav_03": 8.0,
+            "uav_04": 8.0,
+            "uav_05": 8.0,
+            "uav_06": 8.0
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_005",
+          "estimated_s": 2.333333333333333,
+          "per_agent_motion_m": {
+            "uav_01": 4.0,
+            "uav_02": 4.0,
+            "uav_03": 4.0,
+            "uav_04": 4.0,
+            "uav_05": 4.0,
+            "uav_06": 4.0
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_006",
+          "estimated_s": 3.6666666666666665,
+          "per_agent_motion_m": {
+            "uav_01": 8.0,
+            "uav_02": 8.0,
+            "uav_03": 8.0,
+            "uav_04": 8.0,
+            "uav_05": 8.0,
+            "uav_06": 8.0
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        },
+        {
+          "phase": "leg_007",
+          "estimated_s": 7.798692684790379,
+          "per_agent_motion_m": {
+            "uav_01": 20.396078054371138,
+            "uav_02": 20.396078054371138,
+            "uav_03": 20.396078054371138,
+            "uav_04": 20.396078054371138,
+            "uav_05": 20.396078054371138,
+            "uav_06": 20.396078054371138
+          },
+          "barrier_wait_s": {
+            "uav_01": 0.0,
+            "uav_02": 0.0,
+            "uav_03": 0.0,
+            "uav_04": 0.0,
+            "uav_05": 0.0,
+            "uav_06": 0.0
+          }
+        }
+      ],
+      "stage_time_estimate_s": 29.681729565014884,
+      "lifecycle_estimate": {
+        "takeoff_lower_bound_s": 4.0,
+        "takeoff_stabilization_allowance_s": 30.0,
+        "landing_allowance_s": 30.0,
+        "ground_ready_allowance_s": 90.0,
+        "allowance_basis": "fixed uncalibrated engineering allowances; not strict upper bounds"
+      },
+      "airborne_time_estimate_s": 93.68172956501488,
+      "total_time_estimate_s": 183.68172956501488,
+      "reserve_time_s": 60.0,
+      "time_semantics": "nominal estimate, not an execution guarantee"
+    },
+    "nominal_min_clearance_m": 8.0,
+    "executed_limits": {
+      "status": "not_verified"
+    },
+    "proxy_dynamics": {
+      "status": "not_verified",
+      "hard_gate": false
+    },
+    "unverified_constraints": [
+      "continuous-time acceleration and turn dynamics (no timed reference)",
+      "actual tracking error bounded by tracking_margin_m",
+      "physical collision and battery model",
+      "actual climb rate and flight duration; execution evidence required"
+    ]
+  },
+  "unverified_constraints": [
+    "continuous-time acceleration and turn dynamics (no timed reference)",
+    "actual tracking error bounded by tracking_margin_m",
+    "physical collision and battery model",
+    "actual climb rate and flight duration; execution evidence required"
+  ],
+  "reference_time_semantics": "event_driven_no_prescribed_arrival_times"
+}

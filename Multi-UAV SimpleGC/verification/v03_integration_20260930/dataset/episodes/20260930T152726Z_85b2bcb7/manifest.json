@@ -1,0 +1,163 @@
+{
+  "schema_version": 2,
+  "analysis_version": "0.3.0",
+  "run_id": "20260930T152726Z_85b2bcb7",
+  "simulator_version": "0.3.0",
+  "analysis_schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "evaluation_context": {
+    "record_hz": 10.0,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "mission": {
+      "intent": "reconnaissance",
+      "objective": "area_coverage",
+      "target_region_id": "R1",
+      "coverage_required": 0.9,
+      "return_required": true,
+      "observation_model": {
+        "type": "ideal_horizontal_disk",
+        "radius_m": 4.0,
+        "height_tolerance_m": 1.0,
+        "grid_m": 1.0,
+        "activation": "observe_phase_only"
+      }
+    },
+    "platform": {
+      "id": "basic_multirotor_nominal_v1",
+      "max_speed_m_s": 6.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_airborne_time_s": 900.0,
+      "reserve_time_s": 60.0,
+      "dynamics_validation": "execution_proxy_only"
+    },
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ]
+    },
+    "execution": {
+      "backend": "AUTO",
+      "takeoff_alt_m": 8.0,
+      "speed_m_s": 3.0,
+      "waypoint_hold_s": 0.5,
+      "arrival_tolerance_m": 1.0,
+      "confirmation_dwell_s": 0.5,
+      "record_hz": 10.0,
+      "max_gap_s": 0.5,
+      "min_separation_m": 5.0,
+      "timeout_s": 600.0,
+      "ready_timeout_s": 90.0
+    }
+  },
+  "scenario_id": "recon_smoke_2uav_north",
+  "family_id": "recon_smoke_2uav_north_base_001",
+  "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7",
+  "run_status": "completed",
+  "partial_window": false,
+  "time_epoch_host_s": 19478.9346911,
+  "duration_s": 48.0613794000019,
+  "time_semantics": "per-agent passive piecewise source-to-host-receive fit; affine trend and heldout residuals audited; fallback marked",
+  "reference_semantics": "event-driven waypoints, not a timed reference trajectory",
+  "observation_contract": "cooperative FCU telemetry with known identity; no radar/camera detection, occlusion, clutter or identity uncertainty",
+  "source_sha256": {
+    "raw\\uav_01.jsonl": "7f8d160034d38f0318588cd359f7dabc28992441aae7a764873d6c27af23ad09",
+    "sitl\\uav_01\\logs\\00000001.BIN": "6e3b71882915b3f01f5a4e993c17ea1a1ff2687e61f5bf10692df0cdb93c0e71",
+    "raw\\uav_02.jsonl": "9bc2a388ffc49808e326287d184e8c5ca8b9e977b30aeada5793ba66ab43e8e6",
+    "sitl\\uav_02\\logs\\00000001.BIN": "0f3c8e6d2ab14a2b995987ec8b3f503c7eef32be2d8bf9eec64a1c0088c99145",
+    "metadata.json": "99427ba3f725dc77ce4d8dbde5d08cda05d0996edaa702b8aac057b0e4b830a1",
+    "scenario.json": "adb4bf33d6e6f66967e86538c3d9bf9d1c396c30a191e31df9b8bd283634b0f9",
+    "events.jsonl": "96a8cae54ab765b92926ce5ab111416cf98bd18f31cdffde99a96926556be4a3"
+  },
+  "analysis_source_sha256": {
+    "analysis.py": "f5a2d01bf8afbcacc9c4848d3661d7b473127dd186d2c52d02953753cdb77a45",
+    "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+    "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+    "dataset.py": "289dc19c5867c6bee229dd23e9b005c8da59b49e1329d6f63d959eb2b124362e",
+    "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+    "episode_loader.py": "21d337189d7bef48299899184b9e24172ca14f99f621d2d4465759cb59ba5cc4",
+    "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+    "execution_constraints.py": "ec41dd15e97130c7ceb02f0e3898e734ec8d5d24f9394bc19abf8dddd5c3d6b5",
+    "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+    "mission_evaluation.py": "5209c9ff516c1b19c0a605fc690f10c56d304d70900ba612b2435f8eb64a2c77",
+    "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+    "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+    "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+    "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+    "protocol.py": "bbb53ba6d200fc99975157b8b28ba8d5c0dd0bff40d3de9467f6aa669d6df2fa",
+    "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+    "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+    "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+    "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+    "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+    "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+  },
+  "benchmark_eligible": true,
+  "strict_benchmark_eligible": false,
+  "clock_quality": {
+    "overall": "acceptable",
+    "per_agent": {
+      "uav_01": "acceptable",
+      "uav_02": "acceptable"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "task_kind": "mission_v2",
+  "ontology_version": "shared_mission_v1",
+  "label_schema_version": 2,
+  "semantic_validation_version": "shared_coverage_v2",
+  "eligibility_protocol_version": "shared_quality_v1",
+  "execution_constraints_version": "execution_limits_v2",
+  "agent_ids": [
+    "uav_01",
+    "uav_02"
+  ],
+  "artifact_sha256": {
+    "allocation.json": "d0340b34e71a6f73f1718670311662ea2d63b990a4a2d303bbec43fa28aa95d3",
+    "clock_models.json": "a67901c6c2907b53ec1baeed63eeaf5a5e6349c72598ff3c5e97ee0f3d7213a1",
+    "estimation_error.csv": "581daa3e4c9acf29cdcb27ee13ce0bc690aefa8fc871c8e453e20aa59c51e55b",
+    "execution_constraints.json": "1e2bb6f0783bdebe340c4cade462d9e98dbfe61ceeb39bea8ebbd32fae68fa46",
+    "labels.json": "bd5eab3de058074a697c71b8d6f5c68a786d55380e1f94ae79be1a5f5f84f30a",
+    "lifecycle_clock_models.json": "ebae9d0a63f26a7009eae57d465daf49602305ad42e0b185859ba0290d9c4cbb",
+    "logged_parameters.json": "8f46662665efbabcf0b6f0270de1c11e929b2dad09cd8d62fed9efbfea936a7e",
+    "mission.json": "29aed5b4cc1b5e952282ffae9c08b04a36b29e0a66d13bb2866a4b9a8d9a7309",
+    "observations.csv": "254ce302f847c101c38a3a83012ea76abf9ae3a05fde9b749a752d90262b21ae",
+    "phase_windows.json": "f69d76c7df377557cba3dfa30db0d09976ade8781e214b455695ab0a8d97d9a3",
+    "quality.json": "4ec92c4e284ec0329898b32166575e230c0dbac9a14380687e77e3f96512cd4a",
+    "reference_waypoints.csv": "ccc57fdc57bbf67d4f2651bd9f347cc40b3714895345e786b53e4142c9c38c3b",
+    "semantic_plan.json": "c4ec7c562db04990fbc82128e215c3205b2eac9e4f678e1ce9bc37d798f72cc3",
+    "semantic_validation.json": "7b61d76b026e727faea35f83db13005b5674eb3a3adfee332a5f5992f0f82fc2",
+    "shared_scene.json": "8a6fe31a7d6158e7b5cef46349e76290303e02c495d268116f74c3f1b501004c",
+    "task.json": "81cdcfe172c3630f606ca738adbd8c44837c916f6031c7ba91a96f2b97f15e77",
+    "truth.csv": "229a2c79391d2c3f3aa3e6ff07afca22f119f0e50a2556438b38d845953c59d0",
+    "truth_provenance.json": "e4301ca09b8055ba12293132dc421f9db924ff34d880b669056320b6606ad63b",
+    "truth_source.csv": "0bc603b91d571fda2bd9976292bb36919084c8f3b859aa8c3432cd41cd9eb8b8"
+  }
+}

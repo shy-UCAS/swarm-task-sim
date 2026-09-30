@@ -1,0 +1,182 @@
+{
+  "schema_version": 2,
+  "analysis_version": "0.3.0",
+  "run_id": "20260930T155726Z_bd656d6a",
+  "simulator_version": "0.3.0",
+  "analysis_schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "evaluation_context": {
+    "record_hz": 10.0,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "mission": {
+      "coverage_required": 0.9,
+      "intent": "reconnaissance",
+      "objective": "area_coverage",
+      "observation_model": {
+        "activation": "observe_phase_only",
+        "grid_m": 1.0,
+        "height_tolerance_m": 1.0,
+        "radius_m": 4.0,
+        "type": "ideal_horizontal_disk"
+      },
+      "return_required": true,
+      "target_region_id": "R1"
+    },
+    "platform": {
+      "dynamics_validation": "execution_proxy_only",
+      "id": "basic_multirotor_nominal_v1",
+      "max_airborne_time_s": 900.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_speed_m_s": 6.0,
+      "reserve_time_s": 60.0
+    },
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    },
+    "execution": {
+      "arrival_tolerance_m": 1.0,
+      "backend": "AUTO",
+      "confirmation_dwell_s": 0.5,
+      "max_gap_s": 0.5,
+      "min_separation_m": 5.0,
+      "ready_timeout_s": 90.0,
+      "record_hz": 10.0,
+      "speed_m_s": 2.0,
+      "takeoff_alt_m": 8.0,
+      "timeout_s": 1200.0,
+      "waypoint_hold_s": 0.5
+    }
+  },
+  "scenario_id": "recon_0005_v00",
+  "family_id": "recon_b406c7255e660ceb981b",
+  "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a",
+  "run_status": "completed",
+  "partial_window": false,
+  "time_epoch_host_s": 21280.643124,
+  "duration_s": 68.3811517000031,
+  "time_semantics": "per-agent passive piecewise source-to-host-receive fit; affine trend and heldout residuals audited; fallback marked",
+  "reference_semantics": "event-driven waypoints, not a timed reference trajectory",
+  "observation_contract": "cooperative FCU telemetry with known identity; no radar/camera detection, occlusion, clutter or identity uncertainty",
+  "source_sha256": {
+    "raw\\uav_01.jsonl": "fa4bc7a27bf6cd4f21c8730c855502e8490b1991f9cf44606dab0d30a641dc4b",
+    "sitl\\uav_01\\logs\\00000001.BIN": "ab5c4466c83b0165c755253a92ac5bc81d2784ddce2fc945c5dd5419c7a67695",
+    "raw\\uav_02.jsonl": "54fd30945af7a9beeb87bcd69eac8767b9b7683172d5b514222b699e5378f47b",
+    "sitl\\uav_02\\logs\\00000001.BIN": "d177d35cdc7d353e3b61cac62c2d5bcdb87a1137862cce6ddc64907990f7676e",
+    "raw\\uav_03.jsonl": "39a972f75c1479ca6a2cdafd6fc1230960c45f23121ab8dbd350d1f7e167bf22",
+    "sitl\\uav_03\\logs\\00000001.BIN": "81ea4ab21b46e098a3b73fe042f1f550b8f874fe4ff1ee2e54ef9870c671ae6e",
+    "raw\\uav_04.jsonl": "3f1facbb6ef05ee5d3abe4b5d0637f3bf351573149af93be10b700c46098d1e8",
+    "sitl\\uav_04\\logs\\00000001.BIN": "8999258d641bff44f27cbdfe627ec737a1564bf49ed5c83c4cbfb2e669365256",
+    "raw\\uav_05.jsonl": "8e6f31124ff08079c6ccae907d32be92be04ecc6dde674c6770dd5a2e0d6d2ed",
+    "sitl\\uav_05\\logs\\00000001.BIN": "dface8bbf9191ff1636307b16d7336add019fb1cf9dd124edd6bc43f177d2c03",
+    "raw\\uav_06.jsonl": "86df3f37078e8c423d54fc7836fdf69136164fde604d4253d31bef1eeb2e8d5b",
+    "sitl\\uav_06\\logs\\00000001.BIN": "88472eed946d7c784b8bb96543aa581dfb802e3cbee386ccd7e4171768c51462",
+    "metadata.json": "8883bc9296934fe9ca0bc07caf4ba82156f2c992390bb031d5a888c96a9ca335",
+    "scenario.json": "6813d34669bad4fdf3f552d828cd566279a5780f3920440ac5511229776b30ad",
+    "events.jsonl": "64a98bceb75a41f02b2a3b01177c1a06348e5038461b87bf709e578a40c8dd2d",
+    "generation_profile.json": "6ac7cbe43838b9b909a40c00dad278b8f9be8b9207af170b920f6af51a3e7603",
+    "generation_manifest.json": "5d3b517e24bf9b193c3e4f01e97ff180009aad88867a1a559c588ed9927d78ef",
+    "generation_entry.json": "977266042f40be19b182751e49aa37c7c4c052bddfee943102dcfdb787e8e4ee"
+  },
+  "analysis_source_sha256": {
+    "analysis.py": "f5a2d01bf8afbcacc9c4848d3661d7b473127dd186d2c52d02953753cdb77a45",
+    "audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+    "capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+    "dataset.py": "0242667a4ea8a0520ea4c45623184fda0db0d8383ed078cf751e92acc19adaba",
+    "dataset_audit.py": "e654da83a387f6182cd7f027b9a2eb1b084be6c0d06e69c32d728d37d0ffd2f1",
+    "episode_loader.py": "4f6850409181fcdc3c6b73ddd96963a917328624e9c0cd5953aeb9af70017873",
+    "evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+    "execution_constraints.py": "78515ad8450fa975fa5df27013a4aafd9f39c3dea227b06fb6f3bbbd1e4b73ce",
+    "generation.py": "dfdabd7ec465b6681133fbd81de54612c2e678c124afcd7a657dde64cc07f574",
+    "mission_evaluation.py": "87bc837d27d2f2621623361b6a4807c00bc9f8fd46b8b0fb34d0c5e408d194c4",
+    "mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+    "mission_schema.py": "0046302c7480d85d146c5cc7b2812c42e2be43eb0e4909daac90f8b7bae0aeae",
+    "observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+    "processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+    "protocol.py": "b2e92cfaf3d52547cf262b6dd258570ac3a0f36432e952965f33fb91c7dc99be",
+    "quality.py": "e35bbb60fa9b4a5eb381f3ab2fa29f2e1ce59d7556c56776acbf9016c23b1a49",
+    "recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+    "runner.py": "0babd186c5070cdd1cd40edf46ddcafd761bf6bcedbc048914f8fbc0fa96c9ef",
+    "scenario.py": "8170b8f522062cbd57e9f4e3dfd3f52e24013b234a43762f55fc4a3a863b1973",
+    "tasks.py": "c02c3e750fb7674513df10c8a3d520fbb31ac81dcfb5a0ca84840c9a1ed30643",
+    "truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+    "vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+    "__init__.py": "445eeacfd8126ac83bce14ae86272b42c925d5b699c11a75d06fc592d9b5640c"
+  },
+  "benchmark_eligible": true,
+  "strict_benchmark_eligible": false,
+  "clock_quality": {
+    "overall": "acceptable",
+    "per_agent": {
+      "uav_01": "acceptable",
+      "uav_02": "acceptable",
+      "uav_03": "acceptable",
+      "uav_04": "acceptable",
+      "uav_05": "acceptable",
+      "uav_06": "acceptable"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "task_kind": "mission_v2",
+  "ontology_version": "shared_mission_v1",
+  "label_schema_version": 2,
+  "semantic_validation_version": "shared_coverage_v2",
+  "eligibility_protocol_version": "shared_quality_v1",
+  "execution_constraints_version": "execution_limits_v2",
+  "agent_ids": [
+    "uav_01",
+    "uav_02",
+    "uav_03",
+    "uav_04",
+    "uav_05",
+    "uav_06"
+  ],
+  "artifact_sha256": {
+    "allocation.json": "be97747867e9908bd5509920548b3eeed3c4974b33febecb88a8a027d250f496",
+    "clock_models.json": "014ec57bd202974158f0e58d77a3a7cc1a9d259b317690bd2f579a6fbc1623db",
+    "estimation_error.csv": "27d94fd7f797c0a390538403f9b88b02f34c6c02073477893cf483d293cd717a",
+    "execution_constraints.json": "2041f8ea03fae4ecc4b0751d605a1313dbdd56b6270a341bea4c5d107d48f4c1",
+    "labels.json": "17d00fdea7712b1500c8af71353a8e45d72472e75f1578a320d0234895b61e13",
+    "lifecycle_clock_models.json": "d75014b7e26abf97bc5dc4f3046feebcf7a2c4a2cee24c7c6d6c4ee3827cad70",
+    "logged_parameters.json": "4eca2f854200d38159ce0359660ac2555ef437384be3eae8690c7144a9378b5b",
+    "mission.json": "ee23346b0e366d9cb91d6db010ef6da7a7f2799a249b40ae529c4008cddc562f",
+    "observations.csv": "f2a3ea16f3f09d5f3ce73b97135e80111142519efcfd59653649f870bac7f8e5",
+    "phase_windows.json": "726a4a053abe569153b65c4753fe58612106235ab99ba2f870cd4f6dd0cd14aa",
+    "quality.json": "c2429afbf069557373806906c60f343e1050f66e31d19bb0222fb8b1f02b2d41",
+    "reference_waypoints.csv": "7835dc9e3a828eb4fdf8c653b16f980205e1ba9bfb8489f03f39b994a8571918",
+    "semantic_plan.json": "5dcbeaaf31b62186f6117d9f22b1bc3cacaa0e8f92af72522d9ed4cafd471739",
+    "semantic_validation.json": "136a3e896b42fd56bb675a1f9ff224c12c99abf448422c470a95f9277d886bd9",
+    "shared_scene.json": "738ec3820d6186901a82a91d4b429bb07e9298c787b316eea8669ad7a42ef5e3",
+    "task.json": "4e04bc03fce730b9c06b6201e33dabb0b328bd97e087b2f5e604be71fd63fe36",
+    "truth.csv": "e4a5fbbcfb3e2897491fe7c1255553cf0998f39bae09f8ea8641a2434a28cd49",
+    "truth_provenance.json": "fd479706c59a26d5b0c1f92d640267ad99390f6821a34de97dad55a939e65aef",
+    "truth_source.csv": "67fe602337a3c51664717dcf43dbbdbc7328eed875694a9efbf9cfe11ce739f0"
+  }
+}

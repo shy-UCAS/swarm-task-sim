@@ -76,13 +76,14 @@ def clock_to_host(source, model):
     return a[1] + weight * (b[1] - a[1])
 
 
-def read_truth(directory, agent, origin):
+def read_truth(directory, agent, origin, preserve_invalid=False):
     """Return SIM ENU poses and effective PARM values, preserving source times."""
     from pymavlink import DFReader
     paths = sorted((Path(directory) / "sitl" / agent / "logs").glob("*.BIN"))
     # One fresh SITL per run should produce one BIN; do not silently merge resets.
     if len(paths) != 1:
         return [], {}, dict(available=False, reason=f"expected one BIN, found {len(paths)}")
+    source_path = str(paths[0].relative_to(directory))
     reader = DFReader.DFReader_binary(str(paths[0]))
     samples, parameters = [], {}
     dropped = 0
@@ -99,16 +100,26 @@ def read_truth(directory, agent, origin):
             source = packet["TimeUS"] / 1e6
             values = [*geo_to_enu(packet["Lat"], packet["Lng"], packet["Alt"], origin),
                       packet["Q1"], packet["Q2"], packet["Q3"], packet["Q4"]]
-            if not all(math.isfinite(v) for v in [source, *values]):
+            if not all(math.isfinite(v) for v in [source, *values]) or (preserve_invalid and source < 0):
                 dropped += 1
+                if preserve_invalid:
+                    if not math.isfinite(source) or source < 0:
+                        return [], parameters, dict(available=False, reason="unplaceable SIM timestamp",
+                            path=source_path, dropped_nonfinite=dropped)
+                    if samples and source <= samples[-1][0]:
+                        return [], parameters, dict(available=False, reason="SIM source timestamp reset/duplicate",
+                            path=source_path)
+                    samples.append((source, None))
                 continue
             if samples and source <= samples[-1][0]:
-                return [], parameters, dict(available=False, reason="SIM source timestamp reset/duplicate")
+                return [], parameters, dict(available=False, reason="SIM source timestamp reset/duplicate",
+                                           path=source_path)
             samples.append((source, values))
     finally:
         reader.close()
-    return samples, parameters, dict(available=bool(samples), source="onboard_BIN_SIM",
-        path=str(paths[0].relative_to(directory)), samples=len(samples), dropped_nonfinite=dropped,
+    return samples, parameters, dict(available=any(values is not None for _, values in samples), source="onboard_BIN_SIM",
+        path=source_path, samples=len(samples), dropped_nonfinite=dropped,
+        invalid_sample_policy="barrier" if preserve_invalid else "legacy_drop",
         fields="ENU position and wxyz quaternion; no ground-truth velocity available",
         parameter_source="BIN PARM; last logged value, not a guaranteed complete live snapshot")
 
