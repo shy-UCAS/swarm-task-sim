@@ -1,0 +1,2006 @@
+{
+  "version": "v04_stage01_implementation_matrix_v1",
+  "created_utc": "2026-10-02T10:11:02.594581+00:00",
+  "project_root": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC",
+  "status": "IMPLEMENTED_AND_TESTED",
+  "requirement_count": 34,
+  "requirements": [
+    {
+      "id": "R01",
+      "requirement": "原有 150 项回归测试",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/tasks.py",
+          "function": "compile_task",
+          "line": 29,
+          "sha256": "ab598501b2f09f810ca644038df2355924d6c7710d4e31c10c56e34d9cfef39a"
+        },
+        {
+          "path": "swarm_sim/analysis.py",
+          "function": "analyze_run",
+          "line": 54,
+          "sha256": "81d886c68f2d5f2909678a58970bcc11746bfbb2653c7d1fddb1bd6126ecb76c"
+        }
+      ],
+      "tests": {
+        "count": 150,
+        "expected_count": 150,
+        "status": "PASS"
+      },
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "原有150/150；完整V1离线403/403通过",
+      "remaining_issues": []
+    },
+    {
+      "id": "R02",
+      "requirement": "旧任务规范化和编译不变",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/mission_schema.py",
+          "function": "normalize_mission",
+          "line": 58,
+          "sha256": "fa78b3852f83c9bafa42085d1902e02357aad2891fd9d4120c0f8eed2b47f89e"
+        },
+        {
+          "path": "swarm_sim/tasks.py",
+          "function": "compile_task",
+          "line": 29,
+          "sha256": "ab598501b2f09f810ca644038df2355924d6c7710d4e31c10c56e34d9cfef39a"
+        }
+      ],
+      "tests": {
+        "status": "PASS",
+        "count": 104
+      },
+      "evidence_class": "existing_artifact_read_only_regression",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "tmp_v04/wp_e/legacy_regression/legacy_regression.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "4个旧示例+100个生成任务，共104/104匹配",
+      "remaining_issues": []
+    },
+    {
+      "id": "R03",
+      "requirement": "旧运行绑定不变",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/tasks.py",
+          "function": "validate_task_binding",
+          "line": 126,
+          "sha256": "ab598501b2f09f810ca644038df2355924d6c7710d4e31c10c56e34d9cfef39a"
+        }
+      ],
+      "tests": {
+        "status": "PASS",
+        "count": 15
+      },
+      "evidence_class": "existing_artifact_read_only_regression",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "tmp_v04/wp_e/legacy_regression/legacy_regression.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "15/15旧运行绑定通过",
+      "remaining_issues": []
+    },
+    {
+      "id": "R04",
+      "requirement": "旧数据集加载兼容",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/episode_loader.py",
+          "function": "load_episode",
+          "line": 15,
+          "sha256": "335ba87bde356f42446c9635d7369e96dbf8ac99be78e63d656eb9506d0c4f00"
+        }
+      ],
+      "tests": {
+        "status": "PASS",
+        "dataset_count": 2,
+        "count": 15
+      },
+      "evidence_class": "existing_artifact_read_only_regression",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "tmp_v04/wp_e/legacy_regression/legacy_regression.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "2个旧数据集、15/15 episode与基线返回结构一致",
+      "remaining_issues": []
+    },
+    {
+      "id": "R05",
+      "requirement": "旧日志副本复算保持原标签和语义字段",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/analysis.py",
+          "function": "analyze_run",
+          "line": 54,
+          "sha256": "81d886c68f2d5f2909678a58970bcc11746bfbb2653c7d1fddb1bd6126ecb76c"
+        },
+        {
+          "path": "swarm_sim/mission_evaluation.py",
+          "function": "evaluate_mission",
+          "line": 241,
+          "sha256": "fc51e545b8ba7775331bc95652a8c03d1965a6085ccd0fc5e9ed41d8be51aa45"
+        }
+      ],
+      "tests": {
+        "status": "PASS",
+        "count": 15
+      },
+      "evidence_class": "existing_SITL_offline_copies",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "tmp_v04/wp_e/legacy_regression/legacy_regression.json",
+        "tmp_v04/wp_e/v2_mixed_analysis/compatibility.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "15/15副本原有字段不变；execution_metrics作为追加附件",
+      "remaining_issues": [
+        "旧、新v2分析结果可混合导出和加载，实测附件见compatibility.json"
+      ]
+    },
+    {
+      "id": "R06",
+      "requirement": "新增诊断事件不改旧控制和分析",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/vehicle.py",
+          "function": "Vehicle.record_waypoint_reached",
+          "line": 285,
+          "sha256": "72b385862f944dca3cca6440c3a6a989bca313f56c906427b7364588ca426075"
+        },
+        {
+          "path": "swarm_sim/mission_evaluation.py",
+          "function": "execution_windows",
+          "line": 77,
+          "sha256": "fc51e545b8ba7775331bc95652a8c03d1965a6085ccd0fc5e9ed41d8be51aa45"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E06_R06_single_receive_owner_records_all_seq_without_extra_mode_commands",
+          "status": "PASS"
+        },
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_R06_legacy_analysis_ignores_new_waypoint_and_unknown_events",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "单接收线程记录全部seq；旧分析忽略新增及未知事件",
+      "remaining_issues": []
+    },
+    {
+      "id": "G01",
+      "requirement": "family与任务/规划/执行内容无关",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/families.py",
+          "function": "scene_content",
+          "line": 39,
+          "sha256": "958c9fd7da73390512c88b6627d0264223353e55da0f173686150d37fde92033"
+        },
+        {
+          "path": "swarm_sim/families.py",
+          "function": "scene_family_id",
+          "line": 71,
+          "sha256": "958c9fd7da73390512c88b6627d0264223353e55da0f173686150d37fde92033"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_generation_v2.FamilyContentTests.test_g01_family_ignores_all_nonphysical_sections",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g01_generator_geometry_does_not_depend_on_mission_or_execution",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/wp_g/examples/examples_report.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "单元测试及真实规范化示例通过",
+      "remaining_issues": []
+    },
+    {
+      "id": "G02",
+      "requirement": "family响应物理场景变化且与重新编号无关",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/families.py",
+          "function": "scene_content",
+          "line": 39,
+          "sha256": "958c9fd7da73390512c88b6627d0264223353e55da0f173686150d37fde92033"
+        },
+        {
+          "path": "swarm_sim/families.py",
+          "function": "scene_content_hash",
+          "line": 67,
+          "sha256": "958c9fd7da73390512c88b6627d0264223353e55da0f173686150d37fde92033"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_generation_v2.FamilyContentTests.test_g02_geometry_position_heading_origin_world_and_platform_change_identity",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.FamilyContentTests.test_g02_renumbering_region_ids_and_tied_vehicle_order_do_not_change_identity",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/wp_g/examples/examples_report.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "几何/起点/航向改变身份；重编号/列表顺序不变",
+      "remaining_issues": []
+    },
+    {
+      "id": "G03",
+      "requirement": "同场景跨意图family及split一致",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/generation_v2.py",
+          "function": "generate_v2",
+          "line": 122,
+          "sha256": "47cf9b968281eb198024e7c950d3d5f17339ce91360c1f86833581a450983a38"
+        },
+        {
+          "path": "swarm_sim/dataset.py",
+          "function": "family_split",
+          "line": 15,
+          "sha256": "88cdbcd7963f490dc84d728e99aa039c0f1acc237f3c477f5a1e10afbdf54936"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g03_same_scene_two_intents_have_same_family_split_and_shared_variables",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "hand_built_semantic_evidence_and_unit_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "侦察+临时夹具意图合成证据通过",
+      "remaining_issues": [
+        "生产只有侦察；夹具不是第二类生产意图"
+      ]
+    },
+    {
+      "id": "G04",
+      "requirement": "v3严格输入校验",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/mission_v3.py",
+          "function": "normalize_v3",
+          "line": 14,
+          "sha256": "d2ab8e4f49d6a89e9333d2c42c35ba1462d7581829e14b297a3e1767c4d3a942"
+        },
+        {
+          "path": "swarm_sim/registry.py",
+          "function": "get_intent",
+          "line": 48,
+          "sha256": "4ed7c3c64d46cc45419a1cce3098707fc038ca7f517af917ce6cdb427bbc1725"
+        },
+        {
+          "path": "swarm_sim/registry.py",
+          "function": "get_planner",
+          "line": 55,
+          "sha256": "4ed7c3c64d46cc45419a1cce3098707fc038ca7f517af917ce6cdb427bbc1725"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_all_numeric_leaves_reject_bool_and_nonfinite",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_family_mismatch_or_scheme_mismatch_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_incompatible_planner",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_mode_specific_fields_are_not_silently_ignored",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_normalization_idempotent_deterministic_input_untouched",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_restricted_regions_and_grid_overshoot_guards",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_unknown_fields_rejected_at_every_layer",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G04_unregistered_intent_and_planner",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "未知字段、bool/非有限数、注册错配、模式字段错配、family错配均拒绝",
+      "remaining_issues": []
+    },
+    {
+      "id": "G05",
+      "requirement": "v3旧模式与v2编译等价",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/mission_v3.py",
+          "function": "compile_mission_v3",
+          "line": 206,
+          "sha256": "d2ab8e4f49d6a89e9333d2c42c35ba1462d7581829e14b297a3e1767c4d3a942"
+        },
+        {
+          "path": "swarm_sim/mission_planning.py",
+          "function": "compile_execution_phases",
+          "line": 50,
+          "sha256": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G05_binding_detects_mutated_target",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G05_recon_barrier_targets_semantics_and_planning_equal_v2",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/wp_g/examples/examples_report.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "3种几何×返航选择，共6/6组等价",
+      "remaining_issues": []
+    },
+    {
+      "id": "G06",
+      "requirement": "注册表隔离",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/registry.py",
+          "function": "temporary_registration",
+          "line": 73,
+          "sha256": "4ed7c3c64d46cc45419a1cce3098707fc038ca7f517af917ce6cdb427bbc1725"
+        },
+        {
+          "path": "swarm_sim/registry.py",
+          "function": "registered_intents",
+          "line": 62,
+          "sha256": "4ed7c3c64d46cc45419a1cce3098707fc038ca7f517af917ce6cdb427bbc1725"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G06_duplicates_cannot_replace_existing_registry",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G06_fixture_compiler_supports_own_semantic_phases",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G06_planner_route_contract_rejects_missing_agents",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3Tests.test_G06_production_registry_and_exception_cleanup",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "生产仅侦察，正常/异常退出均清理测试注册",
+      "remaining_issues": []
+    },
+    {
+      "id": "G07",
+      "requirement": "意图验证器分派",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/mission_evaluation_v3.py",
+          "function": "evaluate_mission_v3",
+          "line": 27,
+          "sha256": "0b471fca60126eaa5648f92217da318cbc755e0adf3d8ca31cf6f914985e0b02"
+        },
+        {
+          "path": "swarm_sim/reconnaissance.py",
+          "function": "evaluate_channel",
+          "line": 96,
+          "sha256": "5c15a6448001259d58fd4c637c80886fe5fd30e66e7ee647a08fcd039e9d03a5"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_task_v3.TaskV3EvaluationTests.test_G07_fixture_uses_own_validator_and_behavior_callback",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3EvaluationTests.test_G07_legacy_v2_bypasses_registry",
+          "status": "PASS"
+        },
+        {
+          "id": "test_task_v3.TaskV3EvaluationTests.test_G07_recon_hand_computable_dual_channel_equivalence",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "hand_built_semantic_evidence_and_unit_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "手工轨迹v2/v3侦察一致；夹具调用自己的验证器",
+      "remaining_issues": [
+        "不构成真实第二意图实跑验证"
+      ]
+    },
+    {
+      "id": "G08",
+      "requirement": "v3协议、混合模式规则与加载",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/protocol.py",
+          "function": "validate_artifact_protocol",
+          "line": 46,
+          "sha256": "b0f24f73968b32eef12fefb7fca7f9a4bc4793144c14e2128c8333bddecaa05a"
+        },
+        {
+          "path": "swarm_sim/dataset.py",
+          "function": "build_dataset",
+          "line": 20,
+          "sha256": "88cdbcd7963f490dc84d728e99aa039c0f1acc237f3c477f5a1e10afbdf54936"
+        },
+        {
+          "path": "swarm_sim/episode_loader.py",
+          "function": "load_episode",
+          "line": 15,
+          "sha256": "335ba87bde356f42446c9635d7369e96dbf8ac99be78e63d656eb9506d0c4f00"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_protocol_v3.ProtocolV3Tests.test_g08_mixed_control_modes_explicit_and_tamper_checked",
+          "status": "PASS"
+        },
+        {
+          "id": "test_protocol_v3.ProtocolV3Tests.test_g08_mixed_v2_v3_protocol_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "test_protocol_v3.ProtocolV3Tests.test_g08_protocol_versions_are_distinct_but_intent_mode_are_not_axes",
+          "status": "PASS"
+        },
+        {
+          "id": "test_protocol_v3.ProtocolV3Tests.test_g08_two_test_intents_share_dataset_and_family_split",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "hand_built_semantic_evidence_and_unit_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "同v3两夹具意图可导出；v2/v3混合拒绝；模式混合须显式允许",
+      "remaining_issues": []
+    },
+    {
+      "id": "G09",
+      "requirement": "质量资格独立于任务成功",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/quality.py",
+          "function": "episode_quality_eligibility",
+          "line": 91,
+          "sha256": "7451cfa002fcc3272ae8287c53e8c6f24e661156d4f9e807a7fd6a5dc71e3383"
+        },
+        {
+          "path": "swarm_sim/quality.py",
+          "function": "v3_eligibility",
+          "line": 100,
+          "sha256": "7451cfa002fcc3272ae8287c53e8c6f24e661156d4f9e807a7fd6a5dc71e3383"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_protocol_v3.ProtocolV3Tests.test_g09_outcome_and_consistency_do_not_control_episode_quality",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "hand_built_semantic_evidence_and_unit_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "任务失败但质量合格可保留，benchmark保持原含义",
+      "remaining_issues": [
+        "没有窗口级资格；full_stream_strict_v1维持全流检查"
+      ]
+    },
+    {
+      "id": "G10",
+      "requirement": "通用审计及意图专属指标",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/dataset_audit_v3.py",
+          "function": "audit_dataset_v3",
+          "line": 155,
+          "sha256": "73f73becd4d12b286f8635fc4bbff8fa6dfe98f9205b807296de9cf22c85d2d5"
+        },
+        {
+          "path": "swarm_sim/execution_metrics.py",
+          "function": "compute_execution_metrics",
+          "line": 223,
+          "sha256": "1d755c2928dcfd3e37f11610b490c1ef50d5c0dc05de156cc678719c367e743f"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_common_and_registered_intent_metrics_are_separate",
+          "status": "PASS"
+        },
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_counterfactual_uses_quality_eligibility_not_mission_success",
+          "status": "PASS"
+        },
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_missing_evidence_remains_null_with_explicit_counts",
+          "status": "PASS"
+        },
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_missing_intent_or_only_bad_quality_episode_is_explicit",
+          "status": "PASS"
+        },
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_mixed_modes_are_separate_groups_and_duplicates_and_leaks_preserved",
+          "status": "PASS"
+        },
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_order_agreement_excludes_ties_and_reports_reverse_order",
+          "status": "PASS"
+        },
+        {
+          "id": "test_dataset_audit_v3.DatasetAuditV3Tests.test_g10_topology_overlap_is_episode_weighted_with_known_denominator",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "hand_built_semantic_evidence_and_unit_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/wp_g/execution_metrics_final/execution_metrics_regression.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "10项合成审计测试；历史A4可比14/14场、57/57机停靠数一致，同步差0",
+      "remaining_issues": [
+        "15个历史episode中1个失败无A4参考，不伪造可比结果；近重复检测未实施"
+      ]
+    },
+    {
+      "id": "G11",
+      "requirement": "profile v2确定性与防误用",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/generation_v2.py",
+          "function": "normalize_profile",
+          "line": 47,
+          "sha256": "47cf9b968281eb198024e7c950d3d5f17339ce91360c1f86833581a450983a38"
+        },
+        {
+          "path": "swarm_sim/generation_v2.py",
+          "function": "generate_v2",
+          "line": 122,
+          "sha256": "47cf9b968281eb198024e7c950d3d5f17339ce91360c1f86833581a450983a38"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_failed_speed_variant_does_not_publish_successful_sibling",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_mission_order_does_not_change_generation",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_multi_intent_speed_factor_mismatch_is_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_non_agnostic_multi_intent_is_rejected_before_output",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_one_intent_failure_rejects_whole_family_with_attributed_reason",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_repeated_physical_scene_reuses_family_shared_choices",
+          "status": "PASS"
+        },
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g11_reproducible_files_metadata_and_seeds",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "重放一致、各意图/变体原子接受，拒绝非中立采样器多意图",
+      "remaining_issues": [
+        "strip_aligned_v1仍不是意图无关采样器"
+      ]
+    },
+    {
+      "id": "G12",
+      "requirement": "旧生成器冻结",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/generation.py",
+          "function": "generate",
+          "line": 116,
+          "sha256": "c9669e2d2cb12499ffbf09490f630d62558a6454361c8ec1694e87bf06a92d82"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_generation_v2.GeneratorV2Tests.test_g12_all_100_legacy_tasks_match_preexisting_frozen_artifact_hashes",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "unit_and_regression_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "docs/v04_wp_g_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "100/100旧任务及生成产物SHA256一致",
+      "remaining_issues": []
+    },
+    {
+      "id": "E01",
+      "requirement": "连续模式阶段编译、去零段与no-op",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/route_planning.py",
+          "function": "clean_route",
+          "line": 27,
+          "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+        },
+        {
+          "path": "swarm_sim/route_planning.py",
+          "function": "compile_route_phases",
+          "line": 130,
+          "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E01_empty_route_has_explicit_noop_terminal_and_service_false",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E01_epsilon_chain_keeps_first_and_filters_internal_duplicates",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E01_full_compile_and_validate_noop_approach",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E01_return_false_omits_return_phase",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E01_three_semantic_phases_zero_segments_removed_and_original_indices",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "语义阶段连续航线、去重复、原索引、无操作服务关闭通过",
+      "remaining_issues": []
+    },
+    {
+      "id": "E02",
+      "requirement": "AUTO任务项参数",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/scenario.py",
+          "function": "route_mission_for",
+          "line": 110,
+          "sha256": "9029bc645d32d001c428eb9b58e707bf14b088a005c10a64b4124ad25750dc59"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E02_mission_item_order_params_and_final_hold",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/v06_20261002/arrival_brake_diagnostic.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "中间hold=0、末端terminal_hold_s；顺序数量参数符合手工预期",
+      "remaining_issues": [
+        "只读BIN诊断：配置terminal_hold_s=0.5，但历史4场加V06共141个末NAV窗口CMD.Prm1=0.0。Python构造正确不等于飞控执行0.5s驻留；内部计时起点未直接观测，不改参数或arrival定义。"
+      ]
+    },
+    {
+      "id": "E03",
+      "requirement": "时间感知间距检查",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/route_planning.py",
+          "function": "time_aware_phase_clearance",
+          "line": 68,
+          "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E03_arc_length_discretization_at_most_half_meter",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E03_same_place_outside_tau_accepted",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E03_same_time_crossing_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E03_shared_demo_passes_original_clearance_and_tau",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E03_terminal_hold_and_noop_participate_after_nominal_arrival",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "同时相交拒绝/错时通过/终点占位/no-op/共享三机场景测试通过",
+      "remaining_issues": [
+        "依赖匀速名义时序与tau；AC4门禁已授权改为相对进度v2，绝对偏差仅诊断"
+      ]
+    },
+    {
+      "id": "E04",
+      "requirement": "每机阶段航线上限",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/route_planning.py",
+          "function": "clean_route",
+          "line": 27,
+          "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E04_exact_100_waypoints_allowed_101_rejected",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "100合法、101拒绝",
+      "remaining_issues": []
+    },
+    {
+      "id": "E05",
+      "requirement": "schema分派及语义阶段屏障",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner.py",
+          "function": "run_scene",
+          "line": 24,
+          "sha256": "9cf85be8d04f61233a5d00c99d4d64fcc2fbd9fdb664558ac3828d5201c3e51e"
+        },
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "execute_phases",
+          "line": 43,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E05_noop_ready_requires_successful_geometric_confirmation",
+          "status": "PASS"
+        },
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E05_noop_skips_upload_auto_and_confirms_current_endpoint",
+          "status": "PASS"
+        },
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E05_schema1_barrier_and_schema2_route_use_distinct_mission_shapes",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "schema1/2任务形状、no-op控制及ready确认mock通过，后经V02-V04实跑",
+      "remaining_issues": [
+        "语义阶段边界仍保留全机屏障"
+      ]
+    },
+    {
+      "id": "E06",
+      "requirement": "全部waypoint_reached事件",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/vehicle.py",
+          "function": "Vehicle.record_waypoint_reached",
+          "line": 285,
+          "sha256": "72b385862f944dca3cca6440c3a6a989bca313f56c906427b7364588ca426075"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E06_R06_single_receive_owner_records_all_seq_without_extra_mode_commands",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "单接收线程mock及V1真实运行事件完整性通过",
+      "remaining_issues": []
+    },
+    {
+      "id": "E07",
+      "requirement": "双通道轨迹arrival及窗口",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/route_windows.py",
+          "function": "build_route_windows",
+          "line": 88,
+          "sha256": "8f62fdef6a5462d7278629fa961c18d532a671e12bb97162f7488345d03d6cf2"
+        },
+        {
+          "path": "swarm_sim/mission_evaluation_v3.py",
+          "function": "evaluate_mission_v3",
+          "line": 27,
+          "sha256": "0b471fca60126eaa5648f92217da318cbc755e0adf3d8ca31cf6f914985e0b02"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_arrival_before_auto_confirmation_keeps_earliest_definition_but_disables_inverted_service",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_arrival_is_first_post_event_joint_condition",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_channels_derive_different_arrivals_from_own_evidence",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_closest_fallback_is_post_event_and_unverified",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_epoch_shift_and_failed_missing_events_remain_unknown",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_late_terminal_event_cannot_search_back_to_earlier_stop",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_missing_terminal_event_cannot_manufacture_service_window",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_missing_trajectory_retains_explicit_unverified_event_fallback",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_no_op_uses_explicit_events_and_never_activates_service",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_registry_coverage_excludes_barrier_wait_and_channels_stay_independent",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_release_bounded_terminal_does_not_recover_an_invalid_timeline",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_release_timestamp_not_logging_timestamp_ends_phase",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_return_dwell_uses_full_return_window_after_arrival",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_sim_derivative_uses_source_seconds_when_clock_available",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_sim_does_not_use_fcu_velocity_or_bridge_invalid_rows",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_sim_gap_breaks_derivative_and_first_sample_has_no_speed",
+          "status": "PASS"
+        },
+        {
+          "id": "test_route_windows.RouteWindowTests.test_E07_terminal_before_auto_confirmation_can_anchor_later_trajectory_arrival",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/v06_20261002/arrival_brake_diagnostic.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "17项E07边界测试及独立通道处理通过",
+      "remaining_issues": [
+        "arrival_s定义未改；末端速度阈值未满足时用trajectory_min_distance，不能视为已悬停",
+        "只读BIN诊断：配置terminal_hold_s=0.5，但历史4场加V06共141个末NAV窗口CMD.Prm1=0.0。Python构造正确不等于飞控执行0.5s驻留；内部计时起点未直接观测，不改参数或arrival定义。"
+      ]
+    },
+    {
+      "id": "E08",
+      "requirement": "阶段超时与失败证据清理",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "phase_time_budget",
+          "line": 29,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E08_budget_defaults_and_bound_override_only_shortens",
+          "status": "PASS"
+        },
+        {
+          "id": "test_runner_v3.RunnerV3Tests.test_E08_phase_timeout_retains_failure_evidence_and_cleans_owned_processes",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "预算只能缩短；mock与V05真实0.01s受控失败保留证据并回收进程",
+      "remaining_issues": [
+        "V05运行本身仍failed，任务标签null，不能记为成功降落"
+      ]
+    },
+    {
+      "id": "E09",
+      "requirement": "schema2任务绑定",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/tasks.py",
+          "function": "validate_task_binding",
+          "line": 126,
+          "sha256": "ab598501b2f09f810ca644038df2355924d6c7710d4e31c10c56e34d9cfef39a"
+        },
+        {
+          "path": "swarm_sim/scenario.py",
+          "function": "validate_route_scene",
+          "line": 142,
+          "sha256": "9029bc645d32d001c428eb9b58e707bf14b088a005c10a64b4124ad25750dc59"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_route_planning.RoutePlanningTests.test_E09_binding_rejects_route_metadata_and_timing_tampering",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "路线/映射/时序篡改均拒绝",
+      "remaining_issues": []
+    },
+    {
+      "id": "E10",
+      "requirement": "执行伪影指标",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/execution_metrics.py",
+          "function": "compute_execution_metrics",
+          "line": 223,
+          "sha256": "1d755c2928dcfd3e37f11610b490c1ef50d5c0dc05de156cc678719c367e743f"
+        },
+        {
+          "path": "swarm_sim/execution_metrics.py",
+          "function": "stop_segments",
+          "line": 29,
+          "sha256": "1d755c2928dcfd3e37f11610b490c1ef50d5c0dc05de156cc678719c367e743f"
+        },
+        {
+          "path": "swarm_sim/execution_metrics.py",
+          "function": "synchronized_stops",
+          "line": 56,
+          "sha256": "1d755c2928dcfd3e37f11610b490c1ef50d5c0dc05de156cc678719c367e743f"
+        }
+      ],
+      "tests": [
+        {
+          "id": "test_execution_metrics.ExecutionMetricsTests.test_E10_exact_intersection_avoids_audit_envelope_false_positive",
+          "status": "PASS"
+        },
+        {
+          "id": "test_execution_metrics.ExecutionMetricsTests.test_E10_missing_aircraft_or_timeline_unknown_not_zero",
+          "status": "PASS"
+        },
+        {
+          "id": "test_execution_metrics.ExecutionMetricsTests.test_E10_stop_counts_stationary_and_synchronization_hand_calculation",
+          "status": "PASS"
+        },
+        {
+          "id": "test_execution_metrics.ExecutionMetricsTests.test_E10_stop_location_categories_are_disjoint",
+          "status": "PASS"
+        },
+        {
+          "id": "test_execution_metrics.ExecutionMetricsTests.test_E10_threshold_duration_gap_and_missing_speed",
+          "status": "PASS"
+        }
+      ],
+      "evidence_class": "logical_mock_and_hand_built_trajectory_tests",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+        "tmp_v04/ac4_v2_20261002/offline_acceptance.json",
+        "docs/v04_wp_e_milestone.md",
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "tmp_v04/v06_20261002/unit_test_results_final.json"
+      ],
+      "conclusion": "手工合成阈值、停靠、位置、同步交集测试；V1 AC6独立复算通过",
+      "remaining_issues": [
+        "执行指标仅用于标签审计，不进入6维观测特征"
+      ]
+    },
+    {
+      "id": "V01",
+      "requirement": "v3旧屏障模式对照",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/analysis_v3.py",
+          "function": "analyze_run_v3",
+          "line": 43,
+          "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+        }
+      ],
+      "tests": {
+        "expected": 1,
+        "observed": 1,
+        "status": "COMPLETE"
+      },
+      "evidence_class": "new_SITL_runs",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "docs/v04_ac4_v2_milestone.md"
+      ],
+      "conclusion": "适用验收通过；旧失败和停止记录保留",
+      "remaining_issues": []
+    },
+    {
+      "id": "V02",
+      "requirement": "连续模式三机主验证两次",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/analysis_v3.py",
+          "function": "analyze_run_v3",
+          "line": 43,
+          "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+        }
+      ],
+      "tests": {
+        "expected": 2,
+        "observed": 2,
+        "status": "COMPLETE"
+      },
+      "evidence_class": "new_SITL_runs",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "docs/v04_ac4_v2_milestone.md"
+      ],
+      "conclusion": "v1绝对偏差保留诊断，AC4 v2复评首次运行PASS，第二次实跑PASS",
+      "remaining_issues": []
+    },
+    {
+      "id": "V03",
+      "requirement": "两机北向冒烟",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/analysis_v3.py",
+          "function": "analyze_run_v3",
+          "line": 43,
+          "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+        }
+      ],
+      "tests": {
+        "expected": 1,
+        "observed": 1,
+        "status": "COMPLETE"
+      },
+      "evidence_class": "new_SITL_runs",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "docs/v04_ac4_v2_milestone.md"
+      ],
+      "conclusion": "适用验收通过；旧失败和停止记录保留",
+      "remaining_issues": []
+    },
+    {
+      "id": "V04",
+      "requirement": "六机冒烟",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/analysis_v3.py",
+          "function": "analyze_run_v3",
+          "line": 43,
+          "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+        }
+      ],
+      "tests": {
+        "expected": 1,
+        "observed": 1,
+        "status": "COMPLETE"
+      },
+      "evidence_class": "new_SITL_runs",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "docs/v04_ac4_v2_milestone.md"
+      ],
+      "conclusion": "适用验收通过；旧失败和停止记录保留",
+      "remaining_issues": []
+    },
+    {
+      "id": "V05",
+      "requirement": "真实受控失败保留与清理",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/analysis_v3.py",
+          "function": "analyze_run_v3",
+          "line": 43,
+          "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+        }
+      ],
+      "tests": {
+        "expected": 1,
+        "observed": 1,
+        "status": "COMPLETE"
+      },
+      "evidence_class": "new_SITL_runs",
+      "evidence": [
+        "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "docs/v04_ac4_v2_milestone.md"
+      ],
+      "conclusion": "受控失败验收PASS；原运行failed/exit1保留，任务标签null，进程清理不等于降落",
+      "remaining_issues": []
+    },
+    {
+      "id": "V06",
+      "requirement": "10场景试生产全链路",
+      "status": "IMPLEMENTED_AND_TESTED",
+      "test_result": "PASS",
+      "source_functions": [
+        {
+          "path": "swarm_sim/runner_v3.py",
+          "function": "run_scene_v3",
+          "line": 142,
+          "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+        },
+        {
+          "path": "swarm_sim/analysis_v3.py",
+          "function": "analyze_run_v3",
+          "line": 43,
+          "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+        }
+      ],
+      "tests": {
+        "ten_exported_scenes": true,
+        "at_most_ten_attempts": true,
+        "ledger_all_attempts_exported": true,
+        "at_least_eight_completed_and_quality_eligible": true,
+        "matching_profile_parameter_distributions": true,
+        "new_profile_fingerprint_verified": true,
+        "ten_generated_scenes": true,
+        "family_scheme": true,
+        "route_only": true,
+        "reconnaissance_only": true,
+        "audit_69_fields": true,
+        "no_audit_issues": true,
+        "loader_all_pass": true,
+        "legacy_loader_all_pass": true,
+        "distribution_comparison": true,
+        "source_files_unchanged": true
+      },
+      "evidence_class": "new_SITL_runs",
+      "evidence": [
+        "verification/v04_v06_20261002/control.json",
+        "tmp_v04/v06_20261002/pilot_report/report.json",
+        "tmp_v04/v06_20261002/pilot_report/audit.json",
+        "tmp_v04/v06_20261002/independent_runs_10.json",
+        "tmp_v04/v06_20261002/independent_owned_process_identity.json",
+        "tmp_v04/v06_20261002/independent_export_review.json",
+        "tmp_v04/v06_20261002/reporting_exceptions.json",
+        "tmp_v04/v06_20261002/reporting_exceptions_independent.json"
+      ],
+      "conclusion": "10/10场景运行与导出；10/10完成且质量合格；导出、6.9审计、加载及分布对照通过",
+      "remaining_issues": [
+        "单意图、小样本、非配对分布比较；arrival_s定义保留已知兜底限制；阶段2不实施",
+        "9/38架次在0.3m/s口径有5段停靠，45/45段均在语义端点1m内；0.5m/s口径均为3段。此为V06分布异常，AC2未追加为V06门禁。",
+        "family划分7训练/3验证/0测试；测试签名重合分母为0，比例null，不能声称零重合或已有泛化验证。"
+      ]
+    }
+  ],
+  "status_policy": "implementation status and test_result are separate; historical test evidence is reused, not rerun",
+  "evidence_classes": [
+    "unit_and_regression_tests",
+    "hand_built_semantic_evidence",
+    "existing_SITL_offline_analysis",
+    "new_SITL_runs"
+  ],
+  "source_tests": {
+    "path": "tmp_v04/v06_20261002/unit_test_results_final.json",
+    "tests_run": 430,
+    "original_R01": {
+      "count": 150,
+      "expected_count": 150,
+      "status": "PASS"
+    },
+    "sha256": "3b0410aa3eb21c9eb07df88d5cde1cb21ec25bf3cd949953e8743da7fe49c253"
+  },
+  "end_to_end": {
+    "run_id": "20261002T095856Z_e433af1b",
+    "mission_id": "reconnaissance_0000_v00",
+    "run_directory": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b",
+    "analysis_directory": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3",
+    "runtime_call_trace_available": false,
+    "trace_basis": "source call-chain inspection linked to one real completed run and its manifest-bound artifacts; not instrumented runtime stack",
+    "steps": [
+      {
+        "step": 1,
+        "description": "profile采样与TaskSpec",
+        "source_functions": [
+          {
+            "path": "swarm_sim/generation_v2.py",
+            "function": "normalize_profile",
+            "line": 47,
+            "sha256": "47cf9b968281eb198024e7c950d3d5f17339ce91360c1f86833581a450983a38"
+          },
+          {
+            "path": "swarm_sim/generation_v2.py",
+            "function": "generate_v2",
+            "line": 122,
+            "sha256": "47cf9b968281eb198024e7c950d3d5f17339ce91360c1f86833581a450983a38"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "generated/recon_pilot_v04_v06_20261002/generation_profile.json",
+            "exists": true,
+            "sha256": "57ce3d8ee0d9d5675f2b68de6fe11bc0ccdc7426e7c9064f80599e42695e61fa"
+          },
+          {
+            "path": "generated/recon_pilot_v04_v06_20261002/missions/reconnaissance_0000_v00.json",
+            "exists": true,
+            "sha256": "c6f9145617813358b94f49107331755ac9117a5f3590c6c8df62dc2d997b7428"
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "description": "严格规范化与意图/规划器注册表",
+        "source_functions": [
+          {
+            "path": "swarm_sim/mission_v3.py",
+            "function": "normalize_v3",
+            "line": 14,
+            "sha256": "d2ab8e4f49d6a89e9333d2c42c35ba1462d7581829e14b297a3e1767c4d3a942"
+          },
+          {
+            "path": "swarm_sim/registry.py",
+            "function": "get_intent",
+            "line": 48,
+            "sha256": "4ed7c3c64d46cc45419a1cce3098707fc038ca7f517af917ce6cdb427bbc1725"
+          },
+          {
+            "path": "swarm_sim/registry.py",
+            "function": "get_planner",
+            "line": 55,
+            "sha256": "4ed7c3c64d46cc45419a1cce3098707fc038ca7f517af917ce6cdb427bbc1725"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "generated/recon_pilot_v04_v06_20261002/missions/reconnaissance_0000_v00.json",
+            "exists": true,
+            "sha256": "c6f9145617813358b94f49107331755ac9117a5f3590c6c8df62dc2d997b7428"
+          }
+        ]
+      },
+      {
+        "step": 3,
+        "description": "侦察规划器生成航线",
+        "source_functions": [
+          {
+            "path": "swarm_sim/reconnaissance.py",
+            "function": "plan_routes",
+            "line": 62,
+            "sha256": "5c15a6448001259d58fd4c637c80886fe5fd30e66e7ee647a08fcd039e9d03a5"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/allocation.json",
+            "exists": true,
+            "sha256": "3b08d781632704cacb2e7532600cf63b2ea955523b83532b9f974e68f488e961"
+          }
+        ]
+      },
+      {
+        "step": 4,
+        "description": "schema2编译/去零段/时间感知间距/任务绑定",
+        "source_functions": [
+          {
+            "path": "swarm_sim/route_planning.py",
+            "function": "compile_continuous_mission",
+            "line": 218,
+            "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+          },
+          {
+            "path": "swarm_sim/route_planning.py",
+            "function": "clean_route",
+            "line": 27,
+            "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+          },
+          {
+            "path": "swarm_sim/route_planning.py",
+            "function": "time_aware_phase_clearance",
+            "line": 68,
+            "sha256": "d0002f357abefe32741216b8d96b7bf9225d80c0d07c73dc0f7c8f16dc24aae8"
+          },
+          {
+            "path": "swarm_sim/tasks.py",
+            "function": "validate_task_binding",
+            "line": 126,
+            "sha256": "ab598501b2f09f810ca644038df2355924d6c7710d4e31c10c56e34d9cfef39a"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "generated/recon_pilot_v04_v06_20261002/scenes/reconnaissance_0000_v00.json",
+            "exists": true,
+            "sha256": "f06cebf1542b7659dc7a804c754ee5461e566f0be897e8db8c2717dd8692d83b"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/scenario.json",
+            "exists": true,
+            "sha256": "4d1cf152031c94b7409383a9dd51aaa465a3450580eb9f913288141bc5e30dc0"
+          }
+        ]
+      },
+      {
+        "step": 5,
+        "description": "语义阶段运行器/逐运行固件参数预检",
+        "source_functions": [
+          {
+            "path": "swarm_sim/runner_v3.py",
+            "function": "run_scene_v3",
+            "line": 142,
+            "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+          },
+          {
+            "path": "swarm_sim/runner_v3.py",
+            "function": "execute_phases",
+            "line": 43,
+            "sha256": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823"
+          },
+          {
+            "path": "swarm_sim/run_provenance.py",
+            "function": "verify_preflight_files",
+            "line": 84,
+            "sha256": "ebc8cdbe310f395d4370c613f8cbef19f8004da189644541b10a1835745b246e"
+          },
+          {
+            "path": "swarm_sim/run_provenance.py",
+            "function": "compare_parameter_readback",
+            "line": 121,
+            "sha256": "ebc8cdbe310f395d4370c613f8cbef19f8004da189644541b10a1835745b246e"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/metadata.json",
+            "exists": true,
+            "sha256": "eff9738d32395b3d3998a758e841aeee7de8ca4ee43fbe031c14efb2205f3d99"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/firmware_parameters.json",
+            "exists": true,
+            "sha256": "80c5cbfdaf51c8cd35185bccce139b615f2c7191a93f49da454a2f8d6e957bcd"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/events.jsonl",
+            "exists": true,
+            "sha256": "24ee2f27ce57ed96975dd47f4b241604cdc94e199d0ca10ea851bcb09d0a2b56"
+          }
+        ]
+      },
+      {
+        "step": 6,
+        "description": "本机SITL与AUTO航线任务交互",
+        "source_functions": [
+          {
+            "path": "swarm_sim/processes.py",
+            "function": "SITLProcesses.start",
+            "line": 23,
+            "sha256": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31"
+          },
+          {
+            "path": "swarm_sim/scenario.py",
+            "function": "route_mission_for",
+            "line": 110,
+            "sha256": "9029bc645d32d001c428eb9b58e707bf14b088a005c10a64b4124ad25750dc59"
+          },
+          {
+            "path": "swarm_sim/vehicle.py",
+            "function": "Vehicle.upload",
+            "line": 221,
+            "sha256": "72b385862f944dca3cca6440c3a6a989bca313f56c906427b7364588ca426075"
+          },
+          {
+            "path": "swarm_sim/vehicle.py",
+            "function": "Vehicle.execute",
+            "line": 261,
+            "sha256": "72b385862f944dca3cca6440c3a6a989bca313f56c906427b7364588ca426075"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/metadata.json",
+            "exists": true,
+            "sha256": "eff9738d32395b3d3998a758e841aeee7de8ca4ee43fbe031c14efb2205f3d99"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/events.jsonl",
+            "exists": true,
+            "sha256": "24ee2f27ce57ed96975dd47f4b241604cdc94e199d0ca10ea851bcb09d0a2b56"
+          }
+        ]
+      },
+      {
+        "step": 7,
+        "description": "FCU观测与BIN SIM真值独立处理",
+        "source_functions": [
+          {
+            "path": "swarm_sim/observation_processing.py",
+            "function": "prepare_v3_observations",
+            "line": 110,
+            "sha256": "170bf1fb275f764135b377bcfa1c574dd38797bb2ec18b0f10fcdb4e973adefe"
+          },
+          {
+            "path": "swarm_sim/truth.py",
+            "function": "read_truth",
+            "line": 79,
+            "sha256": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9"
+          },
+          {
+            "path": "swarm_sim/analysis_v3.py",
+            "function": "analyze_run_v3",
+            "line": 43,
+            "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/observations.csv",
+            "exists": true,
+            "sha256": "e4f692e52f8ab8e4b4fd98d32c5d506497b65a553d6d44a77382f8007a5d1ebf"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/truth.csv",
+            "exists": true,
+            "sha256": "d6604a680b2168ccfaa0cee82604c7147ea7bcaae0c3b5789b2b15579691efc5"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/truth_provenance.json",
+            "exists": true,
+            "sha256": "bbe05e2233b54183a23f19f13e6c32a92a0ffa705ee9d20c6f5dd94bda404622"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/observation_processing.json",
+            "exists": true,
+            "sha256": "8bd47cee7e8b41d549320c29c69f8b8b62d129aa95dca8319d080c0e45adbf01"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/clock_models.json",
+            "exists": true,
+            "sha256": "65a8d5c858ca0530b96d2c208eeca15e76721551b5bda6e3d51adbff6936daac"
+          }
+        ]
+      },
+      {
+        "step": 8,
+        "description": "双通道arrival窗口与验证器分派",
+        "source_functions": [
+          {
+            "path": "swarm_sim/route_windows.py",
+            "function": "build_route_windows",
+            "line": 88,
+            "sha256": "8f62fdef6a5462d7278629fa961c18d532a671e12bb97162f7488345d03d6cf2"
+          },
+          {
+            "path": "swarm_sim/mission_evaluation_v3.py",
+            "function": "evaluate_mission_v3",
+            "line": 27,
+            "sha256": "0b471fca60126eaa5648f92217da318cbc755e0adf3d8ca31cf6f914985e0b02"
+          },
+          {
+            "path": "swarm_sim/reconnaissance.py",
+            "function": "evaluate_channel",
+            "line": 96,
+            "sha256": "5c15a6448001259d58fd4c637c80886fe5fd30e66e7ee647a08fcd039e9d03a5"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/phase_windows.json",
+            "exists": true,
+            "sha256": "5c26ec0406440e9d0710a47237c5ff0e047367e5973f558d8a1cef848bf862da"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/semantic_validation.json",
+            "exists": true,
+            "sha256": "eed5187eca5739a7e673134e68ba78297a90daf41742086a0dddff0662b60231"
+          }
+        ]
+      },
+      {
+        "step": 9,
+        "description": "标签/两级资格/执行诊断与清单",
+        "source_functions": [
+          {
+            "path": "swarm_sim/quality.py",
+            "function": "v3_eligibility",
+            "line": 100,
+            "sha256": "7451cfa002fcc3272ae8287c53e8c6f24e661156d4f9e807a7fd6a5dc71e3383"
+          },
+          {
+            "path": "swarm_sim/execution_metrics.py",
+            "function": "compute_execution_metrics",
+            "line": 223,
+            "sha256": "1d755c2928dcfd3e37f11610b490c1ef50d5c0dc05de156cc678719c367e743f"
+          },
+          {
+            "path": "swarm_sim/analysis_v3.py",
+            "function": "analyze_run_v3",
+            "line": 43,
+            "sha256": "2b33d02795d97de73bc2236bfbc8141cbe340707f431dafe07b93a46cf40b87a"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/labels.json",
+            "exists": true,
+            "sha256": "b37f4e42c0a14753c457e5f84f7676cca846738cf9b4157e6386eef3c3167ce4"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/quality.json",
+            "exists": true,
+            "sha256": "2e1b72022e6f1a93b1f17c01b6cd84cc3b4bedee2df4093c5bc4ce5fb82fd857"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/execution_metrics.json",
+            "exists": true,
+            "sha256": "25ad0dc8fe1a3ffa269c48ce0e7843659026f46d2f6afd54c910bfa6da952ebc"
+          },
+          {
+            "path": "verification/v04_v06_20261002/execution/attempts/66298901fa6c44548d3143a3e88f213c/reconnaissance_0000_v00_20261002T095856Z_e433af1b/analysis_v040-dev_20261002T100056Z_b9e13df3/manifest.json",
+            "exists": true,
+            "sha256": "f4b4d7147d68ea3e3383d4128a0c4df5a308caae4cb26d6aeb8581e78aeda3de"
+          }
+        ]
+      },
+      {
+        "step": 10,
+        "description": "v3数据集导出",
+        "source_functions": [
+          {
+            "path": "swarm_sim/dataset.py",
+            "function": "build_dataset",
+            "line": 20,
+            "sha256": "88cdbcd7963f490dc84d728e99aa039c0f1acc237f3c477f5a1e10afbdf54936"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/dataset/dataset_manifest.json",
+            "exists": true,
+            "sha256": "5418e28f82ff9afe43ef96334cc917c7323a03fce5c0d5992b1ebf78b067e60f"
+          }
+        ]
+      },
+      {
+        "step": 11,
+        "description": "通用审计",
+        "source_functions": [
+          {
+            "path": "swarm_sim/dataset_audit.py",
+            "function": "audit_dataset",
+            "line": 42,
+            "sha256": "7ab6e0b274f9dee8ed8cb28808db60be399161cf4e0a50caf1e2a18f6a62fd33"
+          },
+          {
+            "path": "swarm_sim/dataset_audit_v3.py",
+            "function": "audit_dataset_v3",
+            "line": 155,
+            "sha256": "73f73becd4d12b286f8635fc4bbff8fa6dfe98f9205b807296de9cf22c85d2d5"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "tmp_v04/v06_20261002/pilot_report/audit.json",
+            "exists": true,
+            "sha256": "d638c86534a1836c656b6df0d81aa73552e4ab6c0498c178f58b6ca5edc651e4"
+          }
+        ]
+      },
+      {
+        "step": 12,
+        "description": "观测与mask加载",
+        "source_functions": [
+          {
+            "path": "swarm_sim/episode_loader.py",
+            "function": "load_episode",
+            "line": 15,
+            "sha256": "335ba87bde356f42446c9635d7369e96dbf8ac99be78e63d656eb9506d0c4f00"
+          }
+        ],
+        "status": "IMPLEMENTED_AND_TESTED",
+        "artifacts": [
+          {
+            "path": "verification/v04_v06_20261002/dataset/episodes/20261002T095856Z_e433af1b/manifest.json",
+            "exists": true,
+            "sha256": "f4b4d7147d68ea3e3383d4128a0c4df5a308caae4cb26d6aeb8581e78aeda3de"
+          },
+          {
+            "path": "tmp_v04/v06_20261002/pilot_report/report.json",
+            "evidence_selector": "loader.new by run_id",
+            "exists": true,
+            "sha256": "ac7f7841670d47db20ba655301348b1d4e398043aa065198a094709e46006de1"
+          }
+        ]
+      }
+    ]
+  },
+  "evidence_sha256": {
+    "docs/v04_ac4_v2_milestone.md": "dc8f779b7b52912fc9086b9cccfd46e8414552437fa1c0e03f80f035e6fcc57e",
+    "docs/v04_spike_go_confirmation.json": "31c5dbf26bfa585ef2438d01867994c088e02bf02d9d231bd40465863224eea4",
+    "docs/v04_spike_review_01.md": "a06bd1952bef748faac9358f9e76e46ea07923692de7c0bffb499b6c71d560e3",
+    "docs/v04_wp_e_milestone.md": "26dc0ca8acc72935771b973e10fdcb1e5c3a32211cb57d38c6c74680e8a29201",
+    "docs/v04_wp_g_milestone.md": "487a50c9da39e9dd508e137c8112b37aca264a9b2cae1008ed0cf0e52fd6e786",
+    "tmp_v04/ac4_v2_20261002/final_acceptance.json": "c9868b0361c3f7de1cad0d4505bb8ffef61f23138d31bb198f91a314119a9457",
+    "tmp_v04/ac4_v2_20261002/offline_acceptance.json": "4c03c3b28b9c6f90763a5f2b786687bf8c7a425484fa29d6f3f32f5041f8456b",
+    "tmp_v04/ac4_v2_20261002/unit_test_results_final.json": "25dcbff6b4e31f7aac4b7bc13812bdbe7eca6b02c5afa454a29d84895b928c24",
+    "tmp_v04/spike_review_01/review_summary.json": "1340d1f964c63a5737638c98bfe35706374a6f3d247175a05c51e0717173e84a",
+    "tmp_v04/v06_20261002/arrival_brake_diagnostic.json": "84c7bdb2ca5e166dcab40e678fda21ef33626244612ddebd895a26dc6b6e1aca",
+    "tmp_v04/v06_20261002/independent_export_review.json": "80ac1f18267aaa25a59604db8a57cbe6a32d57f3693c5449254cd87ab287bb3f",
+    "tmp_v04/v06_20261002/independent_owned_process_identity.json": "977dbd94c489c22087725a2b4e3fe066ae3dda04741e82a693116f7834a7d385",
+    "tmp_v04/v06_20261002/independent_runs_10.json": "3fb414b030ad6b0ff1d7632faa55f595df1f4d56818899484511f79b1ba93c68",
+    "tmp_v04/v06_20261002/pilot_report/audit.json": "d638c86534a1836c656b6df0d81aa73552e4ab6c0498c178f58b6ca5edc651e4",
+    "tmp_v04/v06_20261002/pilot_report/report.json": "ac7f7841670d47db20ba655301348b1d4e398043aa065198a094709e46006de1",
+    "tmp_v04/v06_20261002/reporting_exceptions.json": "59a13a76d6d43ae74a86e1b673ec816314978131d9386d41a9ce0f25f28e3422",
+    "tmp_v04/v06_20261002/reporting_exceptions_independent.json": "a6dbc571c5bb08250b6758f7aa66441b0c3d1b801a968edfe2601fc92f2436e2",
+    "tmp_v04/v06_20261002/unit_test_results_final.json": "3b0410aa3eb21c9eb07df88d5cde1cb21ec25bf3cd949953e8743da7fe49c253",
+    "tmp_v04/wp_e/legacy_regression/legacy_regression.json": "5dece679984f5034241a87ce19b088dc21bec5acbbd13af870f256a1512ef932",
+    "tmp_v04/wp_e/v2_mixed_analysis/compatibility.json": "d8d471340e39d8ec366c4ee048205a0d0b9b73346b9230f36d3fcc34b48de1d3",
+    "tmp_v04/wp_g/examples/examples_report.json": "5bd090a2035224c11c17cbd5fab361b1b55dd9a783d9da51b0169f45e741e6bf",
+    "tmp_v04/wp_g/execution_metrics_final/execution_metrics_regression.json": "2f60c9d44e9849ef4193e514c77e9a947cfe25823df0f8fa26ce3981887f20ca",
+    "verification/v04_v06_20261002/control.json": "a1322d633cb89c8b9de9fb544c0c8b7a85e60ebf4e541391f80c51ccfd44b9cf"
+  },
+  "supplementary_acceptance": {
+    "WP_S": {
+      "decision": "GO",
+      "authority": "explicit user confirmation",
+      "evidence": [
+        "docs/v04_spike_go_confirmation.json",
+        "docs/v04_spike_review_01.md",
+        "tmp_v04/spike_review_01/review_summary.json"
+      ],
+      "duplicate_policy": "exact_duplicate_drop_v1",
+      "metrics": {
+        "ids": [
+          "S-a",
+          "S-b",
+          "S-c",
+          "S-d",
+          "S-e",
+          "S-f",
+          "S-g"
+        ],
+        "path": "tmp_v04/spike_review_01/review_summary.json",
+        "selectors": [
+          "runs[*].strict",
+          "runs[*].revised",
+          "runs[*].sim_auxiliary",
+          "pooled"
+        ],
+        "note": "S-c/S-d are diagnostics, not invented pass/fail gates; original UNKNOWN reports remain unchanged"
+      }
+    },
+    "AC_criteria": {
+      "AC1": {
+        "result": "PASS",
+        "evidence": "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "selector": "final_route_criteria.AC1",
+        "policy": "original plan 8.2"
+      },
+      "AC2": {
+        "result": "PASS",
+        "evidence": "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "selector": "final_route_criteria.AC2",
+        "policy": "original plan 8.2"
+      },
+      "AC3": {
+        "result": "PASS",
+        "evidence": "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "selector": "final_route_criteria.AC3",
+        "policy": "original plan 8.2"
+      },
+      "AC4": {
+        "result": "PASS",
+        "evidence": "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "selector": "final_route_criteria.AC4",
+        "policy": "ac4_relative_nominal_progress_v2"
+      },
+      "AC5": {
+        "result": "PASS",
+        "evidence": "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "selector": "final_route_criteria.AC5",
+        "policy": "original plan 8.2"
+      },
+      "AC6": {
+        "result": "PASS",
+        "evidence": "tmp_v04/ac4_v2_20261002/final_acceptance.json",
+        "selector": "final_route_criteria.AC6",
+        "policy": "original plan 8.2"
+      }
+    },
+    "AC4_v1": {
+      "status": "DIAGNOSTIC_ONLY",
+      "note": "absolute nominal deviation retained; no longer a gate"
+    },
+    "parameter_comparison": "wp_s_parameter_comparison_v2"
+  },
+  "known_scope_boundary": "阶段0-1授权范围完成；阶段2/第二意图/窗口切分/OOD/分类训练未实施。",
+  "source_tests_prior": {
+    "path": "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+    "tests_run": 403,
+    "original_R01": {
+      "count": 150,
+      "expected_count": 150,
+      "status": "PASS"
+    },
+    "sha256": "25dcbff6b4e31f7aac4b7bc13812bdbe7eca6b02c5afa454a29d84895b928c24"
+  },
+  "finalized_utc": "2026-10-02T10:29:48.904665+00:00",
+  "prior_pending_appendix_sha256": "9f2e733d0eadc96cd90316eac0bbe7d59d0a28ba456e84f9adbcb3afe592d71f"
+}

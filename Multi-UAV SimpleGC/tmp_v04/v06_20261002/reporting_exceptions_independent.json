@@ -1,0 +1,460 @@
+{
+  "version": "v06_reporting_exceptions_v1",
+  "created_utc": "2026-10-02T10:28:12.729148+00:00",
+  "acceptance_unchanged": true,
+  "accepted": true,
+  "new_sitl_runs": 0,
+  "stop_count_exception": {
+    "affected_aircraft_episodes": 9,
+    "total_aircraft_episodes": 38,
+    "affected_runs": 3,
+    "total_runs": 10,
+    "threshold_m_s": 0.3,
+    "minimum_stop_duration_s": 0.2,
+    "expected_observation": "All nine have stop_count=5, three semantic phases, only semantic_endpoint locations, and stop_count=3 at 0.5m/s.",
+    "applicability": "AC2 is a V02-V04 acceptance criterion. This is an out-of-sample diagnostic on V06, not a newly added V06 gate.",
+    "interpretation": "Threshold crossings split nearby low-speed intervals; this is sensitivity of the count, not proof of five independent mission pauses.",
+    "records": [
+      {
+        "run_id": "20261002T100525Z_aafb58d3",
+        "agent_id": "uav_01",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 0.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.0051504888162908265,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.8,
+            "end_s": 9.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.2270012488386031,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.6,
+            "end_s": 10.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.1238251551532065,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.4,
+            "end_s": 43.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.06188913240636104,
+            "within_1m": true
+          },
+          {
+            "start_s": 44.3,
+            "end_s": 45.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.19730244781100528,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100525Z_aafb58d3\\execution_metrics.json",
+        "evidence_sha256": "5ad7ffdffacc0c04ed0ef262c07d9cc39404374aca63ac0bc266ec89ea8a3bba"
+      },
+      {
+        "run_id": "20261002T100525Z_aafb58d3",
+        "agent_id": "uav_03",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 0.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.011177505743322805,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.9,
+            "end_s": 9.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.22037138613581808,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.6,
+            "end_s": 10.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.14992501166676983,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.4,
+            "end_s": 43.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.049508345637078066,
+            "within_1m": true
+          },
+          {
+            "start_s": 44.3,
+            "end_s": 45.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.18120482774378138,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100525Z_aafb58d3\\execution_metrics.json",
+        "evidence_sha256": "5ad7ffdffacc0c04ed0ef262c07d9cc39404374aca63ac0bc266ec89ea8a3bba"
+      },
+      {
+        "run_id": "20261002T100525Z_aafb58d3",
+        "agent_id": "uav_05",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 0.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.0014902046601195003,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.9,
+            "end_s": 9.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.2136454613577696,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.6,
+            "end_s": 10.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.16943181650850858,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.4,
+            "end_s": 43.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.15107852308871111,
+            "within_1m": true
+          },
+          {
+            "start_s": 44.3,
+            "end_s": 45.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.23905634770280154,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100525Z_aafb58d3\\execution_metrics.json",
+        "evidence_sha256": "5ad7ffdffacc0c04ed0ef262c07d9cc39404374aca63ac0bc266ec89ea8a3bba"
+      },
+      {
+        "run_id": "20261002T100525Z_aafb58d3",
+        "agent_id": "uav_06",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 0.9,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.014789360944274934,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.9,
+            "end_s": 9.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.20012353765663213,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.7,
+            "end_s": 10.4,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.11948545160951608,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.5,
+            "end_s": 43.8,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.06936445518442504,
+            "within_1m": true
+          },
+          {
+            "start_s": 44.3,
+            "end_s": 44.9,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.1966297276429601,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100525Z_aafb58d3\\execution_metrics.json",
+        "evidence_sha256": "5ad7ffdffacc0c04ed0ef262c07d9cc39404374aca63ac0bc266ec89ea8a3bba"
+      },
+      {
+        "run_id": "20261002T100951Z_be922ea7",
+        "agent_id": "uav_01",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 1.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.04035764001223536,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.1,
+            "end_s": 8.4,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.28400915286907236,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.0,
+            "end_s": 9.5,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.16471564777804276,
+            "within_1m": true
+          },
+          {
+            "start_s": 42.3,
+            "end_s": 42.5,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.3298885935100596,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.1,
+            "end_s": 43.5,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.19926289274203612,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100951Z_be922ea7\\execution_metrics.json",
+        "evidence_sha256": "5aa83475862896d4caf21bb3f157dceec62854331be4883df7412c7cb9666281"
+      },
+      {
+        "run_id": "20261002T100951Z_be922ea7",
+        "agent_id": "uav_02",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 1.1,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.037664699118681186,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.0,
+            "end_s": 8.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.12475861507442261,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.0,
+            "end_s": 9.5,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.31015888859649926,
+            "within_1m": true
+          },
+          {
+            "start_s": 42.1,
+            "end_s": 42.4,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.25270863995363857,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.2,
+            "end_s": 43.7,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.0334604710879267,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100951Z_be922ea7\\execution_metrics.json",
+        "evidence_sha256": "5aa83475862896d4caf21bb3f157dceec62854331be4883df7412c7cb9666281"
+      },
+      {
+        "run_id": "20261002T100951Z_be922ea7",
+        "agent_id": "uav_03",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 0.9,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.03497263743480491,
+            "within_1m": true
+          },
+          {
+            "start_s": 8.0,
+            "end_s": 8.3,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.18992632126520398,
+            "within_1m": true
+          },
+          {
+            "start_s": 9.1,
+            "end_s": 9.7,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.15590163882575325,
+            "within_1m": true
+          },
+          {
+            "start_s": 42.2,
+            "end_s": 42.5,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.365870854556196,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.1,
+            "end_s": 43.6,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.32291198460959186,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T100951Z_be922ea7\\execution_metrics.json",
+        "evidence_sha256": "5aa83475862896d4caf21bb3f157dceec62854331be4883df7412c7cb9666281"
+      },
+      {
+        "run_id": "20261002T101634Z_be00cea9",
+        "agent_id": "uav_02",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 1.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.035205911973157,
+            "within_1m": true
+          },
+          {
+            "start_s": 10.2,
+            "end_s": 10.6,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.13500687905950776,
+            "within_1m": true
+          },
+          {
+            "start_s": 11.0,
+            "end_s": 11.7,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.1925669191208019,
+            "within_1m": true
+          },
+          {
+            "start_s": 42.6,
+            "end_s": 43.1,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.11681176240534256,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.4,
+            "end_s": 44.1,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.08361061354863776,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T101634Z_be00cea9\\execution_metrics.json",
+        "evidence_sha256": "3a5a677470e4765193adbcfb4aac4cea115e6a1ad33dbb45b23b5e14b2701865"
+      },
+      {
+        "run_id": "20261002T101634Z_be00cea9",
+        "agent_id": "uav_03",
+        "semantic_phase_count": 3,
+        "comparison_bound": 4,
+        "stop_count_03": 5,
+        "stop_count_05": 3,
+        "counts_by_location": {
+          "intermediate_waypoint": 0,
+          "semantic_endpoint": 5,
+          "other": 0
+        },
+        "geometric_stop_checks": [
+          {
+            "start_s": 0.0,
+            "end_s": 0.9,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.04382003895500071,
+            "within_1m": true
+          },
+          {
+            "start_s": 10.3,
+            "end_s": 10.7,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.1787898535931242,
+            "within_1m": true
+          },
+          {
+            "start_s": 11.0,
+            "end_s": 11.7,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.06031585536281489,
+            "within_1m": true
+          },
+          {
+            "start_s": 42.6,
+            "end_s": 43.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.2095853208887883,
+            "within_1m": true
+          },
+          {
+            "start_s": 43.3,
+            "end_s": 44.0,
+            "min_horizontal_distance_to_semantic_endpoint_m": 0.21446937956429762,
+            "within_1m": true
+          }
+        ],
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\episodes\\20261002T101634Z_be00cea9\\execution_metrics.json",
+        "evidence_sha256": "3a5a677470e4765193adbcfb4aac4cea115e6a1ad33dbb45b23b5e14b2701865"
+      }
+    ]
+  },
+  "splits": {
+    "train": 7,
+    "validation": 3,
+    "test": 0,
+    "test_signature_seen_in_train": {
+      "numerator": 0,
+      "denominator": 0,
+      "fraction": null,
+      "denominator_basis": "test episodes with available signatures; intent+mode scoped"
+    },
+    "limitation": "A 10-family hash split yielded no test episodes; no test/generalization performance claim is possible."
+  },
+  "source_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v04\\v06_20261002\\pilot_report\\report.json": "ac7f7841670d47db20ba655301348b1d4e398043aa065198a094709e46006de1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v04\\v06_20261002\\pilot_report\\audit.json": "d638c86534a1836c656b6df0d81aa73552e4ab6c0498c178f58b6ca5edc651e4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset\\dataset_manifest.json": "5418e28f82ff9afe43ef96334cc917c7323a03fce5c0d5992b1ebf78b067e60f"
+  }
+}

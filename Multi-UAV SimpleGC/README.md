@@ -1,6 +1,25 @@
 # Multi-UAV SimpleGC
 
-基于本机 ArduCopter SITL 的多无人机实验框架。当前代码版本为 **0.3.0**，支持 1～6 架飞机独立启动、共享矩形区域任务、分阶段并行执行、驻留确认、自动降落，以及 SIM 真值、时间诊断和按任务族组织的数据集。
+基于本机 ArduCopter SITL 的多无人机实验框架。当前代码版本为 **0.4.0-dev（阶段 0–1 验收完成）**。既有 v1/v2 支持 1～6 架飞机独立启动、共享矩形区域任务、分阶段并行执行、驻留确认、自动降落，以及 SIM 真值、时间诊断和按任务族组织的数据集。v3 已接通按语义阶段连续执行、逐运行参数与固件核验、双通道轨迹窗口及分析。
+
+## v0.4 里程碑
+
+WP-S 已由用户确认 GO，独立记录见 [GO 确认记录](docs/v04_spike_go_confirmation.json)，原 UNKNOWN 报告保持原样。WP-G G1–G4 已获用户确认，历史结果见 [WP-G 报告](docs/v04_wp_g_milestone.md)。WP-E 实现和原离线验收见 [WP-E 报告](docs/v04_wp_e_milestone.md)。V1 获确认后，已按授权完成 V06 的 10 场景试生产。
+
+当前状态：离线测试 **430/430** 通过；V06 **10/10** 完成且质量合格，数据集导出、审计、加载及 v0.3 分布对照均通过。本轮预算 10/10，无重试；阶段 0–1 累计 SITL 为 19 次。最终结论、终点驻留与 arrival_s 限制、证据和停止边界见 [阶段 0–1 最终报告](docs/v0.4_stage01_implementation_and_verification.md)。现停止，未开始阶段 2。
+
+V1 的 AC4 使用版本化相对名义进度判据，原绝对偏差保留作诊断；V05 保持受控失败状态。完整对照见 [AC4 v2 / V1 里程碑](docs/v04_ac4_v2_milestone.md)，定义见 [AC4 v2 说明](docs/ac4_timing_v2.md)。原 [V1 停止报告](docs/v04_v1_milestone.md)、[首次续跑停止报告](docs/v04_v1_resume_milestone.md)及其运行、台账保持原样；τ、名义模型、间距检查和飞控参数未调整。V06 独立 profile 为 [recon_pilot_v04_v06.json](generation_profiles/recon_pilot_v04_v06.json)。
+
+v3 已支持严格任务规范化、注册表、按物理场景生成 family、profile v2、两级样本资格、导出/加载和通用审计。生产意图仍只有侦察。观测分析采用 `exact_duplicate_drop_v1 + full_stream_strict_v1`，相关产物绑定四个处理版本；旧处理器和默认质量策略保留。
+
+```powershell
+# 纯计划检查，不启动 SITL；输出路径必须不存在。
+conda run -n llm --no-capture-output python main.py plan missions/v3/recon_shared_3uav_barrier.json --output tmp_v04/my_v3_barrier.json
+conda run -n llm --no-capture-output python main.py validate tmp_v04/my_v3_barrier.json
+conda run -n llm --no-capture-output python main.py generate generation_profiles/recon_pilot_v04.json --output tmp_v04/my_v3_generation
+```
+
+`semantic_phase_route_v1` 编译为 schema 2 航线场景，每条航线上限 100 点，去除小于 0.05 m 的航段；时间感知间距检查及容忍量写入规划元数据。v3 运行前核对已确认 WP-S 的固件和参数模板指纹，并逐机读回完整参数。固件或模板变化须重新执行 WP-S。接口见 [连续航线](docs/continuous_route_schema_v1.md)、[TaskSpec v3](docs/task_spec_v3.md)、[协议与观测](docs/v04_protocol_v3.md)、[审计](docs/v04_dataset_audit_interface.md)、[执行诊断](docs/execution_metrics_v1.md)和[计划补充](docs/v04_stage01_plan_addendum.md)。
 
 新任务接口、规划边界和命令见 [TaskSpec v2 说明](docs/task_spec_v2.md)；本轮实际测试、实跑、失败与限制见 [v0.3 实现与验证记录](docs/v0.3_implementation_and_verification.md)。示例可编译不等于任意参数配置均已实测通过。
 
@@ -127,3 +146,19 @@ CLI 退出码：`run/batch` 的 0 表示通过门槛，1 表示执行、质量�
 `main.py` 已改为上述子命令入口。旧单机批量执行仍可通过 `python flyControl.py` 显式调用，保留旧 JSON 格式，但不具备新的多机保障和质量报告。
 
 阶段同步不是物理仿真锁步；主机时间重采样不是飞控源时钟同步；独立实例不包含共享碰撞动力学、气流交互或在线避碰。不要把高层队形/意图标签直接视为已实现的闭环控制。
+
+## v0.4 WP-S：连续 AUTO 航线先行试验
+
+`scripts/spike_continuous_route.py` 是独立试验入口，复用当前起飞、BRAKE 上传和 AUTO 执行。它按进近、整段侦察、返航三个阶段运行，读取固件和完整参数表，并保存原始 MAVLink 与 SIM 日志。当前正式 TaskSpec v1/v2、执行器和数据协议保持不变；试验结果不导出为正式数据集。
+
+```powershell
+# 启动一次本机三机试验；WP-S 要求两次重复，最多三次，禁止无界重试
+conda run -n llm --no-capture-output python scripts/spike_continuous_route.py
+
+# 只分析事先制作的 WP-S 复核副本，不启动 SITL；复制步骤见 WP-S 报告
+conda run -n llm --no-capture-output python scripts/spike_continuous_route.py --analyze-only tmp_v04/spike_review_01
+```
+
+新证据保存在 `runs/spike_v04_*`。其中 `scenario.json` 是未改动的 v2 参考场景，实际执行航线以 `spike_plan.json` 为准；`spike_metrics.json` 提供 S-a 至 S-g 和单次 `criteria/verdict`，`waypoint_events.json/csv` 保存全部原始到点事件，`spike_waypoints.csv` 给出逐航点结果。两次重复的合并判定见 [WP-S 报告](docs/v04_spike_continuous_route.md)，基线核对见 [M0 报告](docs/v04_baseline_check.md)。
+
+试验 CLI 的退出码 0 表示运行及离线分析完成，1 表示运行失败，2 表示离线分析失败；**GO/NO-GO 必须读取指标报告，不能以退出码 0 替代**。覆盖与最近距离使用被动源时钟对齐，其残差不代表绝对同步精度。WP-S、WP-G 和 V1 已获用户确认；V06 已完成 10 次试生产，阶段 0–1 的最终结论见上方报告。

@@ -1,0 +1,2881 @@
+{
+  "schema_version": 2,
+  "audit_version": "multi_intent_dataset_audit_v1",
+  "dataset_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v06_20261002\\dataset",
+  "family_scheme": "scene_content_v1",
+  "counts": {
+    "episodes": 10,
+    "families": 10,
+    "expected_families": 10,
+    "intents": 1,
+    "control_modes": 1,
+    "base_scenes": 10,
+    "attempts": 10,
+    "semantic_unknown": 0
+  },
+  "rates": {
+    "planning": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "all sampled candidates"
+    },
+    "execution_completed": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "ledger attempts"
+    },
+    "episode_quality_eligible": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "all exported episodes; independent of mission success"
+    },
+    "semantic_pass": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "all exported episodes including unknown"
+    },
+    "default_eligible": {
+      "numerator": 10,
+      "denominator": 10,
+      "fraction": 1.0,
+      "denominator_basis": "all exported episodes"
+    },
+    "strict_eligible": {
+      "numerator": 0,
+      "denominator": 10,
+      "fraction": 0.0,
+      "denominator_basis": "all exported episodes"
+    }
+  },
+  "metrics": {
+    "episode_duration_s": {
+      "count": 10,
+      "min": 38.88646180000069,
+      "median": 48.295887700000094,
+      "p95": 60.075784900000144,
+      "max": 60.075784900000144,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "vehicle_count": {
+      "count": 10,
+      "min": 2.0,
+      "median": 3.0,
+      "p95": 6.0,
+      "max": 6.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "observation_valid_fraction": {
+      "count": 38,
+      "min": 1.0,
+      "median": 1.0,
+      "p95": 1.0,
+      "max": 1.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "truth_valid_fraction": {
+      "count": 38,
+      "min": 1.0,
+      "median": 1.0,
+      "p95": 1.0,
+      "max": 1.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "region_width_m": {
+      "count": 10,
+      "min": 8.105012083559721,
+      "median": 43.16310364789146,
+      "p95": 76.24502476426113,
+      "max": 76.24502476426113,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "region_height_m": {
+      "count": 10,
+      "min": 8.510953126454526,
+      "median": 11.444335213973384,
+      "p95": 92.01218425863303,
+      "max": 92.01218425863303,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "spawn_east_span_m": {
+      "count": 10,
+      "min": 0.0,
+      "median": 28.77540243192764,
+      "p95": 63.53752063688427,
+      "max": 63.53752063688427,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "spawn_north_span_m": {
+      "count": 10,
+      "min": 0.0,
+      "median": 0.0,
+      "p95": 76.67682021552753,
+      "max": 76.67682021552753,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "speed_m_s": {
+      "count": 10,
+      "min": 2.0,
+      "median": 2.5,
+      "p95": 3.0,
+      "max": 3.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "executed_path_length_m": {
+      "count": 38,
+      "min": 75.32717844496173,
+      "median": 93.48739028885521,
+      "p95": 126.34843238449439,
+      "max": 126.36658148991494,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "planned_path_length_m": {
+      "count": 38,
+      "min": 76.27100619198188,
+      "median": 94.13588211184081,
+      "p95": 127.72415555202369,
+      "max": 127.72415555202369,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "airborne_time_s": {
+      "count": 38,
+      "min": 65.97148071491682,
+      "median": 77.96831530491959,
+      "p95": 87.02546050750612,
+      "max": 87.04856039493166,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "executed_stage_count": {
+      "count": 10,
+      "min": 2.0,
+      "median": 3.0,
+      "p95": 3.0,
+      "max": 3.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "barrier_wait_s": {
+      "count": 99,
+      "min": 0.004840399998649048,
+      "median": 0.07359280000091495,
+      "p95": 0.16955790000065463,
+      "max": 0.3048403999986462,
+      "expected_values": 99,
+      "missing_values": 0
+    },
+    "execution_stop_count": {
+      "count": 38,
+      "min": 1.0,
+      "median": 3.0,
+      "p95": 5.0,
+      "max": 5.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "execution_intermediate_stop_count": {
+      "count": 38,
+      "min": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "max": 0.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "execution_semantic_endpoint_stop_count": {
+      "count": 38,
+      "min": 0.0,
+      "median": 3.0,
+      "p95": 5.0,
+      "max": 5.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "execution_other_stop_count": {
+      "count": 38,
+      "min": 0.0,
+      "median": 0.0,
+      "p95": 1.0,
+      "max": 1.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "execution_fleet_stop_event_count": {
+      "count": 10,
+      "min": 2.0,
+      "median": 3.0,
+      "p95": 5.0,
+      "max": 5.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_common_overlap_event_count": {
+      "count": 10,
+      "min": 1.0,
+      "median": 3.0,
+      "p95": 5.0,
+      "max": 5.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_stationary_time_fraction": {
+      "count": 10,
+      "min": 0.022953038469910644,
+      "median": 0.049704942061688476,
+      "p95": 0.060631881392077897,
+      "max": 0.060631881392077897,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_synchronized_time_fraction": {
+      "count": 10,
+      "min": 0.019002375296912115,
+      "median": 0.04129309662352056,
+      "p95": 0.0525328330206379,
+      "max": 0.0525328330206379,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_common_overlap_event_fraction": {
+      "count": 10,
+      "min": 0.5,
+      "median": 1.0,
+      "p95": 1.0,
+      "max": 1.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_intermediate_waypoint_stop_rate": {
+      "count": 10,
+      "min": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "max": 0.0,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_arrival_lag_median_s": {
+      "count": 10,
+      "min": -1.6198454999990641,
+      "median": -1.4541290999992267,
+      "p95": -1.2452730999990305,
+      "max": -1.2452730999990305,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_barrier_wait_median_s": {
+      "count": 10,
+      "min": 0.018267099998048764,
+      "median": 0.07342680000074253,
+      "p95": 0.09683410000288717,
+      "max": 0.09683410000288717,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_nominal_timing_deviation_max_abs_s": {
+      "count": 10,
+      "min": 6.556178179136424,
+      "median": 8.79488614654043,
+      "p95": 10.20355562610537,
+      "max": 10.20355562610537,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_05_stop_count": {
+      "count": 38,
+      "min": 2.0,
+      "median": 3.0,
+      "p95": 3.0,
+      "max": 3.0,
+      "expected_values": 38,
+      "missing_values": 0
+    },
+    "execution_05_stationary_time_fraction": {
+      "count": 10,
+      "min": 0.04042187897751252,
+      "median": 0.07787859924622367,
+      "p95": 0.09655475623066008,
+      "max": 0.09655475623066008,
+      "expected_values": 10,
+      "missing_values": 0
+    },
+    "execution_05_synchronized_time_fraction": {
+      "count": 10,
+      "min": 0.03800475059382423,
+      "median": 0.07332406549274019,
+      "p95": 0.08928571428571429,
+      "max": 0.08928571428571429,
+      "expected_values": 10,
+      "missing_values": 0
+    }
+  },
+  "missing_metrics": [],
+  "groups": [
+    {
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_count": 10,
+      "metrics": {
+        "episode_duration_s": {
+          "count": 10,
+          "min": 38.88646180000069,
+          "median": 48.295887700000094,
+          "p95": 60.075784900000144,
+          "max": 60.075784900000144,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "vehicle_count": {
+          "count": 10,
+          "min": 2.0,
+          "median": 3.0,
+          "p95": 6.0,
+          "max": 6.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "observation_valid_fraction": {
+          "count": 38,
+          "min": 1.0,
+          "median": 1.0,
+          "p95": 1.0,
+          "max": 1.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "truth_valid_fraction": {
+          "count": 38,
+          "min": 1.0,
+          "median": 1.0,
+          "p95": 1.0,
+          "max": 1.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "region_width_m": {
+          "count": 10,
+          "min": 8.105012083559721,
+          "median": 43.16310364789146,
+          "p95": 76.24502476426113,
+          "max": 76.24502476426113,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "region_height_m": {
+          "count": 10,
+          "min": 8.510953126454526,
+          "median": 11.444335213973384,
+          "p95": 92.01218425863303,
+          "max": 92.01218425863303,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "spawn_east_span_m": {
+          "count": 10,
+          "min": 0.0,
+          "median": 28.77540243192764,
+          "p95": 63.53752063688427,
+          "max": 63.53752063688427,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "spawn_north_span_m": {
+          "count": 10,
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 76.67682021552753,
+          "max": 76.67682021552753,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "speed_m_s": {
+          "count": 10,
+          "min": 2.0,
+          "median": 2.5,
+          "p95": 3.0,
+          "max": 3.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "executed_path_length_m": {
+          "count": 38,
+          "min": 75.32717844496173,
+          "median": 93.48739028885521,
+          "p95": 126.34843238449439,
+          "max": 126.36658148991494,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "planned_path_length_m": {
+          "count": 38,
+          "min": 76.27100619198188,
+          "median": 94.13588211184081,
+          "p95": 127.72415555202369,
+          "max": 127.72415555202369,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "airborne_time_s": {
+          "count": 38,
+          "min": 65.97148071491682,
+          "median": 77.96831530491959,
+          "p95": 87.02546050750612,
+          "max": 87.04856039493166,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "executed_stage_count": {
+          "count": 10,
+          "min": 2.0,
+          "median": 3.0,
+          "p95": 3.0,
+          "max": 3.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "barrier_wait_s": {
+          "count": 99,
+          "min": 0.004840399998649048,
+          "median": 0.07359280000091495,
+          "p95": 0.16955790000065463,
+          "max": 0.3048403999986462,
+          "expected_values": 99,
+          "missing_values": 0
+        },
+        "execution_stop_count": {
+          "count": 38,
+          "min": 1.0,
+          "median": 3.0,
+          "p95": 5.0,
+          "max": 5.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "execution_intermediate_stop_count": {
+          "count": 38,
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "execution_semantic_endpoint_stop_count": {
+          "count": 38,
+          "min": 0.0,
+          "median": 3.0,
+          "p95": 5.0,
+          "max": 5.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "execution_other_stop_count": {
+          "count": 38,
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 1.0,
+          "max": 1.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "execution_fleet_stop_event_count": {
+          "count": 10,
+          "min": 2.0,
+          "median": 3.0,
+          "p95": 5.0,
+          "max": 5.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_common_overlap_event_count": {
+          "count": 10,
+          "min": 1.0,
+          "median": 3.0,
+          "p95": 5.0,
+          "max": 5.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_stationary_time_fraction": {
+          "count": 10,
+          "min": 0.022953038469910644,
+          "median": 0.049704942061688476,
+          "p95": 0.060631881392077897,
+          "max": 0.060631881392077897,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_synchronized_time_fraction": {
+          "count": 10,
+          "min": 0.019002375296912115,
+          "median": 0.04129309662352056,
+          "p95": 0.0525328330206379,
+          "max": 0.0525328330206379,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_common_overlap_event_fraction": {
+          "count": 10,
+          "min": 0.5,
+          "median": 1.0,
+          "p95": 1.0,
+          "max": 1.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_intermediate_waypoint_stop_rate": {
+          "count": 10,
+          "min": 0.0,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_arrival_lag_median_s": {
+          "count": 10,
+          "min": -1.6198454999990641,
+          "median": -1.4541290999992267,
+          "p95": -1.2452730999990305,
+          "max": -1.2452730999990305,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_barrier_wait_median_s": {
+          "count": 10,
+          "min": 0.018267099998048764,
+          "median": 0.07342680000074253,
+          "p95": 0.09683410000288717,
+          "max": 0.09683410000288717,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_nominal_timing_deviation_max_abs_s": {
+          "count": 10,
+          "min": 6.556178179136424,
+          "median": 8.79488614654043,
+          "p95": 10.20355562610537,
+          "max": 10.20355562610537,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_05_stop_count": {
+          "count": 38,
+          "min": 2.0,
+          "median": 3.0,
+          "p95": 3.0,
+          "max": 3.0,
+          "expected_values": 38,
+          "missing_values": 0
+        },
+        "execution_05_stationary_time_fraction": {
+          "count": 10,
+          "min": 0.04042187897751252,
+          "median": 0.07787859924622367,
+          "p95": 0.09655475623066008,
+          "max": 0.09655475623066008,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "execution_05_synchronized_time_fraction": {
+          "count": 10,
+          "min": 0.03800475059382423,
+          "median": 0.07332406549274019,
+          "p95": 0.08928571428571429,
+          "max": 0.08928571428571429,
+          "expected_values": 10,
+          "missing_values": 0
+        }
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": {
+          "count": 10,
+          "min": 1.0,
+          "median": 1.0,
+          "p95": 1.0,
+          "max": 1.0,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "repeated_coverage_cell_ratio": {
+          "count": 10,
+          "min": 0.13225806451612904,
+          "median": 0.22559743779255975,
+          "p95": 0.33530106257378983,
+          "max": 0.33530106257378983,
+          "expected_values": 10,
+          "missing_values": 0
+        },
+        "leave_one_out_coverage_drop": {
+          "count": 38,
+          "min": 0.09090909090909091,
+          "median": 0.21845174973488865,
+          "p95": 0.41935483870967744,
+          "max": 0.4483870967741935,
+          "expected_values": 38,
+          "missing_values": 0
+        }
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "clock_grades": {
+        "acceptable": 10
+      },
+      "id_position_order": {
+        "east": {
+          "pairwise": {
+            "numerator": 30,
+            "denominator": 30,
+            "fraction": 1.0,
+            "denominator_basis": "all non-tied agent pairs ordered lexicographically by ID"
+          },
+          "episodes_fully_ordered": {
+            "numerator": 6,
+            "denominator": 6,
+            "fraction": 1.0,
+            "denominator_basis": "episodes with at least one non-tied pair"
+          },
+          "tied_pairs": 34
+        },
+        "north": {
+          "pairwise": {
+            "numerator": 34,
+            "denominator": 34,
+            "fraction": 1.0,
+            "denominator_basis": "all non-tied agent pairs ordered lexicographically by ID"
+          },
+          "episodes_fully_ordered": {
+            "numerator": 4,
+            "denominator": 4,
+            "fraction": 1.0,
+            "denominator_basis": "episodes with at least one non-tied pair"
+          },
+          "tied_pairs": 30
+        }
+      },
+      "topology": {
+        "signature_counts": {
+          "7cbcae6141018badd9623e98b071e9d16eef8c14cd4f32ae6a412f5675413bb5": 3,
+          "438b994e5920e71f97b7535625b6099e54c25bd2e70111796092ec5619f97b85": 1,
+          "c5741a2b3271f8b72085ffab5583b4565f409cba0fcfe38cdf9bb6f56fda27fd": 2,
+          "3363a7fb829a5f85533fc32d7640d9048365a7c082c41436ff9ae2ae42204eeb": 1,
+          "88e29d5534251254b72a3517c786161ba92524e03baaac017eb9aa94db7eeea2": 2,
+          "eb502b0cd1107cb10781d731e9f62f6fecad582db0d02851d7e384ae7bb6fb0e": 1
+        },
+        "missing_signature_episodes": 0,
+        "test_signature_seen_in_train": {
+          "numerator": 0,
+          "denominator": 0,
+          "fraction": null,
+          "denominator_basis": "test episodes with available signatures; intent+mode scoped"
+        },
+        "distinct_test_signatures_seen_in_train": {
+          "numerator": 0,
+          "denominator": 0,
+          "fraction": null,
+          "denominator_basis": "distinct available test signatures; intent+mode scoped"
+        },
+        "test_missing_signature_episodes": 0
+      },
+      "rates": {
+        "episode_quality_eligible": {
+          "numerator": 10,
+          "denominator": 10,
+          "fraction": 1.0,
+          "denominator_basis": "all group episodes; independent of mission success"
+        },
+        "mission_success": {
+          "numerator": 10,
+          "denominator": 10,
+          "fraction": 1.0,
+          "denominator_basis": "all group episodes including unknown"
+        }
+      }
+    }
+  ],
+  "id_position_order": {
+    "east": {
+      "pairwise": {
+        "numerator": 30,
+        "denominator": 30,
+        "fraction": 1.0,
+        "denominator_basis": "all non-tied agent pairs ordered lexicographically by ID"
+      },
+      "episodes_fully_ordered": {
+        "numerator": 6,
+        "denominator": 6,
+        "fraction": 1.0,
+        "denominator_basis": "episodes with at least one non-tied pair"
+      },
+      "tied_pairs": 34
+    },
+    "north": {
+      "pairwise": {
+        "numerator": 34,
+        "denominator": 34,
+        "fraction": 1.0,
+        "denominator_basis": "all non-tied agent pairs ordered lexicographically by ID"
+      },
+      "episodes_fully_ordered": {
+        "numerator": 4,
+        "denominator": 4,
+        "fraction": 1.0,
+        "denominator_basis": "episodes with at least one non-tied pair"
+      },
+      "tied_pairs": 30
+    }
+  },
+  "clock_grades": {
+    "acceptable": 10
+  },
+  "counterfactual_completeness": {
+    "qualification": "episode_quality_eligible",
+    "expected_intents": [
+      "reconnaissance"
+    ],
+    "expectation_source": "exported intents plus provided generation attempts/accepted families",
+    "matrix": {
+      "scene_1689c7df8d6355a85c31": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T101406Z_651c7540"
+          ]
+        }
+      },
+      "scene_1aaf5999e15144c8201c": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T101847Z_8e82a878"
+          ]
+        }
+      },
+      "scene_2a396ca2257eef1de513": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T100525Z_aafb58d3"
+          ]
+        }
+      },
+      "scene_47efa0c67cf709b02d6f": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T100325Z_6ef00e4e"
+          ]
+        }
+      },
+      "scene_55a6c208ad5bc49e9b89": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T101634Z_be00cea9"
+          ]
+        }
+      },
+      "scene_8329aae1866fd2795f79": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T100117Z_eb83bd70"
+          ]
+        }
+      },
+      "scene_be918657142b4ca88926": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T095856Z_e433af1b"
+          ]
+        }
+      },
+      "scene_d96cde0e5e5dba3e5bcf": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T100745Z_a5b07d89"
+          ]
+        }
+      },
+      "scene_ec9e2434b055052422b1": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T101201Z_c87994ef"
+          ]
+        }
+      },
+      "scene_efe79afd2c90be10e587": {
+        "reconnaissance": {
+          "episodes": 1,
+          "quality_eligible": 1,
+          "mission_success": 1,
+          "missing_quality_eligible": false,
+          "run_ids": [
+            "20261002T100951Z_be922ea7"
+          ]
+        }
+      }
+    },
+    "missing": [],
+    "complete": true
+  },
+  "duplicates": {
+    "normalized_input_groups": {},
+    "identity_fields_excluded": [
+      "task_id",
+      "family_id",
+      "seed",
+      "scene_id"
+    ]
+  },
+  "family_split_leaks": {},
+  "issues": [],
+  "episodes": [
+    {
+      "run_id": "20261002T095856Z_e433af1b",
+      "family_id": "scene_be918657142b4ca88926",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 420,
+      "agents": 3,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          41.98261760000241
+        ],
+        "vehicle_count": [
+          3
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          43.031980446761686
+        ],
+        "region_height_m": [
+          10.955055077497668
+        ],
+        "spawn_east_span_m": [
+          28.687986964507793
+        ],
+        "spawn_north_span_m": [
+          0.0
+        ],
+        "speed_m_s": [
+          3.0
+        ],
+        "executed_path_length_m": [
+          94.24265894136485,
+          94.29200032456626,
+          93.49034868028649
+        ],
+        "planned_path_length_m": [
+          95.58446117049334,
+          95.58446117049334,
+          95.58446117049334
+        ],
+        "airborne_time_s": [
+          70.01665516507776,
+          68.92528760509987,
+          68.99167146430511
+        ],
+        "executed_stage_count": [
+          2
+        ],
+        "barrier_wait_s": [
+          0.06582010000201954,
+          0.06582010000201954,
+          0.1658201000020192,
+          0.0826176000024148,
+          0.0826176000024148,
+          0.0826176000024148
+        ],
+        "execution_stop_count": [
+          1,
+          1,
+          2
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          0,
+          0,
+          1
+        ],
+        "execution_other_stop_count": [
+          1,
+          1,
+          1
+        ],
+        "execution_fleet_stop_event_count": [
+          2
+        ],
+        "execution_common_overlap_event_count": [
+          1
+        ],
+        "execution_stationary_time_fraction": [
+          0.022953038469910644
+        ],
+        "execution_synchronized_time_fraction": [
+          0.019002375296912115
+        ],
+        "execution_common_overlap_event_fraction": [
+          0.5
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.3600272999970908
+        ],
+        "execution_barrier_wait_median_s": [
+          0.0826176000024148
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          10.20355562610537
+        ],
+        "execution_05_stop_count": [
+          2,
+          2,
+          2
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.04042187897751252
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.03800475059382423
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.23140495867768596
+        ],
+        "leave_one_out_coverage_drop": [
+          0.2727272727272727,
+          0.2231404958677686,
+          0.2727272727272727
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 3,
+          "comparable_pairs": 3,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        },
+        "north": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 3,
+          "fully_ordered": null
+        }
+      },
+      "topology_signature": [
+        3,
+        "east",
+        [
+          4,
+          4,
+          4
+        ],
+        false
+      ],
+      "topology_signature_error": null,
+      "topology_token": "7cbcae6141018badd9623e98b071e9d16eef8c14cd4f32ae6a412f5675413bb5"
+    },
+    {
+      "run_id": "20261002T100117Z_eb83bd70",
+      "family_id": "scene_8329aae1866fd2795f79",
+      "split": "validation",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 506,
+      "agents": 2,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          50.51874289999978
+        ],
+        "vehicle_count": [
+          2
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          9.941918992503744
+        ],
+        "region_height_m": [
+          30.92310176232281
+        ],
+        "spawn_east_span_m": [
+          0.0
+        ],
+        "spawn_north_span_m": [
+          15.461550881161404
+        ],
+        "speed_m_s": [
+          3.0
+        ],
+        "executed_path_length_m": [
+          110.19138400735378,
+          110.03111682172776
+        ],
+        "planned_path_length_m": [
+          113.09168581291426,
+          113.09168581291425
+        ],
+        "airborne_time_s": [
+          77.96492580871741,
+          77.97170480112176
+        ],
+        "executed_stage_count": [
+          3
+        ],
+        "barrier_wait_s": [
+          0.09019679999837571,
+          0.09019679999837571,
+          0.0076794999979057366,
+          0.10767949999790005,
+          0.018742899999779183,
+          0.018742899999779183
+        ],
+        "execution_stop_count": [
+          3,
+          3
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          3,
+          3
+        ],
+        "execution_other_stop_count": [
+          0,
+          0
+        ],
+        "execution_fleet_stop_event_count": [
+          3
+        ],
+        "execution_common_overlap_event_count": [
+          3
+        ],
+        "execution_stationary_time_fraction": [
+          0.02926441819024249
+        ],
+        "execution_synchronized_time_fraction": [
+          0.02766798418972332
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.5461713000000596
+        ],
+        "execution_barrier_wait_median_s": [
+          0.054469849999077447
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          9.262987789706099
+        ],
+        "execution_05_stop_count": [
+          3,
+          3
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.04708743795660182
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.04743083003952569
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.13225806451612904
+        ],
+        "leave_one_out_coverage_drop": [
+          0.4483870967741935,
+          0.41935483870967744
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 1,
+          "fully_ordered": null
+        },
+        "north": {
+          "agree_pairs": 1,
+          "comparable_pairs": 1,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        }
+      },
+      "topology_signature": [
+        2,
+        "north",
+        [
+          4,
+          4
+        ],
+        true
+      ],
+      "topology_signature_error": null,
+      "topology_token": "438b994e5920e71f97b7535625b6099e54c25bd2e70111796092ec5619f97b85"
+    },
+    {
+      "run_id": "20261002T100325Z_6ef00e4e",
+      "family_id": "scene_47efa0c67cf709b02d6f",
+      "split": "validation",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 415,
+      "agents": 3,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          41.40484039999865
+        ],
+        "vehicle_count": [
+          3
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          45.58582168259192
+        ],
+        "region_height_m": [
+          8.510953126454526
+        ],
+        "spawn_east_span_m": [
+          30.39054778839461
+        ],
+        "spawn_north_span_m": [
+          0.0
+        ],
+        "speed_m_s": [
+          2.0
+        ],
+        "executed_path_length_m": [
+          75.32717844496173,
+          76.24328918059284,
+          75.40570501565375
+        ],
+        "planned_path_length_m": [
+          76.27100619198188,
+          76.2710061919819,
+          76.2710061919819
+        ],
+        "airborne_time_s": [
+          68.97893035350805,
+          68.98529800203842,
+          68.98597848756157
+        ],
+        "executed_stage_count": [
+          2
+        ],
+        "barrier_wait_s": [
+          0.08023129999783052,
+          0.08023129999783052,
+          0.08023129999783052,
+          0.20484039999864478,
+          0.004840399998649048,
+          0.3048403999986462
+        ],
+        "execution_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          2,
+          2,
+          2
+        ],
+        "execution_other_stop_count": [
+          1,
+          1,
+          1
+        ],
+        "execution_fleet_stop_event_count": [
+          3
+        ],
+        "execution_common_overlap_event_count": [
+          3
+        ],
+        "execution_stationary_time_fraction": [
+          0.04971401256164327
+        ],
+        "execution_synchronized_time_fraction": [
+          0.04578313253012048
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.3637427000012412
+        ],
+        "execution_barrier_wait_median_s": [
+          0.08023129999783052
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          7.3809054367674065
+        ],
+        "execution_05_stop_count": [
+          2,
+          2,
+          2
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.07550316158973475
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.07228915662650602
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.1859903381642512
+        ],
+        "leave_one_out_coverage_drop": [
+          0.2826086956521739,
+          0.24879227053140096,
+          0.2826086956521739
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 3,
+          "comparable_pairs": 3,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        },
+        "north": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 3,
+          "fully_ordered": null
+        }
+      },
+      "topology_signature": [
+        3,
+        "east",
+        [
+          4,
+          4,
+          4
+        ],
+        false
+      ],
+      "topology_signature_error": null,
+      "topology_token": "7cbcae6141018badd9623e98b071e9d16eef8c14cd4f32ae6a412f5675413bb5"
+    },
+    {
+      "run_id": "20261002T100525Z_aafb58d3",
+      "family_id": "scene_2a396ca2257eef1de513",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 526,
+      "agents": 6,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          52.555185600002005
+        ],
+        "vehicle_count": [
+          6
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          10.411214952030097
+        ],
+        "region_height_m": [
+          89.30801626887597
+        ],
+        "spawn_east_span_m": [
+          0.0
+        ],
+        "spawn_north_span_m": [
+          74.42334689072999
+        ],
+        "speed_m_s": [
+          2.0
+        ],
+        "executed_path_length_m": [
+          92.85527749902586,
+          92.71314874401763,
+          92.93580644906709,
+          92.69853772165563,
+          92.58681144938218,
+          92.8749501466222
+        ],
+        "planned_path_length_m": [
+          93.05230583307922,
+          93.05230583307922,
+          93.05230583307922,
+          93.05230583307922,
+          93.05230583307925,
+          93.05230583307923
+        ],
+        "airborne_time_s": [
+          80.01095559143299,
+          79.9474962563084,
+          79.98325807498556,
+          79.98843562171386,
+          79.97500126240124,
+          79.97534364692572
+        ],
+        "executed_stage_count": [
+          3
+        ],
+        "barrier_wait_s": [
+          0.1735928000009146,
+          0.07359280000091495,
+          0.07359280000091495,
+          0.07359280000091495,
+          0.07359280000091495,
+          0.07359280000091495,
+          0.06574559999862828,
+          0.06574559999862828,
+          0.06574559999862828,
+          0.06574559999862828,
+          0.06574559999862828,
+          0.06574559999862828,
+          0.05518560000200523,
+          0.05518560000200523,
+          0.05518560000200523,
+          0.05518560000200523,
+          0.05518560000200523,
+          0.05518560000200523
+        ],
+        "execution_stop_count": [
+          5,
+          4,
+          5,
+          4,
+          5,
+          5
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          5,
+          4,
+          5,
+          4,
+          5,
+          5
+        ],
+        "execution_other_stop_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "execution_fleet_stop_event_count": [
+          4
+        ],
+        "execution_common_overlap_event_count": [
+          4
+        ],
+        "execution_stationary_time_fraction": [
+          0.058878354899580175
+        ],
+        "execution_synchronized_time_fraction": [
+          0.051330798479087454
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.4887516499988118
+        ],
+        "execution_barrier_wait_median_s": [
+          0.06574559999862828
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          6.556178179136424
+        ],
+        "execution_05_stop_count": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.09091182958375923
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.08555133079847908
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.22626262626262628
+        ],
+        "leave_one_out_coverage_drop": [
+          0.14444444444444443,
+          0.12121212121212122,
+          0.12222222222222222,
+          0.1191919191919192,
+          0.12222222222222222,
+          0.14444444444444443
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 15,
+          "fully_ordered": null
+        },
+        "north": {
+          "agree_pairs": 15,
+          "comparable_pairs": 15,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        }
+      },
+      "topology_signature": [
+        6,
+        "north",
+        [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        true
+      ],
+      "topology_signature_error": null,
+      "topology_token": "c5741a2b3271f8b72085ffab5583b4565f409cba0fcfe38cdf9bb6f56fda27fd"
+    },
+    {
+      "run_id": "20261002T100745Z_a5b07d89",
+      "family_id": "scene_d96cde0e5e5dba3e5bcf",
+      "split": "validation",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 401,
+      "agents": 6,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          40.01807850000114
+        ],
+        "vehicle_count": [
+          6
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          76.24502476426113
+        ],
+        "region_height_m": [
+          10.513195023146638
+        ],
+        "spawn_east_span_m": [
+          63.53752063688427
+        ],
+        "spawn_north_span_m": [
+          0.0
+        ],
+        "speed_m_s": [
+          2.5
+        ],
+        "executed_path_length_m": [
+          80.6979023018809,
+          80.71599402906617,
+          80.74931074490034,
+          80.92506246096093,
+          80.62934056951057,
+          80.75423812461892
+        ],
+        "planned_path_length_m": [
+          81.57785077082393,
+          81.57785077082393,
+          81.57785077082391,
+          81.57785077082393,
+          81.57785077082391,
+          81.57785077082391
+        ],
+        "airborne_time_s": [
+          67.97154837534704,
+          67.94783045570102,
+          67.91816265548539,
+          67.98006517260484,
+          66.95730547477805,
+          66.99671097974934
+        ],
+        "executed_stage_count": [
+          2
+        ],
+        "barrier_wait_s": [
+          0.16955790000065463,
+          0.16955790000065463,
+          0.06955790000065498,
+          0.06955790000065498,
+          0.16955790000065463,
+          0.16955790000065463,
+          0.01807850000113831,
+          0.01807850000113831,
+          0.01807850000113831,
+          0.01807850000113831,
+          0.01807850000113831,
+          0.01807850000113831
+        ],
+        "execution_stop_count": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "execution_other_stop_count": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "execution_fleet_stop_event_count": [
+          3
+        ],
+        "execution_common_overlap_event_count": [
+          3
+        ],
+        "execution_stationary_time_fraction": [
+          0.049695871561733676
+        ],
+        "execution_synchronized_time_fraction": [
+          0.04488778054862843
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.4195065499996415
+        ],
+        "execution_barrier_wait_median_s": [
+          0.043818200000896645
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          9.054265124751407
+        ],
+        "execution_05_stop_count": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.08135761276962862
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.0773067331670823
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.33530106257378983
+        ],
+        "leave_one_out_coverage_drop": [
+          0.1322314049586777,
+          0.09090909090909091,
+          0.1038961038961039,
+          0.1038961038961039,
+          0.1038961038961039,
+          0.12987012987012986
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 15,
+          "comparable_pairs": 15,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        },
+        "north": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 15,
+          "fully_ordered": null
+        }
+      },
+      "topology_signature": [
+        6,
+        "east",
+        [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        false
+      ],
+      "topology_signature_error": null,
+      "topology_token": "3363a7fb829a5f85533fc32d7640d9048365a7c082c41436ff9ae2ae42204eeb"
+    },
+    {
+      "run_id": "20261002T100951Z_be922ea7",
+      "family_id": "scene_efe79afd2c90be10e587",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 503,
+      "agents": 3,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          50.28016310000021
+        ],
+        "vehicle_count": [
+          3
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          45.06064554520182
+        ],
+        "region_height_m": [
+          11.933615350449099
+        ],
+        "spawn_east_span_m": [
+          30.04043036346788
+        ],
+        "spawn_north_span_m": [
+          0.0
+        ],
+        "speed_m_s": [
+          2.5
+        ],
+        "executed_path_length_m": [
+          98.3988246942323,
+          97.7869496844961,
+          97.58273134997432
+        ],
+        "planned_path_length_m": [
+          98.16860734046625,
+          98.16860734046625,
+          98.16860734046627
+        ],
+        "airborne_time_s": [
+          77.99721544372764,
+          78.03192460531798,
+          77.98458077119759
+        ],
+        "executed_stage_count": [
+          3
+        ],
+        "barrier_wait_s": [
+          0.007459200000448973,
+          0.10745920000044862,
+          0.10745920000044862,
+          0.21837939999750233,
+          0.11837939999750091,
+          0.01837939999749949,
+          0.0801631000002061,
+          0.0801631000002061,
+          0.0801631000002061
+        ],
+        "execution_stop_count": [
+          5,
+          5,
+          5
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          5,
+          5,
+          5
+        ],
+        "execution_other_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_fleet_stop_event_count": [
+          5
+        ],
+        "execution_common_overlap_event_count": [
+          5
+        ],
+        "execution_stationary_time_fraction": [
+          0.05079910595343808
+        ],
+        "execution_synchronized_time_fraction": [
+          0.037698412698412696
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.6198454999990641
+        ],
+        "execution_barrier_wait_median_s": [
+          0.0801631000002061
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          8.985695284762055
+        ],
+        "execution_05_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.09655475623066008
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.08928571428571429
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.21739130434782608
+        ],
+        "leave_one_out_coverage_drop": [
+          0.2826086956521739,
+          0.21739130434782608,
+          0.2826086956521739
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 3,
+          "comparable_pairs": 3,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        },
+        "north": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 3,
+          "fully_ordered": null
+        }
+      },
+      "topology_signature": [
+        3,
+        "east",
+        [
+          4,
+          4,
+          4
+        ],
+        true
+      ],
+      "topology_signature_error": null,
+      "topology_token": "88e29d5534251254b72a3517c786161ba92524e03baaac017eb9aa94db7eeea2"
+    },
+    {
+      "run_id": "20261002T101201Z_c87994ef",
+      "family_id": "scene_ec9e2434b055052422b1",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 464,
+      "agents": 3,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          46.31161229999998
+        ],
+        "vehicle_count": [
+          3
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          8.105012083559721
+        ],
+        "region_height_m": [
+          40.96569986558794
+        ],
+        "spawn_east_span_m": [
+          0.0
+        ],
+        "spawn_north_span_m": [
+          27.310466577058627
+        ],
+        "speed_m_s": [
+          3.0
+        ],
+        "executed_path_length_m": [
+          98.4082937133836,
+          98.29401670339386,
+          98.47404470051892
+        ],
+        "planned_path_length_m": [
+          99.43843761697602,
+          99.43843761697602,
+          99.43843761697602
+        ],
+        "airborne_time_s": [
+          73.98950935581661,
+          73.99149644889096,
+          73.95802678664268
+        ],
+        "executed_stage_count": [
+          3
+        ],
+        "barrier_wait_s": [
+          0.14229289999930117,
+          0.14229289999930117,
+          0.14229289999930117,
+          0.018267099998048764,
+          0.018267099998048764,
+          0.018267099998048764,
+          0.011612299999981701,
+          0.11161229999997602,
+          0.011612299999981701
+        ],
+        "execution_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_other_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_fleet_stop_event_count": [
+          3
+        ],
+        "execution_common_overlap_event_count": [
+          3
+        ],
+        "execution_stationary_time_fraction": [
+          0.033307572625013965
+        ],
+        "execution_synchronized_time_fraction": [
+          0.032327586206896554
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.5459398000006317
+        ],
+        "execution_barrier_wait_median_s": [
+          0.018267099998048764
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          9.691276199788108
+        ],
+        "execution_05_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.05347177782806702
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.05172413793103448
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.22493224932249323
+        ],
+        "leave_one_out_coverage_drop": [
+          0.2872628726287263,
+          0.21951219512195122,
+          0.2682926829268293
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 3,
+          "fully_ordered": null
+        },
+        "north": {
+          "agree_pairs": 3,
+          "comparable_pairs": 3,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        }
+      },
+      "topology_signature": [
+        3,
+        "north",
+        [
+          4,
+          4,
+          4
+        ],
+        true
+      ],
+      "topology_signature_error": null,
+      "topology_token": "eb502b0cd1107cb10781d731e9f62f6fecad582db0d02851d7e384ae7bb6fb0e"
+    },
+    {
+      "run_id": "20261002T101406Z_651c7540",
+      "family_id": "scene_1689c7df8d6355a85c31",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 601,
+      "agents": 6,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          60.075784900000144
+        ],
+        "vehicle_count": [
+          6
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          11.913469236858626
+        ],
+        "region_height_m": [
+          92.01218425863303
+        ],
+        "spawn_east_span_m": [
+          0.0
+        ],
+        "spawn_north_span_m": [
+          76.67682021552753
+        ],
+        "speed_m_s": [
+          2.5
+        ],
+        "executed_path_length_m": [
+          126.23758293278499,
+          126.27981253572653,
+          126.34843238449439,
+          126.13605169875164,
+          126.36658148991494,
+          126.24724023323988
+        ],
+        "planned_path_length_m": [
+          127.72415555202369,
+          127.72415555202369,
+          127.72415555202366,
+          127.72415555202366,
+          127.72415555202369,
+          127.72415555202363
+        ],
+        "airborne_time_s": [
+          87.04856039493166,
+          87.01805026014733,
+          87.01686377413009,
+          87.00041768286154,
+          86.90891158235273,
+          87.02546050750612
+        ],
+        "executed_stage_count": [
+          3
+        ],
+        "barrier_wait_s": [
+          0.01918209999930731,
+          0.11918209999930696,
+          0.11918209999930696,
+          0.01918209999930731,
+          0.11918209999930696,
+          0.01918209999930731,
+          0.057596100002413664,
+          0.057596100002413664,
+          0.057596100002413664,
+          0.057596100002413664,
+          0.057596100002413664,
+          0.057596100002413664,
+          0.07578490000014426,
+          0.07578490000014426,
+          0.07578490000014426,
+          0.07578490000014426,
+          0.07578490000014426,
+          0.07578490000014426
+        ],
+        "execution_stop_count": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "execution_other_stop_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "execution_fleet_stop_event_count": [
+          3
+        ],
+        "execution_common_overlap_event_count": [
+          3
+        ],
+        "execution_stationary_time_fraction": [
+          0.02584614099401312
+        ],
+        "execution_synchronized_time_fraction": [
+          0.02159468438538206
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.5342836499989048
+        ],
+        "execution_barrier_wait_median_s": [
+          0.06669050000127896
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          7.506629808096378
+        ],
+        "execution_05_stop_count": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.04166326820425431
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.03820598006644518
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.22939068100358423
+        ],
+        "leave_one_out_coverage_drop": [
+          0.14516129032258066,
+          0.11917562724014337,
+          0.12365591397849462,
+          0.11917562724014337,
+          0.12365591397849462,
+          0.13978494623655913
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 15,
+          "fully_ordered": null
+        },
+        "north": {
+          "agree_pairs": 15,
+          "comparable_pairs": 15,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        }
+      },
+      "topology_signature": [
+        6,
+        "north",
+        [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        true
+      ],
+      "topology_signature_error": null,
+      "topology_token": "c5741a2b3271f8b72085ffab5583b4565f409cba0fcfe38cdf9bb6f56fda27fd"
+    },
+    {
+      "run_id": "20261002T101634Z_be00cea9",
+      "family_id": "scene_55a6c208ad5bc49e9b89",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 532,
+      "agents": 3,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          53.19683410000289
+        ],
+        "vehicle_count": [
+          3
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          47.35240056935623
+        ],
+        "region_height_m": [
+          9.058748077298677
+        ],
+        "spawn_east_span_m": [
+          31.568267046237487
+        ],
+        "spawn_north_span_m": [
+          0.0
+        ],
+        "speed_m_s": [
+          2.0
+        ],
+        "executed_path_length_m": [
+          93.63401014519178,
+          93.48443189742392,
+          93.5647866426725
+        ],
+        "planned_path_length_m": [
+          94.13588211184081,
+          94.13588211184081,
+          94.13588211184083
+        ],
+        "airborne_time_s": [
+          79.99735003993857,
+          79.95583735152579,
+          81.05274068979976
+        ],
+        "executed_stage_count": [
+          3
+        ],
+        "barrier_wait_s": [
+          0.15412330000108376,
+          0.05412330000108412,
+          0.15412330000108376,
+          0.03468239999929068,
+          0.03468239999929068,
+          0.03468239999929068,
+          0.09683410000288717,
+          0.09683410000288717,
+          0.09683410000288717
+        ],
+        "execution_stop_count": [
+          4,
+          5,
+          5
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          4,
+          5,
+          5
+        ],
+        "execution_other_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_fleet_stop_event_count": [
+          4
+        ],
+        "execution_common_overlap_event_count": [
+          4
+        ],
+        "execution_stationary_time_fraction": [
+          0.060631881392077897
+        ],
+        "execution_synchronized_time_fraction": [
+          0.0525328330206379
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.2452730999990305
+        ],
+        "execution_barrier_wait_median_s": [
+          0.09683410000288717
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          6.863097274233937
+        ],
+        "execution_05_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.08883351170801952
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.08630393996247655
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.16666666666666666
+        ],
+        "leave_one_out_coverage_drop": [
+          0.2916666666666667,
+          0.25,
+          0.2916666666666667
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 3,
+          "comparable_pairs": 3,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        },
+        "north": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 3,
+          "fully_ordered": null
+        }
+      },
+      "topology_signature": [
+        3,
+        "east",
+        [
+          4,
+          4,
+          4
+        ],
+        true
+      ],
+      "topology_signature_error": null,
+      "topology_token": "88e29d5534251254b72a3517c786161ba92524e03baaac017eb9aa94db7eeea2"
+    },
+    {
+      "run_id": "20261002T101847Z_8e82a878",
+      "family_id": "scene_1aaf5999e15144c8201c",
+      "split": "train",
+      "intent": "reconnaissance",
+      "control_mode": "semantic_phase_route_v1",
+      "mission_success": true,
+      "episode_quality_eligible": true,
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "run_status": "completed",
+      "frames": 389,
+      "agents": 3,
+      "clock_grade": "acceptable",
+      "metrics": {
+        "episode_duration_s": [
+          38.88646180000069
+        ],
+        "vehicle_count": [
+          3
+        ],
+        "observation_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "truth_valid_fraction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "region_width_m": [
+          43.29422684902123
+        ],
+        "region_height_m": [
+          9.588412004237778
+        ],
+        "spawn_east_span_m": [
+          28.862817899347483
+        ],
+        "spawn_north_span_m": [
+          0.0
+        ],
+        "speed_m_s": [
+          2.5
+        ],
+        "executed_path_length_m": [
+          77.8346292129095,
+          78.60011410186857,
+          78.54937866288616
+        ],
+        "planned_path_length_m": [
+          79.96464055763086,
+          79.96464055763087,
+          79.96464055763086
+        ],
+        "airborne_time_s": [
+          66.96041279031594,
+          67.00977654478609,
+          65.97148071491682
+        ],
+        "executed_stage_count": [
+          2
+        ],
+        "barrier_wait_s": [
+          0.08706719999754498,
+          0.08706719999754498,
+          0.08706719999754498,
+          0.08646180000069137,
+          0.08646180000069137,
+          0.08646180000069137
+        ],
+        "execution_stop_count": [
+          3,
+          3,
+          3
+        ],
+        "execution_intermediate_stop_count": [
+          0,
+          0,
+          0
+        ],
+        "execution_semantic_endpoint_stop_count": [
+          2,
+          2,
+          2
+        ],
+        "execution_other_stop_count": [
+          1,
+          1,
+          1
+        ],
+        "execution_fleet_stop_event_count": [
+          3
+        ],
+        "execution_common_overlap_event_count": [
+          3
+        ],
+        "execution_stationary_time_fraction": [
+          0.05195663740800142
+        ],
+        "execution_synchronized_time_fraction": [
+          0.046153846153846156
+        ],
+        "execution_common_overlap_event_fraction": [
+          1.0
+        ],
+        "execution_intermediate_waypoint_stop_rate": [
+          0.0
+        ],
+        "execution_arrival_lag_median_s": [
+          -1.3461196500000359
+        ],
+        "execution_barrier_wait_median_s": [
+          0.08676449999911817
+        ],
+        "execution_nominal_timing_deviation_max_abs_s": [
+          8.604077008318804
+        ],
+        "execution_05_stop_count": [
+          2,
+          2,
+          2
+        ],
+        "execution_05_stationary_time_fraction": [
+          0.08025403690271261
+        ],
+        "execution_05_synchronized_time_fraction": [
+          0.07435897435897436
+        ]
+      },
+      "intent_metrics": {
+        "global_coverage_ratio": [
+          1.0
+        ],
+        "repeated_coverage_cell_ratio": [
+          0.22727272727272727
+        ],
+        "leave_one_out_coverage_drop": [
+          0.2727272727272727,
+          0.22727272727272727,
+          0.2727272727272727
+        ]
+      },
+      "required_audit_metrics": [
+        "global_coverage_ratio",
+        "repeated_coverage_cell_ratio",
+        "leave_one_out_coverage_drop"
+      ],
+      "missing_common_metrics": [],
+      "missing_intent_metrics": [],
+      "execution_metrics_version": "execution_artifacts_v1",
+      "execution_metrics_available": true,
+      "execution_metrics_usable": true,
+      "execution_metrics_error": null,
+      "execution_lower_bound_stop_counts": {
+        "0.3": {},
+        "0.5": {}
+      },
+      "id_position_order": {
+        "east": {
+          "agree_pairs": 3,
+          "comparable_pairs": 3,
+          "tied_pairs": 0,
+          "fully_ordered": true
+        },
+        "north": {
+          "agree_pairs": 0,
+          "comparable_pairs": 0,
+          "tied_pairs": 3,
+          "fully_ordered": null
+        }
+      },
+      "topology_signature": [
+        3,
+        "east",
+        [
+          4,
+          4,
+          4
+        ],
+        false
+      ],
+      "topology_signature_error": null,
+      "topology_token": "7cbcae6141018badd9623e98b071e9d16eef8c14cd4f32ae6a412f5675413bb5"
+    }
+  ],
+  "topology_scope": "signature overlap is reported separately per intent/control_mode; no cross-intent signature matching",
+  "limitation": "descriptive audit only; no classifier, accuracy or intention identifiability claim; optional evidence is never recomputed"
+}
