@@ -1,0 +1,1654 @@
+{
+  "audit_version": "wp_s_timestamp_audit_v1",
+  "created_utc": "2026-10-01T16:09:36.520557+00:00",
+  "source_time": "time_boot_ms per run/agent/type; 0 boot ms is valid; SYSTEM_TIME Unix=0 is separately flagged unavailable",
+  "scope": "entire raw capture, file receive order; primary categories mutually exclusive; rollback takes precedence over prior payload equality",
+  "comparison": "all JSON message fields, excludes outer host receive time; interleaved types do not break adjacency within type",
+  "host_policy": "host timestamp anomalies separately counted; never substitute host time for source time",
+  "raw_wire_limitation": "JSON captures decoded payload and source sysid but no MAVLink packet sequence/component/wire bytes",
+  "runs": 17,
+  "historical_runs": 15,
+  "spike_runs": 2,
+  "agent_run_count": 66,
+  "no_message_streams": [],
+  "totals": {
+    "v03": {
+      "GLOBAL_POSITION_INT": {
+        "total": 75151,
+        "advancing": 75151
+      },
+      "SYSTEM_TIME": {
+        "total": 75151,
+        "advancing": 75151,
+        "zero_unix_time": 60
+      }
+    },
+    "spike": {
+      "GLOBAL_POSITION_INT": {
+        "total": 9858,
+        "advancing": 9854,
+        "exact_duplicate": 4
+      },
+      "SYSTEM_TIME": {
+        "total": 9858,
+        "advancing": 9854,
+        "exact_duplicate": 4,
+        "zero_unix_time": 6
+      }
+    }
+  },
+  "anomalies": [
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_01",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_01.jsonl",
+      "message_type": "GLOBAL_POSITION_INT",
+      "category": "exact_duplicate",
+      "line_number": 2777,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49278.720005,
+      "recv_run_relative_s": 12.562453400001687,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2750,
+      "previous_same_source_receive_s": 49278.7193503,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "GLOBAL_POSITION_INT",
+        "time_boot_ms": 8934,
+        "lat": 299998645,
+        "lon": 1200000931,
+        "alt": 0,
+        "relative_alt": 0,
+        "vx": 0,
+        "vy": 0,
+        "vz": -12,
+        "hdg": 1
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_01",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_01.jsonl",
+      "message_type": "SYSTEM_TIME",
+      "category": "exact_duplicate",
+      "line_number": 2792,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49278.7204379,
+      "recv_run_relative_s": 12.562886300001992,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2765,
+      "previous_same_source_receive_s": 49278.7197489,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "SYSTEM_TIME",
+        "time_unix_usec": 1790868765084985,
+        "time_boot_ms": 8934
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_03",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_03.jsonl",
+      "message_type": "GLOBAL_POSITION_INT",
+      "category": "exact_duplicate",
+      "line_number": 2777,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49278.6041147,
+      "recv_run_relative_s": 12.446563099998457,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2750,
+      "previous_same_source_receive_s": 49278.601481,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "GLOBAL_POSITION_INT",
+        "time_boot_ms": 8934,
+        "lat": 299998645,
+        "lon": 1200004662,
+        "alt": 0,
+        "relative_alt": 0,
+        "vx": 0,
+        "vy": 0,
+        "vz": -12,
+        "hdg": 1
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_03",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_03.jsonl",
+      "message_type": "SYSTEM_TIME",
+      "category": "exact_duplicate",
+      "line_number": 2792,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49278.6052386,
+      "recv_run_relative_s": 12.44768699999986,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2765,
+      "previous_same_source_receive_s": 49278.6029306,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "SYSTEM_TIME",
+        "time_unix_usec": 1790868765084985,
+        "time_boot_ms": 8934
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153806Z_42150c31",
+      "agent_id": "uav_01",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_01.jsonl",
+      "message_type": "GLOBAL_POSITION_INT",
+      "category": "exact_duplicate",
+      "line_number": 2777,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49609.0010117,
+      "recv_run_relative_s": 12.45094949999475,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2750,
+      "previous_same_source_receive_s": 49608.9974431,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "GLOBAL_POSITION_INT",
+        "time_boot_ms": 8934,
+        "lat": 299998645,
+        "lon": 1200000931,
+        "alt": 0,
+        "relative_alt": 0,
+        "vx": 0,
+        "vy": 0,
+        "vz": -12,
+        "hdg": 1
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153806Z_42150c31",
+      "agent_id": "uav_01",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_01.jsonl",
+      "message_type": "SYSTEM_TIME",
+      "category": "exact_duplicate",
+      "line_number": 2792,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49609.0036972,
+      "recv_run_relative_s": 12.45363499999803,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2765,
+      "previous_same_source_receive_s": 49608.9993543,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "SYSTEM_TIME",
+        "time_unix_usec": 1790869095484985,
+        "time_boot_ms": 8934
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153806Z_42150c31",
+      "agent_id": "uav_03",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_03.jsonl",
+      "message_type": "GLOBAL_POSITION_INT",
+      "category": "exact_duplicate",
+      "line_number": 2777,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49609.002782,
+      "recv_run_relative_s": 12.452719799999613,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2750,
+      "previous_same_source_receive_s": 49608.9981123,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "GLOBAL_POSITION_INT",
+        "time_boot_ms": 8934,
+        "lat": 299998645,
+        "lon": 1200004662,
+        "alt": 0,
+        "relative_alt": 0,
+        "vx": 0,
+        "vy": 0,
+        "vz": -12,
+        "hdg": 1
+      }
+    },
+    {
+      "cohort": "spike",
+      "run_id": "20261001T153806Z_42150c31",
+      "agent_id": "uav_03",
+      "raw_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_03.jsonl",
+      "message_type": "SYSTEM_TIME",
+      "category": "exact_duplicate",
+      "line_number": 2792,
+      "source_time_boot_ms": 8934,
+      "recv_monotonic_s": 49609.0040566,
+      "recv_run_relative_s": 12.453994399998919,
+      "high_water_time_boot_ms": 8934,
+      "previous_same_source_line": 2765,
+      "previous_same_source_receive_s": 49609.0015105,
+      "previous_same_source_payload_equal": true,
+      "message": {
+        "mavpackettype": "SYSTEM_TIME",
+        "time_unix_usec": 1790869095484985,
+        "time_boot_ms": 8934
+      }
+    }
+  ],
+  "parameter_alignment": [
+    {
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "run_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_01",
+      "request_send_times_recorded": false,
+      "request_send_times_s": null,
+      "missing_index_request_send_times_s": null,
+      "all_connected_t_s": 1.7995288000020082,
+      "autopilot_520_ack": [
+        {
+          "line_number": 3,
+          "t_s": 1.8447846999988542,
+          "result": 0
+        }
+      ],
+      "autopilot_version_responses": [],
+      "request_list_send_bound_s": [
+        11.799528800002008,
+        11.945408699997643
+      ],
+      "request_list_bound_kind": "control-flow lower bound and first-response upper bound, not measured TX",
+      "missing_index_retry_excluded_by_5s_control_flow": true,
+      "exclusion_depends_on_recorded_source_hash_match": true,
+      "readback_complete": [
+        {
+          "event": "firmware_parameters_read",
+          "agent_id": "uav_01",
+          "t": 12.604574799996044,
+          "parameter_count": 1202,
+          "wpnav_count": 7,
+          "version": "ArduCopter V4.0.4-dev (de791682)"
+        }
+      ],
+      "indexed_parameter_count": 1202,
+      "unique_index_count": 1202,
+      "repeated_indices": {},
+      "indexed_parameter_first": {
+        "line_number": 1521,
+        "t_s": 11.945408699997643,
+        "index": 0,
+        "name": "FORMAT_VERSION",
+        "count": 1202
+      },
+      "indexed_parameter_last": {
+        "line_number": 2748,
+        "t_s": 12.561747300002025,
+        "index": 1201,
+        "name": "FFT_ENABLE",
+        "count": 1202
+      },
+      "non_table_parameter_count": 50,
+      "non_table_parameter_index_counts": {
+        "65535": 50
+      },
+      "nearby_telemetry": [
+        {
+          "line_number": 2185,
+          "t_s": 12.250411599998188,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2200,
+          "t_s": 12.251923299998452,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2750,
+          "t_s": 12.561798700000509,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2765,
+          "t_s": 12.562197300001571,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2777,
+          "t_s": 12.562453400001687,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2792,
+          "t_s": 12.562886300001992,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2803,
+          "t_s": 12.605371500001638,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2818,
+          "t_s": 12.60939050000161,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2830,
+          "t_s": 12.711451600000146,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2845,
+          "t_s": 12.712081199999375,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2856,
+          "t_s": 12.802918399996997,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2871,
+          "t_s": 12.803665200000978,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2882,
+          "t_s": 12.926284699999087,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9267
+        },
+        {
+          "line_number": 2897,
+          "t_s": 12.928459099995962,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9267
+        }
+      ],
+      "anomalies": [
+        {
+          "message_type": "GLOBAL_POSITION_INT",
+          "category": "exact_duplicate",
+          "line_number": 2777,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49278.720005,
+          "recv_run_relative_s": 12.562453400001687,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2750,
+          "previous_same_source_receive_s": 49278.7193503,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "GLOBAL_POSITION_INT",
+            "time_boot_ms": 8934,
+            "lat": 299998645,
+            "lon": 1200000931,
+            "alt": 0,
+            "relative_alt": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": -12,
+            "hdg": 1
+          },
+          "delta_last_indexed_parameter_s": 0.0007060999996610917,
+          "delta_readback_complete_s": -0.04212139999435749
+        },
+        {
+          "message_type": "SYSTEM_TIME",
+          "category": "exact_duplicate",
+          "line_number": 2792,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49278.7204379,
+          "recv_run_relative_s": 12.562886300001992,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2765,
+          "previous_same_source_receive_s": 49278.7197489,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "SYSTEM_TIME",
+            "time_unix_usec": 1790868765084985,
+            "time_boot_ms": 8934
+          },
+          "delta_last_indexed_parameter_s": 0.0011389999999664724,
+          "delta_readback_complete_s": -0.04168849999405211
+        }
+      ],
+      "repeated_timestamp_batches": [
+        {
+          "time_boot_ms": 8934,
+          "messages": {
+            "ATTITUDE": {
+              "count": 2,
+              "lines": [
+                2749,
+                2776
+              ],
+              "all_fields_equal": true
+            },
+            "GLOBAL_POSITION_INT": {
+              "count": 2,
+              "lines": [
+                2750,
+                2777
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS": {
+              "count": 2,
+              "lines": [
+                2758,
+                2785
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS_RAW": {
+              "count": 2,
+              "lines": [
+                2759,
+                2786
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU2": {
+              "count": 2,
+              "lines": [
+                2761,
+                2788
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU3": {
+              "count": 2,
+              "lines": [
+                2762,
+                2789
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_PRESSURE": {
+              "count": 2,
+              "lines": [
+                2763,
+                2790
+              ],
+              "all_fields_equal": true
+            },
+            "SYSTEM_TIME": {
+              "count": 2,
+              "lines": [
+                2765,
+                2792
+              ],
+              "all_fields_equal": true
+            }
+          }
+        }
+      ],
+      "causal_conclusion": "association with full parameter-table completion; firmware/transport scheduling cause unproven"
+    },
+    {
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "run_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_02",
+      "request_send_times_recorded": false,
+      "request_send_times_s": null,
+      "missing_index_request_send_times_s": null,
+      "all_connected_t_s": 1.7995288000020082,
+      "autopilot_520_ack": [
+        {
+          "line_number": 3,
+          "t_s": 1.8450288000021828,
+          "result": 0
+        }
+      ],
+      "autopilot_version_responses": [],
+      "request_list_send_bound_s": [
+        11.799528800002008,
+        11.89986769999814
+      ],
+      "request_list_bound_kind": "control-flow lower bound and first-response upper bound, not measured TX",
+      "missing_index_retry_excluded_by_5s_control_flow": true,
+      "exclusion_depends_on_recorded_source_hash_match": true,
+      "readback_complete": [
+        {
+          "event": "firmware_parameters_read",
+          "agent_id": "uav_02",
+          "t": 12.543808399997943,
+          "parameter_count": 1202,
+          "wpnav_count": 7,
+          "version": "ArduCopter V4.0.4-dev (de791682)"
+        }
+      ],
+      "indexed_parameter_count": 1202,
+      "unique_index_count": 1202,
+      "repeated_indices": {},
+      "indexed_parameter_first": {
+        "line_number": 1547,
+        "t_s": 11.89986769999814,
+        "index": 0,
+        "name": "FORMAT_VERSION",
+        "count": 1202
+      },
+      "indexed_parameter_last": {
+        "line_number": 2774,
+        "t_s": 12.487020399996254,
+        "index": 1201,
+        "name": "FFT_ENABLE",
+        "count": 1202
+      },
+      "non_table_parameter_count": 50,
+      "non_table_parameter_index_counts": {
+        "65535": 50
+      },
+      "nearby_telemetry": [
+        {
+          "line_number": 2432,
+          "t_s": 12.297302200000559,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8766
+        },
+        {
+          "line_number": 2447,
+          "t_s": 12.29775079999672,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8766
+        },
+        {
+          "line_number": 2776,
+          "t_s": 12.487173699999403,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2791,
+          "t_s": 12.487789599996177,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2803,
+          "t_s": 12.52794670000003,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2818,
+          "t_s": 12.528706299999612,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2830,
+          "t_s": 12.635480799996003,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2845,
+          "t_s": 12.63605049999751,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2856,
+          "t_s": 12.726525500002026,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2871,
+          "t_s": 12.727234599995427,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2882,
+          "t_s": 12.833805700000084,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9267
+        },
+        {
+          "line_number": 2897,
+          "t_s": 12.834341000001587,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9267
+        }
+      ],
+      "anomalies": [],
+      "repeated_timestamp_batches": [],
+      "causal_conclusion": "association with full parameter-table completion; firmware/transport scheduling cause unproven"
+    },
+    {
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "run_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_03",
+      "request_send_times_recorded": false,
+      "request_send_times_s": null,
+      "missing_index_request_send_times_s": null,
+      "all_connected_t_s": 1.7995288000020082,
+      "autopilot_520_ack": [
+        {
+          "line_number": 3,
+          "t_s": 1.8452476000020397,
+          "result": 0
+        }
+      ],
+      "autopilot_version_responses": [],
+      "request_list_send_bound_s": [
+        11.799528800002008,
+        11.900274499996158
+      ],
+      "request_list_bound_kind": "control-flow lower bound and first-response upper bound, not measured TX",
+      "missing_index_retry_excluded_by_5s_control_flow": true,
+      "exclusion_depends_on_recorded_source_hash_match": true,
+      "readback_complete": [
+        {
+          "event": "firmware_parameters_read",
+          "agent_id": "uav_03",
+          "t": 12.483873400000448,
+          "parameter_count": 1202,
+          "wpnav_count": 7,
+          "version": "ArduCopter V4.0.4-dev (de791682)"
+        }
+      ],
+      "indexed_parameter_count": 1202,
+      "unique_index_count": 1202,
+      "repeated_indices": {},
+      "indexed_parameter_first": {
+        "line_number": 1521,
+        "t_s": 11.900274499996158,
+        "index": 0,
+        "name": "FORMAT_VERSION",
+        "count": 1202
+      },
+      "indexed_parameter_last": {
+        "line_number": 2748,
+        "t_s": 12.443818300002022,
+        "index": 1201,
+        "name": "FFT_ENABLE",
+        "count": 1202
+      },
+      "non_table_parameter_count": 50,
+      "non_table_parameter_index_counts": {
+        "65535": 50
+      },
+      "nearby_telemetry": [
+        {
+          "line_number": 2185,
+          "t_s": 12.144635199998447,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2200,
+          "t_s": 12.145173699995212,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2750,
+          "t_s": 12.443929399996705,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2765,
+          "t_s": 12.445378999997047,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2777,
+          "t_s": 12.446563099998457,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2792,
+          "t_s": 12.44768699999986,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2803,
+          "t_s": 12.466735199996037,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2818,
+          "t_s": 12.46743509999942,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2830,
+          "t_s": 12.574043000000529,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2845,
+          "t_s": 12.57452149999881,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2856,
+          "t_s": 12.665572500001872,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2871,
+          "t_s": 12.666114100000414,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2882,
+          "t_s": 12.771868999996514,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9267
+        },
+        {
+          "line_number": 2897,
+          "t_s": 12.772467199996754,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9267
+        }
+      ],
+      "anomalies": [
+        {
+          "message_type": "GLOBAL_POSITION_INT",
+          "category": "exact_duplicate",
+          "line_number": 2777,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49278.6041147,
+          "recv_run_relative_s": 12.446563099998457,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2750,
+          "previous_same_source_receive_s": 49278.601481,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "GLOBAL_POSITION_INT",
+            "time_boot_ms": 8934,
+            "lat": 299998645,
+            "lon": 1200004662,
+            "alt": 0,
+            "relative_alt": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": -12,
+            "hdg": 1
+          },
+          "delta_last_indexed_parameter_s": 0.0027447999964351766,
+          "delta_readback_complete_s": -0.03731030000199098
+        },
+        {
+          "message_type": "SYSTEM_TIME",
+          "category": "exact_duplicate",
+          "line_number": 2792,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49278.6052386,
+          "recv_run_relative_s": 12.44768699999986,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2765,
+          "previous_same_source_receive_s": 49278.6029306,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "SYSTEM_TIME",
+            "time_unix_usec": 1790868765084985,
+            "time_boot_ms": 8934
+          },
+          "delta_last_indexed_parameter_s": 0.003868699997838121,
+          "delta_readback_complete_s": -0.03618640000058804
+        }
+      ],
+      "repeated_timestamp_batches": [
+        {
+          "time_boot_ms": 8934,
+          "messages": {
+            "ATTITUDE": {
+              "count": 2,
+              "lines": [
+                2749,
+                2776
+              ],
+              "all_fields_equal": true
+            },
+            "GLOBAL_POSITION_INT": {
+              "count": 2,
+              "lines": [
+                2750,
+                2777
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS": {
+              "count": 2,
+              "lines": [
+                2758,
+                2785
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS_RAW": {
+              "count": 2,
+              "lines": [
+                2759,
+                2786
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU2": {
+              "count": 2,
+              "lines": [
+                2761,
+                2788
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU3": {
+              "count": 2,
+              "lines": [
+                2762,
+                2789
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_PRESSURE": {
+              "count": 2,
+              "lines": [
+                2763,
+                2790
+              ],
+              "all_fields_equal": true
+            },
+            "SYSTEM_TIME": {
+              "count": 2,
+              "lines": [
+                2765,
+                2792
+              ],
+              "all_fields_equal": true
+            }
+          }
+        }
+      ],
+      "causal_conclusion": "association with full parameter-table completion; firmware/transport scheduling cause unproven"
+    },
+    {
+      "run_id": "20261001T153806Z_42150c31",
+      "run_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31",
+      "agent_id": "uav_01",
+      "request_send_times_recorded": false,
+      "request_send_times_s": null,
+      "missing_index_request_send_times_s": null,
+      "all_connected_t_s": 1.7241349999967497,
+      "autopilot_520_ack": [
+        {
+          "line_number": 3,
+          "t_s": 1.7681535999945481,
+          "result": 0
+        }
+      ],
+      "autopilot_version_responses": [],
+      "request_list_send_bound_s": [
+        11.72413499999675,
+        11.845974899995781
+      ],
+      "request_list_bound_kind": "control-flow lower bound and first-response upper bound, not measured TX",
+      "missing_index_retry_excluded_by_5s_control_flow": true,
+      "exclusion_depends_on_recorded_source_hash_match": true,
+      "readback_complete": [
+        {
+          "event": "firmware_parameters_read",
+          "agent_id": "uav_01",
+          "t": 12.475934099995357,
+          "parameter_count": 1202,
+          "wpnav_count": 7,
+          "version": "ArduCopter V4.0.4-dev (de791682)"
+        }
+      ],
+      "indexed_parameter_count": 1202,
+      "unique_index_count": 1202,
+      "repeated_indices": {},
+      "indexed_parameter_first": {
+        "line_number": 1521,
+        "t_s": 11.845974899995781,
+        "index": 0,
+        "name": "FORMAT_VERSION",
+        "count": 1202
+      },
+      "indexed_parameter_last": {
+        "line_number": 2748,
+        "t_s": 12.446457799997006,
+        "index": 1201,
+        "name": "FFT_ENABLE",
+        "count": 1202
+      },
+      "non_table_parameter_count": 50,
+      "non_table_parameter_index_counts": {
+        "65535": 50
+      },
+      "nearby_telemetry": [
+        {
+          "line_number": 2185,
+          "t_s": 12.135631299999659,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2200,
+          "t_s": 12.13618289999431,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2750,
+          "t_s": 12.44738089999737,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2765,
+          "t_s": 12.449292099998274,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2777,
+          "t_s": 12.45094949999475,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2792,
+          "t_s": 12.45363499999803,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2803,
+          "t_s": 12.476523899997119,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2818,
+          "t_s": 12.484979799999564,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2830,
+          "t_s": 12.580514799999946,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2845,
+          "t_s": 12.581235099998594,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2856,
+          "t_s": 12.687019999997574,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2871,
+          "t_s": 12.688340799999423,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2882,
+          "t_s": 12.793549799993343,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9267
+        },
+        {
+          "line_number": 2897,
+          "t_s": 12.795693099993514,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9267
+        }
+      ],
+      "anomalies": [
+        {
+          "message_type": "GLOBAL_POSITION_INT",
+          "category": "exact_duplicate",
+          "line_number": 2777,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49609.0010117,
+          "recv_run_relative_s": 12.45094949999475,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2750,
+          "previous_same_source_receive_s": 49608.9974431,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "GLOBAL_POSITION_INT",
+            "time_boot_ms": 8934,
+            "lat": 299998645,
+            "lon": 1200000931,
+            "alt": 0,
+            "relative_alt": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": -12,
+            "hdg": 1
+          },
+          "delta_last_indexed_parameter_s": 0.004491699997743126,
+          "delta_readback_complete_s": -0.024984600000607315
+        },
+        {
+          "message_type": "SYSTEM_TIME",
+          "category": "exact_duplicate",
+          "line_number": 2792,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49609.0036972,
+          "recv_run_relative_s": 12.45363499999803,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2765,
+          "previous_same_source_receive_s": 49608.9993543,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "SYSTEM_TIME",
+            "time_unix_usec": 1790869095484985,
+            "time_boot_ms": 8934
+          },
+          "delta_last_indexed_parameter_s": 0.0071772000010241754,
+          "delta_readback_complete_s": -0.022299099997326266
+        }
+      ],
+      "repeated_timestamp_batches": [
+        {
+          "time_boot_ms": 8934,
+          "messages": {
+            "ATTITUDE": {
+              "count": 2,
+              "lines": [
+                2749,
+                2776
+              ],
+              "all_fields_equal": true
+            },
+            "GLOBAL_POSITION_INT": {
+              "count": 2,
+              "lines": [
+                2750,
+                2777
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS": {
+              "count": 2,
+              "lines": [
+                2758,
+                2785
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS_RAW": {
+              "count": 2,
+              "lines": [
+                2759,
+                2786
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU2": {
+              "count": 2,
+              "lines": [
+                2761,
+                2788
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU3": {
+              "count": 2,
+              "lines": [
+                2762,
+                2789
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_PRESSURE": {
+              "count": 2,
+              "lines": [
+                2763,
+                2790
+              ],
+              "all_fields_equal": true
+            },
+            "SYSTEM_TIME": {
+              "count": 2,
+              "lines": [
+                2765,
+                2792
+              ],
+              "all_fields_equal": true
+            }
+          }
+        }
+      ],
+      "causal_conclusion": "association with full parameter-table completion; firmware/transport scheduling cause unproven"
+    },
+    {
+      "run_id": "20261001T153806Z_42150c31",
+      "run_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31",
+      "agent_id": "uav_02",
+      "request_send_times_recorded": false,
+      "request_send_times_s": null,
+      "missing_index_request_send_times_s": null,
+      "all_connected_t_s": 1.7241349999967497,
+      "autopilot_520_ack": [
+        {
+          "line_number": 3,
+          "t_s": 1.7698794999960228,
+          "result": 0
+        }
+      ],
+      "autopilot_version_responses": [],
+      "request_list_send_bound_s": [
+        11.72413499999675,
+        11.7838946999982
+      ],
+      "request_list_bound_kind": "control-flow lower bound and first-response upper bound, not measured TX",
+      "missing_index_retry_excluded_by_5s_control_flow": true,
+      "exclusion_depends_on_recorded_source_hash_match": true,
+      "readback_complete": [
+        {
+          "event": "firmware_parameters_read",
+          "agent_id": "uav_02",
+          "t": 12.474623399997654,
+          "parameter_count": 1202,
+          "wpnav_count": 7,
+          "version": "ArduCopter V4.0.4-dev (de791682)"
+        }
+      ],
+      "indexed_parameter_count": 1202,
+      "unique_index_count": 1202,
+      "repeated_indices": {},
+      "indexed_parameter_first": {
+        "line_number": 1521,
+        "t_s": 11.7838946999982,
+        "index": 0,
+        "name": "FORMAT_VERSION",
+        "count": 1202
+      },
+      "indexed_parameter_last": {
+        "line_number": 2748,
+        "t_s": 12.445924299994658,
+        "index": 1201,
+        "name": "FFT_ENABLE",
+        "count": 1202
+      },
+      "non_table_parameter_count": 50,
+      "non_table_parameter_index_counts": {
+        "65535": 50
+      },
+      "nearby_telemetry": [
+        {
+          "line_number": 2406,
+          "t_s": 12.21241039999586,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2421,
+          "t_s": 12.21700509999937,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2750,
+          "t_s": 12.446358599998348,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8834
+        },
+        {
+          "line_number": 2765,
+          "t_s": 12.448895499997889,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8834
+        },
+        {
+          "line_number": 2777,
+          "t_s": 12.47632419999718,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8867
+        },
+        {
+          "line_number": 2792,
+          "t_s": 12.483051199997135,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8867
+        },
+        {
+          "line_number": 2803,
+          "t_s": 12.565022299997509,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2818,
+          "t_s": 12.565944299996772,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2830,
+          "t_s": 12.686670199997025,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2845,
+          "t_s": 12.688520299998345,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2856,
+          "t_s": 12.79361109999445,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2871,
+          "t_s": 12.79466699999466,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9167
+        }
+      ],
+      "anomalies": [],
+      "repeated_timestamp_batches": [],
+      "causal_conclusion": "association with full parameter-table completion; firmware/transport scheduling cause unproven"
+    },
+    {
+      "run_id": "20261001T153806Z_42150c31",
+      "run_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31",
+      "agent_id": "uav_03",
+      "request_send_times_recorded": false,
+      "request_send_times_s": null,
+      "missing_index_request_send_times_s": null,
+      "all_connected_t_s": 1.7241349999967497,
+      "autopilot_520_ack": [
+        {
+          "line_number": 3,
+          "t_s": 1.770204799999192,
+          "result": 0
+        }
+      ],
+      "autopilot_version_responses": [],
+      "request_list_send_bound_s": [
+        11.72413499999675,
+        11.845294999999169
+      ],
+      "request_list_bound_kind": "control-flow lower bound and first-response upper bound, not measured TX",
+      "missing_index_retry_excluded_by_5s_control_flow": true,
+      "exclusion_depends_on_recorded_source_hash_match": true,
+      "readback_complete": [
+        {
+          "event": "firmware_parameters_read",
+          "agent_id": "uav_03",
+          "t": 12.473148399993079,
+          "parameter_count": 1202,
+          "wpnav_count": 7,
+          "version": "ArduCopter V4.0.4-dev (de791682)"
+        }
+      ],
+      "indexed_parameter_count": 1202,
+      "unique_index_count": 1202,
+      "repeated_indices": {},
+      "indexed_parameter_first": {
+        "line_number": 1521,
+        "t_s": 11.845294999999169,
+        "index": 0,
+        "name": "FORMAT_VERSION",
+        "count": 1202
+      },
+      "indexed_parameter_last": {
+        "line_number": 2748,
+        "t_s": 12.447929299996758,
+        "index": 1201,
+        "name": "FFT_ENABLE",
+        "count": 1202
+      },
+      "non_table_parameter_count": 50,
+      "non_table_parameter_index_counts": {
+        "65535": 50
+      },
+      "nearby_telemetry": [
+        {
+          "line_number": 2185,
+          "t_s": 12.120777699994505,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2200,
+          "t_s": 12.121326899999985,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8666
+        },
+        {
+          "line_number": 2750,
+          "t_s": 12.448050099999818,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2765,
+          "t_s": 12.451448299994809,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2777,
+          "t_s": 12.452719799999613,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2792,
+          "t_s": 12.453994399998919,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8934
+        },
+        {
+          "line_number": 2803,
+          "t_s": 12.476115199999185,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2818,
+          "t_s": 12.482067699995241,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 8967
+        },
+        {
+          "line_number": 2830,
+          "t_s": 12.5960644999941,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2845,
+          "t_s": 12.596573899994837,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9067
+        },
+        {
+          "line_number": 2856,
+          "t_s": 12.702087499994377,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2871,
+          "t_s": 12.70265319999453,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9167
+        },
+        {
+          "line_number": 2882,
+          "t_s": 12.809054199999082,
+          "message_type": "GLOBAL_POSITION_INT",
+          "time_boot_ms": 9267
+        },
+        {
+          "line_number": 2897,
+          "t_s": 12.809657699996023,
+          "message_type": "SYSTEM_TIME",
+          "time_boot_ms": 9267
+        }
+      ],
+      "anomalies": [
+        {
+          "message_type": "GLOBAL_POSITION_INT",
+          "category": "exact_duplicate",
+          "line_number": 2777,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49609.002782,
+          "recv_run_relative_s": 12.452719799999613,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2750,
+          "previous_same_source_receive_s": 49608.9981123,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "GLOBAL_POSITION_INT",
+            "time_boot_ms": 8934,
+            "lat": 299998645,
+            "lon": 1200004662,
+            "alt": 0,
+            "relative_alt": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": -12,
+            "hdg": 1
+          },
+          "delta_last_indexed_parameter_s": 0.004790500002854969,
+          "delta_readback_complete_s": -0.02042859999346547
+        },
+        {
+          "message_type": "SYSTEM_TIME",
+          "category": "exact_duplicate",
+          "line_number": 2792,
+          "source_time_boot_ms": 8934,
+          "recv_monotonic_s": 49609.0040566,
+          "recv_run_relative_s": 12.453994399998919,
+          "high_water_time_boot_ms": 8934,
+          "previous_same_source_line": 2765,
+          "previous_same_source_receive_s": 49609.0015105,
+          "previous_same_source_payload_equal": true,
+          "message": {
+            "mavpackettype": "SYSTEM_TIME",
+            "time_unix_usec": 1790869095484985,
+            "time_boot_ms": 8934
+          },
+          "delta_last_indexed_parameter_s": 0.0060651000021607615,
+          "delta_readback_complete_s": -0.019153999994159676
+        }
+      ],
+      "repeated_timestamp_batches": [
+        {
+          "time_boot_ms": 8934,
+          "messages": {
+            "ATTITUDE": {
+              "count": 2,
+              "lines": [
+                2749,
+                2776
+              ],
+              "all_fields_equal": true
+            },
+            "GLOBAL_POSITION_INT": {
+              "count": 2,
+              "lines": [
+                2750,
+                2777
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS": {
+              "count": 2,
+              "lines": [
+                2758,
+                2785
+              ],
+              "all_fields_equal": true
+            },
+            "RC_CHANNELS_RAW": {
+              "count": 2,
+              "lines": [
+                2759,
+                2786
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU2": {
+              "count": 2,
+              "lines": [
+                2761,
+                2788
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_IMU3": {
+              "count": 2,
+              "lines": [
+                2762,
+                2789
+              ],
+              "all_fields_equal": true
+            },
+            "SCALED_PRESSURE": {
+              "count": 2,
+              "lines": [
+                2763,
+                2790
+              ],
+              "all_fields_equal": true
+            },
+            "SYSTEM_TIME": {
+              "count": 2,
+              "lines": [
+                2765,
+                2792
+              ],
+              "all_fields_equal": true
+            }
+          }
+        }
+      ],
+      "causal_conclusion": "association with full parameter-table completion; firmware/transport scheduling cause unproven"
+    }
+  ],
+  "source_hashes": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\scripts\\spike_continuous_route.py": "d030e5f325e47b19aa3b4417a63d30a90317d5f48f4174ac85309fca69215912",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\vehicle.py": "e697a80cb92cb0616cf7c618d55f8153bbf35e2a38b06a1da353e83f714ed1fe",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\metadata.json": "7fbc2854a5166bdc7bb1ec476a4dc6661c92168384ef4814448bdfdccf164116",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\dataset_final\\dataset_manifest.json": "2d9af80b2e7728d5b277520f756159bc36aee39527774ded09abb6851652a2b0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\events.jsonl": "f794f8d7ac7c979324c839073058b240b919e62dc45a8dd323a39fe0bb458c70",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\raw\\uav_01.jsonl": "ab35bfed9918128c9cb778a0fb23a79a4445cc583fe32ed2963c6862376b079b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\raw\\uav_02.jsonl": "bf1e9a4cb5cf3fedb8cb8b750b34c0792e841afe3a379e2fabbbda348259aeea",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152031Z_08eff45d\\raw\\uav_03.jsonl": "00eef8a94b93e4917888ff35f9c016abc10bfe659d58adb5a094d3ccd846c50f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\metadata.json": "aaaec86aac04f5d6cc08c558ad05c52361a01f93861da513a1f307e3d67ace7b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\events.jsonl": "30fa21f848b47bcbc19e4fa5fab013da5848ac7fd6e5e0047fb901cec13c0917",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\raw\\uav_01.jsonl": "b5c1c226976f36f3196080908cd300c651e49687036646269655d86272c76a1b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\raw\\uav_02.jsonl": "f77cc5d6951ccbbf8443efaba78f3552f8d87063911b043d8bd3c9472460b2bc",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_20260930T152358Z_56f3a95a\\raw\\uav_03.jsonl": "8edfa0e5ef5b4dce4aab9bd62adb413dd29de80c89f57501abcc989dc72764b9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\metadata.json": "99427ba3f725dc77ce4d8dbde5d08cda05d0996edaa702b8aac057b0e4b830a1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\events.jsonl": "96a8cae54ab765b92926ce5ab111416cf98bd18f31cdffde99a96926556be4a3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\raw\\uav_01.jsonl": "7f8d160034d38f0318588cd359f7dabc28992441aae7a764873d6c27af23ad09",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_2uav_north_20260930T152726Z_85b2bcb7\\raw\\uav_02.jsonl": "9bc2a388ffc49808e326287d184e8c5ca8b9e977b30aeada5793ba66ab43e8e6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\metadata.json": "5c0b08659c265751917a8662c9426063ea6470e756c8b5562582ee1d91f885b4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\events.jsonl": "37734fed21339403c667e2ba116e32700c031275b215d634b69fa4eb924d700e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\raw\\uav_01.jsonl": "19029f33505e855f3948d5f81655e8f6e01e5d9712675528fc5ca72a579a1544",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\raw\\uav_02.jsonl": "a27b437951e21c654cc1a015f0da48136d13210a9d49f03b21bc0f0cfcfadbb6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\raw\\uav_03.jsonl": "5b54d77f98e1d68822de366193bf9766e58e03278a3ee33bc2f0bb4bcd923771",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\raw\\uav_04.jsonl": "02ed6aeab4a0e5fe5f46723642e62defba01fe3c755327a472bfacfa7c4c194e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\raw\\uav_05.jsonl": "2e0e5ece3e97062c62542aef26742e8438e08badeb08dbfdb5037834bac9642b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_smoke_6uav_20260930T152929Z_faff6f17\\raw\\uav_06.jsonl": "ebe4dfa8b8b84423d04e74acf05232aba9441f73ca54ceb86501c5707d7683a8",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\metadata.json": "95754f373072609b80d4e05c20d9da4b54c11cea5f82565b056150ffa2670210",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\events.jsonl": "5c1ec85e8784b1b7efc3c2ce91dc773ec2a15a321a66155eb482b4e4b180a73e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\raw\\uav_01.jsonl": "0a72c4270d7f409604a35101bf935d1ee50e69c9a1fcee371998356cb108f4d1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\raw\\uav_02.jsonl": "95b325fa8c7465a21512d1ab196cc1b4567efae8cdf45255287f2ce2f6eba97c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_integration_20260930\\runs\\recon_shared_demo_3uav_ready_timeout_20260930T153556Z_bf2d3529\\raw\\uav_03.jsonl": "99f600b599fc48893bd4ca92a4ecbde9b50614b453dbce9ca68d838a18b6cafd",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\metadata.json": "784b0163e7881831e1374ae60cd588b31700778e4e1e1219c03fa34da9785666",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_final_20260930\\dataset\\dataset_manifest.json": "b50ce03dce5c0de44cd1ce78ce97dbf89f0222d026ac3ed836648923c43a2371",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\events.jsonl": "93b4fffa35fc4217a0e0bf05610fb9e5950ba63cf5587d748ed6c9b4acabd5af",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\raw\\uav_01.jsonl": "e31f01953a6b4a8148f45ccf54adb05f8325c5dc726dca7b499a2aa0bd63ddaf",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\raw\\uav_02.jsonl": "ffbf699be1919180908a1633d5f07774e25421115a575307e7d32a64dd85fb74",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\raw\\uav_03.jsonl": "cc77664c8f0781d2f917832a9cb31e6f3920afa35a3e7aad899a4f7ba9e2ef8e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\raw\\uav_04.jsonl": "72dd09a94a798262370efa7034803e3f115372085d0e09895473ce019a8105c5",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\raw\\uav_05.jsonl": "f4b305bb1d00ed777d6e9cbb774cbff0e8de0ae1359afec8129c333f8b4b0e32",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\c3702ec934c44ac6b12e58d619134d58\\recon_0000_v00_20260930T153623Z_af3f4fcd\\raw\\uav_06.jsonl": "29002155386715092dbbbd56e0ea0ec3f8eb6ddb51eabb5819b018fac9edd47b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\7955ca8003e7428a94fb1c811f8ce982\\recon_0001_v00_20260930T153848Z_46d1aaa3\\metadata.json": "6181593fc803f90af73c197aaeae2e1505a95cd7a2783b6184853757ec559f7d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\7955ca8003e7428a94fb1c811f8ce982\\recon_0001_v00_20260930T153848Z_46d1aaa3\\events.jsonl": "3ed8c85899146730ab20a0624a74c7709d52a50ff9f35a860f1bdd5ddcac6f22",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\7955ca8003e7428a94fb1c811f8ce982\\recon_0001_v00_20260930T153848Z_46d1aaa3\\raw\\uav_01.jsonl": "c4af2b532814771e98adc22827286ef1b1f4c09a38b845982b54830d63794a6c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\7955ca8003e7428a94fb1c811f8ce982\\recon_0001_v00_20260930T153848Z_46d1aaa3\\raw\\uav_02.jsonl": "1c3d41e64c629011f071a946b3a5cc3f51145fb5d9770b683b5f234569cd47a4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\metadata.json": "3274a2447b0cb4a9bf1ce8baa1a84cb713e4e9767dd71503325804dafb85b54f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\events.jsonl": "572055bd293d37700d88f9f9eb705e4f716234099730e8ad4e1b593d237a1832",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\raw\\uav_01.jsonl": "a8280a075414ecbd3345e5596d9dc43cb0ef2d8c1e32a3ba908df0bde841537e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\raw\\uav_02.jsonl": "bfcdf58f34dbfe343032a652077f7d136dbca716e2cde49ec7449898bf1f6e5a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\raw\\uav_03.jsonl": "e770c7516f0693d472a281fd373a66b1f5a7f463cf0a7c4c0f49c996de3c7a45",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\raw\\uav_04.jsonl": "f719bf86b188444e680f6d9265ebc554504472fca6c96df46397a8660fc57193",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\raw\\uav_05.jsonl": "df04f42323720df96378d057f74bb67bf2181fa7447021d98d9c5e7351edf197",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_20260930\\attempts\\8d19a79c53b74646b3a96d550144e123\\recon_0002_v00_20260930T154116Z_ed102766\\raw\\uav_06.jsonl": "9eb03f1d8d0fec0ee2438b9f6c5a5b5861e6cf7023c6640417e67afadcc1ab11",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\metadata.json": "698a7a616331371cb19da5abcd95ddb7c08c048232e09c12a5695e89de7c2b1c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\events.jsonl": "dafd55191039e7f4dec539d7adef3c74916edb71e22c86b20a3085a04e8ba87c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\raw\\uav_01.jsonl": "6238701dbfd20dc1a1a6710e225c0566dae8bff749745b26d0cafa7c3e8aadde",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\raw\\uav_02.jsonl": "787e7ed3ca6fbad7853b901307961f296e3e98480aca7479c30b850b96560b87",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\raw\\uav_03.jsonl": "1e7d26f0189bbf5432e2f76b2fe901f9688762dc9758709f5a31591461687817",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\raw\\uav_04.jsonl": "2b428a6c9d683f23c2981c0669909008b782d2f09052a52bdc7ca7dd880b8790",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\raw\\uav_05.jsonl": "25eb8fdbd4185eab143bf9fb9a8c024062580404a4379442a5a0825176509854",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\3e1a733be4994cd6a378a790557fd4d2\\recon_0003_v00_20260930T155237Z_12275488\\raw\\uav_06.jsonl": "f0123a6e04ace2b1a2baa455f61619a2d10768985a06917f677f3f257db0e4e2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\24de244719f8450785c3a3a992ab326d\\recon_0004_v00_20260930T155457Z_200822e7\\metadata.json": "9c7a28a408276547c825a2904246ca46852a49046f72c4c8770349f1d62b80e3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\24de244719f8450785c3a3a992ab326d\\recon_0004_v00_20260930T155457Z_200822e7\\events.jsonl": "cd211bca712df07014292075f88aa0c7cb997ae4f27379783f2067ad772cad82",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\24de244719f8450785c3a3a992ab326d\\recon_0004_v00_20260930T155457Z_200822e7\\raw\\uav_01.jsonl": "4c077dfb6b819a179c6e3299b6b9abdd80f469f52e816c41c64d525d9c151e0b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\24de244719f8450785c3a3a992ab326d\\recon_0004_v00_20260930T155457Z_200822e7\\raw\\uav_02.jsonl": "1281b59f829730c9cc64a2a83507ef76517f0e55de38da404647c56980b0ba51",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\24de244719f8450785c3a3a992ab326d\\recon_0004_v00_20260930T155457Z_200822e7\\raw\\uav_03.jsonl": "d5eb83ab7d92620fb3d9929d638afcaebfba73ca20ec32a39c2c0527e8a39050",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\metadata.json": "8883bc9296934fe9ca0bc07caf4ba82156f2c992390bb031d5a888c96a9ca335",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\events.jsonl": "64a98bceb75a41f02b2a3b01177c1a06348e5038461b87bf709e578a40c8dd2d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\raw\\uav_01.jsonl": "fa4bc7a27bf6cd4f21c8730c855502e8490b1991f9cf44606dab0d30a641dc4b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\raw\\uav_02.jsonl": "54fd30945af7a9beeb87bcd69eac8767b9b7683172d5b514222b699e5378f47b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\raw\\uav_03.jsonl": "39a972f75c1479ca6a2cdafd6fc1230960c45f23121ab8dbd350d1f7e167bf22",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\raw\\uav_04.jsonl": "3f1facbb6ef05ee5d3abe4b5d0637f3bf351573149af93be10b700c46098d1e8",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\raw\\uav_05.jsonl": "8e6f31124ff08079c6ccae907d32be92be04ecc6dde674c6770dd5a2e0d6d2ed",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\aa6d8b9ca4384508b4fa2fd382caddc4\\recon_0005_v00_20260930T155726Z_bd656d6a\\raw\\uav_06.jsonl": "86df3f37078e8c423d54fc7836fdf69136164fde604d4253d31bef1eeb2e8d5b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\metadata.json": "6e45cadb3701ef0640720bf87474ba2656daf2953a0f94eb7736ed4bd4d6a1a3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\events.jsonl": "285a3f1b2bb3b401238e2253e38caea2dfc05c90387c8637f6530ba4545eed55",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\raw\\uav_01.jsonl": "9be2003ef3c3d1ba4b40730d5a984f72ba30f6784469a89f92e4dc62173546e0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\raw\\uav_02.jsonl": "ac888f6197a4639960c6fd07b2dbb9a358120c109cc79bea6b7afd7108f04a13",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\raw\\uav_03.jsonl": "059cda0e3d4891326d36673f90a97b68146225ce10886cd4c6efbc093b96bfbd",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\raw\\uav_04.jsonl": "7c188f1c634a953b287e9e2f779fa5e483d17946f1e1e6fc376f75b86a31d978",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\raw\\uav_05.jsonl": "0a0199eb59b594e440e364e0cca88952efece57698912c7cf3eb47aa0e7895d7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\ee92a36219d8475f8f67bd31c4511cee\\recon_0006_v00_20260930T160032Z_3eb54ff1\\raw\\uav_06.jsonl": "f59eeedf00fc3b03ad265696efc80b403409c11fd83130d4683705a5db0cb656",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\83df2e62783a4f8a8e0a0a40e6f130e7\\recon_0007_v00_20260930T160246Z_f7b6895d\\metadata.json": "6c99d3ede1442943b2a3a7e68631f97e1b4f2eb2c7c0cba1bc6461e9c79e079b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\83df2e62783a4f8a8e0a0a40e6f130e7\\recon_0007_v00_20260930T160246Z_f7b6895d\\events.jsonl": "872aac98167608693d3e31fa4eb46af87791863c2ee2c02b92bc4cbb5de59a49",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\83df2e62783a4f8a8e0a0a40e6f130e7\\recon_0007_v00_20260930T160246Z_f7b6895d\\raw\\uav_01.jsonl": "cf590cd220ce0a2af3c15ebffa3145b2d0bd9cbd3f5b9ae6722cf4378633d327",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\83df2e62783a4f8a8e0a0a40e6f130e7\\recon_0007_v00_20260930T160246Z_f7b6895d\\raw\\uav_02.jsonl": "e21d866515bebc874944c0c782aeb27548b68af408679557b1cf1113b0abb578",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\83df2e62783a4f8a8e0a0a40e6f130e7\\recon_0007_v00_20260930T160246Z_f7b6895d\\raw\\uav_03.jsonl": "7ef8c887bbec56139456c329e62aa07304672a1325d1793662cf7da0db24c3da",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\39ac9d85ec84461da28e9de6ebc9677d\\recon_0008_v00_20260930T160457Z_bcd46846\\metadata.json": "47c3a4472ccee8ef3f3de4dfd20e64f14293ead19c31fa4899efdf6a5f5566bd",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\39ac9d85ec84461da28e9de6ebc9677d\\recon_0008_v00_20260930T160457Z_bcd46846\\events.jsonl": "45c83b80889ea2de6b88b4b06a62f1952feac6ca27b5380123b1141f752c57b1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\39ac9d85ec84461da28e9de6ebc9677d\\recon_0008_v00_20260930T160457Z_bcd46846\\raw\\uav_01.jsonl": "a83721e9ef015580ed1ff2458bb8a1685b88a145c8fd6a3cec1e4f8b2cf70615",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\39ac9d85ec84461da28e9de6ebc9677d\\recon_0008_v00_20260930T160457Z_bcd46846\\raw\\uav_02.jsonl": "460d38240fb226dd604aa96f3d47f0c3e593648dcdd3943b3f08c10960025596",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\4f28d2ef58014c6fb175b74bdaeadb18\\recon_0009_v00_20260930T160719Z_a58405a9\\metadata.json": "37d93b1491b8dd2303af6761ff799af8c7e5fd319b2e24133964307c1357703c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\4f28d2ef58014c6fb175b74bdaeadb18\\recon_0009_v00_20260930T160719Z_a58405a9\\events.jsonl": "1f6df59eb1ebb0bab00c08ce2fc965c69332512fe8fbdd5263e90955d66c28f2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\4f28d2ef58014c6fb175b74bdaeadb18\\recon_0009_v00_20260930T160719Z_a58405a9\\raw\\uav_01.jsonl": "1024fb999df1f80c3736cc6373ebe6e3b9bad4d2a96a18c8fbc9222a577504cc",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\4f28d2ef58014c6fb175b74bdaeadb18\\recon_0009_v00_20260930T160719Z_a58405a9\\raw\\uav_02.jsonl": "7c12402611ca17a48714d76af04613f7413bd6879c8f3f5c16df93fa79db2a9a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v03_pilot_remaining_20260930\\attempts\\4f28d2ef58014c6fb175b74bdaeadb18\\recon_0009_v00_20260930T160719Z_a58405a9\\raw\\uav_03.jsonl": "75a05b19624fa5044649518f60b7cc0da731377f75b0fa3400fcc22f47efa596",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\metadata.json": "4723a9729fc158a8e6a88ba697564998010a935b7aeef2332c2e6648f5e40811",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\events.jsonl": "72c49b4a7262a0e053ee7ea0f00ad252e8aaeaf167605c64f7d066f75f7e3bc0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_01.jsonl": "e38f177e5fd8ebaa9d9d55d57d97904721e27813d95ed190a985078dbb37ad83",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_02.jsonl": "f4995d555d4b6c10670991c2ae925ce7af2d5bf2eeccdd18e627ec3c051d6099",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_03.jsonl": "edf54ba70a24fc4696e68b931ed5c2e03355e90bce0d65285c7c97e1fb43c786",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\metadata.json": "f5ea308eaef91c99cc1d9f92dbc9dfb502302946e164e56f49f306dee5083984",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\events.jsonl": "f814dc3f5f5b797979d5d33e5e3791d4ad666462028525bc86cc0da679a9cba4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_01.jsonl": "baab1282d30f4b637b2674cb6b49d5acf21e90545b260fe8f14f292b5d5ecfbb",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_02.jsonl": "dcb8623bfcf8e5db69bac2b0ad727c534ceea01fb90af35d9d919e89b1c4dd15",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_03.jsonl": "f403a0190a017a0c4e9984ff6f1404a313f9a4c0bdc445af3d2044f8ad472b27"
+  },
+  "source_hashes_unchanged_after_scan": true,
+  "audit_script_sha256": "69b7eb177daa2754a5e1b386bc8b446d3826c4ea953ce9f1e37ecd6ec20b6137",
+  "source_production_code_modified": false,
+  "simulator_started": false
+}
