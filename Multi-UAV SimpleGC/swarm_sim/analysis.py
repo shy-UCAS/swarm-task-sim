@@ -55,6 +55,9 @@ def analyze_run(directory, quality_policy=None):
     directory = Path(directory).resolve()
     metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
     scene = metadata["scenario"]
+    if scene.get("task_spec", {}).get("schema_version") == 3:
+        from .analysis_v3 import analyze_run_v3
+        return analyze_run_v3(directory, quality_policy)
     scenario_path = directory / "scenario.json"
     if scenario_path.is_file() and json.loads(scenario_path.read_text(encoding="utf-8")) != scene:
         raise ValueError("scenario.json differs from metadata.scenario; run sources are contradictory")
@@ -201,6 +204,9 @@ def analyze_run(directory, quality_policy=None):
             "semantic_validation.json": semantic["semantic_validation"],
             "phase_windows.json": semantic["phase_windows"], "execution_constraints.json": constraints,
             "lifecycle_clock_models.json": lifecycle_clocks}
+        from .execution_metrics import compute_execution_metrics
+        extra_artifacts["execution_metrics.json"] = compute_execution_metrics(
+            scene, traces, semantic["phase_windows"], events=events, metadata=metadata, time_epoch=epoch)
     else:
         labels = evaluate_task(scene, traces, events, metadata, epoch, clocks)
     quality.update(eligibility(quality, labels["mission_success"]))

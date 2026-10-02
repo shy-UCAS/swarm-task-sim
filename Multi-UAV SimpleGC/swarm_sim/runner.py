@@ -22,6 +22,9 @@ from .quality import policy_hash, resolve_policy
 
 
 def run_scene(scenario, output_root, binary, parameters, base_port=19100, quality_policy=None, generation_context=None):
+    if scenario.get("task_spec", {}).get("schema_version") == 3:
+        from .runner_v3 import run_scene_v3
+        return run_scene_v3(scenario, output_root, binary, parameters, base_port, quality_policy, generation_context)
     scenario = validate(scenario)
     validate_task_binding(scenario)
     policy = resolve_policy(quality_policy)
@@ -43,7 +46,8 @@ def run_scene(scenario, output_root, binary, parameters, base_port=19100, qualit
     event_file = (directory / "events.jsonl").open("w", encoding="utf-8", buffering=1)
 
     def event(kind, agent=None, **fields):
-        packet = dict(event=kind, agent_id=agent, t=time.perf_counter() - epoch, **fields)
+        stamp = fields["recv_monotonic_s"] if kind == "waypoint_reached" else time.perf_counter()
+        packet = dict(event=kind, agent_id=agent, t=stamp - epoch, **fields)
         with event_lock:
             events.append(packet)
             event_file.write(json.dumps(packet, ensure_ascii=False) + "\n")

@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 
 from .generation import checked_path, file_hash
-from .protocol import manifest_protocol, semantic_protocol, validate_artifact_protocol
+from .protocol import PROTOCOL_FIELDS, manifest_protocol, supported_protocols, validate_artifact_protocol
 from .quality import policy_hash, resolve_policy
 
 FEATURE_COLUMNS = ("east_m", "north_m", "up_m", "ve_m_s", "vn_m_s", "vu_m_s")
@@ -22,8 +22,7 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
     root = Path(path).resolve()
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     protocol = manifest_protocol(manifest)
-    supported = semantic_protocol({"task_spec": {"schema_version": 2}} if protocol["task_kind"] == "mission_v2" else {})
-    if protocol != supported:
+    if tuple(protocol[k] for k in PROTOCOL_FIELDS) not in supported_protocols():
         raise ValueError("unsupported semantic protocol in episode")
     if ("quality_policy" not in manifest or "quality_policy_sha256" not in manifest
             or policy_hash(resolve_policy(manifest["quality_policy"])) != manifest["quality_policy_sha256"]):
@@ -55,6 +54,15 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
             raise ValueError("episode manifest differs from frozen dataset selection")
         if entry.get("family_id") != manifest.get("family_id"):
             raise ValueError("dataset and episode family identity disagree")
+        if protocol["task_kind"] == "mission_v3":
+            v3_keys = ("control_mode", "family_scheme", "episode_quality_eligible", "intent", "mission_success",
+                       "semantic_consistency", "run_status", "clock_quality", "agent_ids",
+                       "benchmark_eligible", "strict_benchmark_eligible")
+            if any(type(entry.get(k)) is not type(manifest.get(k)) or entry.get(k) != manifest.get(k) for k in v3_keys):
+                raise ValueError("dataset and v3 episode metadata disagree")
+            modes = dataset.get("control_modes", [])
+            if manifest["control_mode"] not in modes or (len(modes)>1 and dataset.get("allow_mixed_control_modes") is not True):
+                raise ValueError("dataset mixes control_mode without explicit permission")
     expected = agent_ids if agent_ids is not None else manifest.get("agent_ids")
     if expected is None and (root / "task.json").is_file():
         task = json.loads((root / "task.json").read_text(encoding="utf-8"))
@@ -118,4 +126,9 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
     metadata.update(split=entry.get("split"), feature_columns=list(FEATURE_COLUMNS), normalized=False,
                     missing_row_policy="zero-filled with false mask", source_directory=str(root))
     metadata.update(protocol)
+    if protocol["task_kind"] == "mission_v3":
+        from .observation_processing import processing_versions
+        metadata.update({key: manifest.get(key) for key in ("family_scheme", "control_mode", "episode_quality_eligible",
+                        "mission_success", "semantic_consistency", *processing_versions())})
+        metadata["invalid_intervals"] = json.loads((root/"quality.json").read_text(encoding="utf-8")).get("invalid_intervals", {})
     return dict(x=x, mask=mask, t_s=stamps, agent_ids=expected, targets=labels, metadata=metadata)

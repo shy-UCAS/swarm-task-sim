@@ -45,6 +45,9 @@ def audit_dataset(dataset_path, generation_manifest=None, attempt_ledger=None):
     dataset = _read(root / "dataset_manifest.json")
     if not isinstance(dataset, dict) or not isinstance(dataset.get("episodes"), list):
         raise ValueError("dataset_manifest.json with episodes is required")
+    if dataset.get("semantic_protocol", {}).get("task_kind") == "mission_v3":
+        from .dataset_audit_v3 import audit_dataset_v3
+        return audit_dataset_v3(root, generation_manifest, attempt_ledger)
     entries = dataset["episodes"]
     family_splits, split_families = defaultdict(set), defaultdict(set)
     split_episodes, clocks, vehicle_counts, axes, return_choices = Counter(), Counter(), Counter(), Counter(), Counter()

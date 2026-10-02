@@ -17,13 +17,16 @@ def family_split(family_id, salt="simplegc-v02"):
     return "train" if bucket < 70 else ("validation" if bucket < 85 else "test")
 
 
-def build_dataset(run_paths, output, salt="simplegc-v02"):
+def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control_modes=False):
+    if not isinstance(allow_mixed_control_modes, bool):
+        raise ValueError("allow_mixed_control_modes must be boolean")
     output = Path(output).resolve()
     # Validate all inputs before making an export; source runs are never re-evaluated silently.
     entries = []
     seen = set()
     policies = {}
     protocols = {}
+    control_modes = set()
     for path in run_paths:
         root = Path(path).resolve()
         pointer = json.loads((root / "analysis_latest.json").read_text(encoding="utf-8"))
@@ -61,6 +64,10 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
             if candidate.parent != analysis or digest(candidate) != expected:
                 raise ValueError(f"analysis artifact changed: {name}")
         validate_artifact_protocol(manifest, analysis)
+        if protocol["task_kind"] == "mission_v3":
+            control_modes.add(manifest["control_mode"])
+            if len(control_modes) > 1 and not allow_mixed_control_modes:
+                raise ValueError("mixed control_mode requires explicit allow_mixed_control_modes")
         for name, expected in manifest["source_sha256"].items():
             candidate = (root / name).resolve()
             if not candidate.is_relative_to(root) or digest(candidate) != expected:
@@ -76,6 +83,9 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
             evaluation_context=manifest.get("evaluation_context"),
             run_status=manifest["run_status"], source_run=str(root),
             analysis_manifest_sha256=digest(manifest_path))))
+        if protocol["task_kind"] == "mission_v3":
+            entries[-1][1].update({key: manifest.get(key) for key in ("family_scheme", "control_mode", "episode_quality_eligible",
+                                  "mission_success", "semantic_consistency", "intent")})
     if not entries:
         raise ValueError("provide at least one analyzed run")
     output.mkdir(parents=True, exist_ok=False)
@@ -100,5 +110,11 @@ def build_dataset(run_paths, output, salt="simplegc-v02"):
                     strict_eligible=sum(e["strict_benchmark_eligible"] for _, e in entries),
                     failed_runs=sum(e["run_status"] != "completed" for _, e in entries)),
         limitation="no automatic task-family discovery, sliding windows, text generation or sensor simulation")
+    if result["semantic_protocol"]["task_kind"] == "mission_v3":
+        result.update(family_scheme="scene_content_v1", control_modes=sorted(control_modes),
+                      allow_mixed_control_modes=allow_mixed_control_modes, mixed_control_modes=len(control_modes)>1)
+        result["counts"].update(episode_quality_eligible=sum(e["episode_quality_eligible"] for _,e in entries),
+                               mission_success=sum(e["mission_success"] is True for _,e in entries),
+                               semantic_agree=sum(e["semantic_consistency"] == "agree" for _,e in entries))
     write_json(output / "dataset_manifest.json", result)
     return result

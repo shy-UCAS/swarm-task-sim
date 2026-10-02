@@ -159,6 +159,17 @@ def _lifecycle_separation(traces, agents, start, end, threshold, max_gap, allowa
 def evaluate_execution_constraints(scene, lifecycle_observations, lifecycle_truth, events,
                                    metadata, lifecycle_epoch, clocks=None):
     spec = scene["task_spec"]
+    if spec.get("schema_version") == 3:
+        # Both v3 control modes share the same lifecycle constraint contract.
+        # Adapt only the location of platform capabilities; the sampled checks
+        # and the frozen v2 implementation below are unchanged.
+        from .protocol import semantic_protocol
+        adapted = dict(scene, task_spec=dict(spec, schema_version=2, platform=spec["scenario"]["platform"]))
+        result = evaluate_execution_constraints(adapted, lifecycle_observations, lifecycle_truth,
+                                                events, metadata, lifecycle_epoch, clocks)
+        result["constraint_validation_version"] = semantic_protocol(scene)["execution_constraints_version"]
+        result["control_mode"] = spec["execution"]["control_mode"]
+        return result
     platform, world, execution = spec["platform"], spec["scenario"]["world"], spec["execution"]
     shift = metadata["run_epoch_monotonic_s"] - lifecycle_epoch
     clocks = clocks or metadata.get("lifecycle_clock_models", {})

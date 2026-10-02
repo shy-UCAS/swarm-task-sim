@@ -40,6 +40,8 @@ class Vehicle:
         self.raw_path = raw_path
         self.target_component = 1
         self.record_lifecycle = record_lifecycle
+        self.execution_waypoint_indices = None
+        self._execution_context = None
 
     def lifecycle_event(self, kind):
         if not self.record_lifecycle:
@@ -97,6 +99,8 @@ class Vehicle:
                             self.latest[kind] = (received, message)
                             self.inbox.append((self.sequence, kind, message))
                             self.condition.notify_all()
+                        if kind == "MISSION_ITEM_REACHED":
+                            self.record_waypoint_reached(message, received)
                     if now >= next_flush:
                         raw.flush()
                         next_flush = now + 1
@@ -259,6 +263,11 @@ class Vehicle:
             self.check()
             self.cancel.wait(min(0.01, max(0, epoch - time.perf_counter())))
         cursor = self.cursor()
+        # A passive diagnostic sink in the existing RX owner sees every seq,
+        # including messages received while mode(AUTO) awaits its heartbeat.
+        # It never consumes the inbox or changes the terminal-only wait below.
+        self._execution_context = dict(phase=phase, terminal_seq=mission_count - 1,
+                                      planner_indices=getattr(self, "execution_waypoint_indices", None))
         self.event("phase_start_sent", self.id, phase=phase)
         self.mode("AUTO")
         # AUTO starts the preselected mission. Avoid a second MISSION_START that
@@ -272,6 +281,20 @@ class Vehicle:
         # SITL's default low throttle would descend during a scheduling barrier.
         if not self.record_lifecycle:
             self.mode("LOITER")
+
+    def record_waypoint_reached(self, message, received):
+        context = getattr(self, "_execution_context", None)
+        if context is None:
+            return
+        seq = int(message.seq)
+        route_index = seq - 2 if seq >= 2 else None
+        indices = context["planner_indices"]
+        planner_index = (indices[route_index] if indices is not None and route_index is not None
+                         and route_index < len(indices) else None)
+        self.event("waypoint_reached", self.id, phase=context["phase"], seq=seq,
+                   route_index=route_index, planner_index=planner_index,
+                   terminal=seq == context["terminal_seq"], recv_monotonic_s=received,
+                   time_source="single_rx_host_receive")
 
     def land(self, timeout=60):
         self.lifecycle_event("landing_started")

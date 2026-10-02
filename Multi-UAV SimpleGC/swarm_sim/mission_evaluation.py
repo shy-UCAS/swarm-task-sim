@@ -241,6 +241,9 @@ def _evaluate_channel(scene, traces, windows, centers, grid_info, clocks):
 def evaluate_mission(scene, traces, truth_traces, events, metadata, time_epoch, clocks=None):
     """Evaluate v2 independently on SIM truth and cooperative FCU telemetry."""
     spec = scene["task_spec"]
+    if spec.get("schema_version") == 3:
+        from .mission_evaluation_v3 import evaluate_mission_v3
+        return evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoch, clocks)
     if spec.get("schema_version") != 2:
         raise ValueError("shared mission evaluation requires TaskSpec schema_version 2")
     clocks = clocks or {}

@@ -30,6 +30,7 @@ def main(argv=None):
     dataset.add_argument("runs", nargs="+", type=Path)
     dataset.add_argument("--output", type=Path, required=True)
     dataset.add_argument("--split-salt", default="simplegc-v02")
+    dataset.add_argument("--allow-mixed-control-modes", action="store_true", help="Explicit v3 comparison export; recorded in manifest")
     audit = sub.add_parser("audit", help="Read-only check of a legacy trajectory JSON")
     audit.add_argument("scenario", type=Path)
     audit.add_argument("--time-unit", choices=["index", "seconds"], default="index")
@@ -81,7 +82,8 @@ def main(argv=None):
             return 0
         if args.command == "dataset":
             from swarm_sim.dataset import build_dataset
-            result = build_dataset(args.runs, args.output, args.split_salt)
+            result = build_dataset(args.runs, args.output, args.split_salt,
+                                   allow_mixed_control_modes=args.allow_mixed_control_modes)
             print(json.dumps(dict(output=str(args.output), counts=result["counts"]), indent=2))
             return 0
         if args.command == "audit":
