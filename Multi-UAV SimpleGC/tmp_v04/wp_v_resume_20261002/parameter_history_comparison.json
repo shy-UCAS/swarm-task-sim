@@ -1,0 +1,1527 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-02T08:34:14.859111+00:00",
+  "status": "PASS",
+  "scope": "offline parameter-classification replay only; not a new SITL result or retroactive V01 success",
+  "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+  "wp_s_confirmation_sha256": "31c5dbf26bfa585ef2438d01867994c088e02bf02d9d231bd40465863224eea4",
+  "summary": {
+    "agent_readbacks": 9,
+    "stat_reset_pass_count": 9,
+    "complete_comparison_pass_count": 8,
+    "partial_comparison_rejected_count": 1,
+    "input_files_verified_unchanged": 17,
+    "changed_input_files": []
+  },
+  "readbacks": [
+    {
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "run_directory": "runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_01",
+      "source_sha256": {
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\metadata.json": "4723a9729fc158a8e6a88ba697564998010a935b7aeef2332c2e6648f5e40811",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\firmware_parameters.json": "0284db1e46d4d25c10dcc8eac077fbca210bf42a6ddef50416cb0d687b623436",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\spike_metrics.json": "6c6a90c550593b1684dba0b6cbb6fc6c185a7f3a81c32bbba17be289cf3a5000",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_01.jsonl": "e38f177e5fd8ebaa9d9d55d57d97904721e27813d95ed190a985078dbb37ad83"
+      },
+      "run_started_utc": "2026-10-01T15:32:35.876403+00:00",
+      "original_run_status": "completed",
+      "original_spike_decision": "UNKNOWN",
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339262368.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T15:32:48+00:00",
+          "run_started_utc": "2026-10-01T15:32:35.876403+00:00",
+          "delta_s": 12.123597,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1202,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "run_directory": "runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_02",
+      "source_sha256": {
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\metadata.json": "4723a9729fc158a8e6a88ba697564998010a935b7aeef2332c2e6648f5e40811",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\firmware_parameters.json": "0284db1e46d4d25c10dcc8eac077fbca210bf42a6ddef50416cb0d687b623436",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\spike_metrics.json": "6c6a90c550593b1684dba0b6cbb6fc6c185a7f3a81c32bbba17be289cf3a5000",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_02.jsonl": "f4995d555d4b6c10670991c2ae925ce7af2d5bf2eeccdd18e627ec3c051d6099"
+      },
+      "run_started_utc": "2026-10-01T15:32:35.876403+00:00",
+      "original_run_status": "completed",
+      "original_spike_decision": "UNKNOWN",
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "COMPASS_DEC",
+            "reference_value": -0.09687499701976776,
+            "observed_value": -0.09687531739473343,
+            "explanation": "automatic magnetic declination depends on the simulated home location",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SIM_PLD_LON",
+            "reference_value": 120.00009155273438,
+            "observed_value": 120.00028228759766,
+            "explanation": "simulated precision-landing reference initialized from home longitude",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SYSID_THISMAV",
+            "reference_value": 1.0,
+            "observed_value": 2.0,
+            "explanation": "per-instance system ID supplied by SITLProcesses",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339262368.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T15:32:48+00:00",
+          "run_started_utc": "2026-10-01T15:32:35.876403+00:00",
+          "delta_s": 12.123597,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1199,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T153235Z_5eddb7ae",
+      "run_directory": "runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "agent_id": "uav_03",
+      "source_sha256": {
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\metadata.json": "4723a9729fc158a8e6a88ba697564998010a935b7aeef2332c2e6648f5e40811",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\firmware_parameters.json": "0284db1e46d4d25c10dcc8eac077fbca210bf42a6ddef50416cb0d687b623436",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\spike_metrics.json": "6c6a90c550593b1684dba0b6cbb6fc6c185a7f3a81c32bbba17be289cf3a5000",
+        "runs\\spike_v04_20261001T153235Z_5eddb7ae\\raw\\uav_03.jsonl": "edf54ba70a24fc4696e68b931ed5c2e03355e90bce0d65285c7c97e1fb43c786"
+      },
+      "run_started_utc": "2026-10-01T15:32:35.876403+00:00",
+      "original_run_status": "completed",
+      "original_spike_decision": "UNKNOWN",
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "COMPASS_DEC",
+            "reference_value": -0.09687499701976776,
+            "observed_value": -0.0968756228685379,
+            "explanation": "automatic magnetic declination depends on the simulated home location",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SIM_PLD_LON",
+            "reference_value": 120.00009155273438,
+            "observed_value": 120.0004653930664,
+            "explanation": "simulated precision-landing reference initialized from home longitude",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SYSID_THISMAV",
+            "reference_value": 1.0,
+            "observed_value": 3.0,
+            "explanation": "per-instance system ID supplied by SITLProcesses",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339262368.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T15:32:48+00:00",
+          "run_started_utc": "2026-10-01T15:32:35.876403+00:00",
+          "delta_s": 12.123597,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1199,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T153806Z_42150c31",
+      "run_directory": "runs\\spike_v04_20261001T153806Z_42150c31",
+      "agent_id": "uav_01",
+      "source_sha256": {
+        "runs\\spike_v04_20261001T153806Z_42150c31\\metadata.json": "f5ea308eaef91c99cc1d9f92dbc9dfb502302946e164e56f49f306dee5083984",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\firmware_parameters.json": "6b3a3b58e41b7944f175c78868f3b4ee3023f8402128a3e2adfc6b3f08d3fe22",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\spike_metrics.json": "7d30709a213401a9d6a02b8a46fa1298f0e4834b90e49bdce1c90757d08d21e7",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_01.jsonl": "baab1282d30f4b637b2674cb6b49d5acf21e90545b260fe8f14f292b5d5ecfbb"
+      },
+      "run_started_utc": "2026-10-01T15:38:06.282036+00:00",
+      "original_run_status": "completed",
+      "original_spike_decision": "UNKNOWN",
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "STAT_RESET",
+            "reference_value": 339262368.0,
+            "observed_value": 339262688.0,
+            "explanation": "startup timestamp checked against this run start within +/-300 s; not cross-run equality",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339262688.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T15:38:08+00:00",
+          "run_started_utc": "2026-10-01T15:38:06.282036+00:00",
+          "delta_s": 1.717964,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1201,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T153806Z_42150c31",
+      "run_directory": "runs\\spike_v04_20261001T153806Z_42150c31",
+      "agent_id": "uav_02",
+      "source_sha256": {
+        "runs\\spike_v04_20261001T153806Z_42150c31\\metadata.json": "f5ea308eaef91c99cc1d9f92dbc9dfb502302946e164e56f49f306dee5083984",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\firmware_parameters.json": "6b3a3b58e41b7944f175c78868f3b4ee3023f8402128a3e2adfc6b3f08d3fe22",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\spike_metrics.json": "7d30709a213401a9d6a02b8a46fa1298f0e4834b90e49bdce1c90757d08d21e7",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_02.jsonl": "dcb8623bfcf8e5db69bac2b0ad727c534ceea01fb90af35d9d919e89b1c4dd15"
+      },
+      "run_started_utc": "2026-10-01T15:38:06.282036+00:00",
+      "original_run_status": "completed",
+      "original_spike_decision": "UNKNOWN",
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "COMPASS_DEC",
+            "reference_value": -0.09687499701976776,
+            "observed_value": -0.09687531739473343,
+            "explanation": "automatic magnetic declination depends on the simulated home location",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SIM_PLD_LON",
+            "reference_value": 120.00009155273438,
+            "observed_value": 120.00028228759766,
+            "explanation": "simulated precision-landing reference initialized from home longitude",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "STAT_RESET",
+            "reference_value": 339262368.0,
+            "observed_value": 339262688.0,
+            "explanation": "startup timestamp checked against this run start within +/-300 s; not cross-run equality",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SYSID_THISMAV",
+            "reference_value": 1.0,
+            "observed_value": 2.0,
+            "explanation": "per-instance system ID supplied by SITLProcesses",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339262688.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T15:38:08+00:00",
+          "run_started_utc": "2026-10-01T15:38:06.282036+00:00",
+          "delta_s": 1.717964,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1198,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T153806Z_42150c31",
+      "run_directory": "runs\\spike_v04_20261001T153806Z_42150c31",
+      "agent_id": "uav_03",
+      "source_sha256": {
+        "runs\\spike_v04_20261001T153806Z_42150c31\\metadata.json": "f5ea308eaef91c99cc1d9f92dbc9dfb502302946e164e56f49f306dee5083984",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\firmware_parameters.json": "6b3a3b58e41b7944f175c78868f3b4ee3023f8402128a3e2adfc6b3f08d3fe22",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\spike_metrics.json": "7d30709a213401a9d6a02b8a46fa1298f0e4834b90e49bdce1c90757d08d21e7",
+        "runs\\spike_v04_20261001T153806Z_42150c31\\raw\\uav_03.jsonl": "f403a0190a017a0c4e9984ff6f1404a313f9a4c0bdc445af3d2044f8ad472b27"
+      },
+      "run_started_utc": "2026-10-01T15:38:06.282036+00:00",
+      "original_run_status": "completed",
+      "original_spike_decision": "UNKNOWN",
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "COMPASS_DEC",
+            "reference_value": -0.09687499701976776,
+            "observed_value": -0.0968756228685379,
+            "explanation": "automatic magnetic declination depends on the simulated home location",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SIM_PLD_LON",
+            "reference_value": 120.00009155273438,
+            "observed_value": 120.0004653930664,
+            "explanation": "simulated precision-landing reference initialized from home longitude",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "STAT_RESET",
+            "reference_value": 339262368.0,
+            "observed_value": 339262688.0,
+            "explanation": "startup timestamp checked against this run start within +/-300 s; not cross-run equality",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SYSID_THISMAV",
+            "reference_value": 1.0,
+            "observed_value": 3.0,
+            "explanation": "per-instance system ID supplied by SITLProcesses",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339262688.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T15:38:08+00:00",
+          "run_started_utc": "2026-10-01T15:38:06.282036+00:00",
+          "delta_s": 1.717964,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1198,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T182936Z_6bca981d",
+      "run_directory": "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d",
+      "agent_id": "uav_01",
+      "source_sha256": {
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\metadata.json": "5e6f52ceb98049023bcbd754c16dd2fa1f6ac7cff5bd188b12c3f8e1806ce6e3",
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\firmware_parameters.json": "d891bf7c60a0a43717c3d5341b5ac0b6acef3f5cdd0943b545ccd39dbd8f87b8",
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\raw\\uav_01.jsonl": "9b5b2bcab55233df302cb8e50c21fcf21e0854bbc67e27ee8ed37d1920415333"
+      },
+      "run_started_utc": "2026-10-01T18:29:36.418436+00:00",
+      "original_run_status": "failed",
+      "original_spike_decision": null,
+      "original_readback_complete": false,
+      "original_received_count": 1105,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "reject partial readback",
+      "comparison_error": "unexplained parameter readback differences require review/new WP-S GO: parameter readback incomplete or parameter collection differs, AUTOTUNE_AGGR, AUTOTUNE_AXES, AUTOTUNE_MIN_D, CAM_RC_TYPE, FFT_ENABLE, FHLD_BRAKE_RATE, FHLD_FILT_HZ, FHLD_FLOW_MAX, FHLD_QUAL_MIN, FHLD_XY_FILT_HZ, FHLD_XY_I, FHLD_XY_IMAX, FHLD_XY_P, FOLL_ENABLE, FS_OPTIONS, FS_VIBE_ENABLE, LAND_ALT_LOW, OA_TYPE, PILOT_SPEED_DN, RC10_DZ, RC10_MAX, RC10_MIN, RC10_OPTION, RC10_REVERSED, RC10_TRIM, RC11_DZ, RC11_MAX, RC11_MIN, RC11_OPTION, RC11_REVERSED, RC11_TRIM, RC12_DZ, RC12_MAX, RC12_MIN, RC12_OPTION, RC12_REVERSED, RC12_TRIM, RC13_DZ, RC13_MAX, RC13_MIN, RC13_OPTION, RC13_REVERSED, RC13_TRIM, RC14_DZ, RC14_MAX, RC14_MIN, RC14_OPTION, RC14_REVERSED, RC14_TRIM, RC15_DZ, RC15_MAX, RC15_MIN, RC15_OPTION, RC15_REVERSED, RC15_TRIM, RC16_DZ, RC16_MAX, RC16_MIN, RC16_OPTION, RC16_REVERSED, RC16_TRIM, RC6_DZ, RC6_OPTION, RC6_REVERSED, RC7_DZ, RC7_MAX, RC7_MIN, RC7_OPTION, RC7_REVERSED, RC7_TRIM, RC8_DZ, RC8_MAX, RC8_MIN, RC8_OPTION, RC8_REVERSED, RC8_TRIM, RC9_DZ, RC9_MAX, RC9_MIN, RC9_OPTION, RC9_REVERSED, RC9_TRIM, RC_OPTIONS, RC_OVERRIDE_TIME, SCR_ENABLE, SID_AXIS, SRTL_ACCURACY, SRTL_POINTS, TCAL_ENABLED, TUNE_MAX, TUNE_MIN, VISO_ORIENT, VISO_POS_X, VISO_POS_Y, VISO_POS_Z, VISO_TYPE, ZIGZAG_AUTO_PUMP",
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "AUTOTUNE_AGGR",
+            "reference_value": 0.10000000149011612,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "AUTOTUNE_AXES",
+            "reference_value": 7.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "AUTOTUNE_MIN_D",
+            "reference_value": 0.0010000000474974513,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "CAM_RC_TYPE",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FFT_ENABLE",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_BRAKE_RATE",
+            "reference_value": 8.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_FILT_HZ",
+            "reference_value": 5.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_FLOW_MAX",
+            "reference_value": 0.6000000238418579,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_QUAL_MIN",
+            "reference_value": 10.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_XY_FILT_HZ",
+            "reference_value": 5.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_XY_I",
+            "reference_value": 0.30000001192092896,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_XY_IMAX",
+            "reference_value": 3000.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FHLD_XY_P",
+            "reference_value": 0.20000000298023224,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FOLL_ENABLE",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FS_OPTIONS",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "FS_VIBE_ENABLE",
+            "reference_value": 1.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "LAND_ALT_LOW",
+            "reference_value": 1000.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "OA_TYPE",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "PILOT_SPEED_DN",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC10_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC10_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC10_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC10_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC10_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC10_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC11_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC11_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC11_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC11_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC11_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC11_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC12_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC12_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC12_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC12_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC12_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC12_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC13_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC13_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC13_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC13_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC13_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC13_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC14_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC14_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC14_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC14_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC14_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC14_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC15_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC15_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC15_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC15_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC15_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC15_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC16_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC16_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC16_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC16_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC16_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC16_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC6_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC6_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC6_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC7_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC7_MAX",
+            "reference_value": 2000.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC7_MIN",
+            "reference_value": 1000.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC7_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC7_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC7_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC8_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC8_MAX",
+            "reference_value": 2000.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC8_MIN",
+            "reference_value": 1000.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC8_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC8_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC8_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC9_DZ",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC9_MAX",
+            "reference_value": 1900.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC9_MIN",
+            "reference_value": 1100.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC9_OPTION",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC9_REVERSED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC9_TRIM",
+            "reference_value": 1500.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC_OPTIONS",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "RC_OVERRIDE_TIME",
+            "reference_value": 3.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "SCR_ENABLE",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "SID_AXIS",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "SRTL_ACCURACY",
+            "reference_value": 2.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "SRTL_POINTS",
+            "reference_value": 300.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "STAT_RESET",
+            "reference_value": 339262368.0,
+            "observed_value": 339272992.0,
+            "explanation": "startup timestamp checked against this run start within +/-300 s; not cross-run equality",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "TCAL_ENABLED",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "TUNE_MAX",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "TUNE_MIN",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "VISO_ORIENT",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "VISO_POS_X",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "VISO_POS_Y",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "VISO_POS_Z",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "VISO_TYPE",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          },
+          {
+            "name": "ZIGZAG_AUTO_PUMP",
+            "reference_value": 0.0,
+            "observed_value": null,
+            "explanation": null,
+            "allowed_instance_difference": false
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": false,
+        "stat_reset": {
+          "raw_value": 339272992.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T18:29:52+00:00",
+          "run_started_utc": "2026-10-01T18:29:36.418436+00:00",
+          "delta_s": 15.581564,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1104,
+        "unexplained": [
+          "parameter readback incomplete or parameter collection differs",
+          "AUTOTUNE_AGGR",
+          "AUTOTUNE_AXES",
+          "AUTOTUNE_MIN_D",
+          "CAM_RC_TYPE",
+          "FFT_ENABLE",
+          "FHLD_BRAKE_RATE",
+          "FHLD_FILT_HZ",
+          "FHLD_FLOW_MAX",
+          "FHLD_QUAL_MIN",
+          "FHLD_XY_FILT_HZ",
+          "FHLD_XY_I",
+          "FHLD_XY_IMAX",
+          "FHLD_XY_P",
+          "FOLL_ENABLE",
+          "FS_OPTIONS",
+          "FS_VIBE_ENABLE",
+          "LAND_ALT_LOW",
+          "OA_TYPE",
+          "PILOT_SPEED_DN",
+          "RC10_DZ",
+          "RC10_MAX",
+          "RC10_MIN",
+          "RC10_OPTION",
+          "RC10_REVERSED",
+          "RC10_TRIM",
+          "RC11_DZ",
+          "RC11_MAX",
+          "RC11_MIN",
+          "RC11_OPTION",
+          "RC11_REVERSED",
+          "RC11_TRIM",
+          "RC12_DZ",
+          "RC12_MAX",
+          "RC12_MIN",
+          "RC12_OPTION",
+          "RC12_REVERSED",
+          "RC12_TRIM",
+          "RC13_DZ",
+          "RC13_MAX",
+          "RC13_MIN",
+          "RC13_OPTION",
+          "RC13_REVERSED",
+          "RC13_TRIM",
+          "RC14_DZ",
+          "RC14_MAX",
+          "RC14_MIN",
+          "RC14_OPTION",
+          "RC14_REVERSED",
+          "RC14_TRIM",
+          "RC15_DZ",
+          "RC15_MAX",
+          "RC15_MIN",
+          "RC15_OPTION",
+          "RC15_REVERSED",
+          "RC15_TRIM",
+          "RC16_DZ",
+          "RC16_MAX",
+          "RC16_MIN",
+          "RC16_OPTION",
+          "RC16_REVERSED",
+          "RC16_TRIM",
+          "RC6_DZ",
+          "RC6_OPTION",
+          "RC6_REVERSED",
+          "RC7_DZ",
+          "RC7_MAX",
+          "RC7_MIN",
+          "RC7_OPTION",
+          "RC7_REVERSED",
+          "RC7_TRIM",
+          "RC8_DZ",
+          "RC8_MAX",
+          "RC8_MIN",
+          "RC8_OPTION",
+          "RC8_REVERSED",
+          "RC8_TRIM",
+          "RC9_DZ",
+          "RC9_MAX",
+          "RC9_MIN",
+          "RC9_OPTION",
+          "RC9_REVERSED",
+          "RC9_TRIM",
+          "RC_OPTIONS",
+          "RC_OVERRIDE_TIME",
+          "SCR_ENABLE",
+          "SID_AXIS",
+          "SRTL_ACCURACY",
+          "SRTL_POINTS",
+          "TCAL_ENABLED",
+          "TUNE_MAX",
+          "TUNE_MIN",
+          "VISO_ORIENT",
+          "VISO_POS_X",
+          "VISO_POS_Y",
+          "VISO_POS_Z",
+          "VISO_TYPE",
+          "ZIGZAG_AUTO_PUMP"
+        ],
+        "pass": false
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T182936Z_6bca981d",
+      "run_directory": "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d",
+      "agent_id": "uav_02",
+      "source_sha256": {
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\metadata.json": "5e6f52ceb98049023bcbd754c16dd2fa1f6ac7cff5bd188b12c3f8e1806ce6e3",
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\firmware_parameters.json": "d891bf7c60a0a43717c3d5341b5ac0b6acef3f5cdd0943b545ccd39dbd8f87b8",
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\raw\\uav_02.jsonl": "88a9d8fb564a61adbd6c658fcf8bedd32f093f3f1bab8aad48b6d9d28d4d3049"
+      },
+      "run_started_utc": "2026-10-01T18:29:36.418436+00:00",
+      "original_run_status": "failed",
+      "original_spike_decision": null,
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "COMPASS_DEC",
+            "reference_value": -0.09687499701976776,
+            "observed_value": -0.09687531739473343,
+            "explanation": "automatic magnetic declination depends on the simulated home location",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SIM_PLD_LON",
+            "reference_value": 120.00009155273438,
+            "observed_value": 120.00028228759766,
+            "explanation": "simulated precision-landing reference initialized from home longitude",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "STAT_RESET",
+            "reference_value": 339262368.0,
+            "observed_value": 339272992.0,
+            "explanation": "startup timestamp checked against this run start within +/-300 s; not cross-run equality",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SYSID_THISMAV",
+            "reference_value": 1.0,
+            "observed_value": 2.0,
+            "explanation": "per-instance system ID supplied by SITLProcesses",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339272992.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T18:29:52+00:00",
+          "run_started_utc": "2026-10-01T18:29:36.418436+00:00",
+          "delta_s": 15.581564,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1198,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    },
+    {
+      "run_id": "20261001T182936Z_6bca981d",
+      "run_directory": "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d",
+      "agent_id": "uav_03",
+      "source_sha256": {
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\metadata.json": "5e6f52ceb98049023bcbd754c16dd2fa1f6ac7cff5bd188b12c3f8e1806ce6e3",
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\firmware_parameters.json": "d891bf7c60a0a43717c3d5341b5ac0b6acef3f5cdd0943b545ccd39dbd8f87b8",
+        "verification\\v04_v1_20261001\\runs\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\raw\\uav_03.jsonl": "9c76c05d334d4d1d8bf4fee59ca3b2f5e280d9caf7ebff4910e83b1717db8d3b"
+      },
+      "run_started_utc": "2026-10-01T18:29:36.418436+00:00",
+      "original_run_status": "failed",
+      "original_spike_decision": null,
+      "original_readback_complete": true,
+      "original_received_count": 1202,
+      "original_parameter_count": 1202,
+      "replay_kind": "in-memory copy only; no historical metadata or result relabeling",
+      "expected_comparison": "pass complete readback",
+      "comparison_error": null,
+      "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+      "parameter_comparison": {
+        "version": "wp_s_parameter_comparison_v2",
+        "changes": [
+          {
+            "name": "COMPASS_DEC",
+            "reference_value": -0.09687499701976776,
+            "observed_value": -0.0968756228685379,
+            "explanation": "automatic magnetic declination depends on the simulated home location",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SIM_PLD_LON",
+            "reference_value": 120.00009155273438,
+            "observed_value": 120.0004653930664,
+            "explanation": "simulated precision-landing reference initialized from home longitude",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "STAT_RESET",
+            "reference_value": 339262368.0,
+            "observed_value": 339272992.0,
+            "explanation": "startup timestamp checked against this run start within +/-300 s; not cross-run equality",
+            "allowed_instance_difference": true
+          },
+          {
+            "name": "SYSID_THISMAV",
+            "reference_value": 1.0,
+            "observed_value": 3.0,
+            "explanation": "per-instance system ID supplied by SITLProcesses",
+            "allowed_instance_difference": true
+          }
+        ],
+        "status": "evaluated",
+        "collection_complete": true,
+        "stat_reset": {
+          "raw_value": 339272992.0,
+          "epoch_utc": "2016-01-01T00:00:00+00:00",
+          "converted_utc": "2026-10-01T18:29:52+00:00",
+          "run_started_utc": "2026-10-01T18:29:36.418436+00:00",
+          "delta_s": 15.581564,
+          "tolerance_s": 300.0,
+          "boundary": "inclusive",
+          "error": null,
+          "pass": true
+        },
+        "fresh_instance": {
+          "STAT_BOOTCNT": {
+            "expected_value": 1.0,
+            "observed_value": 1.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_FLTTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          },
+          "STAT_RUNTIME": {
+            "expected_value": 0.0,
+            "observed_value": 0.0,
+            "reason": "fresh SITL instance; changed statistics indicate EEPROM reuse",
+            "pass": true
+          }
+        },
+        "unchanged_count": 1198,
+        "unexplained": [],
+        "pass": true
+      },
+      "expected_outcome_matched": true
+    }
+  ]
+}

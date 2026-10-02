@@ -1,0 +1,121 @@
+{
+  "status": "PASS",
+  "checks": {
+    "E01": "PASS",
+    "E02": "PASS",
+    "E03": "PASS",
+    "E04": "PASS",
+    "E05": "PASS",
+    "E06": "PASS",
+    "E07": "PASS",
+    "E08": "PASS",
+    "E09": "PASS",
+    "E10": "PASS",
+    "R06": "PASS",
+    "R01": "PASS",
+    "R02": "PASS",
+    "R03": "PASS",
+    "R04": "PASS",
+    "R05": "PASS"
+  },
+  "evidence": {
+    "E01": [
+      "test_route_planning.RoutePlanningTests.test_E01_empty_route_has_explicit_noop_terminal_and_service_false",
+      "test_route_planning.RoutePlanningTests.test_E01_epsilon_chain_keeps_first_and_filters_internal_duplicates",
+      "test_route_planning.RoutePlanningTests.test_E01_full_compile_and_validate_noop_approach",
+      "test_route_planning.RoutePlanningTests.test_E01_return_false_omits_return_phase",
+      "test_route_planning.RoutePlanningTests.test_E01_three_semantic_phases_zero_segments_removed_and_original_indices"
+    ],
+    "E02": [
+      "test_route_planning.RoutePlanningTests.test_E02_mission_item_order_params_and_final_hold"
+    ],
+    "E03": [
+      "test_route_planning.RoutePlanningTests.test_E03_arc_length_discretization_at_most_half_meter",
+      "test_route_planning.RoutePlanningTests.test_E03_same_place_outside_tau_accepted",
+      "test_route_planning.RoutePlanningTests.test_E03_same_time_crossing_rejected",
+      "test_route_planning.RoutePlanningTests.test_E03_shared_demo_passes_original_clearance_and_tau",
+      "test_route_planning.RoutePlanningTests.test_E03_terminal_hold_and_noop_participate_after_nominal_arrival"
+    ],
+    "E04": [
+      "test_route_planning.RoutePlanningTests.test_E04_exact_100_waypoints_allowed_101_rejected"
+    ],
+    "E05": [
+      "test_runner_v3.RunnerV3Tests.test_E05_noop_ready_requires_successful_geometric_confirmation",
+      "test_runner_v3.RunnerV3Tests.test_E05_noop_skips_upload_auto_and_confirms_current_endpoint",
+      "test_runner_v3.RunnerV3Tests.test_E05_schema1_barrier_and_schema2_route_use_distinct_mission_shapes"
+    ],
+    "E06": [
+      "test_runner_v3.RunnerV3Tests.test_E06_R06_single_receive_owner_records_all_seq_without_extra_mode_commands"
+    ],
+    "E07": [
+      "test_route_windows.RouteWindowTests.test_E07_arrival_before_auto_confirmation_keeps_earliest_definition_but_disables_inverted_service",
+      "test_route_windows.RouteWindowTests.test_E07_arrival_is_first_post_event_joint_condition",
+      "test_route_windows.RouteWindowTests.test_E07_channels_derive_different_arrivals_from_own_evidence",
+      "test_route_windows.RouteWindowTests.test_E07_closest_fallback_is_post_event_and_unverified",
+      "test_route_windows.RouteWindowTests.test_E07_epoch_shift_and_failed_missing_events_remain_unknown",
+      "test_route_windows.RouteWindowTests.test_E07_late_terminal_event_cannot_search_back_to_earlier_stop",
+      "test_route_windows.RouteWindowTests.test_E07_missing_terminal_event_cannot_manufacture_service_window",
+      "test_route_windows.RouteWindowTests.test_E07_missing_trajectory_retains_explicit_unverified_event_fallback",
+      "test_route_windows.RouteWindowTests.test_E07_no_op_uses_explicit_events_and_never_activates_service",
+      "test_route_windows.RouteWindowTests.test_E07_registry_coverage_excludes_barrier_wait_and_channels_stay_independent",
+      "test_route_windows.RouteWindowTests.test_E07_release_bounded_terminal_does_not_recover_an_invalid_timeline",
+      "test_route_windows.RouteWindowTests.test_E07_release_timestamp_not_logging_timestamp_ends_phase",
+      "test_route_windows.RouteWindowTests.test_E07_return_dwell_uses_full_return_window_after_arrival",
+      "test_route_windows.RouteWindowTests.test_E07_sim_derivative_uses_source_seconds_when_clock_available",
+      "test_route_windows.RouteWindowTests.test_E07_sim_does_not_use_fcu_velocity_or_bridge_invalid_rows",
+      "test_route_windows.RouteWindowTests.test_E07_sim_gap_breaks_derivative_and_first_sample_has_no_speed",
+      "test_route_windows.RouteWindowTests.test_E07_terminal_before_auto_confirmation_can_anchor_later_trajectory_arrival"
+    ],
+    "E08": [
+      "test_runner_v3.RunnerV3Tests.test_E08_budget_defaults_and_bound_override_only_shortens",
+      "test_runner_v3.RunnerV3Tests.test_E08_phase_timeout_retains_failure_evidence_and_cleans_owned_processes"
+    ],
+    "E09": [
+      "test_route_planning.RoutePlanningTests.test_E09_binding_rejects_route_metadata_and_timing_tampering"
+    ],
+    "E10": [
+      "test_execution_metrics.ExecutionMetricsTests.test_E10_exact_intersection_avoids_audit_envelope_false_positive",
+      "test_execution_metrics.ExecutionMetricsTests.test_E10_missing_aircraft_or_timeline_unknown_not_zero",
+      "test_execution_metrics.ExecutionMetricsTests.test_E10_stop_counts_stationary_and_synchronization_hand_calculation",
+      "test_execution_metrics.ExecutionMetricsTests.test_E10_stop_location_categories_are_disjoint",
+      "test_execution_metrics.ExecutionMetricsTests.test_E10_threshold_duration_gap_and_missing_speed"
+    ],
+    "R06": [
+      "test_runner_v3.RunnerV3Tests.test_E06_R06_single_receive_owner_records_all_seq_without_extra_mode_commands",
+      "test_runner_v3.RunnerV3Tests.test_R06_legacy_analysis_ignores_new_waypoint_and_unknown_events"
+    ],
+    "R01": {
+      "count": 150,
+      "expected_count": 150,
+      "status": "PASS"
+    },
+    "R02": {
+      "status": "PASS",
+      "count": 104
+    },
+    "R03": {
+      "status": "PASS",
+      "count": 15
+    },
+    "R04": {
+      "status": "PASS",
+      "dataset_count": 2,
+      "count": 15
+    },
+    "R05": {
+      "status": "PASS",
+      "count": 15
+    }
+  },
+  "created_utc": "2026-10-02T09:21:18.395277+00:00",
+  "evidence_class": "offline_only; logical, mock, hand-built trajectories, existing historical copies",
+  "new_sitl_runs": 0,
+  "tests_path": "tmp_v04/ac4_v2_20261002/unit_test_results_final.json",
+  "tests_sha256": "25dcbff6b4e31f7aac4b7bc13812bdbe7eca6b02c5afa454a29d84895b928c24",
+  "supporting_sha256": {
+    "tmp_v04/wp_e/legacy_regression/legacy_regression.json": "5dece679984f5034241a87ce19b088dc21bec5acbbd13af870f256a1512ef932",
+    "tmp_v04/wp_e/v2_mixed_analysis/compatibility.json": "d8d471340e39d8ec366c4ee048205a0d0b9b73346b9230f36d3fcc34b48de1d3",
+    "tmp_v04/ac4_v2_20261002/pre_sitl_preservation.json": "b1b0195e26517df60b2cff9897781a40db79dc64a2be61627068cb50cb27d2d6"
+  },
+  "parameter_comparison_version": "wp_s_parameter_comparison_v2"
+}

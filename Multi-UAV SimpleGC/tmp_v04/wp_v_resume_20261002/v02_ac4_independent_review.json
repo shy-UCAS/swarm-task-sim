@@ -1,0 +1,1405 @@
+{
+  "version": "v02_ac4_independent_review_v1",
+  "generated_utc": "2026-10-02T08:43:56.610421+00:00",
+  "new_sitl_runs": 0,
+  "run_id": "20261002T083751Z_3874072a",
+  "run_status": "completed",
+  "run_exit_code": 0,
+  "ledger_stop": "V02_r1: AC4=False",
+  "status": "CONFIRMED_AC4_FAIL",
+  "definition": "Every matched raw waypoint receive time minus its scheduled semantic-phase release, compared to the unchanged bound nominal waypoint time; strict abs difference < per-phase tau",
+  "timing_pass": false,
+  "reported_timing_matches": true,
+  "expected_waypoints": 33,
+  "independently_paired_waypoints": 33,
+  "separation": {
+    "independent_minimum_m": 17.610261872828183,
+    "required_m": 5.0,
+    "unassessed_intervals": 0,
+    "pass_": true,
+    "closest": {
+      "agents": [
+        "uav_01",
+        "uav_02"
+      ],
+      "segment_start_s": 69.8,
+      "segment_end_s": 69.9,
+      "fraction": 1
+    },
+    "reported_minimum_m": 17.610261872828183,
+    "matches_report": true,
+    "method": "Independent quadratic minimization of 3D relative position on every adjacent exported SIM truth grid segment; no production assess_separation import"
+  },
+  "phase_results": {
+    "p00_approach": {
+      "tau_s": 3.0,
+      "waypoint_count": 3,
+      "max_abs_deviation_s": 2.51021705045678,
+      "worst": {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "seq": 2,
+        "terminal": true,
+        "actual_s": 8.056386900001598,
+        "nominal_s": 5.546169849544818,
+        "deviation_s": 2.51021705045678,
+        "abs_deviation_s": 2.51021705045678,
+        "tau_s": 3.0,
+        "pass_strict_abs_less_than_tau": true,
+        "raw_receive_monotonic_s": 16189.1967858,
+        "release_monotonic_s": 16181.1403989,
+        "actual_increment_s": 8.056386900001598,
+        "nominal_increment_s": 5.546169849544818,
+        "excess_increment_s": 2.51021705045678,
+        "phase_auto_confirmation_lag_s": [
+          0.01431370000136667
+        ],
+        "reported_metrics_match": true,
+        "event_duplicates": 0,
+        "route_hold_s": null
+      },
+      "pass_strict_abs_less_than_tau": true,
+      "violated_count": 0,
+      "deviation_progression": {
+        "uav_01": [
+          {
+            "seq": 2,
+            "deviation_s": 2.51021705045678,
+            "excess_increment_s": 2.51021705045678,
+            "terminal": true
+          }
+        ],
+        "uav_02": [
+          {
+            "seq": 2,
+            "deviation_s": 2.417774050455413,
+            "excess_increment_s": 2.417774050455413,
+            "terminal": true
+          }
+        ],
+        "uav_03": [
+          {
+            "seq": 2,
+            "deviation_s": 2.495755550455944,
+            "excess_increment_s": 2.495755550455944,
+            "terminal": true
+          }
+        ]
+      }
+    },
+    "p01_observe": {
+      "tau_s": 11.160000000000002,
+      "waypoint_count": 27,
+      "max_abs_deviation_s": 14.349637600001365,
+      "worst": {
+        "phase": "p01_observe",
+        "agent_id": "uav_01",
+        "seq": 10,
+        "terminal": true,
+        "actual_s": 69.14963760000137,
+        "nominal_s": 54.800000000000004,
+        "deviation_s": 14.349637600001365,
+        "abs_deviation_s": 14.349637600001365,
+        "tau_s": 11.160000000000002,
+        "pass_strict_abs_less_than_tau": false,
+        "raw_receive_monotonic_s": 16259.8439228,
+        "release_monotonic_s": 16190.6942852,
+        "actual_increment_s": 12.526073600000018,
+        "nominal_increment_s": 10.0,
+        "excess_increment_s": 2.526073600000018,
+        "phase_auto_confirmation_lag_s": [
+          0.02855009999984759
+        ],
+        "reported_metrics_match": true,
+        "event_duplicates": 0,
+        "route_hold_s": null
+      },
+      "pass_strict_abs_less_than_tau": false,
+      "violated_count": 6,
+      "deviation_progression": {
+        "uav_01": [
+          {
+            "seq": 2,
+            "deviation_s": 1.815791300001365,
+            "excess_increment_s": 1.815791300001365,
+            "terminal": false
+          },
+          {
+            "seq": 3,
+            "deviation_s": 3.190611800001351,
+            "excess_increment_s": 1.374820499999986,
+            "terminal": false
+          },
+          {
+            "seq": 4,
+            "deviation_s": 4.6639484000013915,
+            "excess_increment_s": 1.4733366000000405,
+            "terminal": false
+          },
+          {
+            "seq": 5,
+            "deviation_s": 6.133307200001216,
+            "excess_increment_s": 1.4693587999998243,
+            "terminal": false
+          },
+          {
+            "seq": 6,
+            "deviation_s": 7.509192600000098,
+            "excess_increment_s": 1.3758853999988823,
+            "terminal": false
+          },
+          {
+            "seq": 7,
+            "deviation_s": 8.913748200000917,
+            "excess_increment_s": 1.404555600000819,
+            "terminal": false
+          },
+          {
+            "seq": 8,
+            "deviation_s": 10.268843000000196,
+            "excess_increment_s": 1.3550947999992786,
+            "terminal": false
+          },
+          {
+            "seq": 9,
+            "deviation_s": 11.823564000001348,
+            "excess_increment_s": 1.5547210000011518,
+            "terminal": false
+          },
+          {
+            "seq": 10,
+            "deviation_s": 14.349637600001365,
+            "excess_increment_s": 2.526073600000018,
+            "terminal": true
+          }
+        ],
+        "uav_02": [
+          {
+            "seq": 2,
+            "deviation_s": 1.8632132000002457,
+            "excess_increment_s": 1.8632132000002457,
+            "terminal": false
+          },
+          {
+            "seq": 3,
+            "deviation_s": 3.2539995000013757,
+            "excess_increment_s": 1.39078630000113,
+            "terminal": false
+          },
+          {
+            "seq": 4,
+            "deviation_s": 4.7040460000014725,
+            "excess_increment_s": 1.4500465000000968,
+            "terminal": false
+          },
+          {
+            "seq": 5,
+            "deviation_s": 6.093788700001465,
+            "excess_increment_s": 1.3897426999999922,
+            "terminal": false
+          },
+          {
+            "seq": 6,
+            "deviation_s": 7.521524800000044,
+            "excess_increment_s": 1.4277360999985795,
+            "terminal": false
+          },
+          {
+            "seq": 7,
+            "deviation_s": 8.796920600000163,
+            "excess_increment_s": 1.275395800000119,
+            "terminal": false
+          },
+          {
+            "seq": 8,
+            "deviation_s": 10.273731200001208,
+            "excess_increment_s": 1.4768106000010448,
+            "terminal": false
+          },
+          {
+            "seq": 9,
+            "deviation_s": 11.560820700001578,
+            "excess_increment_s": 1.28708950000037,
+            "terminal": false
+          },
+          {
+            "seq": 10,
+            "deviation_s": 14.07092870000016,
+            "excess_increment_s": 2.5101079999985814,
+            "terminal": true
+          }
+        ],
+        "uav_03": [
+          {
+            "seq": 2,
+            "deviation_s": 1.8933680999998614,
+            "excess_increment_s": 1.8933680999998614,
+            "terminal": false
+          },
+          {
+            "seq": 3,
+            "deviation_s": 3.220477200001186,
+            "excess_increment_s": 1.3271091000013246,
+            "terminal": false
+          },
+          {
+            "seq": 4,
+            "deviation_s": 4.6493942000004616,
+            "excess_increment_s": 1.4289169999992755,
+            "terminal": false
+          },
+          {
+            "seq": 5,
+            "deviation_s": 6.095379500000124,
+            "excess_increment_s": 1.4459852999996627,
+            "terminal": false
+          },
+          {
+            "seq": 6,
+            "deviation_s": 7.492563500001417,
+            "excess_increment_s": 1.3971840000012925,
+            "terminal": false
+          },
+          {
+            "seq": 7,
+            "deviation_s": 8.820977400000992,
+            "excess_increment_s": 1.3284138999995747,
+            "terminal": false
+          },
+          {
+            "seq": 8,
+            "deviation_s": 10.254591799999979,
+            "excess_increment_s": 1.4336143999989872,
+            "terminal": false
+          },
+          {
+            "seq": 9,
+            "deviation_s": 11.791373200000812,
+            "excess_increment_s": 1.5367814000008337,
+            "terminal": false
+          },
+          {
+            "seq": 10,
+            "deviation_s": 14.286409500001533,
+            "excess_increment_s": 2.49503630000072,
+            "terminal": true
+          }
+        ]
+      }
+    },
+    "p02_return": {
+      "tau_s": 3.2381573362813185,
+      "waypoint_count": 3,
+      "max_abs_deviation_s": 2.3777282185953066,
+      "worst": {
+        "phase": "p02_return",
+        "agent_id": "uav_01",
+        "seq": 2,
+        "terminal": true,
+        "actual_s": 17.5685149000019,
+        "nominal_s": 15.190786681406594,
+        "deviation_s": 2.3777282185953066,
+        "abs_deviation_s": 2.3777282185953066,
+        "tau_s": 3.2381573362813185,
+        "pass_strict_abs_less_than_tau": true,
+        "raw_receive_monotonic_s": 16278.9069495,
+        "release_monotonic_s": 16261.338434599998,
+        "actual_increment_s": 17.5685149000019,
+        "nominal_increment_s": 15.190786681406594,
+        "excess_increment_s": 2.3777282185953066,
+        "phase_auto_confirmation_lag_s": [
+          0.027200700002140366
+        ],
+        "reported_metrics_match": true,
+        "event_duplicates": 0,
+        "route_hold_s": null
+      },
+      "pass_strict_abs_less_than_tau": true,
+      "violated_count": 0,
+      "deviation_progression": {
+        "uav_01": [
+          {
+            "seq": 2,
+            "deviation_s": 2.3777282185953066,
+            "excess_increment_s": 2.3777282185953066,
+            "terminal": true
+          }
+        ],
+        "uav_02": [
+          {
+            "seq": 2,
+            "deviation_s": 2.2646218185952005,
+            "excess_increment_s": 2.2646218185952005,
+            "terminal": true
+          }
+        ],
+        "uav_03": [
+          {
+            "seq": 2,
+            "deviation_s": 2.328151918595408,
+            "excess_increment_s": 2.328151918595408,
+            "terminal": true
+          }
+        ]
+      }
+    }
+  },
+  "worst": {
+    "phase": "p01_observe",
+    "agent_id": "uav_01",
+    "seq": 10,
+    "terminal": true,
+    "actual_s": 69.14963760000137,
+    "nominal_s": 54.800000000000004,
+    "deviation_s": 14.349637600001365,
+    "abs_deviation_s": 14.349637600001365,
+    "tau_s": 11.160000000000002,
+    "pass_strict_abs_less_than_tau": false,
+    "raw_receive_monotonic_s": 16259.8439228,
+    "release_monotonic_s": 16190.6942852,
+    "actual_increment_s": 12.526073600000018,
+    "nominal_increment_s": 10.0,
+    "excess_increment_s": 2.526073600000018,
+    "phase_auto_confirmation_lag_s": [
+      0.02855009999984759
+    ],
+    "reported_metrics_match": true,
+    "event_duplicates": 0,
+    "route_hold_s": null
+  },
+  "failed_waypoints": [
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.62356400000135,
+      "nominal_s": 44.800000000000004,
+      "deviation_s": 11.823564000001348,
+      "abs_deviation_s": 11.823564000001348,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.3178492,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.7547210000011546,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.5547210000011518,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 10,
+      "terminal": true,
+      "actual_s": 69.14963760000137,
+      "nominal_s": 54.800000000000004,
+      "deviation_s": 14.349637600001365,
+      "abs_deviation_s": 14.349637600001365,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16259.8439228,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 12.526073600000018,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 2.526073600000018,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.36082070000157,
+      "nominal_s": 44.79999999999999,
+      "deviation_s": 11.560820700001578,
+      "abs_deviation_s": 11.560820700001578,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.0551059,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.4870895000003657,
+      "nominal_increment_s": 1.1999999999999957,
+      "excess_increment_s": 1.28708950000037,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 10,
+      "terminal": true,
+      "actual_s": 68.87092870000015,
+      "nominal_s": 54.79999999999999,
+      "deviation_s": 14.07092870000016,
+      "abs_deviation_s": 14.07092870000016,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16259.5652139,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 12.510107999998581,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 2.5101079999985814,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.59137320000082,
+      "nominal_s": 44.800000000000004,
+      "deviation_s": 11.791373200000812,
+      "abs_deviation_s": 11.791373200000812,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.2856584,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.7367814000008366,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.5367814000008337,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 10,
+      "terminal": true,
+      "actual_s": 69.08640950000154,
+      "nominal_s": 54.800000000000004,
+      "deviation_s": 14.286409500001533,
+      "abs_deviation_s": 14.286409500001533,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16259.7806947,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 12.49503630000072,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 2.49503630000072,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    }
+  ],
+  "nonterminal_violations": [
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.62356400000135,
+      "nominal_s": 44.800000000000004,
+      "deviation_s": 11.823564000001348,
+      "abs_deviation_s": 11.823564000001348,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.3178492,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.7547210000011546,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.5547210000011518,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.36082070000157,
+      "nominal_s": 44.79999999999999,
+      "deviation_s": 11.560820700001578,
+      "abs_deviation_s": 11.560820700001578,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.0551059,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.4870895000003657,
+      "nominal_increment_s": 1.1999999999999957,
+      "excess_increment_s": 1.28708950000037,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.59137320000082,
+      "nominal_s": 44.800000000000004,
+      "deviation_s": 11.791373200000812,
+      "abs_deviation_s": 11.791373200000812,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.2856584,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.7367814000008366,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.5367814000008337,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    }
+  ],
+  "per_waypoint": [
+    {
+      "phase": "p00_approach",
+      "agent_id": "uav_01",
+      "seq": 2,
+      "terminal": true,
+      "actual_s": 8.056386900001598,
+      "nominal_s": 5.546169849544818,
+      "deviation_s": 2.51021705045678,
+      "abs_deviation_s": 2.51021705045678,
+      "tau_s": 3.0,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16189.1967858,
+      "release_monotonic_s": 16181.1403989,
+      "actual_increment_s": 8.056386900001598,
+      "nominal_increment_s": 5.546169849544818,
+      "excess_increment_s": 2.51021705045678,
+      "phase_auto_confirmation_lag_s": [
+        0.01431370000136667
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p00_approach",
+      "agent_id": "uav_02",
+      "seq": 2,
+      "terminal": true,
+      "actual_s": 7.963943900000231,
+      "nominal_s": 5.546169849544818,
+      "deviation_s": 2.417774050455413,
+      "abs_deviation_s": 2.417774050455413,
+      "tau_s": 3.0,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16189.1043428,
+      "release_monotonic_s": 16181.1403989,
+      "actual_increment_s": 7.963943900000231,
+      "nominal_increment_s": 5.546169849544818,
+      "excess_increment_s": 2.417774050455413,
+      "phase_auto_confirmation_lag_s": [
+        0.030764900000576745
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p00_approach",
+      "agent_id": "uav_03",
+      "seq": 2,
+      "terminal": true,
+      "actual_s": 8.041925400000764,
+      "nominal_s": 5.54616984954482,
+      "deviation_s": 2.495755550455944,
+      "abs_deviation_s": 2.495755550455944,
+      "tau_s": 3.0,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16189.1823243,
+      "release_monotonic_s": 16181.1403989,
+      "actual_increment_s": 8.041925400000764,
+      "nominal_increment_s": 5.54616984954482,
+      "excess_increment_s": 2.495755550455944,
+      "phase_auto_confirmation_lag_s": [
+        0.029826800000591902
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 2,
+      "terminal": false,
+      "actual_s": 11.815791300001365,
+      "nominal_s": 10.0,
+      "deviation_s": 1.815791300001365,
+      "abs_deviation_s": 1.815791300001365,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16202.5100765,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.815791300001365,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 1.815791300001365,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 3,
+      "terminal": false,
+      "actual_s": 14.390611800001352,
+      "nominal_s": 11.200000000000001,
+      "deviation_s": 3.190611800001351,
+      "abs_deviation_s": 3.190611800001351,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16205.084897,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.574820499999987,
+      "nominal_increment_s": 1.200000000000001,
+      "excess_increment_s": 1.374820499999986,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 4,
+      "terminal": false,
+      "actual_s": 25.86394840000139,
+      "nominal_s": 21.2,
+      "deviation_s": 4.6639484000013915,
+      "abs_deviation_s": 4.6639484000013915,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16216.5582336,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.473336600000039,
+      "nominal_increment_s": 9.999999999999998,
+      "excess_increment_s": 1.4733366000000405,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 5,
+      "terminal": false,
+      "actual_s": 28.533307200001218,
+      "nominal_s": 22.400000000000002,
+      "deviation_s": 6.133307200001216,
+      "abs_deviation_s": 6.133307200001216,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16219.2275924,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.669358799999827,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.4693587999998243,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 6,
+      "terminal": false,
+      "actual_s": 39.9091926000001,
+      "nominal_s": 32.4,
+      "deviation_s": 7.509192600000098,
+      "abs_deviation_s": 7.509192600000098,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16230.6034778,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.375885399998879,
+      "nominal_increment_s": 9.999999999999996,
+      "excess_increment_s": 1.3758853999988823,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 7,
+      "terminal": false,
+      "actual_s": 42.51374820000092,
+      "nominal_s": 33.6,
+      "deviation_s": 8.913748200000917,
+      "abs_deviation_s": 8.913748200000917,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16233.2080334,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.604555600000822,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.404555600000819,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 8,
+      "terminal": false,
+      "actual_s": 53.8688430000002,
+      "nominal_s": 43.6,
+      "deviation_s": 10.268843000000196,
+      "abs_deviation_s": 10.268843000000196,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16244.5631282,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.355094799999279,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 1.3550947999992786,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.62356400000135,
+      "nominal_s": 44.800000000000004,
+      "deviation_s": 11.823564000001348,
+      "abs_deviation_s": 11.823564000001348,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.3178492,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.7547210000011546,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.5547210000011518,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_01",
+      "seq": 10,
+      "terminal": true,
+      "actual_s": 69.14963760000137,
+      "nominal_s": 54.800000000000004,
+      "deviation_s": 14.349637600001365,
+      "abs_deviation_s": 14.349637600001365,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16259.8439228,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 12.526073600000018,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 2.526073600000018,
+      "phase_auto_confirmation_lag_s": [
+        0.02855009999984759
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 2,
+      "terminal": false,
+      "actual_s": 11.863213200000246,
+      "nominal_s": 10.0,
+      "deviation_s": 1.8632132000002457,
+      "abs_deviation_s": 1.8632132000002457,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16202.5574984,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.863213200000246,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 1.8632132000002457,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 3,
+      "terminal": false,
+      "actual_s": 14.453999500001373,
+      "nominal_s": 11.199999999999998,
+      "deviation_s": 3.2539995000013757,
+      "abs_deviation_s": 3.2539995000013757,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16205.1482847,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.5907863000011275,
+      "nominal_increment_s": 1.1999999999999975,
+      "excess_increment_s": 1.39078630000113,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 4,
+      "terminal": false,
+      "actual_s": 25.904046000001472,
+      "nominal_s": 21.2,
+      "deviation_s": 4.7040460000014725,
+      "abs_deviation_s": 4.7040460000014725,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16216.5983312,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.450046500000099,
+      "nominal_increment_s": 10.000000000000002,
+      "excess_increment_s": 1.4500465000000968,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 5,
+      "terminal": false,
+      "actual_s": 28.49378870000146,
+      "nominal_s": 22.399999999999995,
+      "deviation_s": 6.093788700001465,
+      "abs_deviation_s": 6.093788700001465,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16219.1880739,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.589742699999988,
+      "nominal_increment_s": 1.1999999999999957,
+      "excess_increment_s": 1.3897426999999922,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 6,
+      "terminal": false,
+      "actual_s": 39.92152480000004,
+      "nominal_s": 32.4,
+      "deviation_s": 7.521524800000044,
+      "abs_deviation_s": 7.521524800000044,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16230.61581,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.427736099998583,
+      "nominal_increment_s": 10.000000000000004,
+      "excess_increment_s": 1.4277360999985795,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 7,
+      "terminal": false,
+      "actual_s": 42.39692060000016,
+      "nominal_s": 33.599999999999994,
+      "deviation_s": 8.796920600000163,
+      "abs_deviation_s": 8.796920600000163,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16233.0912058,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.475395800000115,
+      "nominal_increment_s": 1.1999999999999957,
+      "excess_increment_s": 1.275395800000119,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 8,
+      "terminal": false,
+      "actual_s": 53.8737312000012,
+      "nominal_s": 43.599999999999994,
+      "deviation_s": 10.273731200001208,
+      "abs_deviation_s": 10.273731200001208,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16244.5680164,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.476810600001045,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 1.4768106000010448,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.36082070000157,
+      "nominal_s": 44.79999999999999,
+      "deviation_s": 11.560820700001578,
+      "abs_deviation_s": 11.560820700001578,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.0551059,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.4870895000003657,
+      "nominal_increment_s": 1.1999999999999957,
+      "excess_increment_s": 1.28708950000037,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_02",
+      "seq": 10,
+      "terminal": true,
+      "actual_s": 68.87092870000015,
+      "nominal_s": 54.79999999999999,
+      "deviation_s": 14.07092870000016,
+      "abs_deviation_s": 14.07092870000016,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16259.5652139,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 12.510107999998581,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 2.5101079999985814,
+      "phase_auto_confirmation_lag_s": [
+        0.02787700000044424
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 2,
+      "terminal": false,
+      "actual_s": 11.893368099999861,
+      "nominal_s": 10.0,
+      "deviation_s": 1.8933680999998614,
+      "abs_deviation_s": 1.8933680999998614,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16202.5876533,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.893368099999861,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 1.8933680999998614,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 3,
+      "terminal": false,
+      "actual_s": 14.420477200001187,
+      "nominal_s": 11.200000000000001,
+      "deviation_s": 3.220477200001186,
+      "abs_deviation_s": 3.220477200001186,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16205.1147624,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.5271091000013257,
+      "nominal_increment_s": 1.200000000000001,
+      "excess_increment_s": 1.3271091000013246,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 4,
+      "terminal": false,
+      "actual_s": 25.84939420000046,
+      "nominal_s": 21.2,
+      "deviation_s": 4.6493942000004616,
+      "abs_deviation_s": 4.6493942000004616,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16216.5436794,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.428916999999274,
+      "nominal_increment_s": 9.999999999999998,
+      "excess_increment_s": 1.4289169999992755,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 5,
+      "terminal": false,
+      "actual_s": 28.495379500000126,
+      "nominal_s": 22.400000000000002,
+      "deviation_s": 6.095379500000124,
+      "abs_deviation_s": 6.095379500000124,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16219.1896647,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.6459852999996656,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.4459852999996627,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 6,
+      "terminal": false,
+      "actual_s": 39.892563500001415,
+      "nominal_s": 32.4,
+      "deviation_s": 7.492563500001417,
+      "abs_deviation_s": 7.492563500001417,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16230.5868487,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.397184000001289,
+      "nominal_increment_s": 9.999999999999996,
+      "excess_increment_s": 1.3971840000012925,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 7,
+      "terminal": false,
+      "actual_s": 42.42097740000099,
+      "nominal_s": 33.6,
+      "deviation_s": 8.820977400000992,
+      "abs_deviation_s": 8.820977400000992,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16233.1152626,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.5284138999995776,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.3284138999995747,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 8,
+      "terminal": false,
+      "actual_s": 53.85459179999998,
+      "nominal_s": 43.6,
+      "deviation_s": 10.254591799999979,
+      "abs_deviation_s": 10.254591799999979,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16244.548877,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 11.433614399998987,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 1.4336143999989872,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 9,
+      "terminal": false,
+      "actual_s": 56.59137320000082,
+      "nominal_s": 44.800000000000004,
+      "deviation_s": 11.791373200000812,
+      "abs_deviation_s": 11.791373200000812,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16247.2856584,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 2.7367814000008366,
+      "nominal_increment_s": 1.2000000000000028,
+      "excess_increment_s": 1.5367814000008337,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p01_observe",
+      "agent_id": "uav_03",
+      "seq": 10,
+      "terminal": true,
+      "actual_s": 69.08640950000154,
+      "nominal_s": 54.800000000000004,
+      "deviation_s": 14.286409500001533,
+      "abs_deviation_s": 14.286409500001533,
+      "tau_s": 11.160000000000002,
+      "pass_strict_abs_less_than_tau": false,
+      "raw_receive_monotonic_s": 16259.7806947,
+      "release_monotonic_s": 16190.6942852,
+      "actual_increment_s": 12.49503630000072,
+      "nominal_increment_s": 10.0,
+      "excess_increment_s": 2.49503630000072,
+      "phase_auto_confirmation_lag_s": [
+        0.026157600001170067
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p02_return",
+      "agent_id": "uav_01",
+      "seq": 2,
+      "terminal": true,
+      "actual_s": 17.5685149000019,
+      "nominal_s": 15.190786681406594,
+      "deviation_s": 2.3777282185953066,
+      "abs_deviation_s": 2.3777282185953066,
+      "tau_s": 3.2381573362813185,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16278.9069495,
+      "release_monotonic_s": 16261.338434599998,
+      "actual_increment_s": 17.5685149000019,
+      "nominal_increment_s": 15.190786681406594,
+      "excess_increment_s": 2.3777282185953066,
+      "phase_auto_confirmation_lag_s": [
+        0.027200700002140366
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p02_return",
+      "agent_id": "uav_02",
+      "seq": 2,
+      "terminal": true,
+      "actual_s": 17.455408500001795,
+      "nominal_s": 15.190786681406594,
+      "deviation_s": 2.2646218185952005,
+      "abs_deviation_s": 2.2646218185952005,
+      "tau_s": 3.2381573362813185,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16278.7938431,
+      "release_monotonic_s": 16261.338434599998,
+      "actual_increment_s": 17.455408500001795,
+      "nominal_increment_s": 15.190786681406594,
+      "excess_increment_s": 2.2646218185952005,
+      "phase_auto_confirmation_lag_s": [
+        0.04253660000176751
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    },
+    {
+      "phase": "p02_return",
+      "agent_id": "uav_03",
+      "seq": 2,
+      "terminal": true,
+      "actual_s": 17.518938600002002,
+      "nominal_s": 15.190786681406594,
+      "deviation_s": 2.328151918595408,
+      "abs_deviation_s": 2.328151918595408,
+      "tau_s": 3.2381573362813185,
+      "pass_strict_abs_less_than_tau": true,
+      "raw_receive_monotonic_s": 16278.8573732,
+      "release_monotonic_s": 16261.338434599998,
+      "actual_increment_s": 17.518938600002002,
+      "nominal_increment_s": 15.190786681406594,
+      "excess_increment_s": 2.328151918595408,
+      "phase_auto_confirmation_lag_s": [
+        0.029371400001764414
+      ],
+      "reported_metrics_match": true,
+      "event_duplicates": 0,
+      "route_hold_s": null
+    }
+  ],
+  "interpretation": {
+    "supported_observation": "Observe-phase delay increases along the route; pre-terminal waypoint violations occur before terminal hold/confirmation, so terminal hold alone cannot explain AC4 failure.",
+    "bounded_inference": "The growth across alternating scan and lane-change intervals is consistent with finite acceleration and corner/lane-change dynamics omitted by a uniform-speed nominal model; this is an inference, not a uniquely identified controller cause.",
+    "not_caused_by_phase_barrier_overhead": "Each phase nominal comparison restarts at its own scheduled release; preceding phase upload/wait time does not accumulate into observe nominal deviation.",
+    "no_acceptance_change": "The user-authorized tau, nominal definition, flight parameters and thresholds are unchanged; no later V jobs started by this review."
+  },
+  "input_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_latest.json": "120fbe1d09209350e83ae54ad7ea70aefd029b2ad2cee382aa540a15502450e0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\events.jsonl": "a70a0d36620ae99d109ba71b3502f776350e6c3a5b8c06a5404f088eaec90e04",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\firmware_parameters.json": "d9525d5ebe440a9adb1fd044d2c08a78d38cb5b8d1fa3167c3f75039c554e7ae",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\metadata.json": "48e82fad385b2e505001b20664e76af3a93484d1fcb33687f7c4f34fe7e4922b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\quality.json": "a47a0dc16290b97f4352bd944ce900cda8d8691e9c25970d43f49000343aa0a3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\samples.csv": "0a4e560a11120d512706694684a111f2b4799128b335c32f6755dd337a3a72fe",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\scenario.json": "bb8e48962c23322d8f424f89f7ad68b3bb055476c9a77ca6ffad73337bda0d76",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\allocation.json": "1a32883ea099a8a6a151cb8cbfb365023ce1e80150b3683ae2a9a1b8bbeef1ee",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\clock_models.json": "ee17757749a3352b9fab2efae89354f4b9c8b636988ad672640f372f551c0ebc",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\estimation_error.csv": "6cbdf16c7c933d82574d2ef4cba1df0016a679d5c375bf24c4c09f54cb9f907f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\execution_constraints.json": "118826a6fcce32f98854560d66a0313bc50c1c91762f6ce4a598adf47772e1b4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\execution_metrics.json": "38048a9775b03c75885b50c43252c57ccca0ac15ed61c3e65642f5e81de32296",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\labels.json": "3c6cb93da6e5d1748197b008e3c671064d6f43d90e7e7540bd26db4a86ac0eb8",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\lifecycle_clock_models.json": "6c5fd2301f0c42580f66cf65eeed945e546785534530600a3d962ca70c3ccb61",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\logged_parameters.json": "88633f368b20eed1e0e29486ff78eebc42b6714c5dfac7d2ac1c0105f28b273b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\manifest.json": "54f9273e654622f74f385b1de49479e13740d208a2e5fb5984737b71c491649a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\mission.json": "d5d3268fdbf53a0f7415eaef6cae9cd2ddc44a4ecf3e7dc17786ff9168d79dd5",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\observations.csv": "df455e9db54b2ad91aac01a9a3e02bfb875c7bc88266d8e1ea8f83c175ec0ae1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\observation_processing.json": "fb86f2dd95fd15b5c77f710982ca3c4537340947fb31514788a6ac5f9457ff70",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\phase_windows.json": "d1c24f04a72a5d62c26b626b4415e91f2779c115be75d9d378b9c4dd9f11e3ce",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\quality.json": "faaf45d95b1884cdd19d12d8d59e758ef51b3f651053dadb9d8786bb9226a848",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\reference_waypoints.csv": "bcd4ff82359ec8a30c45905c8c951b5661837d837f798d4832a5303d4960ef16",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\semantic_plan.json": "83ffd842d0adb2cfa51dd9fe16c8287cc583d629cbdb1ee3e93c334ee61f5932",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\semantic_validation.json": "3d8c3a8f9034cf8d1622191c3d70fd3b75e5f30dbee46e7f567d1f7436712e79",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\shared_scene.json": "cda562030886cfd2f5fb0e9dd8243a98474dba7fbcbea99a86828dc37b2d7905",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\task.json": "e8dc3cb44bbebe6cfb697d7e40a9d7cc707af3135d4f329a4f4e54a89f1625fe",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\truth.csv": "abe8288ee442ce38e36c299f9ffab103907bf0b07382a6ecff96ac3dadf80de4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\truth_provenance.json": "bf7334e87ddc5ce274cd3a8329d52e2e10daeac74f4ed9fc6dbb6a94c28bac6f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\truth_source.csv": "ba120a7521fa90d439bfb5555da4c4029375032110d6dc1e7242a5b24e0cf8fb",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\raw\\uav_01.jsonl": "f4542d34a0c9af002975a25f900e9b5a3f21116f23a58b70553952638ad0c74d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\raw\\uav_02.jsonl": "8caaddd133cd9d9397145cabf32a05b424f016f4f09a8fd93b50a3ce022509ad",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\raw\\uav_03.jsonl": "48b87df719c992d0a0d3b289d4b54a88e8d19790e42cb810cade06531952effb",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\console.log": "fc404ddbf7410856d93c1b694a1c0656c8ab31839518dd74513176ade59fd521",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\defaults.parm": "53b1bc66f90d358031e0204642a3a4a59e97ad77b0654c3831f2290bfefd3ef9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\eeprom.bin": "eef87f651020fca5cfa5f4ea338246d1e8791332c657b9d772e22bd1f2eea65f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\console.log": "2259e818b41ab48b84dddd79b1cd323a5db0eebee54895285a20d259ec0237a0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\defaults.parm": "60a1af571e26e4914c5b98eb9ff65aad201e5184067a0552b5b98fd7024aa6e4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\eeprom.bin": "4d8b19ff6804ae8dfb9f05f278b8b5b80ad665e2a3ab80e05e363c0dde0efcd2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\console.log": "cf834cad4e936b1808455bdf96390e89d8f8379f37e0ad899377ccbfbe0a941f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\defaults.parm": "3af0359b87588392735d707d3f768f7bccd1514b47cb9c5e0c821b32a813474a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\eeprom.bin": "449997e8e2caadb29af70738ffe6e18312c811f96a29f0a55dc7f2a185ed3a9b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\logs\\00000001.BIN": "28bede6f2d4220feca4f49afe529f3d4f804087f8be4f05efd5a261171516503",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\logs\\LASTLOG.TXT": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\terrain\\N29E120.DAT": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_01\\terrain\\N30E120.DAT": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\logs\\00000001.BIN": "487658ee051f3638e82dba29b5ad30b32790a6dabb85dab4877c2ab3100b7c84",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\logs\\LASTLOG.TXT": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\terrain\\N29E120.DAT": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_02\\terrain\\N30E120.DAT": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\logs\\00000001.BIN": "fa1f8503056290e0c3a1962e9de27774723d44e4c907cff5035ccf3a4ac66f7f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\logs\\LASTLOG.TXT": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\terrain\\N29E120.DAT": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\sitl\\uav_03\\terrain\\N30E120.DAT": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_files_unchanged": true,
+  "changed_sources": []
+}
