@@ -1,0 +1,82 @@
+{
+  "task_normalized_sha256": "d92ca342efbdb8bf8fdf56f7f1c8eb1d5b2c920c79fb26b054809ab6b9db7656",
+  "compiled_scene_schema_version": 2,
+  "control_mode": "semantic_phase_route_v1",
+  "semantic_phases": [
+    "approach",
+    "patrol",
+    "return"
+  ],
+  "registered_intent": "patrol",
+  "validator_version": "perimeter_revisit_v1",
+  "registered_planner": "staggered_same_loop_v1",
+  "semantic_protocol": {
+    "task_kind": "mission_v3",
+    "ontology_version": "multi_intent_mission_v1",
+    "label_schema_version": 3,
+    "semantic_validation_version": "multi_intent_validation_v2",
+    "eligibility_protocol_version": "multi_intent_quality_v1",
+    "execution_constraints_version": "multi_intent_execution_limits_v2"
+  },
+  "required_audit_metrics": [
+    "min_segment_visits",
+    "max_revisit_gap_s",
+    "loop_segment_coverage"
+  ],
+  "topology_signature": [
+    2,
+    2,
+    "cw",
+    true
+  ],
+  "total_zero_length_segments": 0,
+  "per_phase_waypoint_counts": {
+    "p00_approach": {
+      "uav_01": 1,
+      "uav_02": 1
+    },
+    "p01_patrol": {
+      "uav_01": 10,
+      "uav_02": 10
+    },
+    "p02_return": {
+      "uav_01": 1,
+      "uav_02": 1
+    }
+  },
+  "max_phase_waypoint_count": 10,
+  "waypoint_limit": 100,
+  "direction": "cw",
+  "laps": 2,
+  "perimeter_m": 140.0,
+  "entry_spacing_arc_m": 70.0,
+  "nominal_revisit_interval_s": 23.333333333333332,
+  "prefilter": {
+    "version": "patrol_spacing_prefilter_v1",
+    "passed": true,
+    "rejection_reason": null,
+    "nominal_spacing_m": 70.0,
+    "minimum_spacing_m": 24.0,
+    "uncertainty_allowance_m": 2.0,
+    "scope": "nominal along-route screen only; full time-aware clearance is required"
+  },
+  "candidate_assignment_count": 2,
+  "feasible_assignment_count": 2,
+  "selected_phase_clearance": {
+    "approach": {
+      "tau_s": 3.0,
+      "nominal_min_clearance_m": 45.281554611299356,
+      "required_clearance_m": 7.0
+    },
+    "patrol": {
+      "tau_s": 5.0,
+      "nominal_min_clearance_m": 30.0,
+      "required_clearance_m": 7.0
+    },
+    "return": {
+      "tau_s": 3.0,
+      "nominal_min_clearance_m": 45.281554611299356,
+      "required_clearance_m": 7.0
+    }
+  }
+}

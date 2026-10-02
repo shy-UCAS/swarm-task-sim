@@ -1,0 +1,112 @@
+{
+  "schema_version": 3,
+  "task_id": "patrol_route_v05_template",
+  "seed": 42,
+  "scenario": {
+    "scene_id": "shared_rectangle_demo",
+    "origin": {
+      "lat": 30.0,
+      "lon": 120.0,
+      "alt_msl_m": 12.0
+    },
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ]
+    },
+    "regions": [
+      {
+        "id": "R1",
+        "type": "rectangle",
+        "min_east_m": 0.0,
+        "min_north_m": 0.0,
+        "width_m": 54.0,
+        "height_m": 30.0
+      }
+    ],
+    "restricted_regions": [],
+    "vehicles": [
+      {
+        "id": "uav_01",
+        "sysid": 1,
+        "east_m": 9.0,
+        "north_m": -15.0,
+        "heading_deg": 0.0
+      },
+      {
+        "id": "uav_02",
+        "sysid": 2,
+        "east_m": 27.0,
+        "north_m": -15.0,
+        "heading_deg": 0.0
+      },
+      {
+        "id": "uav_03",
+        "sysid": 3,
+        "east_m": 45.0,
+        "north_m": -15.0,
+        "heading_deg": 0.0
+      }
+    ],
+    "platform": {
+      "id": "basic_multirotor_nominal_v1",
+      "max_speed_m_s": 6.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_airborne_time_s": 900.0,
+      "reserve_time_s": 60.0,
+      "dynamics_validation": "execution_proxy_only"
+    }
+  },
+  "mission": {
+    "intent": "patrol",
+    "target_region_id": "R1",
+    "return_required": true,
+    "intent_params": {
+      "objective": "perimeter_patrol",
+      "max_revisit_gap_factor": 2.0,
+      "segment_length_m": 5.0,
+      "standoff_m": 0.0,
+      "laps": 2,
+      "visit_radius_m": 3.0
+    }
+  },
+  "planner": {
+    "params": {
+      "tracking_margin_m": 1.0
+    },
+    "name": "staggered_same_loop_v1"
+  },
+  "execution": {
+    "backend": "AUTO",
+    "takeoff_alt_m": 8.0,
+    "speed_m_s": 3.0,
+    "arrival_tolerance_m": 1.0,
+    "confirmation_dwell_s": 0.5,
+    "record_hz": 10.0,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "timeout_s": 1200.0,
+    "ready_timeout_s": 90.0,
+    "control_mode": "semantic_phase_route_v1",
+    "terminal_hold_s": 0.0,
+    "async_timing_tolerance": {
+      "min_s": 3.0,
+      "fraction_of_phase": 0.2,
+      "max_s": 5.0
+    },
+    "hold_semantics": "integer_seconds_v1"
+  },
+  "family_id": "scene_d168b91bd8159a8ae8b9",
+  "family_scheme": "scene_content_v1"
+}

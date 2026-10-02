@@ -1,0 +1,62 @@
+{
+  "version": "v05b_r1_1_validation_stop_review_v1",
+  "decision": "STOP",
+  "review_scope": "read-only; no SITL restart, comparator edit, parameter-template edit, or reinterpretation of the failed run",
+  "run_id": "20261002T165813Z_59899fb4",
+  "case_id": "VP1",
+  "validation_control_completed": false,
+  "validation_stopped_reason": "AV gate failed/unknown: AV-1, AV-2, AV-3, AV-4, AV-6, AV-7, AV-8",
+  "sitl_attempts_consumed": 1,
+  "flight_epoch_present": false,
+  "flights_performed": 0,
+  "retryable": false,
+  "retry_reason": "A complete readback on uav_02 and uav_03 exposed an unexplained parameter difference; this is not a startup, connection, or partial-readback-only infrastructure failure.",
+  "dr": {
+    "pass": true,
+    "candidate_draws": 206,
+    "joint_feasible_candidates": 130,
+    "joint_feasible_fraction": 0.6310679611650486,
+    "accepted_bases": 130,
+    "accepted_by_n": {"2": 44, "3": 43, "4": 43}
+  },
+  "wp_s_zero_heading_baseline": {
+    "run_ids": ["20261001T153235Z_5eddb7ae", "20261001T153806Z_42150c31"],
+    "all_vehicle_heading_deg": 0.0,
+    "all_sim_pld_yaw": 0.0
+  },
+  "vp1_heading_yaw_evidence": [
+    {"agent_id": "uav_01", "scene_heading_deg": 77.96633497586826, "home_argv_heading_deg": 77.96633497586826, "sim_pld_yaw_readback": 77.0, "truncated_heading_matches": true, "received_parameters": 1105, "expected_parameters": 1202, "complete": false, "readback_error": "RuntimeError: uav_01: run cancelled"},
+    {"agent_id": "uav_02", "scene_heading_deg": 71.61085756291743, "home_argv_heading_deg": 71.61085756291743, "sim_pld_yaw_readback": 71.0, "truncated_heading_matches": true, "received_parameters": 1202, "expected_parameters": 1202, "complete": true, "unexplained_parameter_differences": ["SIM_PLD_YAW"]},
+    {"agent_id": "uav_03", "scene_heading_deg": 13.240824201465085, "home_argv_heading_deg": 13.240824201465085, "sim_pld_yaw_readback": 13.0, "truncated_heading_matches": true, "received_parameters": 1202, "expected_parameters": 1202, "complete": true, "unexplained_parameter_differences": ["SIM_PLD_YAW"]}
+  ],
+  "causal_interpretation": {
+    "hypothesis": "The per-scene launch --home heading initializes SIM_PLD_YAW after integer truncation; zero-heading WP-S baseline could not reveal this instance dependence.",
+    "support": "Three independent VP1 values match their launch heading after positive-angle truncation; uav_02 and uav_03 have complete readbacks with no other unexplained differences.",
+    "certainty": "strong inference, not firmware-source proof"
+  },
+  "fingerprint_gate": {
+    "firmware_sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+    "parameter_template_sha256": "4f780ced6a47582cec2b66dfce7ce995f0ad20683e16909541f58b2837f1dee5",
+    "matches_confirmed_wp_s": true,
+    "stat_reset_within_300_s_all_agents": true,
+    "stat_bootcnt_one_all_agents": true,
+    "stat_flttime_zero_all_agents": true,
+    "stat_runtime_zero_all_agents": true
+  },
+  "protected_files": {"registered": 11307, "unchanged": 11307, "missing": 0, "changed": 0},
+  "not_executed": ["VP2", "VP3", "VP4", "VR1", "VR2", "HD decision", "PP pilot", "pause 1 combined report", "batch generation"],
+  "proposal_only": "Version a bounded SIM_PLD_YAW rule tied to the exact launch --home heading. Test correct mapping, wrong yaw, missing entry, negative-angle semantics and partial readback offline; do not add an unconditional name whitelist.",
+  "evidence_sha256": {
+    "tmp_v05/dr_v05b/review.json": "f2356b597ab6e4926e01258237eacf4f1b96cc5834a0dad2be7ef7eb3437cba1",
+    "verification/v05b_validation_20261002_r2/control.json": "03fc24ab53d0f3d60cfa914e8c055afd056b27e39bbad83961dea17726d0207d",
+    "verification/v05b_validation_20261002_r2/protected_stop_review.json": "5847c80ae132aba4db819445cc318e2ae037f1ce2c447dc54803aa7a14b38f5b",
+    "verification/v05b_validation_20261002_r2/execution/VP1/attempt_0/attempts/113a1c13587a47dc8a6c03050c85b5e6/patrol_0001_v00_20261002T165813Z_59899fb4/scenario.json": "4b87f4fc8085896ed1197558f3d613f36340bbeb9ff1380b272766fe71746431",
+    "verification/v05b_validation_20261002_r2/execution/VP1/attempt_0/attempts/113a1c13587a47dc8a6c03050c85b5e6/patrol_0001_v00_20261002T165813Z_59899fb4/metadata.json": "680273eb3b9fa6b0cddf603ce544dc933f2e33026cde2e696a9a954482e82a2d",
+    "verification/v05b_validation_20261002_r2/execution/VP1/attempt_0/attempts/113a1c13587a47dc8a6c03050c85b5e6/patrol_0001_v00_20261002T165813Z_59899fb4/firmware_parameters.json": "fac3d6b2a6b3760bb926c180cf3a415cf9f1c4fa08381a30b7c36ee54f99204d",
+    "verification/v05b_validation_20261002_r2/execution/VP1/attempt_0/attempts/113a1c13587a47dc8a6c03050c85b5e6/patrol_0001_v00_20261002T165813Z_59899fb4/events.jsonl": "174afb57af5c0b1bb38470566709410137e7ac78a85fef821900b8cdf8a0c78c",
+    "runs/spike_v04_20261001T153235Z_5eddb7ae/scenario.json": "fad6ad3759d869c8e0d9c03a1d72db5b5e61dc1d0203f6a1cfb5b4d2fbbda267",
+    "runs/spike_v04_20261001T153235Z_5eddb7ae/firmware_parameters.json": "0284db1e46d4d25c10dcc8eac077fbca210bf42a6ddef50416cb0d687b623436",
+    "runs/spike_v04_20261001T153806Z_42150c31/scenario.json": "fad6ad3759d869c8e0d9c03a1d72db5b5e61dc1d0203f6a1cfb5b4d2fbbda267",
+    "runs/spike_v04_20261001T153806Z_42150c31/firmware_parameters.json": "6b3a3b58e41b7944f175c78868f3b4ee3023f8402128a3e2adfc6b3f08d3fe22"
+  }
+}

@@ -25,7 +25,7 @@ def normalize_planner(params, spec):
     params = copy.deepcopy(params)
     _object(params, "planner.params", ("partition_axis", "assignment", "lane_spacing_m", "tracking_margin_m",
                                       "lane_end_overshoot_m"), optional=("lane_end_overshoot_m",))
-    _enum(params, "partition_axis", "planner.params", ("east", "north"))
+    _enum(params, "partition_axis", "planner.params", ("east", "north", "auto"))
     _enum(params, "assignment", "planner.params", ("monotone_entry_order",))
     _numeric(params, "lane_spacing_m", "planner.params", .01, 4000)
     _numeric(params, "tracking_margin_m", "planner.params", 0, 100)
@@ -64,7 +64,27 @@ def plan_routes(spec):
 
     scenario, mission, planner = spec["scenario"], spec["mission"], spec["planner"]["params"]
     region = next(r for r in scenario["regions"] if r["id"] == mission["target_region_id"])
-    axis = planner["partition_axis"]
+    requested_axis = planner["partition_axis"]
+    axis = requested_axis
+    axis_resolution = None
+    if requested_axis == "auto":
+        vehicles = scenario["vehicles"]
+        centroid_east = sum(v["east_m"] for v in vehicles) / len(vehicles)
+        centroid_north = sum(v["north_m"] for v in vehicles) / len(vehicles)
+        center_east = region["min_east_m"] + region["width_m"] / 2
+        center_north = region["min_north_m"] + region["height_m"] / 2
+        delta_east, delta_north = centroid_east - center_east, centroid_north - center_north
+        # Resolve diagonals by the dominant displacement; north/south wins a tie.
+        north_south = abs(delta_north) >= abs(delta_east)
+        axis = "east" if north_south else "north"
+        inferred_side = ("north" if delta_north >= 0 else "south") if north_south else (
+            "east" if delta_east >= 0 else "west")
+        axis_resolution = dict(requested_axis="auto", resolved_axis=axis,
+            method="dominant_centroid_displacement_enu_v1; north_south_on_tie",
+            inferred_entry_side=inferred_side,
+            vehicle_start_centroid=dict(east_m=centroid_east, north_m=centroid_north),
+            region_center=dict(east_m=center_east, north_m=center_north),
+            displacement_from_region_center=dict(east_m=delta_east, north_m=delta_north))
     partitions = partition_region(region, len(scenario["vehicles"]), axis)
     cross_width = region["width_m" if axis == "east" else "height_m"] / len(partitions)
     if cross_width <= 2 * spec["execution"]["arrival_tolerance_m"]:
@@ -87,10 +107,13 @@ def plan_routes(spec):
     coverage = nominal_coverage(region, routes, params["observation_model"])
     if coverage["ratio"] + 1e-12 < params["coverage_required"]:
         raise ValueError(f"nominal global coverage {coverage['ratio']:.6f} below required coverage")
-    return PlanResult(routes, assignments, dict(
+    diagnostics = dict(
         allocation_method=planner["assignment"], partition_axis=axis,
         sweep_axis="north" if axis == "east" else "east", region_partitions=partitions,
-        nominal_global_coverage=coverage))
+        nominal_global_coverage=coverage)
+    if axis_resolution is not None:
+        diagnostics["partition_axis_resolution"] = axis_resolution
+    return PlanResult(routes, assignments, diagnostics)
 
 
 def evaluate_channel(scene, traces, windows, clocks):
@@ -114,7 +137,7 @@ def behavior_labels(scene, truth):
 
 def topology_signature(spec, planning):
     routes = planning["per_agent_reference_routes"]
-    return (len(spec["scenario"]["vehicles"]), spec["planner"]["params"]["partition_axis"],
+    return (len(spec["scenario"]["vehicles"]), planning.get("partition_axis", spec["planner"]["params"]["partition_axis"]),
             tuple(len(routes[agent]["observe"]) // 2 for agent in sorted(routes)), spec["mission"]["return_required"])
 
 

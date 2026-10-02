@@ -176,7 +176,7 @@ def audit_dataset_v3(dataset_path, generation_manifest=None, attempt_ledger=None
         task, quality = evidence("task.json"), evidence("quality.json")
         allocation, windows = evidence("allocation.json"), evidence("phase_windows.json")
         execution_raw, constraints = evidence("execution_metrics.json"), evidence("execution_constraints.json")
-        execution_usable = execution_raw.get("version") == "execution_artifacts_v1"
+        execution_usable = execution_raw.get("version") in ("execution_artifacts_v1", "execution_artifacts_v2")
         execution = execution_raw if execution_usable else {}
         labels = episode["targets"]
         intent_name, mode = task["mission"]["intent"], task["execution"]["control_mode"]

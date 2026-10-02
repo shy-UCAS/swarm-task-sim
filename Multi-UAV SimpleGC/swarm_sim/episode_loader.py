@@ -12,6 +12,36 @@ from .quality import policy_hash, resolve_policy
 FEATURE_COLUMNS = ("east_m", "north_m", "up_m", "ve_m_s", "vn_m_s", "vu_m_s")
 
 
+def load_public_scene(episode_dir):
+    """Return only the target rectangle's four horizontal ENU (east, north) corners.
+
+    The task is privileged source material: select the target region by mission
+    reference and expose no task, planner, vehicle, or execution fields.
+    """
+    root = Path(episode_dir).resolve()
+    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+    expected = manifest.get("artifact_sha256", {}).get("task.json")
+    if not isinstance(expected, str) or not expected:
+        raise ValueError("task.json is not covered by the episode manifest")
+    task_file = checked_path(root, "task.json")
+    if file_hash(task_file) != expected:
+        raise ValueError("episode artifact changed: task.json")
+    task = json.loads(task_file.read_text(encoding="utf-8"))
+    target_id = task["mission"]["target_region_id"]
+    regions = [region for region in task["scenario"]["regions"] if region["id"] == target_id]
+    if len(regions) != 1 or regions[0].get("type") != "rectangle":
+        raise ValueError("target region must be one rectangle")
+    region = regions[0]
+    values = [region[key] for key in ("min_east_m", "min_north_m", "width_m", "height_m")]
+    if any(type(value) not in (int, float) or not math.isfinite(value) for value in values):
+        raise ValueError("target region has invalid ENU coordinates")
+    east, north, width, height = values
+    if width <= 0 or height <= 0:
+        raise ValueError("target region must have positive dimensions")
+    return ((east, north), (east + width, north),
+            (east + width, north + height), (east, north + height))
+
+
 def load_episode(path, agent_ids=None, verify_hashes=True):
     """Return unnormalized nested lists x[T,N,6], mask[T,N], time, targets and metadata.
 

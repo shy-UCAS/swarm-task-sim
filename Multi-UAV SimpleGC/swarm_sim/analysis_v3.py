@@ -6,11 +6,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import __version__
+from .ac4_timing import (AC4_TIMING_V3_VERSION, ORDERED_ROUTE_PROGRESS_VERSION,
+                         evaluate_ac4_timing_v3, terminal_hover_evidence_v3)
 from .analysis import aligned_truth_samples, assess_separation, digest
 from .execution_constraints import evaluate_execution_constraints
-from .execution_metrics import compute_execution_metrics
+from .execution_metrics import VERSION_V2 as EXECUTION_ARTIFACTS_V2, compute_execution_metrics, compute_execution_metrics_v2
 from .mission_evaluation_v3 import evaluate_mission_v3
 from .observation_processing import prepare_v3_observations, processing_versions
+from .onboard_mission_params import diagnose_onboard_mission_params
 from .protocol import semantic_protocol, validate_artifact_protocol
 from .quality import invalid_intervals, policy_hash, resolve_policy, summarize_clocks, v3_eligibility
 from .recording import resample, write_json
@@ -38,6 +41,14 @@ def _reference_rows(scene):
                     result.append([index,phase["name"],agent,waypoint,target["east_m"],target["north_m"],target["up_m"],
                                    phase["speed_m_s"],phase["terminal_hold_s"] if waypoint==len(route)-1 else 0.0])
     return result
+
+
+def _uses_v05_route_evidence(spec):
+    """Optional v0.5 semantics select new diagnostics; old v0.4 tasks stay frozen."""
+    execution=spec["execution"]
+    return (execution["control_mode"]=="semantic_phase_route_v1" and
+            (spec["mission"]["intent"]=="patrol" or "hold_semantics" in execution or
+             "max_s" in execution.get("async_timing_tolerance", {})))
 
 
 def analyze_run_v3(directory, quality_policy=None):
@@ -139,20 +150,54 @@ def analyze_run_v3(directory, quality_policy=None):
         exported_grid_last_s=grid[-1] if grid else None,mission_end_s=None if unstarted else end-epoch,model_input_grid_unchanged=True,
         semantics="one internal boundary-support sample; never exported as an observation; no invalid/gap bridging")
     constraints=evaluate_execution_constraints(scene,lifecycle_observations,lifecycle_truth,events,metadata,lifecycle_epoch,clocks=lifecycle_clocks)
+    onboard=diagnose_onboard_mission_params(directory,scene,events,lifecycle_clocks)
+    quality.update(onboard_mission_param_check_version=onboard["version"],
+                   onboard_mission_param_check_status=onboard["status"],
+                   onboard_mission_param_check_required=onboard["required"],
+                   onboard_mission_param_check_pass=onboard["pass_gate"])
     labels=semantic["labels"]
     labels["label_provenance"].update(versions)
     quality.update(execution_constraints_pass=constraints["hard_constraints_pass"],mission_success=labels["mission_success"],
                    semantic_consistency=labels["semantic_consistency"])
     quality.update(v3_eligibility(quality,labels))
     nominal=nominal_arrival_evidence(scene,events,metadata,epoch)
-    metrics=compute_execution_metrics(scene,traces,semantic["phase_windows"],events=events,metadata=metadata,time_epoch=epoch,
-                                      nominal_arrivals=nominal["records"])
+    v05_route_evidence=_uses_v05_route_evidence(spec)
+    metrics_fn=compute_execution_metrics_v2 if v05_route_evidence else compute_execution_metrics
+    metrics=metrics_fn(scene,traces,semantic["phase_windows"],events=events,metadata=metadata,time_epoch=epoch,
+                       nominal_arrivals=nominal["records"])
     metrics["nominal_timing_deviation_s"]["assessment"]=nominal
+    v05_versions={}
+    ac4_report=None
+    if v05_route_evidence:
+        v05_versions=dict(route_progress_version=ORDERED_ROUTE_PROGRESS_VERSION,
+                          ac4_timing_version=AC4_TIMING_V3_VERSION,
+                          execution_artifacts_version=EXECUTION_ARTIFACTS_V2)
+        releases=[event.get("phase") for event in events if event.get("event")=="phase_release_scheduled"]
+        hover_supported=(metadata["status"]=="completed" and "mission_end_monotonic_s" in metadata
+                         and all(releases.count(phase["name"])==1 for phase in scene["phases"]))
+        ac4_channels={}
+        hover_evidence={}
+        for channel,channel_traces in (("truth",semantic_truth_traces),("observation",semantic_traces)):
+            starts,evidence=(terminal_hover_evidence_v3(scene,channel_traces,events,metadata,epoch,channel,clocks)
+                             if hover_supported else ({},[]))
+            hover_evidence[channel]=evidence
+            ac4_channels[channel]=evaluate_ac4_timing_v3(scene,channel_traces,events,metadata,epoch,
+                                                          channel=channel,terminal_hover_starts=starts)
+        ac4_report=dict(**v05_versions,**versions,channels=ac4_channels,hover_evidence=hover_evidence,
+                        truth_primary=True,observation_crosscheck=True,
+                        criterion="per semantic phase D <= tau; no change to nominal timing or arrival_s")
+        quality.update(v05_versions)
+        quality["ac4_v3_truth_within_tau"]=ac4_channels["truth"]["within_tau"]
+        quality["ac4_v3_observation_within_tau"]=ac4_channels["observation"]["within_tau"]
+        labels["label_provenance"].update(v05_versions)
     extra={"mission.json":spec["mission"],"shared_scene.json":spec["scenario"],"allocation.json":scene["planning"],
         "semantic_plan.json":scene["semantic_plan"],"semantic_validation.json":dict(semantic["semantic_validation"],**versions),
         "phase_windows.json":dict(semantic["phase_windows"],**versions),"execution_constraints.json":dict(constraints,**versions),
         "lifecycle_clock_models.json":lifecycle_clocks,"execution_metrics.json":dict(metrics,**versions),
+        "onboard_mission_param_check.json":onboard,
         "observation_processing.json":dict(**versions,per_agent=audits,raw_evidence_preserved=True)}
+    if ac4_report is not None:
+        extra["ac4_timing_v3.json"]=ac4_report
     output=directory/("analysis_v"+__version__.replace(".","")+"_"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_")+uuid.uuid4().hex[:8])
     output.mkdir()
     fields=["t_s","agent_id","valid"]
@@ -170,7 +215,7 @@ def analyze_run_v3(directory, quality_policy=None):
     manifest=dict(schema_version=3,analysis_version=__version__,analysis_schema_version=3,
         simulator_version=metadata.get("version"),run_id=metadata["run_id"],run_directory=str(directory),run_status=metadata["status"],
         scenario_id=scene["scenario_id"],family_id=spec["family_id"],family_scheme=spec["family_scheme"],
-        control_mode=spec["execution"]["control_mode"],intent=spec["mission"]["intent"],**protocol,**versions,
+        control_mode=spec["execution"]["control_mode"],intent=spec["mission"]["intent"],**protocol,**versions,**v05_versions,
         quality_policy=policy,quality_policy_sha256=policy_hash(policy),evaluation_context=context,
         partial_window="mission_end_monotonic_s" not in metadata,time_epoch_host_s=epoch,duration_s=end-epoch,
         observation_window=observation_window,
@@ -180,6 +225,10 @@ def analyze_run_v3(directory, quality_policy=None):
         source_sha256=source_hashes,analysis_source_sha256={p.name:digest(p) for p in Path(__file__).parent.glob("*.py")},
         benchmark_eligible=quality["benchmark_eligible"],strict_benchmark_eligible=quality["strict_benchmark_eligible"],
         episode_quality_eligible=quality["episode_quality_eligible"],mission_success=labels["mission_success"],
+        onboard_mission_param_check_version=onboard["version"],
+        onboard_mission_param_check_status=onboard["status"],
+        onboard_mission_param_check_required=onboard["required"],
+        onboard_mission_param_check_pass=onboard["pass_gate"],
         semantic_consistency=labels["semantic_consistency"],clock_quality=clock_quality,
         agent_ids=sorted(v["id"] for v in scene["vehicles"]),
         artifact_sha256={p.name:digest(p) for p in output.iterdir() if p.is_file()})

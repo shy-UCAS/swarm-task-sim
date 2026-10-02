@@ -176,15 +176,15 @@ class TaskV3Tests(unittest.TestCase):
         self.assertEqual([p["name"] for p in scene["phases"]], ["p00_approach", "p01_observe", "p02_return"])
 
     def test_G06_production_registry_and_exception_cleanup(self):
-        self.assertEqual(registered_intents(), ("reconnaissance",))
-        self.assertEqual(registered_planners(), ("equal_strip_lawnmower_v1",))
+        self.assertEqual(registered_intents(), ("patrol", "reconnaissance"))
+        self.assertEqual(registered_planners(), ("equal_strip_lawnmower_v1", "staggered_same_loop_v1"))
         with self.assertRaisesRegex(RuntimeError, "deliberate"):
             with temporary_registration(fixture_intent(), (fixture_planner(),)):
                 self.assertIn("fixture_intent", registered_intents())
                 self.assertEqual(get_planner("fixture_planner").version, "fixture_plan_v1")
                 raise RuntimeError("deliberate")
-        self.assertEqual(registered_intents(), ("reconnaissance",))
-        self.assertEqual(registered_planners(), ("equal_strip_lawnmower_v1",))
+        self.assertEqual(registered_intents(), ("patrol", "reconnaissance"))
+        self.assertEqual(registered_planners(), ("equal_strip_lawnmower_v1", "staggered_same_loop_v1"))
         with self.assertRaisesRegex(ValueError, "unregistered"):
             get_intent("fixture_intent")
 

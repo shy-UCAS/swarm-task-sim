@@ -1,0 +1,126 @@
+{
+  "execution": {
+    "arrival_tolerance_m": 1.0,
+    "async_timing_tolerance": {
+      "fraction_of_phase": 0.2,
+      "max_s": 5.0,
+      "min_s": 3.0
+    },
+    "backend": "AUTO",
+    "confirmation_dwell_s": 0.5,
+    "control_mode": "semantic_phase_route_v1",
+    "hold_semantics": "integer_seconds_v1",
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "ready_timeout_s": 90.0,
+    "record_hz": 10.0,
+    "speed_m_s": 3.0,
+    "takeoff_alt_m": 8.0,
+    "terminal_hold_s": 0.0,
+    "timeout_s": 1200.0
+  },
+  "family_id": "scene_1b8cd7a9bc97cbcadf3b",
+  "family_scheme": "scene_content_v1",
+  "mission": {
+    "intent": "reconnaissance",
+    "intent_params": {
+      "coverage_required": 0.9,
+      "objective": "area_coverage",
+      "observation_model": {
+        "activation": "observe_phase_only",
+        "grid_m": 1.0,
+        "height_tolerance_m": 1.0,
+        "radius_m": 4.0,
+        "type": "ideal_horizontal_disk"
+      }
+    },
+    "return_required": true,
+    "target_region_id": "R1"
+  },
+  "planner": {
+    "name": "equal_strip_lawnmower_v1",
+    "params": {
+      "assignment": "monotone_entry_order",
+      "lane_end_overshoot_m": 0.0,
+      "lane_spacing_m": 4.0,
+      "partition_axis": "auto",
+      "tracking_margin_m": 1.0
+    }
+  },
+  "scenario": {
+    "origin": {
+      "alt_msl_m": 12.0,
+      "lat": 30.0,
+      "lon": 120.0
+    },
+    "platform": {
+      "dynamics_validation": "execution_proxy_only",
+      "id": "basic_multirotor_nominal_v1",
+      "max_airborne_time_s": 900.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_speed_m_s": 6.0,
+      "reserve_time_s": 60.0
+    },
+    "regions": [
+      {
+        "height_m": 23.404927018394687,
+        "id": "R1",
+        "min_east_m": -14.1226269910632,
+        "min_north_m": -9.686083360594198,
+        "type": "rectangle",
+        "width_m": 44.10074229415498
+      }
+    ],
+    "restricted_regions": [],
+    "scene_id": "base_0011",
+    "vehicles": [
+      {
+        "east_m": 8.184421259348737,
+        "heading_deg": 21.24345210702422,
+        "id": "uav_01",
+        "north_m": 36.19270603666023,
+        "sysid": 1
+      },
+      {
+        "east_m": -0.3376958977277482,
+        "heading_deg": 108.41684927985695,
+        "id": "uav_02",
+        "north_m": 33.637180604666845,
+        "sysid": 2
+      },
+      {
+        "east_m": -6.622876662051586,
+        "heading_deg": 93.58904099009973,
+        "id": "uav_03",
+        "north_m": 25.558094818585523,
+        "sysid": 3
+      },
+      {
+        "east_m": -12.059702304945484,
+        "heading_deg": 44.352085297690344,
+        "id": "uav_04",
+        "north_m": 31.8680677381835,
+        "sysid": 4
+      }
+    ],
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    }
+  },
+  "schema_version": 3,
+  "seed": 7547225871613378874,
+  "task_id": "reconnaissance_0011_v00"
+}

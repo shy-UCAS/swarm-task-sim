@@ -31,6 +31,10 @@ def main(argv=None):
     dataset.add_argument("--output", type=Path, required=True)
     dataset.add_argument("--split-salt", default="simplegc-v02")
     dataset.add_argument("--allow-mixed-control-modes", action="store_true", help="Explicit v3 comparison export; recorded in manifest")
+    describe = sub.add_parser("describe", help="Export manifest-bound Chinese descriptions beside a frozen dataset")
+    describe.add_argument("dataset_directory", type=Path)
+    describe.add_argument("--templates", choices=["zh_v0"], default="zh_v0")
+    describe.add_argument("--output", type=Path)
     audit = sub.add_parser("audit", help="Read-only check of a legacy trajectory JSON")
     audit.add_argument("scenario", type=Path)
     audit.add_argument("--time-unit", choices=["index", "seconds"], default="index")
@@ -85,6 +89,15 @@ def main(argv=None):
             result = build_dataset(args.runs, args.output, args.split_salt,
                                    allow_mixed_control_modes=args.allow_mixed_control_modes)
             print(json.dumps(dict(output=str(args.output), counts=result["counts"]), indent=2))
+            return 0
+        if args.command == "describe":
+            from swarm_sim.language_v0 import describe_dataset
+            result = describe_dataset(args.dataset_directory, args.output, args.templates)
+            print(json.dumps(dict(output=str(args.output or args.dataset_directory.with_name(
+                args.dataset_directory.name + "_language_zh_v0")), input_episodes=result["input_episodes"],
+                eligible_agree_episodes=result["eligible_agree_episodes"],
+                descriptions=result["descriptions"], skipped_episodes=result["skipped_episodes"]),
+                ensure_ascii=False, indent=2))
             return 0
         if args.command == "audit":
             from swarm_sim.audit import audit_paths

@@ -1,0 +1,225 @@
+{
+  "audit_version": "validation_preflight_independent_v1",
+  "source": {
+    "manifest": "tmp_v05/dr/generated_130/generation_manifest.json",
+    "manifest_sha256": "5a1f7951cb8e1c803c767c13785cfb061fce570ecf43f4ec5b22ff8ef0ce81e6",
+    "profile_sha256": "dee335d29817a3ede25487848ce870b0d3d7f029a0c43ce062a2e205e523b19c",
+    "candidate_draws": 383,
+    "accepted_dual_intent_candidates": 130,
+    "verified_candidate_task_files": 125
+  },
+  "scope": "Read-only existing TaskSpec candidate files and generation manifest; no replanning, SITL, seed or profile change.",
+  "criteria": {
+    "VP1": "patrol planned; 3 UAV; K=2; return_required=true; hold=0",
+    "VP2": "patrol planned; 4 UAV; minimum positive P/N minus spacing prefilter bound among candidates",
+    "VP3": "patrol planned; 2 UAV; K=3; return_required=false",
+    "VP4": "same VP1 physical/task sampling, but hold=1; no such task is present in the frozen formal profile candidates",
+    "VR1": "recon planned; 3 UAV; entry east/west; partition_axis=auto",
+    "VR2": "recon planned; 4 UAV; formation=cluster"
+  },
+  "availability": {
+    "all_candidate_draws": {
+      "VP1": {
+        "count": 17,
+        "candidate_ids": [
+          "base_0001_candidate_00",
+          "base_0004_candidate_01",
+          "base_0011_candidate_09",
+          "base_0043_candidate_01",
+          "base_0051_candidate_06",
+          "base_0067_candidate_03",
+          "base_0069_candidate_01",
+          "base_0072_candidate_04",
+          "base_0074_candidate_04",
+          "base_0075_candidate_00",
+          "base_0075_candidate_03",
+          "base_0102_candidate_00",
+          "base_0102_candidate_03",
+          "base_0107_candidate_01",
+          "base_0109_candidate_04",
+          "base_0109_candidate_07",
+          "base_0112_candidate_00"
+        ]
+      },
+      "VP2": {
+        "count": 19,
+        "candidate_ids": [
+          "base_0005_candidate_00",
+          "base_0018_candidate_02",
+          "base_0036_candidate_01",
+          "base_0039_candidate_00",
+          "base_0040_candidate_00",
+          "base_0043_candidate_00",
+          "base_0044_candidate_04",
+          "base_0052_candidate_00",
+          "base_0054_candidate_01",
+          "base_0056_candidate_05",
+          "base_0063_candidate_00",
+          "base_0072_candidate_02",
+          "base_0079_candidate_01",
+          "base_0082_candidate_04",
+          "base_0082_candidate_09",
+          "base_0090_candidate_04",
+          "base_0105_candidate_04",
+          "base_0109_candidate_05",
+          "base_0114_candidate_00"
+        ]
+      },
+      "VP3": {
+        "count": 16,
+        "candidate_ids": [
+          "base_0003_candidate_01",
+          "base_0015_candidate_00",
+          "base_0016_candidate_02",
+          "base_0020_candidate_01",
+          "base_0024_candidate_01",
+          "base_0035_candidate_03",
+          "base_0039_candidate_03",
+          "base_0047_candidate_01",
+          "base_0079_candidate_02",
+          "base_0083_candidate_02",
+          "base_0090_candidate_05",
+          "base_0092_candidate_00",
+          "base_0095_candidate_01",
+          "base_0100_candidate_00",
+          "base_0120_candidate_04",
+          "base_0125_candidate_00"
+        ]
+      },
+      "VR1": {
+        "count": 9,
+        "candidate_ids": [
+          "base_0011_candidate_07",
+          "base_0011_candidate_09",
+          "base_0021_candidate_04",
+          "base_0025_candidate_02",
+          "base_0067_candidate_03",
+          "base_0072_candidate_06",
+          "base_0077_candidate_00",
+          "base_0104_candidate_01",
+          "base_0116_candidate_01"
+        ]
+      },
+      "VR2": {
+        "count": 0,
+        "candidate_ids": []
+      }
+    },
+    "accepted_dual_intent_candidates": {
+      "VP1": {
+        "count": 8,
+        "candidate_ids": [
+          "base_0001_candidate_00",
+          "base_0011_candidate_09",
+          "base_0043_candidate_01",
+          "base_0051_candidate_06",
+          "base_0067_candidate_03",
+          "base_0069_candidate_01",
+          "base_0075_candidate_03",
+          "base_0102_candidate_03"
+        ]
+      },
+      "VP2": {
+        "count": 4,
+        "candidate_ids": [
+          "base_0018_candidate_02",
+          "base_0036_candidate_01",
+          "base_0063_candidate_00",
+          "base_0082_candidate_09"
+        ]
+      },
+      "VP3": {
+        "count": 14,
+        "candidate_ids": [
+          "base_0015_candidate_00",
+          "base_0016_candidate_02",
+          "base_0024_candidate_01",
+          "base_0035_candidate_03",
+          "base_0039_candidate_03",
+          "base_0047_candidate_01",
+          "base_0079_candidate_02",
+          "base_0083_candidate_02",
+          "base_0090_candidate_05",
+          "base_0092_candidate_00",
+          "base_0095_candidate_01",
+          "base_0100_candidate_00",
+          "base_0120_candidate_04",
+          "base_0125_candidate_00"
+        ]
+      },
+      "VR1": {
+        "count": 7,
+        "candidate_ids": [
+          "base_0011_candidate_09",
+          "base_0021_candidate_04",
+          "base_0067_candidate_03",
+          "base_0072_candidate_06",
+          "base_0077_candidate_00",
+          "base_0104_candidate_01",
+          "base_0116_candidate_01"
+        ]
+      },
+      "VR2": {
+        "count": 0,
+        "candidate_ids": []
+      }
+    }
+  },
+  "VP2_spacing": {
+    "formula": "P/N - (v*tau + min_separation_m + 2*tracking_margin_m + 2m)",
+    "all_planned_count": 19,
+    "closest_all_planned": {
+      "candidate_id": "base_0109_candidate_05",
+      "candidate_status": "planning_rejected",
+      "formation": "line",
+      "patrol_task": "candidates/base_0109_candidate_05_patrol_v00.json",
+      "perimeter_per_agent_m": 28.75092925995358,
+      "prefilter_lower_bound_m": 24.0,
+      "excess_m": 4.75092925995358,
+      "excess_fraction_of_lower_bound": 0.19795538583139916,
+      "tau_s": 5.0,
+      "speed_m_s": 3.0,
+      "required_clearance_m": 7.0
+    },
+    "accepted_dual_intent_count": 4,
+    "closest_accepted_dual_intent": {
+      "candidate_id": "base_0036_candidate_01",
+      "candidate_status": "accepted",
+      "formation": "line",
+      "patrol_task": "candidates/base_0036_candidate_01_patrol_v00.json",
+      "perimeter_per_agent_m": 35.04995034111842,
+      "prefilter_lower_bound_m": 24.0,
+      "excess_m": 11.049950341118418,
+      "excess_fraction_of_lower_bound": 0.46041459754660075,
+      "tau_s": 5.0,
+      "speed_m_s": 3.0,
+      "required_clearance_m": 7.0
+    },
+    "interpretation": "The plan gives no numeric threshold for near the lower bound; these are the closest available planned tasks in each source scope."
+  },
+  "VR2_four_uav_cluster": {
+    "candidate_draws": 64,
+    "recon_planned": 0,
+    "recon_planning_rejected": 64,
+    "recon_rejection_reason_counts": {
+      "time_aware_nominal_routes_too_close": 64
+    },
+    "patrol_planned": 5,
+    "dual_intent_accepted": 0,
+    "recon_task_hashes_verified": 64
+  },
+  "VP4_hold": {
+    "existing_hold_1_candidate_tasks": 0,
+    "eligible_VP1_sources_all_planned": 17,
+    "eligible_VP1_sources_accepted": 8,
+    "interpretation": "VP4 is an explicit in-memory hold=1 clone of VP1 under plan 11.1; its hold=1 planning feasibility is not established by the existing hold=0 manifest and must be verified separately before SITL.",
+    "all_formal_candidate_tasks_checked": 766,
+    "existing_hold_0_candidate_tasks": 766
+  },
+  "conclusion": {
+    "all_six_available_as_existing_planned_candidate_tasks": false,
+    "blocking_missing_scene": "VR2: no 4-UAV cluster reconnaissance task planned among all 383 formal-profile candidate draws",
+    "no_parameter_or_seed_relaxation_proposed": true,
+    "SITL_started_by_this_audit": false
+  }
+}

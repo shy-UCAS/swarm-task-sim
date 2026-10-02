@@ -1,0 +1,520 @@
+{
+  "run_status": "completed",
+  "usable": true,
+  "available": true,
+  "benchmark_eligible": true,
+  "strict_benchmark_eligible": false,
+  "episode_quality_eligible": true,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "schema_version": 3,
+  "task_kind": "mission_v3",
+  "ontology_version": "multi_intent_mission_v1",
+  "label_schema_version": 3,
+  "semantic_validation_version": "multi_intent_validation_v2",
+  "eligibility_protocol_version": "multi_intent_quality_v1",
+  "execution_constraints_version": "multi_intent_execution_limits_v2",
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1",
+  "frames": 1684,
+  "observation_window": {
+    "status": "complete",
+    "reason": null,
+    "scheduled_start_host_s": 48147.8666342,
+    "recorded_lifecycle_end_host_s": 48338.4456166,
+    "recorded_mission_end_host_s": 48316.2636616,
+    "effective_start_host_s": 48147.8666342,
+    "effective_end_host_s": 48316.2636616
+  },
+  "observation_valid_fraction": {
+    "uav_01": 1.0,
+    "uav_02": 1.0,
+    "uav_03": 1.0
+  },
+  "truth_valid_fraction": {
+    "uav_01": 1.0,
+    "uav_02": 1.0,
+    "uav_03": 1.0
+  },
+  "timing_diagnostic_pass": true,
+  "clock_quality": {
+    "overall": "acceptable",
+    "per_agent": {
+      "uav_01": "acceptable",
+      "uav_02": "acceptable",
+      "uav_03": "acceptable"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "evaluation_context": {
+    "record_hz": 10.0,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "mission": {
+      "intent": "patrol",
+      "intent_params": {
+        "laps": 2,
+        "max_revisit_gap_factor": 2.0,
+        "objective": "perimeter_patrol",
+        "segment_length_m": 5.0,
+        "standoff_m": 0.0,
+        "visit_radius_m": 3.0
+      },
+      "return_required": true,
+      "target_region_id": "R1"
+    },
+    "platform": {
+      "dynamics_validation": "execution_proxy_only",
+      "id": "basic_multirotor_nominal_v1",
+      "max_airborne_time_s": 900.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_speed_m_s": 6.0,
+      "reserve_time_s": 60.0
+    },
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    },
+    "execution": {
+      "arrival_tolerance_m": 1.0,
+      "async_timing_tolerance": {
+        "fraction_of_phase": 0.2,
+        "max_s": 5.0,
+        "min_s": 3.0
+      },
+      "backend": "AUTO",
+      "confirmation_dwell_s": 0.5,
+      "control_mode": "semantic_phase_route_v1",
+      "hold_semantics": "integer_seconds_v1",
+      "max_gap_s": 0.5,
+      "min_separation_m": 5.0,
+      "ready_timeout_s": 90.0,
+      "record_hz": 10.0,
+      "speed_m_s": 3.0,
+      "takeoff_alt_m": 8.0,
+      "terminal_hold_s": 0.0,
+      "timeout_s": 1200.0
+    }
+  },
+  "observation_filter": {
+    "uav_01": {
+      "message_type": "GLOBAL_POSITION_INT",
+      "counting_unit": "raw_message",
+      "rejection_reason_order": [
+        "missing_fields",
+        "invalid_type",
+        "non_finite",
+        "invalid_timestamp",
+        "position_out_of_bounds",
+        "horizontal_speed_out_of_bounds",
+        "vertical_speed_out_of_bounds"
+      ],
+      "primary_reason_only": true,
+      "whole_run": {
+        "total_messages": 2322,
+        "accepted": 2321,
+        "rejected": 1,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 1,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window": {
+        "total_messages": 1640,
+        "accepted": 1640,
+        "rejected": 0,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 0,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window_host_receive_s": [
+        48147.8666342,
+        48316.2636616
+      ]
+    },
+    "uav_02": {
+      "message_type": "GLOBAL_POSITION_INT",
+      "counting_unit": "raw_message",
+      "rejection_reason_order": [
+        "missing_fields",
+        "invalid_type",
+        "non_finite",
+        "invalid_timestamp",
+        "position_out_of_bounds",
+        "horizontal_speed_out_of_bounds",
+        "vertical_speed_out_of_bounds"
+      ],
+      "primary_reason_only": true,
+      "whole_run": {
+        "total_messages": 2321,
+        "accepted": 2320,
+        "rejected": 1,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 1,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window": {
+        "total_messages": 1640,
+        "accepted": 1640,
+        "rejected": 0,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 0,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window_host_receive_s": [
+        48147.8666342,
+        48316.2636616
+      ]
+    },
+    "uav_03": {
+      "message_type": "GLOBAL_POSITION_INT",
+      "counting_unit": "raw_message",
+      "rejection_reason_order": [
+        "missing_fields",
+        "invalid_type",
+        "non_finite",
+        "invalid_timestamp",
+        "position_out_of_bounds",
+        "horizontal_speed_out_of_bounds",
+        "vertical_speed_out_of_bounds"
+      ],
+      "primary_reason_only": true,
+      "whole_run": {
+        "total_messages": 2322,
+        "accepted": 2321,
+        "rejected": 1,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 1,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window": {
+        "total_messages": 1642,
+        "accepted": 1642,
+        "rejected": 0,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 0,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window_host_receive_s": [
+        48147.8666342,
+        48316.2636616
+      ]
+    }
+  },
+  "observation_timeline_errors": {
+    "uav_01": null,
+    "uav_02": null,
+    "uav_03": null
+  },
+  "observation_processing_audit": {
+    "uav_01": {
+      "version": "exact_duplicate_drop_v1",
+      "scope": "v3 only; full stream; no window clipping",
+      "observation_processing_version": "v3_observation_v1",
+      "duplicate_policy_version": "exact_duplicate_drop_v1",
+      "timeline_policy_version": "full_stream_strict_v1",
+      "clock_model_version": "passive_system_time_piecewise_v1",
+      "equality": "all message fields; type-sensitive canonical JSON; receive stamp excluded",
+      "counts": {
+        "GLOBAL_POSITION_INT": {
+          "total": 2323,
+          "kept": 2322,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        },
+        "SYSTEM_TIME": {
+          "total": 2323,
+          "kept": 2322,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        }
+      },
+      "details": [
+        {
+          "raw_line": 20172,
+          "kind": "GLOBAL_POSITION_INT",
+          "sysid": 1,
+          "source_time_boot_ms": 72871,
+          "recv_monotonic_s": 48171.9094061,
+          "first_line": 20145,
+          "first_recv_monotonic_s": 48171.9073462,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": true,
+          "inside_observe_window": null
+        },
+        {
+          "raw_line": 20187,
+          "kind": "SYSTEM_TIME",
+          "sysid": 1,
+          "source_time_boot_ms": 72871,
+          "recv_monotonic_s": 48171.9099825,
+          "first_line": 20160,
+          "first_recv_monotonic_s": 48171.9090431,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": true,
+          "inside_observe_window": null
+        }
+      ],
+      "dropped_count": 2
+    },
+    "uav_02": {
+      "version": "exact_duplicate_drop_v1",
+      "scope": "v3 only; full stream; no window clipping",
+      "observation_processing_version": "v3_observation_v1",
+      "duplicate_policy_version": "exact_duplicate_drop_v1",
+      "timeline_policy_version": "full_stream_strict_v1",
+      "clock_model_version": "passive_system_time_piecewise_v1",
+      "equality": "all message fields; type-sensitive canonical JSON; receive stamp excluded",
+      "counts": {
+        "GLOBAL_POSITION_INT": {
+          "total": 2322,
+          "kept": 2321,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        },
+        "SYSTEM_TIME": {
+          "total": 2322,
+          "kept": 2321,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        }
+      },
+      "details": [
+        {
+          "raw_line": 2830,
+          "kind": "GLOBAL_POSITION_INT",
+          "sysid": 2,
+          "source_time_boot_ms": 9134,
+          "recv_monotonic_s": 48106.8783749,
+          "first_line": 2804,
+          "first_recv_monotonic_s": 48106.87773,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        },
+        {
+          "raw_line": 2845,
+          "kind": "SYSTEM_TIME",
+          "sysid": 2,
+          "source_time_boot_ms": 9134,
+          "recv_monotonic_s": 48106.8786413,
+          "first_line": 2819,
+          "first_recv_monotonic_s": 48106.8781244,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        }
+      ],
+      "dropped_count": 2
+    },
+    "uav_03": {
+      "version": "exact_duplicate_drop_v1",
+      "scope": "v3 only; full stream; no window clipping",
+      "observation_processing_version": "v3_observation_v1",
+      "duplicate_policy_version": "exact_duplicate_drop_v1",
+      "timeline_policy_version": "full_stream_strict_v1",
+      "clock_model_version": "passive_system_time_piecewise_v1",
+      "equality": "all message fields; type-sensitive canonical JSON; receive stamp excluded",
+      "counts": {
+        "GLOBAL_POSITION_INT": {
+          "total": 2323,
+          "kept": 2322,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        },
+        "SYSTEM_TIME": {
+          "total": 2323,
+          "kept": 2322,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        }
+      },
+      "details": [
+        {
+          "raw_line": 2804,
+          "kind": "GLOBAL_POSITION_INT",
+          "sysid": 3,
+          "source_time_boot_ms": 9034,
+          "recv_monotonic_s": 48106.9412432,
+          "first_line": 2777,
+          "first_recv_monotonic_s": 48106.9405719,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        },
+        {
+          "raw_line": 2819,
+          "kind": "SYSTEM_TIME",
+          "sysid": 3,
+          "source_time_boot_ms": 9034,
+          "recv_monotonic_s": 48106.9415229,
+          "first_line": 2792,
+          "first_recv_monotonic_s": 48106.9409977,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        }
+      ],
+      "dropped_count": 2
+    }
+  },
+  "invalid_intervals": {
+    "uav_01": [],
+    "uav_02": [],
+    "uav_03": []
+  },
+  "timing_residual_threshold_s": 0.05,
+  "minimum_separation_m": 7.757607269937358,
+  "separation_status": "clear_observed",
+  "unassessed_pair_intervals": 0,
+  "risk_pair_intervals": 0,
+  "truth_separation": {
+    "status": "clear_observed",
+    "minimum_m": 7.740896371167331,
+    "unassessed_pair_intervals": 0,
+    "risk_pair_intervals": 0,
+    "method": "piecewise-linear relative motion on passively aligned positions"
+  },
+  "data_quality_pass": true,
+  "truth_available_pass": true,
+  "run_completed": true,
+  "estimation_error": {
+    "uav_01": {
+      "samples": 1684,
+      "rms_m": 0.2675767579162116,
+      "p95_m": 0.31952477309469834,
+      "max_m": 0.3377121651679833
+    },
+    "uav_02": {
+      "samples": 1684,
+      "rms_m": 0.2624534905757093,
+      "p95_m": 0.31352964625829866,
+      "max_m": 0.3479549851536148
+    },
+    "uav_03": {
+      "samples": 1684,
+      "rms_m": 0.27024285029812584,
+      "p95_m": 0.3214809833492418,
+      "max_m": 0.344234947172752
+    }
+  },
+  "estimation_error_note": "FCU vs BIN SIM source-time comparison; internal FCU filtering latency remains; passive fit is not absolute synchronization",
+  "onboard_mission_param_check_version": "onboard_mission_param_check_v1",
+  "onboard_mission_param_check_status": "pass",
+  "onboard_mission_param_check_required": true,
+  "onboard_mission_param_check_pass": true,
+  "execution_constraints_pass": true,
+  "mission_success": true,
+  "semantic_consistency": "agree",
+  "route_progress_version": "ordered_route_progress_v1",
+  "ac4_timing_version": "ac4_relative_progress_timing_v3",
+  "execution_artifacts_version": "execution_artifacts_v2",
+  "ac4_v3_truth_within_tau": false,
+  "ac4_v3_observation_within_tau": false,
+  "analysis_directory": "analysis_v050-dev_20261002T173446Z_4efff936",
+  "mission_success_observation": true
+}

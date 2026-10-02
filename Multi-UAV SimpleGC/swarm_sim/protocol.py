@@ -8,17 +8,38 @@ SHARED_CONSTRAINT_VERSION = "execution_limits_v2"
 SHARED_LABEL_SCHEMA_VERSION = 2
 V3_SEMANTIC_VERSION = "multi_intent_validation_v1"
 V3_CONSTRAINT_VERSION = "multi_intent_execution_limits_v1"
+V05_SEMANTIC_VERSION = "multi_intent_validation_v2"
+V05_CONSTRAINT_VERSION = "multi_intent_execution_limits_v2"
+V05_ROUTE_PROGRESS_VERSION = "ordered_route_progress_v1"
+V05_AC4_TIMING_VERSION = "ac4_relative_progress_timing_v3"
+V05_EXECUTION_ARTIFACTS_VERSION = "execution_artifacts_v2"
 
 PROTOCOL_FIELDS = ("task_kind", "ontology_version", "label_schema_version", "semantic_validation_version",
                    "eligibility_protocol_version", "execution_constraints_version")
 
 
+def is_v05_task_spec(task):
+    """Select the new contract from explicit TaskSpec features, never a run date."""
+    if not isinstance(task, dict) or task.get("schema_version") != 3:
+        return False
+    mission = task.get("mission", {})
+    execution = task.get("execution", {})
+    if not isinstance(mission, dict) or not isinstance(execution, dict):
+        return False
+    timing = execution.get("async_timing_tolerance", {})
+    return (mission.get("intent") == "patrol" or "hold_semantics" in execution or
+            isinstance(timing, dict) and "max_s" in timing)
+
+
 def semantic_protocol(scene):
-    if scene.get("task_spec", {}).get("schema_version") == 3:
+    task = scene.get("task_spec", {})
+    if task.get("schema_version") == 3:
+        new_contract = is_v05_task_spec(task)
         return dict(task_kind="mission_v3", ontology_version="multi_intent_mission_v1", label_schema_version=3,
-                    semantic_validation_version=V3_SEMANTIC_VERSION, eligibility_protocol_version="multi_intent_quality_v1",
-                    execution_constraints_version=V3_CONSTRAINT_VERSION)
-    if scene.get("task_spec", {}).get("schema_version") == 2:
+                    semantic_validation_version=V05_SEMANTIC_VERSION if new_contract else V3_SEMANTIC_VERSION,
+                    eligibility_protocol_version="multi_intent_quality_v1",
+                    execution_constraints_version=V05_CONSTRAINT_VERSION if new_contract else V3_CONSTRAINT_VERSION)
+    if task.get("schema_version") == 2:
         return dict(task_kind="mission_v2", ontology_version="shared_mission_v1", label_schema_version=SHARED_LABEL_SCHEMA_VERSION,
                     semantic_validation_version=SHARED_SEMANTIC_VERSION, eligibility_protocol_version="shared_quality_v1",
                     execution_constraints_version=SHARED_CONSTRAINT_VERSION)
@@ -69,9 +90,11 @@ def validate_artifact_protocol(manifest, root):
 
 
 def supported_protocols():
-    """Explicit protocol support set; neither intent nor control mode is a protocol axis."""
+    """Explicit historical and current contracts; TaskSpec chooses between them."""
     return {tuple(semantic_protocol(scene)[key] for key in PROTOCOL_FIELDS)
-            for scene in ({}, {"task_spec": {"schema_version": 2}}, {"task_spec": {"schema_version": 3}})}
+            for scene in ({}, {"task_spec": {"schema_version": 2}},
+                          {"task_spec": {"schema_version": 3}},
+                          {"task_spec": {"schema_version": 3, "mission": {"intent": "patrol"}}})}
 
 
 def _validate_v3_artifacts(manifest, root, protocol):
@@ -86,6 +109,47 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError(f"semantic protocol artifact is not hashed: {name}")
         files[name] = json.loads((root/name).read_text(encoding="utf-8"))
     labels, quality, task = files["labels.json"], files["quality.json"], files["task.json"]
+    if semantic_protocol({"task_spec": task}) != protocol:
+        raise ValueError("v3 TaskSpec semantic protocol mismatch")
+    if is_v05_task_spec(task) and task.get("execution", {}).get("control_mode") == "semantic_phase_route_v1":
+        required = ("execution_metrics.json", "ac4_timing_v3.json")
+        if any(name not in manifest.get("artifact_sha256", {}) for name in required):
+            raise ValueError("v0.5 protocol requires versioned route evidence artifacts")
+        metrics = json.loads((root / "execution_metrics.json").read_text(encoding="utf-8"))
+        ac4 = json.loads((root / "ac4_timing_v3.json").read_text(encoding="utf-8"))
+        expected_versions = dict(route_progress_version=V05_ROUTE_PROGRESS_VERSION,
+                                 ac4_timing_version=V05_AC4_TIMING_VERSION,
+                                 execution_artifacts_version=V05_EXECUTION_ARTIFACTS_VERSION)
+        if (any(artifact.get(key) != value for artifact in
+                (manifest, quality, labels.get("label_provenance", {}), ac4)
+                for key, value in expected_versions.items())
+                or metrics.get("version") != V05_EXECUTION_ARTIFACTS_VERSION
+                or set(ac4.get("channels", {})) != {"truth", "observation"}
+                or any(channel.get("version") != V05_AC4_TIMING_VERSION or
+                       channel.get("mapping_version") != V05_ROUTE_PROGRESS_VERSION
+                       for channel in ac4["channels"].values())
+                or any(ac4.get(key) != value for key, value in processing_versions().items())):
+            raise ValueError("inconsistent v0.5 route evidence versions")
+    hold_semantics = task.get("execution", {}).get("hold_semantics")
+    onboard_name = "onboard_mission_param_check.json"
+    if hold_semantics == "integer_seconds_v1" or onboard_name in manifest.get("artifact_sha256", {}):
+        from .onboard_mission_params import VERSION as onboard_version
+
+        if onboard_name not in manifest.get("artifact_sha256", {}):
+            raise ValueError("integer hold semantics requires hashed onboard mission parameter evidence")
+        onboard = json.loads((root / onboard_name).read_text(encoding="utf-8"))
+        required = hold_semantics == "integer_seconds_v1"
+        status = onboard.get("status")
+        passed = onboard.get("pass_gate")
+        if (onboard.get("version") != onboard_version or onboard.get("required") is not required
+                or status not in ("pass", "mismatch", "unknown")
+                or passed is not ((status == "pass") if required else None)
+                or any(artifact.get("onboard_mission_param_check_version") != onboard_version
+                       or artifact.get("onboard_mission_param_check_status") != status
+                       or artifact.get("onboard_mission_param_check_required") is not required
+                       or artifact.get("onboard_mission_param_check_pass") is not passed
+                       for artifact in (quality, manifest))):
+            raise ValueError("inconsistent onboard mission parameter evidence")
     task_agents = [v["id"] for v in task["scenario"]["vehicles"]]
     manifest_agents = manifest.get("agent_ids")
     if (not isinstance(manifest_agents, list) or not manifest_agents

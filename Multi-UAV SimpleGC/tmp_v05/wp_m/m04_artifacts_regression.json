@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "verification": "M04_execution_artifacts_v2_historical_replay",
+  "status": "PASS",
+  "new_sitl_runs": 0,
+  "comparison_count": 14,
+  "inapplicable_wp_s": [
+    {
+      "name": "WP-S_r1",
+      "run_directory": "runs\\spike_v04_20261001T153235Z_5eddb7ae",
+      "archived_v1_attachment_available": false,
+      "applicable": false,
+      "reason": "WP-S used leg-by-leg mode before execution_metrics.json existed; no v1 attachment or v3 semantic window"
+    },
+    {
+      "name": "WP-S_r2",
+      "run_directory": "runs\\spike_v04_20261001T153806Z_42150c31",
+      "archived_v1_attachment_available": false,
+      "applicable": false,
+      "reason": "WP-S used leg-by-leg mode before execution_metrics.json existed; no v1 attachment or v3 semantic window"
+    }
+  ],
+  "repeated_visit_synthetic_test": "tests/test_wp_m_artifacts.py",
+  "note": "Actual archived v1 attachments are compared field by field to v1 replay, then v2; only the top-level version differs. The phase passage window ends at the next scheduled release and is half-open for stop assignment; arrival_s service semantics are unchanged.",
+  "comparisons": [
+    {
+      "name": "V02_r1",
+      "run_id": "20261002T083751Z_3874072a",
+      "run_directory": "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a",
+      "archived_attachment": "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 2964,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\metadata.json": "48e82fad385b2e505001b20664e76af3a93484d1fcb33687f7c4f34fe7e4922b",
+        "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\scenario.json": "bb8e48962c23322d8f424f89f7ad68b3bb055476c9a77ca6ffad73337bda0d76",
+        "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\events.jsonl": "a70a0d36620ae99d109ba71b3502f776350e6c3a5b8c06a5404f088eaec90e04",
+        "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\observations.csv": "df455e9db54b2ad91aac01a9a3e02bfb875c7bc88266d8e1ea8f83c175ec0ae1",
+        "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\phase_windows.json": "d1c24f04a72a5d62c26b626b4415e91f2779c115be75d9d378b9c4dd9f11e3ce",
+        "verification\\v04_v1_resume_20261002\\runs\\recon_shared_demo_3uav_20261002T083751Z_3874072a\\analysis_v040-dev_20261002T084055Z_88d77638\\execution_metrics.json": "38048a9775b03c75885b50c43252c57ccca0ac15ed61c3e65642f5e81de32296"
+      }
+    },
+    {
+      "name": "V02_r2",
+      "run_id": "20261002T092201Z_3bc79cde",
+      "run_directory": "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde",
+      "archived_attachment": "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\analysis_v040-dev_20261002T092506Z_a7f26100\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 2961,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\metadata.json": "e7997ab259d9dfa7aa627584781d2017e765b79e19c56fa84c3738896ca2db9e",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\scenario.json": "bb8e48962c23322d8f424f89f7ad68b3bb055476c9a77ca6ffad73337bda0d76",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\events.jsonl": "2469c2dc168f710e258288cb8e1346ca4b01e082d9c26de809d47174a788bd79",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\analysis_v040-dev_20261002T092506Z_a7f26100\\observations.csv": "45491fb7d09bdb570291c1b7b7fd1b7009b95e43a32ff6e20043eefc0865c016",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\analysis_v040-dev_20261002T092506Z_a7f26100\\phase_windows.json": "8792ac6f3ef124ebb1cf62de9bb6f19c8cdb2105c1ab5f889502c639cd5b6c6f",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_shared_demo_3uav_20261002T092201Z_3bc79cde\\analysis_v040-dev_20261002T092506Z_a7f26100\\execution_metrics.json": "bda671e7abaacfff7b99816775ef155b25c429b6ff1d426cf924a69eda5a37d7"
+      }
+    },
+    {
+      "name": "V03_r1",
+      "run_id": "20261002T092554Z_f5457bbb",
+      "run_directory": "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb",
+      "archived_attachment": "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\analysis_v040-dev_20261002T092747Z_3eeef42b\\execution_metrics.json",
+      "aircraft_count": 2,
+      "observation_rows": 768,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\metadata.json": "931108cbd650106fff653607aeaccd6d213bbcb71a72d32cd9f560f4bef83caa",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\scenario.json": "a2609da492c488bf37a8736f8cdeed4cfc5cbe205144d809cca749521c3d585d",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\events.jsonl": "a6d0bac29b3fa3c3b6b80e24448308685047b0829e38aa971e55bb345d7550c2",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\analysis_v040-dev_20261002T092747Z_3eeef42b\\observations.csv": "5447fed11b61d5e9e2a28c7811922c81154c5df52ff10835bccc3ad05a2950a2",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\analysis_v040-dev_20261002T092747Z_3eeef42b\\phase_windows.json": "208325aa7618fb203ec2e65244c227f7b7cbb28a20ffff3bcc37304edef6a5ad",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_2uav_north_20261002T092554Z_f5457bbb\\analysis_v040-dev_20261002T092747Z_3eeef42b\\execution_metrics.json": "bd3a41ea4def5b4a06fa4251479b27ad669ed5f25f50dc94d12be1779de4ce38"
+      }
+    },
+    {
+      "name": "V04_r1",
+      "run_id": "20261002T092830Z_f3b2d69b",
+      "run_directory": "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b",
+      "archived_attachment": "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\analysis_v040-dev_20261002T093029Z_dd468cfc\\execution_metrics.json",
+      "aircraft_count": 6,
+      "observation_rows": 2322,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\metadata.json": "39441f501e1bda5e30a0ac2964e9877733a7611b5070e835ed11be0b6b3ecae6",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\scenario.json": "28345bc3def1371438e4ec81e93fd998c5a2c3949a7585e4a196ad84f28a732e",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\events.jsonl": "32b9bd0c434e9fad1079d7a3e7ef17cb3a42aaf0a38b97fe51f73d1395a4ad01",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\analysis_v040-dev_20261002T093029Z_dd468cfc\\observations.csv": "ba018219d5024c4269aaff08d1d41070835ce2c4e3c02bdaee01a8736173b875",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\analysis_v040-dev_20261002T093029Z_dd468cfc\\phase_windows.json": "8161161ccbecd08801cb6ab47593ef2bcfeb17c8ecb86c200e7fbdce8c495950",
+        "verification\\v04_ac4_v2_20261002\\runs\\recon_smoke_6uav_20261002T092830Z_f3b2d69b\\analysis_v040-dev_20261002T093029Z_dd468cfc\\execution_metrics.json": "5b93efbaec1e389d69a842f5cf09bccd4763ff327bf7ad012f5a74d8fdc5b548"
+      }
+    },
+    {
+      "name": "V06_01",
+      "run_id": "20261002T100745Z_a5b07d89",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\analysis_v040-dev_20261002T100949Z_afa7fad1\\execution_metrics.json",
+      "aircraft_count": 6,
+      "observation_rows": 2406,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\metadata.json": "6006cdfd5c7056eb463623867cccaf70fd6a91243911e7751635e393b83a0c8d",
+        "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\scenario.json": "e4bb780754dc1d90f657f8e0ea4b5730a73a230a708a24fb44851a415ef7d5b3",
+        "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\events.jsonl": "4a980e7b1769ba0cbb6a30d161326729adc94e33989ca832ace01e63397b14fd",
+        "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\analysis_v040-dev_20261002T100949Z_afa7fad1\\observations.csv": "278a757c4e2a9725dc816b4318566bc73749e77702852b7047fd2d49a78d5c3c",
+        "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\analysis_v040-dev_20261002T100949Z_afa7fad1\\phase_windows.json": "77cbdd3fb870f9134c4b44998c20c6218a29ff75b71f51c5b8ab0b0711b2cc99",
+        "verification\\v04_v06_20261002\\execution\\attempts\\2ec4134ff3844e5ea25bebef4043794f\\reconnaissance_0004_v00_20261002T100745Z_a5b07d89\\analysis_v040-dev_20261002T100949Z_afa7fad1\\execution_metrics.json": "2770dde18379483433c7f3e1938e27244c360c1feb4d51761ed9116d09479bd5"
+      }
+    },
+    {
+      "name": "V06_02",
+      "run_id": "20261002T095856Z_e433af1b",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\analysis_v040-dev_20261002T100056Z_b9e13df3\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 1260,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\metadata.json": "eff9738d32395b3d3998a758e841aeee7de8ca4ee43fbe031c14efb2205f3d99",
+        "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\scenario.json": "4d1cf152031c94b7409383a9dd51aaa465a3450580eb9f913288141bc5e30dc0",
+        "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\events.jsonl": "24ee2f27ce57ed96975dd47f4b241604cdc94e199d0ca10ea851bcb09d0a2b56",
+        "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\analysis_v040-dev_20261002T100056Z_b9e13df3\\observations.csv": "e4f692e52f8ab8e4b4fd98d32c5d506497b65a553d6d44a77382f8007a5d1ebf",
+        "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\analysis_v040-dev_20261002T100056Z_b9e13df3\\phase_windows.json": "5c26ec0406440e9d0710a47237c5ff0e047367e5973f558d8a1cef848bf862da",
+        "verification\\v04_v06_20261002\\execution\\attempts\\66298901fa6c44548d3143a3e88f213c\\reconnaissance_0000_v00_20261002T095856Z_e433af1b\\analysis_v040-dev_20261002T100056Z_b9e13df3\\execution_metrics.json": "25ad0dc8fe1a3ffa269c48ce0e7843659026f46d2f6afd54c910bfa6da952ebc"
+      }
+    },
+    {
+      "name": "V06_03",
+      "run_id": "20261002T101847Z_8e82a878",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\analysis_v040-dev_20261002T102043Z_d6001f8b\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 1167,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\metadata.json": "62a76177a41eda35c6fa4d3a1d4c083c5b2771398f0d15c0f899a244e74a3edf",
+        "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\scenario.json": "c6337de358fe2c199d8e22f32a2ab3174b689b896a9aadf40d1bdd551cbc6c99",
+        "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\events.jsonl": "68aa59a16ad37e82b34037631e280ea548afc225451d66ca2a4c808c623537da",
+        "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\analysis_v040-dev_20261002T102043Z_d6001f8b\\observations.csv": "aeea8d86a0741cb0502a76345718616be107d09452c22dc6587238a9a809cfa1",
+        "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\analysis_v040-dev_20261002T102043Z_d6001f8b\\phase_windows.json": "b41938a50470ac826320ef061adc36b953fa00fa0dafb50501014381d6de1856",
+        "verification\\v04_v06_20261002\\execution\\attempts\\6bdbc12c1b00421e992c2711fd489d10\\reconnaissance_0009_v00_20261002T101847Z_8e82a878\\analysis_v040-dev_20261002T102043Z_d6001f8b\\execution_metrics.json": "089249bd342393ecbe480186cb9249f8b4736ee3b968c67a3e5defb316053b30"
+      }
+    },
+    {
+      "name": "V06_04",
+      "run_id": "20261002T101634Z_be00cea9",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\analysis_v040-dev_20261002T101845Z_809cef36\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 1596,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\metadata.json": "eead8c069c37535d05c28052c2745e43ff094822d86c08fbf14e6ee175d07afa",
+        "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\scenario.json": "ee50e01debb3bd661901cdab0772047226d077733e54906415c8bcea7899b75c",
+        "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\events.jsonl": "2334498287964103cc087755fecba82c4b3e03f44aa7a86377cae5efeb11eae6",
+        "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\analysis_v040-dev_20261002T101845Z_809cef36\\observations.csv": "30eee416e555f63fff0dc864548c65229e4299878fec9e9c587da32dc2533948",
+        "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\analysis_v040-dev_20261002T101845Z_809cef36\\phase_windows.json": "623ea5331cef84bb7d00f7e0589da9342d9d9b2a9fc579003eaf875357448c1e",
+        "verification\\v04_v06_20261002\\execution\\attempts\\7d55ae998163471eb344182e0e646211\\reconnaissance_0008_v00_20261002T101634Z_be00cea9\\analysis_v040-dev_20261002T101845Z_809cef36\\execution_metrics.json": "3a5a677470e4765193adbcfb4aac4cea115e6a1ad33dbb45b23b5e14b2701865"
+      }
+    },
+    {
+      "name": "V06_05",
+      "run_id": "20261002T100525Z_aafb58d3",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\analysis_v040-dev_20261002T100743Z_04638cc1\\execution_metrics.json",
+      "aircraft_count": 6,
+      "observation_rows": 3156,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\metadata.json": "16471edbef801636d9383f5774e5d8f0dd21c668e3e25e55e898a8501ba9f7cd",
+        "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\scenario.json": "40167780f1880b2ae908a0d3845e7868624e739dce5f391f41f69bdf6f5d645a",
+        "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\events.jsonl": "4f0bf788fb7ecaba43a52ff8b3cfa5abe99aa911378d75d09cdb7bca6cca104c",
+        "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\analysis_v040-dev_20261002T100743Z_04638cc1\\observations.csv": "ad884a5ff21290d2caec6eb3d9735db3a274805aef6635a4c45d71e09ab1265d",
+        "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\analysis_v040-dev_20261002T100743Z_04638cc1\\phase_windows.json": "ac100ea01b69d14890c75f44cf872c03fd9fd3e4262605b8016195916f28b982",
+        "verification\\v04_v06_20261002\\execution\\attempts\\81273a7f686146788f9adb4c4e4836d2\\reconnaissance_0003_v00_20261002T100525Z_aafb58d3\\analysis_v040-dev_20261002T100743Z_04638cc1\\execution_metrics.json": "5ad7ffdffacc0c04ed0ef262c07d9cc39404374aca63ac0bc266ec89ea8a3bba"
+      }
+    },
+    {
+      "name": "V06_06",
+      "run_id": "20261002T101406Z_651c7540",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\analysis_v040-dev_20261002T101632Z_0f682fa8\\execution_metrics.json",
+      "aircraft_count": 6,
+      "observation_rows": 3606,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\metadata.json": "e7241582a054de736b27790679249bb938166ee27203719c71bc6c59951bf823",
+        "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\scenario.json": "e0857a6e3ac52c56256485788784ee0323664c112c2ae4b4df2040959ca112d5",
+        "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\events.jsonl": "5471fddb0ae6337e0941e98451111221c1ae6748a220b39799e8d4fe9990998e",
+        "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\analysis_v040-dev_20261002T101632Z_0f682fa8\\observations.csv": "e6e087b6d25c60acd0b6a2b124d19f33293b24f090932619ff8c01912cc1b507",
+        "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\analysis_v040-dev_20261002T101632Z_0f682fa8\\phase_windows.json": "0d8414527dd0979d1b01be6432b89704dbb44145d727866abf899d5422647cf4",
+        "verification\\v04_v06_20261002\\execution\\attempts\\8c9d7826ae664a71a46ad9c15a388eb0\\reconnaissance_0007_v00_20261002T101406Z_651c7540\\analysis_v040-dev_20261002T101632Z_0f682fa8\\execution_metrics.json": "9984b0d15a02e85f585c49399468029a77ec682b55ea999da38fe9e80c7b7888"
+      }
+    },
+    {
+      "name": "V06_07",
+      "run_id": "20261002T100117Z_eb83bd70",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\analysis_v040-dev_20261002T100323Z_838f8fee\\execution_metrics.json",
+      "aircraft_count": 2,
+      "observation_rows": 1012,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\metadata.json": "36b9884bcaccb85b51a08cb3037683337235697987562ecf9eb9494b2352b3ae",
+        "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\scenario.json": "c15621178c92ae6ab40d66d636ff6cb89f97ace1a3fcf8628b8ef809a94c02eb",
+        "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\events.jsonl": "90f9c6bc43d2671945de04ca73aa6ba244d7874e5c7013e311ec4058997d9f29",
+        "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\analysis_v040-dev_20261002T100323Z_838f8fee\\observations.csv": "1415b4d885419c4e1d22292c080cae71b9b2e6db7ee226c289b44ff689a5c985",
+        "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\analysis_v040-dev_20261002T100323Z_838f8fee\\phase_windows.json": "053d7ed0a4ee1be5b3676898beff0b1d5deadec2c002b5ff26a0d96f6a820246",
+        "verification\\v04_v06_20261002\\execution\\attempts\\93ce6262705d471a970b7d3996293392\\reconnaissance_0001_v00_20261002T100117Z_eb83bd70\\analysis_v040-dev_20261002T100323Z_838f8fee\\execution_metrics.json": "fdea6f180a2d0dab73747039340141b6bdb5bc5090216645ddf8acd288936fb9"
+      }
+    },
+    {
+      "name": "V06_08",
+      "run_id": "20261002T101201Z_c87994ef",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\analysis_v040-dev_20261002T101404Z_c8f96cba\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 1392,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\metadata.json": "6b6648901a79d3b740ae79deb3cf3106156318c46aba310501428b5de966a88c",
+        "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\scenario.json": "e18de343cd29bb215a4af75c6c2e52183c9e7e28769905a07fea6d96583a8d48",
+        "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\events.jsonl": "a610242e1bc941e74d671f89bf6faa008df591610a28f6131908646979ac0711",
+        "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\analysis_v040-dev_20261002T101404Z_c8f96cba\\observations.csv": "4be03bed465858a59dfa70b7e9ccdccb527bf1a0a33dc4774e19672a6821140b",
+        "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\analysis_v040-dev_20261002T101404Z_c8f96cba\\phase_windows.json": "7e559639de94671c0ed9536900ee699561f36a94fae71d61756398fd6dd417c4",
+        "verification\\v04_v06_20261002\\execution\\attempts\\c9ecb17b82594afda8139932307d0824\\reconnaissance_0006_v00_20261002T101201Z_c87994ef\\analysis_v040-dev_20261002T101404Z_c8f96cba\\execution_metrics.json": "1a6c4245eed3d5479cd7f58cffab624a02f87223fa335158cf1ed81cf4146977"
+      }
+    },
+    {
+      "name": "V06_09",
+      "run_id": "20261002T100951Z_be922ea7",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\analysis_v040-dev_20261002T101159Z_ded8a87c\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 1509,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\metadata.json": "8465d00cbed0212fef7bed69f84233e0d601fbcd6963d4ec499058ad6cf62d10",
+        "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\scenario.json": "d9924811404f574054b3bcfa07455fee1cc838e88c9e7d3f68dcc0c3ddb57842",
+        "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\events.jsonl": "f23c4f3e4c0e6988ce43f8b152a7270061177a43f6f6c296a9d3c0305c458b4f",
+        "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\analysis_v040-dev_20261002T101159Z_ded8a87c\\observations.csv": "e926f13640ab1875d6537684343237ba08c99256e9db26549f49df0059c62b93",
+        "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\analysis_v040-dev_20261002T101159Z_ded8a87c\\phase_windows.json": "c34df5aa9a5376d6edb15f52f9b841fab992b7d734cc60010256b0532f897881",
+        "verification\\v04_v06_20261002\\execution\\attempts\\d7a569ada9e34c1391a634d4acb308bd\\reconnaissance_0005_v00_20261002T100951Z_be922ea7\\analysis_v040-dev_20261002T101159Z_ded8a87c\\execution_metrics.json": "5aa83475862896d4caf21bb3f157dceec62854331be4883df7412c7cb9666281"
+      }
+    },
+    {
+      "name": "V06_10",
+      "run_id": "20261002T100325Z_6ef00e4e",
+      "run_directory": "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e",
+      "archived_attachment": "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\analysis_v040-dev_20261002T100523Z_4464c355\\execution_metrics.json",
+      "aircraft_count": 3,
+      "observation_rows": 1245,
+      "archived_v1_replay_equal": true,
+      "archived_v1_first_difference": null,
+      "v2_equal_except_top_level_version": true,
+      "v2_first_difference": null,
+      "archived_sources_unchanged": true,
+      "archived_source_sha256": {
+        "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\metadata.json": "429aa3e7a9a1a1a4c8d732c41384a0e748c260fb4305d2b1a0db1208b37c0672",
+        "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\scenario.json": "cbedf8dfbf8af13744c6658efd56c6e85516e2c5913afa4bd265c90066b5c775",
+        "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\events.jsonl": "f4b75c9750b3f1f92ca712f0060d9ad4ecc05b16559a4f982aa4ff787ba6410f",
+        "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\analysis_v040-dev_20261002T100523Z_4464c355\\observations.csv": "dcd723b11076cda6f150dcba3704bc6d65da2d029f8c874d2f984b64bb81da09",
+        "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\analysis_v040-dev_20261002T100523Z_4464c355\\phase_windows.json": "2b0b38f59efb65b00cf8de10c6a8489f80ef412c0278f2b114e8a13f734d1995",
+        "verification\\v04_v06_20261002\\execution\\attempts\\f39fcdd89b04445eacd1e6a7046c5e52\\reconnaissance_0002_v00_20261002T100325Z_6ef00e4e\\analysis_v040-dev_20261002T100523Z_4464c355\\execution_metrics.json": "ac8769048f000355ad1e007f2c15a2f046b72fb7dbb80359f6b90fa6babdf13f"
+      }
+    }
+  ]
+}

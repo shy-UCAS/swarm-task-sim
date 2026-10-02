@@ -92,6 +92,8 @@ def episode_quality_eligibility(quality):
     """V3 data qualification, deliberately independent of mission outcome."""
     return bool(all(quality.get(k) is True for k in ("run_completed", "data_quality_pass", "truth_available_pass",
                      "timing_diagnostic_pass", "execution_constraints_pass"))
+                and (not quality.get("onboard_mission_param_check_required")
+                     or quality.get("onboard_mission_param_check_pass") is True)
                 and quality.get("clock_quality", {}).get("overall") in ("strict", "acceptable")
                 and quality.get("separation_status") == "clear_observed"
                 and quality.get("truth_separation", {}).get("status") == "clear_observed")
@@ -101,7 +103,9 @@ def v3_eligibility(quality, labels):
     """Append data qualification while retaining the existing shared benchmark meaning."""
     result = eligibility(quality, labels["mission_success"])
     additional = (quality.get("execution_constraints_pass") is True and labels.get("semantic_consistency") == "agree"
-                  and labels.get("mission_success_observation") is True)
+                  and labels.get("mission_success_observation") is True
+                  and (not quality.get("onboard_mission_param_check_required")
+                       or quality.get("onboard_mission_param_check_pass") is True))
     result["benchmark_eligible"] &= additional
     result["strict_benchmark_eligible"] &= additional
     result["episode_quality_eligible"] = episode_quality_eligibility(quality)

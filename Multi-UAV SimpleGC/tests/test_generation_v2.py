@@ -146,8 +146,17 @@ class GeneratorV2Tests(unittest.TestCase):
             self.assertEqual(len({family_split(e["family_id"]) for e in entries}), 1)
             self.assertEqual(entries[0]["shared_mission_params"], entries[1]["shared_mission_params"])
             self.assertEqual(result["counts"]["accepted_bases"], 1)
-        self.assertEqual(registered_intents(), ("reconnaissance",))
-        self.assertEqual(registered_samplers(), ("strip_aligned_v1",))
+        self.assertEqual(registered_intents(), ("patrol", "reconnaissance"))
+        self.assertEqual(registered_samplers(), ("random_spawn_v1", "random_spawn_v2", "strip_aligned_v1"))
+
+    def test_v05b_twenty_candidate_budget_does_not_expand_legacy_samplers(self):
+        old = profile(1)
+        old["max_candidates_per_base"] = 11
+        with self.assertRaisesRegex(ValueError, "requires random_spawn_v2"):
+            normalize_profile(old)
+        updated = normalize_profile(ROOT / "generation_profiles/dual_intent_v05b.json")
+        self.assertEqual(updated["max_candidates_per_base"], 20)
+        self.assertEqual(updated["scene_sampler"]["name"], "random_spawn_v2")
 
     def test_g11_non_agnostic_multi_intent_is_rejected_before_output(self):
         with temporary_registration(replace(get_intent("reconnaissance"), name="fixture_scan")), tempfile.TemporaryDirectory() as temp:
@@ -234,7 +243,7 @@ class GeneratorV2Tests(unittest.TestCase):
             with temporary_sampler(fixture_sampler()):
                 self.assertTrue(get_sampler("fixture_fixed_scene").intent_agnostic)
                 raise RuntimeError("fixture")
-        self.assertEqual(registered_samplers(), ("strip_aligned_v1",))
+        self.assertEqual(registered_samplers(), ("random_spawn_v1", "random_spawn_v2", "strip_aligned_v1"))
         with self.assertRaises(ValueError):
             with temporary_sampler(get_sampler("strip_aligned_v1")):
                 self.fail("must not overwrite production")

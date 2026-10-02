@@ -15,6 +15,7 @@ from .scenario import number, validate
 
 ROUTE_COMPILER_VERSION = "semantic_phase_route_v1"
 CAPABILITY_VERSION = "time_aware_route_capability_v1"
+PATROL_SPACING_PREFILTER_VERSION = "patrol_spacing_prefilter_v1"
 ZERO_LENGTH_EPSILON_M = .05
 MAX_SAMPLE_STEP_M = .5
 MAX_ROUTE_WAYPOINTS = 100
@@ -65,6 +66,28 @@ def sample_route(start, route, speed, step=MAX_SAMPLE_STEP_M):
     return samples, waypoint_times, total
 
 
+def patrol_spacing_prefilter(perimeter_m, agent_count, speed_m_s, tau_s, required_clearance_m):
+    """An arc-length screen for equally staggered, same-direction loops.
+
+    Passing is not a clearance guarantee: corner chords can be shorter than
+    their along-route separation. The full time-aware check remains mandatory.
+    """
+    number(perimeter_m, "patrol perimeter", .01, 1000000)
+    if type(agent_count) is not int or agent_count < 2:
+        raise ValueError("patrol agent_count must be an integer >= 2")
+    number(speed_m_s, "patrol speed", .01, 100)
+    number(tau_s, "patrol tau", 0, 3600)
+    number(required_clearance_m, "patrol required clearance", .1, 2000)
+    nominal_spacing_m = perimeter_m / agent_count
+    minimum_spacing_m = speed_m_s * tau_s + required_clearance_m + 2.0
+    passed = nominal_spacing_m + 1e-9 >= minimum_spacing_m
+    return dict(version=PATROL_SPACING_PREFILTER_VERSION, passed=passed,
+                rejection_reason=None if passed else "patrol_spacing_prefilter",
+                nominal_spacing_m=nominal_spacing_m, minimum_spacing_m=minimum_spacing_m,
+                uncertainty_allowance_m=2.0,
+                scope="nominal along-route screen only; full time-aware clearance is required")
+
+
 def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, timing_tolerance,
                              terminal_hold_s=0.0, confirmation_dwell_s=0.0):
     """Check all sampled point pairs within tau, including stationary intervals.
@@ -80,13 +103,21 @@ def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, 
     number(confirmation_dwell_s, "confirmation_dwell_s", 0, 60)
     number(timing_tolerance["min_s"], "async_timing_tolerance.min_s", 0, 3600)
     number(timing_tolerance["fraction_of_phase"], "async_timing_tolerance.fraction_of_phase", 0, 1)
+    if "max_s" in timing_tolerance:
+        number(timing_tolerance["max_s"], "async_timing_tolerance.max_s", 0, 3600)
     sampled, arrivals, lengths = {}, {}, {}
     for agent in starts:
         sampled[agent], arrivals[agent], lengths[agent] = sample_route(starts[agent], routes[agent], speed_m_s)
     motion = {agent: lengths[agent] / speed_m_s for agent in starts}
     completion = {agent: motion[agent] + (terminal_hold_s if routes[agent] else 0) + confirmation_dwell_s for agent in starts}
     motion_duration, duration = max(motion.values()), max(completion.values())
-    tau = max(timing_tolerance["min_s"], timing_tolerance["fraction_of_phase"] * duration)
+    if "max_s" in timing_tolerance:
+        tau = max(timing_tolerance["min_s"],
+                  min(timing_tolerance["fraction_of_phase"] * duration, timing_tolerance["max_s"]))
+        tau_basis = "max(min_s, min(fraction_of_phase * duration_s, max_s)); duration includes terminal hold and confirmation"
+    else:
+        tau = max(timing_tolerance["min_s"], timing_tolerance["fraction_of_phase"] * duration)
+        tau_basis = "max(min_s, fraction_of_phase * duration_s); duration includes terminal hold and confirmation"
     minimum, closest, checked_pairs = None, None, 0
 
     def consider(left, right, ta, pa, tb, pb, kind):
@@ -118,7 +149,7 @@ def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, 
     return dict(duration_s=duration, motion_duration_s=motion_duration,
         per_agent_arrival_s=motion, per_agent_waypoint_arrival_s=arrivals,
         per_agent_completion_s=completion, per_agent_path_length_m=lengths,
-        tau_s=tau, tau_basis="max(min_s, fraction_of_phase * duration_s); duration includes terminal hold and confirmation",
+        tau_s=tau, tau_basis=tau_basis,
         timing_tolerance=copy.deepcopy(timing_tolerance),
         terminal_hold_s=terminal_hold_s, confirmation_dwell_s=confirmation_dwell_s,
         max_sample_step_m=MAX_SAMPLE_STEP_M, sample_counts={a: len(v) for a, v in sampled.items()},

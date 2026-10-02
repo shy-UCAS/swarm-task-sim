@@ -1,0 +1,60 @@
+{
+  "review": "m0_task_seed_template_id_dependency",
+  "baseline_head": "c204d1d013cdc668aa1979c66687d58c6a551da6",
+  "conclusion": "The v0.4 mission seed includes template_id. When template_id is omitted, the default identifier hashes the entire template_spec, including execution. A V06 profile with an explicit template_id keeps the mission seed stable under this execution-only edit.",
+  "source_locations": {
+    "canonical_hash": "swarm_sim/generation.py:14-16",
+    "schema_2_dispatch": "swarm_sim/generation.py:116-124",
+    "profile_template_loading_and_default_id": "swarm_sim/generation_v2.py:47-56,91-105",
+    "scene_seed": "swarm_sim/generation_v2.py:39-40,139-140",
+    "mission_seed": "swarm_sim/generation_v2.py:43-44",
+    "task_seed_assignment": "swarm_sim/generation_v2.py:155-170",
+    "generated_task_seed_record": "swarm_sim/generation_v2.py:194-203",
+    "explicit_v06_template_id": "generation_profiles/recon_pilot_v04_v06.json:20-25",
+    "existing_v06_generated_entry": "generated/recon_pilot_v04_v06_20261002/mission_list.json:35-45"
+  },
+  "method": {
+    "environment": "Conda llm, Python -B, code supplied on stdin; in-memory calculation only",
+    "source_profile": "generation_profiles/recon_pilot_v04_v06.json",
+    "change": "Only template_spec.execution.terminal_hold_s changes from 0.5 to 1.0",
+    "hash": "SHA256 of UTF-8 JSON with sort_keys=True, separators=(',', ':'), ensure_ascii=False and allow_nan=False",
+    "legacy_seed_scheme": "hierarchical_scene_mission_v1",
+    "scene_seed_formula": "int(canonical_hash([seed_scheme, master_seed, base_index, candidate_index])[:16], 16) % 2**63",
+    "mission_seed_formula": "int(canonical_hash([seed_scheme, scene_seed, intent, template_id, variant_index])[:16], 16) % 2**63",
+    "large_integers": "Seeds are decimal strings to preserve exact 64-bit values in JSON consumers."
+  },
+  "inputs": {
+    "master_seed": 20260930,
+    "base_index": 0,
+    "candidate_index": 0,
+    "scene_seed": "442445514775877568",
+    "intent": "reconnaissance",
+    "variant_index": 0,
+    "terminal_hold_s_before": 0.5,
+    "terminal_hold_s_after": 1,
+    "template_canonical_sha256_before": "eda99bc1bff185563a467f770ce56d4618cff3ce8a147a157404507cf8a85ada",
+    "template_canonical_sha256_after": "6b77c6cbd7662031cb2397b8b622cf9b243052669e769aef50ab919c9325628f"
+  },
+  "cases": {
+    "template_id_omitted": {
+      "template_id_before": "template_eda99bc1bff185563a46",
+      "template_id_after": "template_6b77c6cbd7662031cb23",
+      "task_seed_before": "4835539782409883372",
+      "task_seed_after": "1904240717079467866",
+      "task_seed_changed": true
+    },
+    "template_id_explicit": {
+      "template_id_before": "recon_v04_route_v06",
+      "template_id_after": "recon_v04_route_v06",
+      "task_seed_before": "330863698933941023",
+      "task_seed_after": "330863698933941023",
+      "task_seed_changed": false,
+      "existing_v06_entry_matches_before": true
+    }
+  },
+  "interpretation": {
+    "scene_sampling": "The scene seed formula excludes template_id, so this edit does not itself change scene sampling or family geometry.",
+    "current_planner": "The v0.4 reconnaissance plan_routes implementation does not use TaskSpec.seed for random route choices. The consequence for v0.5 patrol sampling must be tested when that planner is implemented.",
+    "r06_regression": "With task_semantics_only_v1, an execution-only edit must leave the semantic identifier, mission seed and sampled patrol choices unchanged; a mission/planner semantic edit should change the semantic identifier and seed. Without seed_scheme, regenerate V06 and compare frozen artifact hashes."
+  }
+}

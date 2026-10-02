@@ -1,0 +1,654 @@
+{
+  "active_attempt": null,
+  "aggregate_av1": {},
+  "binary": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe",
+  "bundle": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle",
+  "case_to_mission": {
+    "VP1": "patrol_0001_v00",
+    "VP2": "patrol_0116_v00",
+    "VP3": "patrol_0048_v00",
+    "VP4": "patrol_0001_v00_hold1",
+    "VR1": "reconnaissance_0010_v00",
+    "VR2": "reconnaissance_0002_v00"
+  },
+  "completed": false,
+  "firmware": {
+    "offset_bytes": 2232184,
+    "sha256": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+    "version_source": "binary_embedded_ascii_metadata",
+    "version_string": "ArduCopter V4.0.4-dev (de791682)"
+  },
+  "frozen_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\arducopter.exe": "0c0c1be702858dad5ed07e319efffda641cfc358423a65608ff949d3becc8532",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\copter.parm": "4f780ced6a47582cec2b66dfce7ce995f0ad20683e16909541f58b2837f1dee5",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\docs\\v04_spike_go_confirmation.json": "31c5dbf26bfa585ef2438d01867994c088e02bf02d9d231bd40465863224eea4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\generation_profiles\\dual_intent_v05.json": "bbd1210b64ec41a323def024ef89eb9a039922788fd7fae762edb5ded355ab4c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\generation_profiles\\dual_intent_v05c.json": "ce3cd32b6297b551aac538db90904b56b1c615cf91a1d4a453cd59d8e4bc49f9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\quality_policies\\default_v022.json": "56443726d7e7e9b6c50888e8ccbbc75e8cd4343ef0c1f8d0760968aa8fdc3896",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\scripts\\run_mission_list.py": "1b983905f6015edbad4fdd591f5f5b0de59a58bd1f925edb755409401ae1c0d1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\scripts\\run_v05c_validation.py": "437a1d67ff0065650b941cd766c741d71806ba02e854377a83b524e30debd207",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\scripts\\select_v05c_validation.py": "659cf3d9054bc7363f282ff9a862825fc2a927a5e05af9acbd171837f349469e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\scripts\\verify_v05_protected.py": "124c2026ddfa327f7bdf496d5abd4e36b538cf775cb65054acd97aaeec01fed1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\__init__.py": "8dfea2c8d0e442063abf613dce5c4796067dc5c46432112466cc9cf5bfddd7c2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\ac4_timing.py": "7e1e292c7c59bd371bd5ac6f6667b1552e4891e4920a09d0da244ff00d653605",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\analysis.py": "81d886c68f2d5f2909678a58970bcc11746bfbb2653c7d1fddb1bd6126ecb76c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\analysis_v3.py": "b210d55666063aabe02d3f51dc0e939a5bdb89c0e6a48a813a8aa2fbcef7b636",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\audit.py": "a28ee83731bbe7d70f00c1ffba9beedb231ae48f76af508e4a99dc6c6ee080c9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\capability.py": "2caf0b8c1735bc9421d8a23d5a4d23e1b2bcfefee4e11244435e71e994e73e84",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\dataset.py": "88cdbcd7963f490dc84d728e99aa039c0f1acc237f3c477f5a1e10afbdf54936",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\dataset_audit.py": "7ab6e0b274f9dee8ed8cb28808db60be399161cf4e0a50caf1e2a18f6a62fd33",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\dataset_audit_v3.py": "f9acc0d950a618aea8132c85f4b330cdb932ef583fdfc419561ac6838abbe7a9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\episode_loader.py": "ee79185aabe1ba70166e1e01005f2321bbea77879b87be2bb861a648b2476897",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\evaluation.py": "35c63a3477faab5784f1b465c2505ae4a4553293e9de192420ed166298b78e1e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\execution_constraints.py": "cb8a68e2271e48448f562a090f72541ef6d6495e750c5d913cb9fc685a8a6a30",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\execution_metrics.py": "abdb130f725fb44f2187ac97fe120c389875289a3a9c6810dc46877a34d27ff9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\families.py": "958c9fd7da73390512c88b6627d0264223353e55da0f173686150d37fde92033",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\generation.py": "c9669e2d2cb12499ffbf09490f630d62558a6454361c8ec1694e87bf06a92d82",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\generation_v2.py": "5e15afecca451df60cfe64da9f4f93a6331ab05624cd1bef995f939d2f4eb4f1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\language_templates_v0.py": "16538f40b9be38d143042dcb3ddfa7bef8b6db2ecb706516553c0dc06bfd55df",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\language_v0.py": "2e4b84230355ce5cafd3fd4b53da55626ee3e0e165f0683687521a4106730bc3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\mission_evaluation.py": "fc51e545b8ba7775331bc95652a8c03d1965a6085ccd0fc5e9ed41d8be51aa45",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\mission_evaluation_v3.py": "0b471fca60126eaa5648f92217da318cbc755e0adf3d8ca31cf6f914985e0b02",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\mission_planning.py": "925383b1f162f07f1879d2bc0d0dbab6211f7bb29d81b942ae491a67902eecfb",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\mission_schema.py": "fa78b3852f83c9bafa42085d1902e02357aad2891fd9d4120c0f8eed2b47f89e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\mission_v3.py": "ba68641f47d806f7dec79fb6dd6df75d2d229e49c29d8c50438da350cc1b1737",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\observation_processing.py": "170bf1fb275f764135b377bcfa1c574dd38797bb2ec18b0f10fcdb4e973adefe",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\observations.py": "1684c0b1b9e363e9fb66c3466dbddb5ccce503d3d3b23810b000ffa98424bbd2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\observer_facts_v0.py": "9de1e1bd5c9ee91cfdb87366b6ad53ef9e352aee14d90505c03cbf57bc7223d5",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\onboard_mission_params.py": "9f4f046b5f3f7bcd725eeeff063808b00da800c7697666ffdd08c8625d724707",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\patrol.py": "513d487d40be20af72815850490690d7e0acfe34fd425ca1ea9a8e0ee118f2d9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\patrol_validation.py": "507fa6cdb710ad2c76637918b8c7d45db35a1b3be3bce6675be7e16b581e7ef1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\processes.py": "2650d737c38d6f7307bda22bf743e7feaa4afbcd908c0507b8ef73bb44065e31",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\protocol.py": "d1bbd68c9f1fd59d3f2a2f6adbfddc2c968d3050b25c06e383d90998c5ab6b99",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\quality.py": "7df469ad18f9c1e6f7b9fe3419a0824825af3620a55156f1d8bcb6fd577545d4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\reconnaissance.py": "4ccf1ef0b0a97f0c734ab36c09d02335000040b56d0833c549bbcdb6900a745b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\recording.py": "c15b8a13cc7660693f87e66ff72499de0927500e14c2d2b797c69f8c096a5f8f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\registry.py": "fb27894f4b9373cac9fe8de6883cf33659c30febe296616109e9ee9129eee3d5",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\route_planning.py": "241bc2815f6ae06e6ca3cd13a3321059f0a5f48fc0800fd6f3ee4eb9929da13b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\route_timing.py": "daabc2c3e4b522e62dfa3d89bed747e8efc3047eaf9890a72a37d352a1e7368f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\route_windows.py": "8f62fdef6a5462d7278629fa961c18d532a671e12bb97162f7488345d03d6cf2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\run_provenance.py": "ebc8cdbe310f395d4370c613f8cbef19f8004da189644541b10a1835745b246e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\runner.py": "9cf85be8d04f61233a5d00c99d4d64fcc2fbd9fdb664558ac3828d5201c3e51e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\runner_v3.py": "499b8ea6ca769351c8d1f2216ee024224a09d6e00c37fdf18d3251c91667e823",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\scenario.py": "9029bc645d32d001c428eb9b58e707bf14b088a005c10a64b4124ad25750dc59",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\scene_samplers.py": "62934b42f0994b9716893a89d88a371453256abd521bb8fbb067c2421f5984ee",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\tasks.py": "ab598501b2f09f810ca644038df2355924d6c7710d4e31c10c56e34d9cfef39a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\truth.py": "135e560e2499a352eb68603207705f291352a14b5635ba2547972c38a2aa57e9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\swarm_sim\\vehicle.py": "72b385862f944dca3cca6440c3a6a989bca313f56c906427b7364588ca426075",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\dr_v05c\\generated_130\\generation_manifest.json": "17f3480028aea43290d9fd41b757063e6e0f8f62e8cc56631660e6bf18272d4c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\dr_v05c\\review.json": "37876d0638bea7805dc3b16374206a101a2640275e06f8a76373a80bc5054634",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\m0\\protected_baseline.json": "b93a6a09935c8e00f96415dab6ec9dd74920b7fe48342f9c3af940ddf43acf6f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\generation_manifest.json": "b76e599d11317f805f915eedc93c1309dddaeb20ba7cf112d9be3b76c460ec4c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\generation_profile.json": "ed3858cf4d75686de07bf91a4f1e192e28e5112f3e18ffbc10479f7f13f78ca6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\mission_list.json": "e8c497823e4cb2048a58f4a4bceab70fe9f3c0232dd5ba109b7c84774cfa1a33",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\missions\\patrol_0001_v00.json": "b4191d80d76b773495e881564c30c4232db4c948abc2ad6a16ec64a3a2bd717b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\missions\\patrol_0001_v00_hold1.json": "88b97c5eb64af80bb0c920586d3b735fe4a1351f4be1afb3952dcb8062c5103c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\missions\\patrol_0048_v00.json": "7d32e376c4ecdedfa9980b78bbaf96511b0c5fec72031d08e720a5b6b66e6fba",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\missions\\patrol_0116_v00.json": "92820e8c35a482da61c745a2cd21a9bc0a3de091b9ee6e5afbd299099916acd4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\missions\\reconnaissance_0002_v00.json": "777c21f20e49f61fa2cfe79f0cb2e3e3dc5473b999199c55bff7712bbf0b7865",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\missions\\reconnaissance_0010_v00.json": "2ab218c7a2224fc85f1e126ace933ee68358dc78f5c3b05310fe7a328707823b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\scenes\\patrol_0001_v00.json": "a6d62002186f9706f43a052ea27818fd003708552937ce91edfc64a7006c8c7a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\scenes\\patrol_0001_v00_hold1.json": "72d467f6ee127be3aacd7fa3d5f376e32ff39e494cf312c313a8f6beff6de863",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\scenes\\patrol_0048_v00.json": "96fb5de598612eba3a5ccfba0ecc1bed98488ed0f8f1e19508c0d4b4e7d012f6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\scenes\\patrol_0116_v00.json": "c554cbf9780bb08c79d520caac896137ed2f50bb6b09518bd0411a446637065c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\scenes\\reconnaissance_0002_v00.json": "dd6e4161d9cbbdb76682894b0ddf6cde3d8f495cd9d596e9cf43542c60677fb4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\scenes\\reconnaissance_0010_v00.json": "1889d16c9c3e83df4230aabb07a622f15b82e9122ed97d0cf6552e9b8ca77d0b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\validation_v05c\\bundle\\selection.json": "528f0457d443c2571170a2b52c3662e70597feec2ae33df4dbaa9ac6eb65d53e"
+  },
+  "historical_attempts_consumed": 1,
+  "historical_failed_attempt": {
+    "disposition": "stopped_parameter_mismatch_preserved_not_counted_as_valid_VP1",
+    "flight_epoch_present": false,
+    "retryable": false,
+    "sitl_attempts_consumed": 1,
+    "source_control": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\control.json",
+    "source_control_sha256": "03fc24ab53d0f3d60cfa914e8c055afd056b27e39bbad83961dea17726d0207d",
+    "source_evidence_sha256": {
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\control.json": "03fc24ab53d0f3d60cfa914e8c055afd056b27e39bbad83961dea17726d0207d",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\analysis_latest.json": "91e97cd8b11d4740296fd6d5c690c211486bf2aa8c0b694d23bee227876e29b8",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\analysis_v050-dev_20261002T165825Z_4b6d9b53\\manifest.json": "64d3500a4aceba10349d700ef0cb7d216c46c81a2c17607e858eeb8d11162bb6",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\events.jsonl": "174afb57af5c0b1bb38470566709410137e7ac78a85fef821900b8cdf8a0c78c",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\firmware_parameters.json": "fac3d6b2a6b3760bb926c180cf3a415cf9f1c4fa08381a30b7c36ee54f99204d",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\metadata.json": "680273eb3b9fa6b0cddf603ce544dc933f2e33026cde2e696a9a954482e82a2d",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\quality.json": "602c3480a447309769bea8b6b6e59962a8f409c69d2dc57fca2e52cb4ca44d36",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\scenario.json": "4b87f4fc8085896ed1197558f3d613f36340bbeb9ff1380b272766fe71746431",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\protected_stop_review.json": "5847c80ae132aba4db819445cc318e2ae037f1ce2c447dc54803aa7a14b38f5b",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\stop_review.json": "b23d8b4b93ae00bc171d4055d04668cb3675208dc22253696f4e067e9f0513c1"
+    },
+    "source_record": {
+      "assessment": {
+        "av1": {
+          "evidence_complete": false,
+          "stopped_count": 0,
+          "total_count": 27,
+          "unknown_count": 27
+        },
+        "av2": {
+          "limit": 4,
+          "per_agent": {
+            "uav_01": {
+              "counts_by_location": null,
+              "evidence_complete": false,
+              "invalid_reason": "semantic_mission_window_missing",
+              "stop_count": null,
+              "stop_count_is_lower_bound": false,
+              "stop_intervals_s": null,
+              "stops": []
+            },
+            "uav_02": {
+              "counts_by_location": null,
+              "evidence_complete": false,
+              "invalid_reason": "semantic_mission_window_missing",
+              "stop_count": null,
+              "stop_count_is_lower_bound": false,
+              "stop_intervals_s": null,
+              "stops": []
+            },
+            "uav_03": {
+              "counts_by_location": null,
+              "evidence_complete": false,
+              "invalid_reason": "semantic_mission_window_missing",
+              "stop_count": null,
+              "stop_count_is_lower_bound": false,
+              "stop_intervals_s": null,
+              "stops": []
+            }
+          },
+          "semantic_phase_count": 3
+        },
+        "av3": {
+          "mission_success": null,
+          "mission_success_observation": null,
+          "semantic_consistency": "unknown"
+        },
+        "av4": {
+          "required_m": 5.0,
+          "timing": {
+            "observation": {
+              "complete": false,
+              "crosscheck_within_tau": null,
+              "pass_": false,
+              "per_phase": {
+                "p00_approach": {
+                  "D_s": null,
+                  "crosscheck_D_s": null,
+                  "pass_": false,
+                  "semantic_phase": "approach",
+                  "tau_s": null
+                },
+                "p01_patrol": {
+                  "D_s": null,
+                  "crosscheck_D_s": null,
+                  "pass_": false,
+                  "semantic_phase": "patrol",
+                  "tau_s": null
+                },
+                "p02_return": {
+                  "D_s": null,
+                  "crosscheck_D_s": null,
+                  "pass_": false,
+                  "semantic_phase": "return",
+                  "tau_s": null
+                }
+              },
+              "within_tau": null
+            },
+            "truth": {
+              "complete": false,
+              "crosscheck_within_tau": null,
+              "pass_": false,
+              "per_phase": {
+                "p00_approach": {
+                  "D_s": null,
+                  "crosscheck_D_s": null,
+                  "pass_": false,
+                  "semantic_phase": "approach",
+                  "tau_s": null
+                },
+                "p01_patrol": {
+                  "D_s": null,
+                  "crosscheck_D_s": null,
+                  "pass_": false,
+                  "semantic_phase": "patrol",
+                  "tau_s": null
+                },
+                "p02_return": {
+                  "D_s": null,
+                  "crosscheck_D_s": null,
+                  "pass_": false,
+                  "semantic_phase": "return",
+                  "tau_s": null
+                }
+              },
+              "within_tau": null
+            }
+          },
+          "truth_minimum_m": 8.2038538722971,
+          "truth_separation_status": "unknown"
+        },
+        "av5": {
+          "zero_length_count": 0
+        },
+        "av6": {
+          "onboard_status": "unknown",
+          "vp4_terminal_prm1": null
+        },
+        "av7": {
+          "episode_quality_eligible": false,
+          "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+          "provenance_status": "failed"
+        },
+        "av8": {
+          "applicable": true,
+          "intent": "patrol",
+          "per_agent_laps_observed": {
+            "observation": {
+              "uav_01": null,
+              "uav_02": null,
+              "uav_03": null
+            },
+            "truth": {
+              "uav_01": null,
+              "uav_02": null,
+              "uav_03": null
+            }
+          },
+          "planned_laps": 2
+        },
+        "checks": {
+          "AV-1": false,
+          "AV-2": false,
+          "AV-3": false,
+          "AV-4": false,
+          "AV-5": true,
+          "AV-6": false,
+          "AV-7": false,
+          "AV-8": false
+        },
+        "individual_pass": false
+      },
+      "attempt_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6",
+      "attempt_index": 0,
+      "attempted_utc": "2026-10-02T16:58:12.991612+00:00",
+      "case_id": "VP1",
+      "evidence_sha256": {
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\analysis_latest.json": "91e97cd8b11d4740296fd6d5c690c211486bf2aa8c0b694d23bee227876e29b8",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\analysis_v050-dev_20261002T165825Z_4b6d9b53\\manifest.json": "64d3500a4aceba10349d700ef0cb7d216c46c81a2c17607e858eeb8d11162bb6",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\firmware_parameters.json": "fac3d6b2a6b3760bb926c180cf3a415cf9f1c4fa08381a30b7c36ee54f99204d",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\metadata.json": "680273eb3b9fa6b0cddf603ce544dc933f2e33026cde2e696a9a954482e82a2d",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4\\quality.json": "602c3480a447309769bea8b6b6e59962a8f409c69d2dc57fca2e52cb4ca44d36"
+      },
+      "finished_utc": "2026-10-02T16:58:26.113369+00:00",
+      "flight_epoch_present": false,
+      "individual_pass": false,
+      "mission_id": "patrol_0001_v00",
+      "reserved_utc": "2026-10-02T16:58:12.991612+00:00",
+      "retry_reason": null,
+      "retryable_pre_takeoff": false,
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4",
+      "run_id": "20261002T165813Z_59899fb4",
+      "run_root": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0",
+      "run_status": "failed",
+      "runner_error": "ValueError: unexplained parameter readback differences require review/new WP-S GO: SIM_PLD_YAW",
+      "runner_status": "execution_failed",
+      "stopped_reason": "AV gate failed/unknown: AV-1, AV-2, AV-3, AV-4, AV-6, AV-7, AV-8"
+    },
+    "source_run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05b_validation_20261002_r2\\execution\\VP1\\attempt_0\\attempts\\113a1c13587a47dc8a6c03050c85b5e6\\patrol_0001_v00_20261002T165813Z_59899fb4"
+  },
+  "max_attempts": 7,
+  "max_extra_retries": 1,
+  "parameters": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\ArducopterSITL\\copter.parm",
+  "parameters_sha256": "4f780ced6a47582cec2b66dfce7ce995f0ad20683e16909541f58b2837f1dee5",
+  "planned_cases": [
+    "VP1",
+    "VP2",
+    "VP3",
+    "VP4",
+    "VR1",
+    "VR2"
+  ],
+  "prepared_utc": "2026-10-02T17:30:19.620294+00:00",
+  "profile": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\generation_profiles\\dual_intent_v05c.json",
+  "profile_canonical_sha256": "daa0dd5f7efa2b55c6db6a6e30ceb9445631d39d55d3b8d066bf03b23cbb5f22",
+  "profile_file_sha256": "ce3cd32b6297b551aac538db90904b56b1c615cf91a1d4a453cd59d8e4bc49f9",
+  "protected_file_count": 11307,
+  "quality_policy": {
+    "clock_acceptable_p95_s": 0.05,
+    "clock_strict_p95_s": 0.02,
+    "horizontal_position_bound_m": 2500.0,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "invalid_sample_interpolation": "barrier",
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "min_up_m": -100.0,
+    "observation_filter": "global_position_v1",
+    "version": "0.2.2",
+    "vertical_velocity_sanity_m_s": 30.0
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "records": [
+    {
+      "assessment": {
+        "av1": {
+          "evidence_complete": false,
+          "stopped_count": 0,
+          "total_count": 27,
+          "unknown_count": 9
+        },
+        "av2": {
+          "limit": 4,
+          "per_agent": {
+            "uav_01": {
+              "counts_by_location": {
+                "intermediate_waypoint": 0,
+                "other": 0,
+                "semantic_endpoint": 5
+              },
+              "evidence_complete": true,
+              "invalid_reason": null,
+              "stop_count": 5,
+              "stop_count_is_lower_bound": false,
+              "stop_intervals_s": [
+                [
+                  0.0,
+                  0.9
+                ],
+                [
+                  19.3,
+                  25.3
+                ],
+                [
+                  145.0,
+                  145.3
+                ],
+                [
+                  146.4,
+                  146.8
+                ],
+                [
+                  164.9,
+                  168.3
+                ]
+              ],
+              "stops": [
+                {
+                  "end_s": 0.9,
+                  "location": "semantic_endpoint",
+                  "start_s": 0.0
+                },
+                {
+                  "end_s": 25.3,
+                  "location": "semantic_endpoint",
+                  "start_s": 19.3
+                },
+                {
+                  "end_s": 145.3,
+                  "location": "semantic_endpoint",
+                  "ordered_visit_assignment": {
+                    "location": "semantic_endpoint",
+                    "matched_visit_s": 144.64728388034493,
+                    "minimum_stop_distance_m": 0.20445046554410873,
+                    "phase": "p01_patrol",
+                    "route_index": 9,
+                    "stop_to_visit_gap_s": 0.35271611965507077
+                  },
+                  "ordered_visit_evidence_complete": true,
+                  "start_s": 145.0
+                },
+                {
+                  "end_s": 146.8,
+                  "location": "semantic_endpoint",
+                  "start_s": 146.4
+                },
+                {
+                  "end_s": 168.3,
+                  "location": "semantic_endpoint",
+                  "start_s": 164.9
+                }
+              ],
+              "unknown_location_count": 0
+            },
+            "uav_02": {
+              "counts_by_location": {
+                "intermediate_waypoint": 0,
+                "other": 0,
+                "semantic_endpoint": 4
+              },
+              "evidence_complete": true,
+              "invalid_reason": null,
+              "stop_count": 4,
+              "stop_count_is_lower_bound": false,
+              "stop_intervals_s": [
+                [
+                  0.0,
+                  0.9
+                ],
+                [
+                  9.5,
+                  25.3
+                ],
+                [
+                  145.2,
+                  145.4
+                ],
+                [
+                  154.7,
+                  168.3
+                ]
+              ],
+              "stops": [
+                {
+                  "end_s": 0.9,
+                  "location": "semantic_endpoint",
+                  "start_s": 0.0
+                },
+                {
+                  "end_s": 25.3,
+                  "location": "semantic_endpoint",
+                  "start_s": 9.5
+                },
+                {
+                  "end_s": 145.4,
+                  "location": "semantic_endpoint",
+                  "start_s": 145.2
+                },
+                {
+                  "end_s": 168.3,
+                  "location": "semantic_endpoint",
+                  "start_s": 154.7
+                }
+              ],
+              "unknown_location_count": 0
+            },
+            "uav_03": {
+              "counts_by_location": {
+                "intermediate_waypoint": 0,
+                "other": 0,
+                "semantic_endpoint": 3
+              },
+              "evidence_complete": true,
+              "invalid_reason": null,
+              "stop_count": 3,
+              "stop_count_is_lower_bound": false,
+              "stop_intervals_s": [
+                [
+                  0.0,
+                  0.9
+                ],
+                [
+                  24.2,
+                  24.5
+                ],
+                [
+                  145.1,
+                  145.4
+                ]
+              ],
+              "stops": [
+                {
+                  "end_s": 0.9,
+                  "location": "semantic_endpoint",
+                  "start_s": 0.0
+                },
+                {
+                  "end_s": 24.5,
+                  "location": "semantic_endpoint",
+                  "start_s": 24.2
+                },
+                {
+                  "end_s": 145.4,
+                  "location": "semantic_endpoint",
+                  "start_s": 145.1
+                }
+              ],
+              "unknown_location_count": 0
+            }
+          },
+          "semantic_phase_count": 3
+        },
+        "av3": {
+          "mission_success": true,
+          "mission_success_observation": true,
+          "semantic_consistency": "agree"
+        },
+        "av4": {
+          "required_m": 5.0,
+          "timing": {
+            "observation": {
+              "complete": false,
+              "crosscheck_within_tau": true,
+              "pass_": false,
+              "per_phase": {
+                "p00_approach": {
+                  "D_s": 7.133040993204302,
+                  "crosscheck_D_s": 2.9246888081651026,
+                  "pass_": false,
+                  "semantic_phase": "approach",
+                  "tau_s": 4.022393503953943
+                },
+                "p01_patrol": {
+                  "D_s": null,
+                  "crosscheck_D_s": 1.6977979857048098,
+                  "pass_": false,
+                  "semantic_phase": "patrol",
+                  "tau_s": 5.0
+                },
+                "p02_return": {
+                  "D_s": 2.613443665361382,
+                  "crosscheck_D_s": 2.980349117035818,
+                  "pass_": true,
+                  "semantic_phase": "return",
+                  "tau_s": 4.022393503953943
+                }
+              },
+              "within_tau": false
+            },
+            "truth": {
+              "complete": false,
+              "crosscheck_within_tau": false,
+              "pass_": false,
+              "per_phase": {
+                "p00_approach": {
+                  "D_s": 5.907045788894024,
+                  "crosscheck_D_s": 4.414737248209795,
+                  "pass_": false,
+                  "semantic_phase": "approach",
+                  "tau_s": 4.022393503953943
+                },
+                "p01_patrol": {
+                  "D_s": null,
+                  "crosscheck_D_s": 1.6977979857048098,
+                  "pass_": false,
+                  "semantic_phase": "patrol",
+                  "tau_s": 5.0
+                },
+                "p02_return": {
+                  "D_s": 2.7220598588738802,
+                  "crosscheck_D_s": 3.068888724089586,
+                  "pass_": true,
+                  "semantic_phase": "return",
+                  "tau_s": 4.022393503953943
+                }
+              },
+              "within_tau": false
+            }
+          },
+          "truth_minimum_m": 7.740896371167331,
+          "truth_separation_status": "clear_observed"
+        },
+        "av5": {
+          "zero_length_count": 0
+        },
+        "av6": {
+          "onboard_status": "pass",
+          "vp4_terminal_prm1": null
+        },
+        "av7": {
+          "episode_quality_eligible": true,
+          "parameter_comparison_version": "wp_s_parameter_comparison_v2",
+          "provenance_status": "verified_before_takeoff"
+        },
+        "av8": {
+          "applicable": true,
+          "intent": "patrol",
+          "per_agent_laps_observed": {
+            "observation": {
+              "uav_01": 2,
+              "uav_02": 2,
+              "uav_03": null
+            },
+            "truth": {
+              "uav_01": 2,
+              "uav_02": 2,
+              "uav_03": null
+            }
+          },
+          "planned_laps": 2
+        },
+        "checks": {
+          "AV-1": false,
+          "AV-2": false,
+          "AV-3": true,
+          "AV-4": false,
+          "AV-5": true,
+          "AV-6": true,
+          "AV-7": true,
+          "AV-8": false
+        },
+        "individual_pass": false
+      },
+      "attempt_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d",
+      "attempt_index": 0,
+      "attempted_utc": "2026-10-02T17:30:37.698995+00:00",
+      "case_id": "VP1",
+      "evidence_sha256": {
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812\\analysis_latest.json": "a119545ece5fcb29bd30b82629c42b4a3c8d28131f51a1611bf6e72c5cb30491",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812\\analysis_v050-dev_20261002T173446Z_4efff936\\manifest.json": "d34689c9b9aebbd6f6c4e5cc669536cc5269886c7639d75f5a8bd4d9dc752be0",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812\\firmware_parameters.json": "01768ca8a37d494d452bae8ccdaceaa23c5f8f455f74ac1ddf5e42564572de2c",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812\\metadata.json": "70c455187dcd30b4d72faf5f534b3c8c3480686856f0b17460e3d2c73b7b55d4",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812\\quality.json": "15ea7b93440b1b407d174df565fcb34e106fdd7caaf4ce6d7a16f6134d2164d3"
+      },
+      "finished_utc": "2026-10-02T17:34:47.396504+00:00",
+      "flight_epoch_present": true,
+      "individual_pass": false,
+      "mission_id": "patrol_0001_v00",
+      "reserved_utc": "2026-10-02T17:30:37.698995+00:00",
+      "retry_reason": null,
+      "retryable_pre_takeoff": false,
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812",
+      "run_id": "20261002T173037Z_a380b812",
+      "run_root": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0",
+      "run_status": "completed",
+      "runner_error": null,
+      "runner_status": "succeeded",
+      "stopped_reason": "AV gate failed/unknown: AV-1, AV-2, AV-4, AV-8"
+    }
+  ],
+  "retry_policy": "one per case, only proven pre-takeoff startup/connection/partial-readback failure",
+  "review": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\dr_v05c\\review.json",
+  "source_review_sha256": "37876d0638bea7805dc3b16374206a101a2640275e06f8a76373a80bc5054634",
+  "stopped_reason": "AV gate failed/unknown: AV-1, AV-2, AV-4, AV-8",
+  "total_sitl_budget": 8,
+  "version": "v05c_validation_controller_v1"
+}

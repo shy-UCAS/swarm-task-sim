@@ -1,0 +1,112 @@
+{
+  "execution": {
+    "arrival_tolerance_m": 1.0,
+    "async_timing_tolerance": {
+      "fraction_of_phase": 0.2,
+      "max_s": 5.0,
+      "min_s": 3.0
+    },
+    "backend": "AUTO",
+    "confirmation_dwell_s": 0.5,
+    "control_mode": "semantic_phase_route_v1",
+    "hold_semantics": "integer_seconds_v1",
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "ready_timeout_s": 90.0,
+    "record_hz": 10.0,
+    "speed_m_s": 2.5,
+    "takeoff_alt_m": 8.0,
+    "terminal_hold_s": 0.0,
+    "timeout_s": 1200.0
+  },
+  "family_id": "scene_ac93c8b270c28f8ab886",
+  "family_scheme": "scene_content_v1",
+  "mission": {
+    "intent": "patrol",
+    "intent_params": {
+      "laps": 3,
+      "max_revisit_gap_factor": 2.0,
+      "objective": "perimeter_patrol",
+      "segment_length_m": 5.0,
+      "standoff_m": 0.0,
+      "visit_radius_m": 3.0
+    },
+    "return_required": false,
+    "target_region_id": "R1"
+  },
+  "planner": {
+    "name": "staggered_same_loop_v1",
+    "params": {
+      "tracking_margin_m": 1.0
+    }
+  },
+  "scenario": {
+    "origin": {
+      "alt_msl_m": 12.0,
+      "lat": 30.0,
+      "lon": 120.0
+    },
+    "platform": {
+      "dynamics_validation": "execution_proxy_only",
+      "id": "basic_multirotor_nominal_v1",
+      "max_airborne_time_s": 900.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_speed_m_s": 6.0,
+      "reserve_time_s": 60.0
+    },
+    "regions": [
+      {
+        "height_m": 23.47122233406682,
+        "id": "R1",
+        "min_east_m": -22.5074980243933,
+        "min_north_m": -8.043889295041746,
+        "type": "rectangle",
+        "width_m": 46.145891251007924
+      }
+    ],
+    "restricted_regions": [],
+    "scene_id": "base_0051",
+    "vehicles": [
+      {
+        "east_m": -14.140991053637261,
+        "heading_deg": 162.68200373181108,
+        "id": "uav_01",
+        "north_m": -27.681827068827467,
+        "sysid": 1
+      },
+      {
+        "east_m": -6.282158845425321,
+        "heading_deg": 275.39714443303086,
+        "id": "uav_02",
+        "north_m": -22.025984207195734,
+        "sysid": 2
+      },
+      {
+        "east_m": -15.110121305622354,
+        "heading_deg": 204.33539186095808,
+        "id": "uav_03",
+        "north_m": -15.393013749534425,
+        "sysid": 3
+      }
+    ],
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    }
+  },
+  "schema_version": 3,
+  "seed": 4141953791122537594,
+  "task_id": "patrol_0051_v00"
+}

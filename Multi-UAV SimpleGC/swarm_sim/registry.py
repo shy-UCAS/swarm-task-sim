@@ -1,4 +1,4 @@
-"""Versioned intent and planner contracts; production has one registered intent."""
+"""Versioned intent and planner contracts with explicit production registration."""
 
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -41,8 +41,11 @@ _intents, _planners = {}, {}
 def _initialize():
     if not _intents:
         from .reconnaissance import intent_spec, planner_spec
+        from .patrol import intent_spec as patrol_intent, planner_spec as patrol_planner
         _intents[intent_spec.name] = intent_spec
         _planners[planner_spec.name] = planner_spec
+        _intents[patrol_intent.name] = patrol_intent
+        _planners[patrol_planner.name] = patrol_planner
 
 
 def get_intent(name):

@@ -122,8 +122,11 @@ def normalize_v3(spec):
                  "semantic_phase_route_v1": ("terminal_hold_s", "async_timing_tolerance")}[mode]
     common = ("control_mode", "backend", "takeoff_alt_m", "speed_m_s", "arrival_tolerance_m",
               "confirmation_dwell_s", "record_hz", "max_gap_s", "min_separation_m", "timeout_s", "ready_timeout_s",
-              "phase_timeout_override_s")
-    _object(execution, f"execution ({mode})", common + exclusive, optional=("phase_timeout_override_s",))
+              "phase_timeout_override_s", "hold_semantics")
+    _object(execution, f"execution ({mode})", common + exclusive,
+            optional=("phase_timeout_override_s", "hold_semantics"))
+    if "hold_semantics" in execution:
+        _enum(execution, "hold_semantics", "execution", ("integer_seconds_v1",))
     if "phase_timeout_override_s" in execution:
         _numeric(execution, "phase_timeout_override_s", "execution", .001, 3600)
     _enum(execution, "backend", "execution", ("AUTO",))
@@ -132,10 +135,15 @@ def normalize_v3(spec):
             ("min_separation_m", .1, 1000), ("timeout_s", 10, 3600), ("ready_timeout_s", 10, 300)):
         _numeric(execution, key, "execution", low, high)
     _numeric(execution, exclusive[0], "execution", 0, 60)
+    if execution.get("hold_semantics") == "integer_seconds_v1" and not execution[exclusive[0]].is_integer():
+        raise ValueError(f"execution.{exclusive[0]} must be an integer number of seconds under integer_seconds_v1")
     if mode == "semantic_phase_route_v1":
-        timing = _object(execution["async_timing_tolerance"], "async_timing_tolerance", ("min_s", "fraction_of_phase"))
+        timing = _object(execution["async_timing_tolerance"], "async_timing_tolerance",
+                         ("min_s", "fraction_of_phase", "max_s"), optional=("max_s",))
         _numeric(timing, "min_s", "async_timing_tolerance", 0, 3600)
         _numeric(timing, "fraction_of_phase", "async_timing_tolerance", 0, 1)
+        if "max_s" in timing:
+            _numeric(timing, "max_s", "async_timing_tolerance", 0, 3600)
     if execution["speed_m_s"] > platform["max_speed_m_s"]:
         raise ValueError("command speed exceeds platform max_speed_m_s")
     if not world["flight_up_bounds_m"][0] <= execution["takeoff_alt_m"] <= world["flight_up_bounds_m"][1]:

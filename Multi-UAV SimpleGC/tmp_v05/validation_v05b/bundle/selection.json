@@ -1,0 +1,201 @@
+{
+  "accepted_base_count": 130,
+  "accepted_by_vehicle_count": {
+    "2": 44,
+    "3": 43,
+    "4": 43
+  },
+  "candidate_count": 206,
+  "case_order": [
+    "VP1",
+    "VP2",
+    "VP3",
+    "VP4",
+    "VR1",
+    "VR2"
+  ],
+  "cases": {
+    "VP1": {
+      "case_id": "VP1",
+      "filter_trace": [
+        {
+          "after_relaxation": null,
+          "eligible_count": 19
+        }
+      ],
+      "original_criteria": {
+        "entry_sides": null,
+        "intent": "patrol",
+        "laps": 2,
+        "return_required": true,
+        "vehicle_count": 3
+      },
+      "patrol_prefilter_margin_m": 28.43530936294752,
+      "relaxed": [],
+      "selected_base_index": 1,
+      "selected_candidate": "base_0001_candidate_00",
+      "selected_criteria": {
+        "entry_side": "north",
+        "laps": 2,
+        "return_required": true,
+        "vehicle_count": 3
+      },
+      "selected_mission_id": "patrol_0001_v00"
+    },
+    "VP2": {
+      "case_id": "VP2",
+      "filter_trace": [
+        {
+          "after_relaxation": null,
+          "eligible_count": 43
+        }
+      ],
+      "original_criteria": {
+        "entry_sides": null,
+        "intent": "patrol",
+        "laps": null,
+        "return_required": null,
+        "vehicle_count": 4
+      },
+      "patrol_prefilter_margin_m": 28.406489571418888,
+      "relaxed": [],
+      "selected_base_index": 116,
+      "selected_candidate": "base_0116_candidate_01",
+      "selected_criteria": {
+        "entry_side": "west",
+        "laps": 2,
+        "return_required": true,
+        "vehicle_count": 4
+      },
+      "selected_mission_id": "patrol_0116_v00"
+    },
+    "VP3": {
+      "case_id": "VP3",
+      "filter_trace": [
+        {
+          "after_relaxation": null,
+          "eligible_count": 8
+        }
+      ],
+      "original_criteria": {
+        "entry_sides": null,
+        "intent": "patrol",
+        "laps": 3,
+        "return_required": false,
+        "vehicle_count": 2
+      },
+      "patrol_prefilter_margin_m": 40.51724227296821,
+      "relaxed": [],
+      "selected_base_index": 48,
+      "selected_candidate": "base_0048_candidate_00",
+      "selected_criteria": {
+        "entry_side": "south",
+        "laps": 3,
+        "return_required": false,
+        "vehicle_count": 2
+      },
+      "selected_mission_id": "patrol_0048_v00"
+    },
+    "VP4": {
+      "case_id": "VP4",
+      "derivation": "same normalized VP1 task except execution.terminal_hold_s: 0 -> 1",
+      "original_criteria": {
+        "entry_sides": null,
+        "intent": "patrol",
+        "laps": 2,
+        "return_required": true,
+        "terminal_hold_s": 1,
+        "vehicle_count": 3
+      },
+      "relaxed": [],
+      "selected_base_index": 1,
+      "selected_candidate": "base_0001_candidate_00",
+      "selected_criteria": {
+        "entry_side": "north",
+        "laps": 2,
+        "return_required": true,
+        "vehicle_count": 3
+      },
+      "selected_mission_id": "patrol_0001_v00_hold1",
+      "source_case": "VP1"
+    },
+    "VR1": {
+      "case_id": "VR1",
+      "filter_trace": [
+        {
+          "after_relaxation": null,
+          "eligible_count": 17
+        }
+      ],
+      "original_criteria": {
+        "entry_sides": [
+          "east",
+          "west"
+        ],
+        "intent": "reconnaissance",
+        "laps": null,
+        "return_required": null,
+        "vehicle_count": 3
+      },
+      "patrol_prefilter_margin_m": null,
+      "relaxed": [],
+      "selected_base_index": 10,
+      "selected_candidate": "base_0010_candidate_00",
+      "selected_criteria": {
+        "entry_side": "east",
+        "laps": 2,
+        "return_required": true,
+        "vehicle_count": 3
+      },
+      "selected_mission_id": "reconnaissance_0010_v00"
+    },
+    "VR2": {
+      "case_id": "VR2",
+      "filter_trace": [
+        {
+          "after_relaxation": null,
+          "eligible_count": 43
+        }
+      ],
+      "original_criteria": {
+        "entry_sides": null,
+        "intent": "reconnaissance",
+        "laps": null,
+        "return_required": null,
+        "vehicle_count": 4
+      },
+      "patrol_prefilter_margin_m": null,
+      "relaxed": [],
+      "selected_base_index": 2,
+      "selected_candidate": "base_0002_candidate_02",
+      "selected_criteria": {
+        "entry_side": "east",
+        "laps": 2,
+        "return_required": false,
+        "vehicle_count": 4
+      },
+      "selected_mission_id": "reconnaissance_0002_v00"
+    }
+  },
+  "joint_feasible_fraction": 0.6310679611650486,
+  "policy": "accepted v05b DR scenes only; relax entry side, then K, then return; N never relaxed",
+  "source_generation_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\dr_v05b\\generated_130",
+  "source_manifest_sha256": "019d1745e309edbfa8cf61e303b3ad02cc480e47a4f62b3168814ddee67e4d3c",
+  "source_profile_canonical_sha256": "6253d7cf568e6e8665d6cc8baadd061e3ccd850cc5b25b723ee23da2f78a096c",
+  "source_profile_file_sha256": "d3d7f82793377450a18b869fc9a0738aaaa747094fe9e3ed30949af8c9b7578c",
+  "source_review_gate": {
+    "accepted_bases_130_of_130": true,
+    "accepted_observe_geometry_clear": true,
+    "generated_artifacts_intact": true,
+    "generated_structure_consistent": true,
+    "joint_feasible_rate_ge_30_percent": true,
+    "no_missing_sampled_parameters": true,
+    "pass": true,
+    "production_observe_crosscheck": true,
+    "profile_binding": true,
+    "sampler_strata_and_line_only": true,
+    "stratified_accepted_44_43_43": true
+  },
+  "source_review_sha256": "f2356b597ab6e4926e01258237eacf4f1b96cc5834a0dad2be7ef7eb3437cba1",
+  "version": "v05b_validation_selection_v1"
+}

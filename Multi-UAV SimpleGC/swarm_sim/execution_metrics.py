@@ -12,6 +12,7 @@ from .observations import finite_number
 
 
 VERSION = "execution_artifacts_v1"
+VERSION_V2 = "execution_artifacts_v2"
 
 
 def distribution(values):
@@ -286,3 +287,204 @@ def compute_execution_metrics(scene, traces, windows, events=None, metadata=None
         thresholds=thresholds,
         intermediate_waypoints=_waypoint_metrics(scene, traces, windows, waypoints, bounds, dt, invalid),
         **_timing_metrics(windows, events, metadata, time_epoch, nominal_arrivals))
+
+
+def _repeated_route_phases(scene):
+    """Only a repeated visit *within one phase* needs ordered attribution.
+
+    Phase boundaries may intentionally coincide (approach ends where patrol
+    starts). Such a boundary is not a repeated route visit by itself.
+    """
+    repeated = []
+    for phase in scene.get("phases", []):
+        name = phase.get("name")
+        roles = scene.get("semantic_plan", {}).get("execution_phases", {}).get(name, {}).get("agents", {})
+        for agent, route in phase.get("routes", {}).items():
+            start = roles.get(agent, {}).get("start_point")
+            points = ([start] if isinstance(start, dict) else []) + list(route)
+            coordinates = [(p.get("east_m"), p.get("north_m"), p.get("up_m")) for p in points]
+            if len(set(coordinates)) < len(coordinates):
+                repeated.append((phase, agent, start))
+    return repeated
+
+
+def _phase_window(agent, phase_name, windows):
+    selected = [w for w in windows if w.get("agent_id") == agent and w.get("phase") == phase_name
+                and finite_number(w.get("start_s")) and finite_number(w.get("end_s"))]
+    if not selected:
+        return None
+    releases = [w["phase_release_s"] for w in selected if finite_number(w.get("phase_release_s"))]
+    start = min(releases) if releases else min(w["start_s"] for w in selected)
+    stop = max(w["end_s"] for w in selected)
+    successors = [w.get("phase_release_s", w.get("start_s")) for w in windows
+                  if w.get("agent_id") == agent and w.get("phase") != phase_name
+                  and finite_number(w.get("start_s")) and w["start_s"] > stop]
+    successors = [value for value in successors if finite_number(value) and value > stop]
+    # Some service windows end before terminal confirmation. Extend only to
+    # the next scheduled release, never into that phase's AUTO interval.
+    return start, min(successors) if successors else stop, all(w.get("complete_execution_window", False) for w in selected)
+
+
+def _ordered_visits(scene, traces, windows, repeated, dt):
+    """Map repeated route targets to observed visits; never invent missing visits."""
+    from .ac4_timing import ordered_route_progress
+
+    by_phase = {}
+    for phase, agent, start_point in repeated:
+        name = phase["name"]
+        route = phase["routes"][agent]
+        window = _phase_window(agent, name, windows)
+        model = scene.get("planning", {}).get("nominal_phase_timing", {}).get(name, {})
+        nominal = model.get("per_agent_waypoint_arrival_s", {}).get(agent)
+        key = agent, name
+        item = dict(phase=name, semantic_phase=phase["semantic_phase"], agent_id=agent,
+                    route=route, window_s=list(window[:2]) if window else None,
+                    evidence_complete=False, nodes=[], issues=[])
+        if window is None or not isinstance(start_point, dict) or not isinstance(nominal, list) or len(route) != len(nominal):
+            item["issues"].append("missing_window_start_or_nominal_route")
+        else:
+            start, end, execution_complete = window
+            if not execution_complete:
+                item["issues"].append("incomplete_execution_window")
+            try:
+                mapped = ordered_route_progress(traces.get(agent, []), route, nominal,
+                    start_s=start, end_s=end,
+                    max_gap_s=scene.get("max_gap_s", scene.get("task_spec", {}).get("execution", {}).get("max_gap_s", 1.5 * dt)),
+                    start_point=start_point)
+            except ValueError as exc:
+                item["issues"].append(str(exc))
+            else:
+                item["nodes"] = mapped.get("nodes", [])
+                item["issues"].extend(mapped.get("issues", []))
+                item["evidence_complete"] = execution_complete and mapped.get("evidence_complete") is True
+        by_phase[key] = item
+    return by_phase
+
+
+def _stop_visit_assignment(interval, rows, phase):
+    """A stop may be assigned to at most one ordered node (horizontal <=1 m)."""
+    start, end = interval
+    positions = [p for t, p in rows if start <= t <= end and _valid_position(p)]
+    candidates = []
+    for node in phase["nodes"]:
+        stamp = node.get("actual_s")
+        route_index = node.get("route_index")
+        if not finite_number(stamp) or not (start - 2 <= stamp <= end + 2):
+            continue
+        point = (phase["route"][route_index] if type(route_index) is int and 0 <= route_index < len(phase["route"])
+                 else None)
+        if point is None:
+            continue
+        distance = min((math.hypot(p[0] - point["east_m"], p[1] - point["north_m"]) for p in positions), default=None)
+        if distance is not None and distance <= 1:
+            time_gap = max(start - stamp, stamp - end, 0)
+            candidates.append((time_gap, distance, abs((start + end) / 2 - stamp), route_index, stamp))
+    if not candidates:
+        return None
+    time_gap, distance, _, route_index, stamp = min(candidates)
+    return dict(phase=phase["phase"], route_index=route_index, matched_visit_s=stamp,
+                stop_to_visit_gap_s=time_gap, minimum_stop_distance_m=distance,
+                location="semantic_endpoint" if route_index == len(phase["route"]) - 1 else "intermediate_waypoint")
+
+
+def _summarize_v2_waypoints(records):
+    unknown = sum(row["stopped"] is None for row in records)
+    stopped = sum(row["stopped"] is True for row in records)
+    by_length = {}
+    for record in records:
+        value = record["scan_line_length_m"]
+        key = f"{value:.6f}" if value is not None else "not_applicable"
+        by_length.setdefault(key, []).append(record)
+    grouped = {key: dict(waypoint_count=len(group), unknown_count=sum(r["minimum_passing_speed_m_s"] is None for r in group),
+                         minimum_passing_speed_m_s=distribution(r["minimum_passing_speed_m_s"] for r in group))
+               for key, group in sorted(by_length.items())}
+    return dict(total_count=len(records), stopped_count=stopped, unknown_count=unknown,
+                stop_rate=stopped / len(records) if records and not unknown else None,
+                minimum_passing_speed_m_s=distribution(r["minimum_passing_speed_m_s"] for r in records),
+                by_scan_line_length_m=grouped, records=records)
+
+
+def compute_execution_metrics_v2(scene, traces, windows, events=None, metadata=None, time_epoch=None, nominal_arrivals=None):
+    """Versioned visit-aware diagnostics for routes that revisit a position.
+
+    The v1 entry point remains frozen. For routes without a repeated position,
+    every v1 metric value and record is preserved, with only the top-level
+    version changed. Repeated routes require observed ordered visits; missing
+    evidence leaves waypoint stop attribution unknown, never silently spatial.
+    """
+    result = compute_execution_metrics(scene, traces, windows, events=events, metadata=metadata,
+                                       time_epoch=time_epoch, nominal_arrivals=nominal_arrivals)
+    result["version"] = VERSION_V2
+    repeated = _repeated_route_phases(scene)
+    if not repeated:
+        return result
+    windows = windows.get("windows", []) if isinstance(windows, dict) else windows
+    windows = windows or []
+    dt = result["sampling_dt_s"]
+    phases = _ordered_visits(scene, traces, windows, repeated, dt)
+    assignment_by_stop = {}
+    for threshold, report in result["thresholds"].items():
+        for (agent, phase_name), phase in phases.items():
+            per_agent = report["per_agent"].get(agent)
+            if per_agent is None or per_agent["stops"] is None or phase["window_s"] is None:
+                continue
+            phase_start, phase_end = phase["window_s"]
+            for stop_index, stop in enumerate(per_agent["stops"]):
+                start, end = stop["start_s"], stop["end_s"]
+                midpoint = (start + end) / 2
+                # A next-phase release belongs to the next phase, even when
+                # the preceding passage window ends at the same instant.
+                if not phase_start <= midpoint < phase_end:
+                    continue
+                # Unproved ordering does not justify assigning a repeated
+                # corner to any particular lap or waypoint.
+                assignment = (_stop_visit_assignment((start, end), traces.get(agent, []), phase)
+                              if phase["evidence_complete"] else None)
+                stop["location"] = assignment["location"] if assignment else ("other" if phase["evidence_complete"] else None)
+                stop["ordered_visit_assignment"] = assignment
+                stop["ordered_visit_evidence_complete"] = phase["evidence_complete"]
+                assignment_by_stop[threshold, agent, stop_index] = assignment
+            per_agent["counts_by_location"] = {location: sum(stop["location"] == location for stop in per_agent["stops"])
+                                               for location in ("intermediate_waypoint", "semantic_endpoint", "other")}
+            per_agent["unknown_location_count"] = sum(stop["location"] is None for stop in per_agent["stops"])
+    records = [record for record in result["intermediate_waypoints"]["records"]
+               if (record["agent_id"], record["semantic_phase"]) not in
+               {(agent, phase["semantic_phase"]) for (agent, _), phase in phases.items()}]
+    for (agent, phase_name), phase in phases.items():
+        route = phase["route"]
+        if not route:
+            continue
+        role = scene.get("semantic_plan", {}).get("execution_phases", {}).get(phase_name, {}).get("agents", {}).get(agent, {})
+        planner_indices = role.get("waypoint_planner_indices", list(range(len(route))))
+        assigned = {}
+        stops = result["thresholds"]["0.3"]["per_agent"].get(agent, {}).get("stops") or []
+        for index, stop in enumerate(stops):
+            item = assignment_by_stop.get(("0.3", agent, index))
+            if item and item["phase"] == phase_name and item["location"] == "intermediate_waypoint":
+                assigned.setdefault(item["route_index"], []).append([stop["start_s"], stop["end_s"]])
+        nodes = {node.get("route_index"): node for node in phase["nodes"] if type(node.get("route_index")) is int}
+        rows = traces.get(agent, [])
+        for route_index, point in enumerate(route[:-1]):
+            node = nodes.get(route_index)
+            stamp = node.get("actual_s") if node else None
+            candidates = [_speed(p) for t, p in rows if finite_number(stamp) and abs(t - stamp) <= 2
+                          and _valid_position(p) and math.hypot(p[0] - point["east_m"], p[1] - point["north_m"]) <= 2
+                          and _speed(p) is not None]
+            minimum = min(candidates) if candidates else None
+            visit_complete = phase["evidence_complete"] and node is not None
+            intervals = assigned.get(route_index, [])
+            records.append(dict(agent_id=agent, semantic_phase=phase["semantic_phase"],
+                waypoint_index=planner_indices[route_index] if route_index < len(planner_indices) else route_index,
+                route_index=route_index, point=point, scan_line_length_m=None,
+                matched_visit_s=stamp, visit_mapping_version="ordered_route_progress_v1",
+                minimum_passing_speed_m_s=minimum,
+                stopped=True if intervals else False if visit_complete else None,
+                evidence_complete=visit_complete, window_s=phase["window_s"], stop_intervals_s=intervals,
+                visit_issues=list(phase["issues"])))
+    result["intermediate_waypoints"] = _summarize_v2_waypoints(records)
+    result["ordered_visit_attribution"] = dict(version="ordered_stop_attribution_v1",
+        time_tolerance_s=2, distance_tolerance_m=1, distance_basis="horizontal_EN",
+        phase_evidence={f"{agent}:{name}": dict(
+            evidence_complete=phase["evidence_complete"], issues=phase["issues"],
+            matched_nodes=len(phase["nodes"])) for (agent, name), phase in phases.items()})
+    return result
