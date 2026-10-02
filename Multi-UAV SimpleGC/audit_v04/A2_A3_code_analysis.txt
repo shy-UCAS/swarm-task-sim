@@ -1,0 +1,58 @@
+A2: 运行器每个阶段的执行流程
+===================================
+
+关键代码路径: swarm_sim/runner.py:95-113
+
+阶段执行流程（每个phase循环一次）:
+1. parallel(upload_phase) - 并行上传每个飞机的任务（行99-104）
+   - 每个飞机上传 mission_for(scenario, phase["name"], client.id)
+   - mission_for返回该飞机在该phase的单段航线
+
+2. parallel(execute) - 并行执行AUTO模式（行105-107）
+   - client.execute(epoch, mission_count, timeout, phase["name"])
+   - 每个飞机独立等待 MISSION_ITEM_REACHED(seq=mission_count-1)
+
+3. parallel(confirm) - 并行确认到达目标点（行108-112）
+   - client.confirm_target(...) 
+   - 等待几何位置验证通过（在tolerance内dwell_s秒）
+
+关键发现:
+- 每个phase = 1次upload + 1次execute + 1次confirm
+- upload调用mission_for，每次仅上传该phase的航点
+- execute等待最后一个航点到达，然后发phase_finished事件
+- confirm在AUTO完成后额外等待几何验证
+
+A3: 飞控交互 - 每个航段上传什么、模式如何切换
+==============================================
+
+upload函数 (swarm_sim/vehicle.py:217-255):
+- 输入: mission列表（单个phase的航点）
+- 流程:
+  1. 切换到BRAKE或LOITER模式（行218）
+  2. mission_clear_all（行220）
+  3. mission_count_send（行225）
+  4. 响应MISSION_REQUEST，逐个发送mission_item（行230-250）
+  5. mission_set_current设为seq=1（行254）
+
+execute函数 (swarm_sim/vehicle.py:257-274):
+- 切换到AUTO模式（行263）
+- 等待MISSION_ITEM_REACHED(seq=mission_count-1)（行267-268）
+- 共享任务保持AUTO模式，否则切回LOITER（行273-274）
+
+confirm_target函数 (swarm_sim/vehicle.py:283-316):
+- 在AUTO/LOITER后执行
+- 循环读取GLOBAL_POSITION_INT
+- 检查位置在tolerance内且连续dwell_s秒
+- 发出task_target_verified事件（行315）
+
+模式切换序列（每个phase）:
+1. upload: BRAKE/LOITER
+2. execute: AUTO（启动航点任务）
+3. confirm: 保持AUTO（共享任务）或LOITER
+4. 下一个phase重复
+
+关键发现:
+- 每个phase独立上传一段航线（非累积）
+- 每次都是mission_clear_all + 新上传
+- AUTO模式执行完最后航点后，立即发phase_finished
+- confirm是额外的几何验证，不在AUTO航点控制内

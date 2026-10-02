@@ -1,0 +1,10 @@
+import json
+t = json.load(open("missions/recon_shared_3uav.json"))
+print("world:", json.dumps(t["scenario"]["world"]))
+print("min_separation_m:", t["execution"]["min_separation_m"])
+print("tracking_margin_m:", t["planner"]["tracking_margin_m"])
+print("radius_m:", t["mission"]["observation_model"]["radius_m"])
+print("coverage_required:", t["mission"]["coverage_required"])
+print("takeoff_alt_m:", t["execution"]["takeoff_alt_m"])
+print("max_path_length_m:", t["platform"]["max_path_length_m"])
+print("max_airborne_time_s:", t["platform"]["max_airborne_time_s"])

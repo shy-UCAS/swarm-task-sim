@@ -1,0 +1,65 @@
+A6: 改为"每机整段连续航线"的改动范围评估
+================================================
+
+当前架构（phase-by-phase上传）:
+- runner.py:95-113 循环phases，每个phase执行 upload → execute → confirm
+- vehicle.py:217-255 upload函数每次mission_clear_all + 上传单段
+- vehicle.py:257-274 execute函数等待单段完成
+- mission_planning.py:50-84 compile_execution_phases生成phase列表
+
+改为整段连续航线的改动范围:
+
+1. **mission_planning.py** (核心重构)
+   - compile_execution_phases: 不再生成phase列表，而是生成per-agent完整航线
+   - 需要重新设计semantic_plan结构，保留语义阶段信息但不再映射到执行phases
+   - 或者保留phases作为"语义锚点"，但上传时合并为连续航线
+
+2. **runner.py** (简化主循环)
+   - 删除 for phase in phases 循环
+   - 改为一次性上传所有航线: parallel(upload_full_mission)
+   - 一次execute等待全部完成
+   - confirm逻辑需要重新设计：不再每个phase确认，改为流式验证或仅验证关键点
+
+3. **vehicle.py** (上传与验证)
+   - upload函数保持不变（或合并多段为一个任务列表）
+   - execute函数需要等待整段完成，而不是单段
+   - confirm_target可能改为异步流式验证，而非阻塞式逐段确认
+
+4. **observations.py / mission_evaluation.py** (窗口构建)
+   - 当前窗口基于execution_phases + events构建
+   - 改为基于语义锚点 + 连续轨迹切分
+   - execution_windows函数需要重构，不再依赖phase_finished事件
+   - 可能需要新的"语义段识别"逻辑
+
+5. **tasks.py** (确认需求)
+   - target_confirmation函数当前返回per-phase的tolerance和dwell
+   - 改为per-semantic-segment或per-waypoint-type
+
+6. **scenario.py / mission_schema.py** (schema变更)
+   - 当前task_spec包含phases列表
+   - 可能改为per_agent_routes + semantic_annotations
+   - 或保留phases但标记为"语义参考"而非执行单元
+
+影响范围估计:
+- 核心修改: 4个文件 (mission_planning, runner, vehicle, mission_evaluation)
+- 适配修改: 3个文件 (tasks, observations, scenario)
+- 测试更新: 所有phase相关测试需要重写
+- 数据协议: semantic_plan和phase_windows的schema需要版本升级
+
+工作量估计:
+- 规划与设计: 重新定义语义阶段与执行航线的映射关系
+- 实现核心逻辑: 3-5天
+- 适配周边模块: 2-3天
+- 测试与验证: 2-3天
+- 总计: 7-11天
+
+风险:
+- 失去phase-by-phase的细粒度进度反馈
+- 错误恢复变复杂（单段失败vs整段失败）
+- 窗口构建从事件驱动改为轨迹分析，可能引入新的边界判断问题
+- 现有15个episode的数据协议不兼容，需要重新生成
+
+优势:
+- 消除phase间的停靠（当前A4数据显示57个零长度航段，平均停靠0.62s）
+- 减少模式切换次数（当前每phase一次LOITER→AUTO）
+- 更接近真实连续飞行场景
