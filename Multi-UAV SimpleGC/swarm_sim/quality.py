@@ -86,3 +86,55 @@ def eligibility(quality, mission_success):
     grade = quality["clock_quality"]["overall"]
     return dict(benchmark_eligible=bool(other_checks and grade in ("strict", "acceptable")),
                 strict_benchmark_eligible=bool(other_checks and grade == "strict"))
+
+
+def episode_quality_eligibility(quality):
+    """V3 data qualification, deliberately independent of mission outcome."""
+    return bool(all(quality.get(k) is True for k in ("run_completed", "data_quality_pass", "truth_available_pass",
+                     "timing_diagnostic_pass", "execution_constraints_pass"))
+                and quality.get("clock_quality", {}).get("overall") in ("strict", "acceptable")
+                and quality.get("separation_status") == "clear_observed"
+                and quality.get("truth_separation", {}).get("status") == "clear_observed")
+
+
+def v3_eligibility(quality, labels):
+    """Append data qualification while retaining the existing shared benchmark meaning."""
+    result = eligibility(quality, labels["mission_success"])
+    additional = (quality.get("execution_constraints_pass") is True and labels.get("semantic_consistency") == "agree"
+                  and labels.get("mission_success_observation") is True)
+    result["benchmark_eligible"] &= additional
+    result["strict_benchmark_eligible"] &= additional
+    result["episode_quality_eligible"] = episode_quality_eligibility(quality)
+    return result
+
+
+def invalid_intervals(traces, maximum_gap_s, flags=None):
+    """Closed sample-support intervals for future window consumers; no window qualification."""
+    if not isinstance(maximum_gap_s, (int,float)) or isinstance(maximum_gap_s,bool) or not math.isfinite(maximum_gap_s) or maximum_gap_s <= 0:
+        raise ValueError("maximum_gap_s must be finite and positive")
+    result = {}
+    flags = flags or {}
+    for agent, rows in traces.items():
+        intervals, previous = [], None
+        for stamp, value in rows:
+            if not isinstance(stamp,(int,float)) or isinstance(stamp,bool) or not math.isfinite(stamp):
+                raise ValueError("invalid interval source timestamp")
+            if previous is not None and stamp <= previous:
+                raise ValueError("interval evidence must be strictly increasing")
+            if previous is not None and stamp-previous > maximum_gap_s:
+                intervals.append(dict(start_s=previous,end_s=stamp,reason="sample_gap"))
+            reason = flags.get(agent, {}).get(stamp)
+            valid = value is not None and len(value) >= 6 and all(isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v) for v in value[:6])
+            if not valid or reason:
+                intervals.append(dict(start_s=stamp,end_s=stamp,reason=str(reason or "invalid_observation")))
+            previous = stamp
+        # Invalid samples are barriers. Adjacent invalid samples of the same reason may be grouped.
+        merged = []
+        for row in intervals:
+            if (merged and row["reason"] == merged[-1]["reason"] and row["start_s"]-merged[-1]["end_s"] <= maximum_gap_s
+                    and not any(merged[-1]["end_s"] < t < row["start_s"] and v is not None for t,v in rows)):
+                merged[-1]["end_s"] = row["end_s"]
+            else:
+                merged.append(dict(row))
+        result[agent] = merged
+    return result

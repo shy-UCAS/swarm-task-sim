@@ -7,6 +7,12 @@ import re
 from .scenario import number
 
 
+def normalize_v3(spec):
+    """Explicit new-version entry point; normalize_mission remains frozen at v2."""
+    from .mission_v3 import normalize_v3 as implementation
+    return implementation(spec)
+
+
 def _object(value, name, fields, optional=()):
     if not isinstance(value, dict):
         raise ValueError(f"{name} must be an object")

@@ -32,6 +32,9 @@ def compile_task(spec):
     if spec.get("schema_version") == 2:
         from .mission_planning import compile_shared_mission_v2
         return compile_shared_mission_v2(spec)
+    if spec.get("schema_version") == 3:
+        from .mission_v3 import compile_mission_v3
+        return compile_mission_v3(spec)
     return compile_task_v1(spec)
 
 

@@ -115,6 +115,13 @@ def _sample(profile, base_index, candidate_index, family):
 
 def generate(profile, output):
     """Freeze profile/template, sample bounded candidates and compile accepted variants."""
+    # New profiles dispatch before the frozen v1 algorithm; all legacy sampling,
+    # normalization, names, hashes and output serialization below stay unchanged.
+    discriminator = (json.loads(Path(profile).read_text(encoding="utf-8-sig"))
+                     if isinstance(profile, (str, Path)) else profile)
+    if isinstance(discriminator, dict) and type(discriminator.get("schema_version")) is int and discriminator["schema_version"] == 2:
+        from .generation_v2 import generate_v2
+        return generate_v2(profile, output)
     from .tasks import compile_task
 
     profile = _profile(profile)
