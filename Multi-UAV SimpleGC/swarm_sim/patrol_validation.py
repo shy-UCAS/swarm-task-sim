@@ -93,7 +93,10 @@ def segment_visits(points, segment, visit_radius_m, agent):
     return visits, initial
 
 
-def _progress(scene, traces, window):
+def _progress(scene, traces, window, progress_mapping_version="ordered_route_progress_v1"):
+    from .ac4_timing import ordered_route_progress_v2
+    mapper = {"ordered_route_progress_v1": ordered_route_progress,
+              "ordered_route_progress_v2": ordered_route_progress_v2}[progress_mapping_version]
     agent = window["agent_id"]
     phase = window["phase"]
     phase_data = next(p for p in scene["phases"] if p["name"] == phase)
@@ -105,7 +108,7 @@ def _progress(scene, traces, window):
                  if math.dist([point[k] for k in ("east_m", "north_m", "up_m")],
                               [start_point[k] for k in ("east_m", "north_m", "up_m")]) <= 1e-6]
     try:
-        result = ordered_route_progress(traces.get(agent, []), route, nominal,
+        result = mapper(traces.get(agent, []), route, nominal,
             start_s=window["start_s"], end_s=window["end_s"],
             max_gap_s=scene["max_gap_s"], start_point=start_point,
             lap_node_indices=lap_nodes)
@@ -129,7 +132,7 @@ def _progress(scene, traces, window):
                 node_evidence=result.get("node_evidence", []))
 
 
-def evaluate_channel(scene, traces, windows, clocks):
+def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version="ordered_route_progress_v1"):
     """Evaluate visits and three gap types on one channel, without substitution."""
     del clocks  # Positions already belong to the caller's selected channel.
     spec = scene["task_spec"]
@@ -163,7 +166,7 @@ def evaluate_channel(scene, traces, windows, clocks):
             failures.append(f"{agent}:{reason}")
         else:
             points_by_agent[agent] = points
-        progress[agent] = _progress(scene, traces, window)
+        progress[agent] = _progress(scene, traces, window, progress_mapping_version)
     complete = not failures
     n = len(agents)
     phase = next((p for p in scene["phases"] if p["semantic_phase"] == "patrol"), None)

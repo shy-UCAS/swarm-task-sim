@@ -1,0 +1,1465 @@
+{
+  "version": "execution_artifacts_v2",
+  "evidence_basis": "FCU_horizontal_velocity",
+  "diagnostic_only": true,
+  "model_feature_eligible": false,
+  "stop_thresholds_m_s": [
+    0.3,
+    0.5
+  ],
+  "minimum_stop_duration_s": 0.2,
+  "sampling_dt_s": 0.1,
+  "detection_window": "entire exported task observation grid",
+  "fraction_window_s": [
+    0.009815199991862755,
+    150.65952159999142
+  ],
+  "scope_note": "counts use exported grid; stationary/sync fractions use semantic event span; gaps > 1.5 ticks break stops",
+  "synchronized_fraction_definition": "A4 sampled grid starting at semantic span start; endpoint-inclusive; denominator round(duration/dt)+1",
+  "location_priority": [
+    "semantic_endpoint",
+    "intermediate_waypoint",
+    "other"
+  ],
+  "invalid_agents": {},
+  "evidence_complete": true,
+  "thresholds": {
+    "0.3": {
+      "per_agent": {
+        "uav_01": {
+          "stop_count": 2,
+          "stop_intervals_s": [
+            [
+              0.0,
+              0.9
+            ],
+            [
+              14.9,
+              24.4
+            ]
+          ],
+          "counts_by_location": {
+            "intermediate_waypoint": 0,
+            "semantic_endpoint": 1,
+            "other": 1
+          },
+          "stops": [
+            {
+              "start_s": 0.0,
+              "end_s": 0.9,
+              "location": "other"
+            },
+            {
+              "start_s": 14.9,
+              "end_s": 24.4,
+              "location": "semantic_endpoint"
+            }
+          ],
+          "invalid_reason": null,
+          "evidence_complete": true,
+          "stop_count_is_lower_bound": false,
+          "unknown_location_count": 0
+        },
+        "uav_02": {
+          "stop_count": 3,
+          "stop_intervals_s": [
+            [
+              0.0,
+              0.9
+            ],
+            [
+              23.5,
+              23.9
+            ],
+            [
+              24.2,
+              24.9
+            ]
+          ],
+          "counts_by_location": {
+            "intermediate_waypoint": 0,
+            "semantic_endpoint": 0,
+            "other": 1
+          },
+          "stops": [
+            {
+              "start_s": 0.0,
+              "end_s": 0.9,
+              "location": "other"
+            },
+            {
+              "start_s": 23.5,
+              "end_s": 23.9,
+              "location": null,
+              "ordered_visit_assignment": null,
+              "ordered_visit_evidence_complete": false
+            },
+            {
+              "start_s": 24.2,
+              "end_s": 24.9,
+              "location": null,
+              "ordered_visit_assignment": null,
+              "ordered_visit_evidence_complete": false
+            }
+          ],
+          "invalid_reason": null,
+          "evidence_complete": true,
+          "stop_count_is_lower_bound": false,
+          "unknown_location_count": 2
+        }
+      },
+      "stationary_time_s": 12.380369600016271,
+      "stationary_time_fraction": 0.041089922761430316,
+      "synchronized_time_fraction": 0.009953550099535502,
+      "synchronized_grid_points": 15,
+      "grid_points": 1507,
+      "fleet_stop_event_count": 2,
+      "common_overlap_event_count": 2,
+      "common_overlap_event_fraction": 1.0,
+      "audit_envelope_common_event_count": 2
+    },
+    "0.5": {
+      "per_agent": {
+        "uav_01": {
+          "stop_count": 2,
+          "stop_intervals_s": [
+            [
+              0.0,
+              1.1
+            ],
+            [
+              14.7,
+              24.6
+            ]
+          ],
+          "counts_by_location": {
+            "intermediate_waypoint": 0,
+            "semantic_endpoint": 1,
+            "other": 1
+          },
+          "stops": [
+            {
+              "start_s": 0.0,
+              "end_s": 1.1,
+              "location": "other"
+            },
+            {
+              "start_s": 14.7,
+              "end_s": 24.6,
+              "location": "semantic_endpoint"
+            }
+          ],
+          "invalid_reason": null,
+          "evidence_complete": true,
+          "stop_count_is_lower_bound": false,
+          "unknown_location_count": 0
+        },
+        "uav_02": {
+          "stop_count": 2,
+          "stop_intervals_s": [
+            [
+              0.0,
+              1.1
+            ],
+            [
+              23.4,
+              25.2
+            ]
+          ],
+          "counts_by_location": {
+            "intermediate_waypoint": 0,
+            "semantic_endpoint": 0,
+            "other": 1
+          },
+          "stops": [
+            {
+              "start_s": 0.0,
+              "end_s": 1.1,
+              "location": "other"
+            },
+            {
+              "start_s": 23.4,
+              "end_s": 25.2,
+              "location": null,
+              "ordered_visit_assignment": null,
+              "ordered_visit_evidence_complete": false
+            }
+          ],
+          "invalid_reason": null,
+          "evidence_complete": true,
+          "stop_count_is_lower_bound": false,
+          "unknown_location_count": 1
+        }
+      },
+      "stationary_time_s": 13.880369600016277,
+      "stationary_time_fraction": 0.046068359280972075,
+      "synchronized_time_fraction": 0.015262110152621102,
+      "synchronized_grid_points": 23,
+      "grid_points": 1507,
+      "fleet_stop_event_count": 2,
+      "common_overlap_event_count": 2,
+      "common_overlap_event_fraction": 1.0,
+      "audit_envelope_common_event_count": 2
+    }
+  },
+  "intermediate_waypoints": {
+    "total_count": 18,
+    "stopped_count": 0,
+    "unknown_count": 18,
+    "stop_rate": null,
+    "minimum_passing_speed_m_s": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "max": null
+    },
+    "by_scan_line_length_m": {
+      "not_applicable": {
+        "waypoint_count": 18,
+        "unknown_count": 18,
+        "minimum_passing_speed_m_s": {
+          "count": 0,
+          "min": null,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "max": null
+        }
+      }
+    },
+    "records": [
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 0,
+        "route_index": 0,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 1,
+        "route_index": 1,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": 5.41895992464314,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 2,
+        "route_index": 2,
+        "point": {
+          "east_m": 11.686232506095664,
+          "north_m": 5.4189599246431435,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 3,
+        "route_index": 3,
+        "point": {
+          "east_m": 11.686232506095678,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 4,
+        "route_index": 4,
+        "point": {
+          "east_m": -10.12918865583708,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 5,
+        "route_index": 5,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 6,
+        "route_index": 6,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": 5.41895992464314,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 7,
+        "route_index": 7,
+        "point": {
+          "east_m": 11.686232506095678,
+          "north_m": 5.4189599246431435,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_01",
+        "semantic_phase": "patrol",
+        "waypoint_index": 8,
+        "route_index": 8,
+        "point": {
+          "east_m": 11.686232506095678,
+          "north_m": -21.8882812715103,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 0,
+        "route_index": 0,
+        "point": {
+          "east_m": 11.686232506095678,
+          "north_m": 5.4189599246431435,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 1,
+        "route_index": 1,
+        "point": {
+          "east_m": 11.686232506095678,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 2,
+        "route_index": 2,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 3,
+        "route_index": 3,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": 5.41895992464314,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 4,
+        "route_index": 4,
+        "point": {
+          "east_m": 3.7036517298162615,
+          "north_m": 5.4189599246431435,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 5,
+        "route_index": 5,
+        "point": {
+          "east_m": 11.686232506095664,
+          "north_m": 5.4189599246431435,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 6,
+        "route_index": 6,
+        "point": {
+          "east_m": 11.686232506095678,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 7,
+        "route_index": 7,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": -21.888281271510316,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      },
+      {
+        "agent_id": "uav_02",
+        "semantic_phase": "patrol",
+        "waypoint_index": 8,
+        "route_index": 8,
+        "point": {
+          "east_m": -18.111769432116496,
+          "north_m": 5.41895992464314,
+          "up_m": 8.0
+        },
+        "scan_line_length_m": null,
+        "matched_visit_s": null,
+        "visit_mapping_version": "ordered_route_progress_v1",
+        "minimum_passing_speed_m_s": null,
+        "stopped": null,
+        "evidence_complete": false,
+        "window_s": [
+          23.56192899999587,
+          150.65952159999142
+        ],
+        "stop_intervals_s": [],
+        "visit_issues": [
+          "trajectory_does_not_cover_common_domain"
+        ]
+      }
+    ]
+  },
+  "arrival_lag_s": {
+    "available": true,
+    "records": [
+      {
+        "agent_id": "uav_01",
+        "phase": "p00_approach",
+        "semantic_phase": "approach",
+        "event_s": 13.231172899992089,
+        "arrival_s": 14.9,
+        "lag_s": -1.6688271000079116
+      },
+      {
+        "agent_id": "uav_02",
+        "phase": "p00_approach",
+        "semantic_phase": "approach",
+        "event_s": 22.084276099994895,
+        "arrival_s": 23.5,
+        "lag_s": -1.415723900005105
+      },
+      {
+        "agent_id": "uav_01",
+        "phase": "p01_patrol",
+        "semantic_phase": "patrol",
+        "event_s": 149.064400999996,
+        "arrival_s": 150.6,
+        "lag_s": -1.535599000003998
+      },
+      {
+        "agent_id": "uav_02",
+        "phase": "p01_patrol",
+        "semantic_phase": "patrol",
+        "event_s": 149.68680649999442,
+        "arrival_s": 150.6,
+        "lag_s": -0.9131935000055762
+      }
+    ],
+    "distribution": {
+      "count": 4,
+      "min": -1.6688271000079116,
+      "p10": -1.6288586700067376,
+      "median": -1.4756614500045515,
+      "p90": -1.0639526200054348,
+      "max": -0.9131935000055762
+    },
+    "unavailable_reason": null
+  },
+  "barrier_wait_s": {
+    "available": true,
+    "records": [
+      {
+        "agent_id": "uav_01",
+        "phase": "p00_approach",
+        "semantic_phase": "approach",
+        "value_s": 8.66192899999587,
+        "source": "trajectory_arrival_to_next_release"
+      },
+      {
+        "agent_id": "uav_02",
+        "phase": "p00_approach",
+        "semantic_phase": "approach",
+        "value_s": 0.06192899999587098,
+        "source": "trajectory_arrival_to_next_release"
+      },
+      {
+        "agent_id": "uav_01",
+        "phase": "p01_patrol",
+        "semantic_phase": "patrol",
+        "value_s": 0.059521599991427365,
+        "source": "trajectory_arrival_to_next_release"
+      },
+      {
+        "agent_id": "uav_02",
+        "phase": "p01_patrol",
+        "semantic_phase": "patrol",
+        "value_s": 0.059521599991427365,
+        "source": "trajectory_arrival_to_next_release"
+      }
+    ],
+    "distribution": {
+      "count": 4,
+      "min": 0.059521599991427365,
+      "p10": 0.059521599991427365,
+      "median": 0.06072529999364917,
+      "p90": 6.081928999995872,
+      "max": 8.66192899999587
+    },
+    "unavailable_reason": null
+  },
+  "nominal_timing_deviation_s": {
+    "available": true,
+    "records": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "seq": 2,
+        "route_index": 0,
+        "actual_s": 13.231172899992089,
+        "nominal_s": 11.936122625520403,
+        "deviation_s": 1.295050274471686,
+        "tau_s": 4.203895873204431,
+        "within_tau": true,
+        "release_s": 0.0,
+        "event_s": 13.231172899992089,
+        "event_count": 1
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "seq": 2,
+        "route_index": 0,
+        "actual_s": 22.084276099994895,
+        "nominal_s": 20.519479366022153,
+        "deviation_s": 1.5647967339727415,
+        "tau_s": 4.203895873204431,
+        "within_tau": true,
+        "release_s": 0.0,
+        "event_s": 22.084276099994895,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 2,
+        "route_index": 0,
+        "actual_s": 4.809681799997634,
+        "nominal_s": 3.991290388139708,
+        "deviation_s": 0.8183914118579256,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 28.371610799993505,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 3,
+        "route_index": 1,
+        "actual_s": 19.791894399997545,
+        "nominal_s": 17.644910986216438,
+        "deviation_s": 2.1469834137811077,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 43.353823399993416,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 4,
+        "route_index": 2,
+        "actual_s": 35.96952769999916,
+        "nominal_s": 32.543911955322514,
+        "deviation_s": 3.425615744676648,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 59.53145669999503,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 5,
+        "route_index": 3,
+        "actual_s": 50.867838300000585,
+        "nominal_s": 46.19753255339924,
+        "deviation_s": 4.670305746601343,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 74.42976729999646,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 6,
+        "route_index": 4,
+        "actual_s": 62.986697299995285,
+        "nominal_s": 57.10524313436562,
+        "deviation_s": 5.881454165629663,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 86.54862629999116,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 7,
+        "route_index": 5,
+        "actual_s": 67.0697560999979,
+        "nominal_s": 61.09653352250533,
+        "deviation_s": 5.973222577492571,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 90.63168509999377,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 8,
+        "route_index": 6,
+        "actual_s": 81.95038809999824,
+        "nominal_s": 74.75015412058207,
+        "deviation_s": 7.2002339794161685,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 105.5123170999941,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 9,
+        "route_index": 7,
+        "actual_s": 98.12886579999758,
+        "nominal_s": 89.64915508968815,
+        "deviation_s": 8.479710710309433,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 121.69079479999345,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 10,
+        "route_index": 8,
+        "actual_s": 113.04946650000056,
+        "nominal_s": 103.30277568776488,
+        "deviation_s": 9.746690812235684,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 136.61139549999643,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "seq": 11,
+        "route_index": 9,
+        "actual_s": 125.50247200000013,
+        "nominal_s": 114.21048626873126,
+        "deviation_s": 11.291985731268866,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 149.064400999996,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 2,
+        "route_index": 0,
+        "actual_s": 5.39771219999966,
+        "nominal_s": 3.991290388139708,
+        "deviation_s": 1.4064218118599516,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 28.95964119999553,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 3,
+        "route_index": 1,
+        "actual_s": 20.324374899995746,
+        "nominal_s": 17.644910986216438,
+        "deviation_s": 2.6794639137793084,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 43.88630389999162,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 4,
+        "route_index": 2,
+        "actual_s": 36.518703599998844,
+        "nominal_s": 32.54391195532253,
+        "deviation_s": 3.9747916446763156,
+        "tau_s": 5.0,
+        "within_tau": true,
+        "release_s": 23.56192899999587,
+        "event_s": 60.080632599994715,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 5,
+        "route_index": 3,
+        "actual_s": 51.54961679999542,
+        "nominal_s": 46.197532553399256,
+        "deviation_s": 5.3520842465961636,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 75.11154579999129,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 6,
+        "route_index": 4,
+        "actual_s": 63.517461299998104,
+        "nominal_s": 57.10524313436564,
+        "deviation_s": 6.412218165632467,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 87.07939029999397,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 7,
+        "route_index": 5,
+        "actual_s": 67.73252339999453,
+        "nominal_s": 61.09653352250534,
+        "deviation_s": 6.6359898774891946,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 91.2944523999904,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 8,
+        "route_index": 6,
+        "actual_s": 82.57318989999476,
+        "nominal_s": 74.75015412058207,
+        "deviation_s": 7.823035779412692,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 106.13511889999063,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 9,
+        "route_index": 7,
+        "actual_s": 98.7666814999975,
+        "nominal_s": 89.64915508968815,
+        "deviation_s": 9.117526410309353,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 122.32861049999337,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 10,
+        "route_index": 8,
+        "actual_s": 113.73014529999637,
+        "nominal_s": 103.30277568776488,
+        "deviation_s": 10.427369612231487,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 137.29207429999224,
+        "event_count": 1
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "seq": 11,
+        "route_index": 9,
+        "actual_s": 126.12487749999855,
+        "nominal_s": 114.21048626873126,
+        "deviation_s": 11.914391231267288,
+        "tau_s": 5.0,
+        "within_tau": false,
+        "release_s": 23.56192899999587,
+        "event_s": 149.68680649999442,
+        "event_count": 1
+      }
+    ],
+    "distribution": {
+      "count": 22,
+      "min": 0.8183914118579256,
+      "p10": 1.4222593040712306,
+      "median": 5.927338371561117,
+      "p90": 10.35930173223191,
+      "max": 11.914391231267288
+    },
+    "max_abs_s": 11.914391231267288,
+    "unavailable_reason": null,
+    "assessment": {
+      "records": [
+        {
+          "phase": "p00_approach",
+          "agent_id": "uav_01",
+          "seq": 2,
+          "route_index": 0,
+          "actual_s": 13.231172899992089,
+          "nominal_s": 11.936122625520403,
+          "deviation_s": 1.295050274471686,
+          "tau_s": 4.203895873204431,
+          "within_tau": true,
+          "release_s": 0.0,
+          "event_s": 13.231172899992089,
+          "event_count": 1
+        },
+        {
+          "phase": "p00_approach",
+          "agent_id": "uav_02",
+          "seq": 2,
+          "route_index": 0,
+          "actual_s": 22.084276099994895,
+          "nominal_s": 20.519479366022153,
+          "deviation_s": 1.5647967339727415,
+          "tau_s": 4.203895873204431,
+          "within_tau": true,
+          "release_s": 0.0,
+          "event_s": 22.084276099994895,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 2,
+          "route_index": 0,
+          "actual_s": 4.809681799997634,
+          "nominal_s": 3.991290388139708,
+          "deviation_s": 0.8183914118579256,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 28.371610799993505,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 3,
+          "route_index": 1,
+          "actual_s": 19.791894399997545,
+          "nominal_s": 17.644910986216438,
+          "deviation_s": 2.1469834137811077,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 43.353823399993416,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 4,
+          "route_index": 2,
+          "actual_s": 35.96952769999916,
+          "nominal_s": 32.543911955322514,
+          "deviation_s": 3.425615744676648,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 59.53145669999503,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 5,
+          "route_index": 3,
+          "actual_s": 50.867838300000585,
+          "nominal_s": 46.19753255339924,
+          "deviation_s": 4.670305746601343,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 74.42976729999646,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 6,
+          "route_index": 4,
+          "actual_s": 62.986697299995285,
+          "nominal_s": 57.10524313436562,
+          "deviation_s": 5.881454165629663,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 86.54862629999116,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 7,
+          "route_index": 5,
+          "actual_s": 67.0697560999979,
+          "nominal_s": 61.09653352250533,
+          "deviation_s": 5.973222577492571,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 90.63168509999377,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 8,
+          "route_index": 6,
+          "actual_s": 81.95038809999824,
+          "nominal_s": 74.75015412058207,
+          "deviation_s": 7.2002339794161685,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 105.5123170999941,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 9,
+          "route_index": 7,
+          "actual_s": 98.12886579999758,
+          "nominal_s": 89.64915508968815,
+          "deviation_s": 8.479710710309433,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 121.69079479999345,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 10,
+          "route_index": 8,
+          "actual_s": 113.04946650000056,
+          "nominal_s": 103.30277568776488,
+          "deviation_s": 9.746690812235684,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 136.61139549999643,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_01",
+          "seq": 11,
+          "route_index": 9,
+          "actual_s": 125.50247200000013,
+          "nominal_s": 114.21048626873126,
+          "deviation_s": 11.291985731268866,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 149.064400999996,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 2,
+          "route_index": 0,
+          "actual_s": 5.39771219999966,
+          "nominal_s": 3.991290388139708,
+          "deviation_s": 1.4064218118599516,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 28.95964119999553,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 3,
+          "route_index": 1,
+          "actual_s": 20.324374899995746,
+          "nominal_s": 17.644910986216438,
+          "deviation_s": 2.6794639137793084,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 43.88630389999162,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 4,
+          "route_index": 2,
+          "actual_s": 36.518703599998844,
+          "nominal_s": 32.54391195532253,
+          "deviation_s": 3.9747916446763156,
+          "tau_s": 5.0,
+          "within_tau": true,
+          "release_s": 23.56192899999587,
+          "event_s": 60.080632599994715,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 5,
+          "route_index": 3,
+          "actual_s": 51.54961679999542,
+          "nominal_s": 46.197532553399256,
+          "deviation_s": 5.3520842465961636,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 75.11154579999129,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 6,
+          "route_index": 4,
+          "actual_s": 63.517461299998104,
+          "nominal_s": 57.10524313436564,
+          "deviation_s": 6.412218165632467,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 87.07939029999397,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 7,
+          "route_index": 5,
+          "actual_s": 67.73252339999453,
+          "nominal_s": 61.09653352250534,
+          "deviation_s": 6.6359898774891946,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 91.2944523999904,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 8,
+          "route_index": 6,
+          "actual_s": 82.57318989999476,
+          "nominal_s": 74.75015412058207,
+          "deviation_s": 7.823035779412692,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 106.13511889999063,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 9,
+          "route_index": 7,
+          "actual_s": 98.7666814999975,
+          "nominal_s": 89.64915508968815,
+          "deviation_s": 9.117526410309353,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 122.32861049999337,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 10,
+          "route_index": 8,
+          "actual_s": 113.73014529999637,
+          "nominal_s": 103.30277568776488,
+          "deviation_s": 10.427369612231487,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 137.29207429999224,
+          "event_count": 1
+        },
+        {
+          "phase": "p01_patrol",
+          "agent_id": "uav_02",
+          "seq": 11,
+          "route_index": 9,
+          "actual_s": 126.12487749999855,
+          "nominal_s": 114.21048626873126,
+          "deviation_s": 11.914391231267288,
+          "tau_s": 5.0,
+          "within_tau": false,
+          "release_s": 23.56192899999587,
+          "event_s": 149.68680649999442,
+          "event_count": 1
+        }
+      ],
+      "missing": [],
+      "per_phase": {
+        "p00_approach": {
+          "tau_s": 4.203895873204431,
+          "nominal_duration_s": 21.019479366022153,
+          "release_s": 0.0,
+          "end_s": 23.56192899999587,
+          "expected_waypoints": 2,
+          "paired_waypoints": 2,
+          "complete": true,
+          "max_abs_s": 1.5647967339727415,
+          "within_tau": true
+        },
+        "p01_patrol": {
+          "tau_s": 5.0,
+          "nominal_duration_s": 114.71048626873126,
+          "release_s": 23.56192899999587,
+          "end_s": 150.65952159999142,
+          "expected_waypoints": 20,
+          "paired_waypoints": 20,
+          "complete": true,
+          "max_abs_s": 11.914391231267288,
+          "within_tau": false
+        }
+      },
+      "expected_waypoints": 22,
+      "paired_waypoints": 22,
+      "complete": true,
+      "within_tau": false,
+      "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+      "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+    }
+  },
+  "ordered_visit_attribution": {
+    "version": "ordered_stop_attribution_v1",
+    "time_tolerance_s": 2,
+    "distance_tolerance_m": 1,
+    "distance_basis": "horizontal_EN",
+    "phase_evidence": {
+      "uav_01:p01_patrol": {
+        "evidence_complete": false,
+        "issues": [
+          "trajectory_does_not_cover_common_domain"
+        ],
+        "matched_nodes": 1
+      },
+      "uav_02:p01_patrol": {
+        "evidence_complete": false,
+        "issues": [
+          "trajectory_does_not_cover_common_domain"
+        ],
+        "matched_nodes": 1
+      }
+    }
+  },
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1"
+}

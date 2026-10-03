@@ -1,0 +1,4054 @@
+{
+  "route_progress_version": "ordered_route_progress_v1",
+  "ac4_timing_version": "ac4_relative_progress_timing_v3",
+  "execution_artifacts_version": "execution_artifacts_v2",
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1",
+  "channels": {
+    "truth": {
+      "version": "ac4_relative_progress_timing_v3",
+      "mapping_version": "ordered_route_progress_v1",
+      "event_mapping_version": "raw_waypoint_event_piecewise_linear_v1",
+      "interval_version": "simultaneous_terminal_interval_min_span_v1",
+      "channel": "truth",
+      "per_phase": {
+        "p00_approach": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              22.024916300004406
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.8932734211676134,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 21.9,
+                    "nominal_s": 18.866314008111267,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.2032621300761766,
+                    "closest_time_interval_s": [
+                      21.9,
+                      21.9
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      22.024916300004406
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 18.866314008111267,
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "actual_s": 21.9,
+                    "match_distance_m": 0.2032621300761766,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      21.9
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      18.866314008111267
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.00145689391861481,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 222,
+                  "witness": {
+                    "actual_s": 22.024916300004406,
+                    "observed_progress_m": 37.65196059490358,
+                    "previous_max_progress_m": 37.65341748882219,
+                    "route_distance_m": 0.19296145944298893
+                  }
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 15.32785337002152,
+                    "nominal_s": 12.545744776391098,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.1900129610437278,
+                    "closest_time_interval_s": [
+                      15.32785337002152,
+                      15.32785337002152
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      22.024916300004406
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 15.6,
+                "supplied_terminal_hover_start_s": 15.6,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 12.545744776391098,
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "actual_s": 15.32785337002152,
+                    "match_distance_m": 0.1900129610437278,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      15.32785337002152
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      12.545744776391098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.13648137755780354,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 222,
+                  "witness": {
+                    "actual_s": 18.9,
+                    "observed_progress_m": 24.955008175224393,
+                    "previous_max_progress_m": 25.091489552782196,
+                    "route_distance_m": 0.18108249686173916
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 0.8932734211676134,
+              "selected_nominal_s": {
+                "uav_01": 13.439018197558712,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  13.439018197558712,
+                  13.439018197558712
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 15.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              15.32785337002152,
+              15.6,
+              21.9,
+              22.024916300004406
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              22.024916300004406
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.0120304001500493,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 20.21699709999666,
+                    "nominal_s": 18.866314008111267,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 13.852831099997275,
+                    "nominal_s": 12.545744776391098,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 15.6,
+                "supplied_terminal_hover_start_s": 15.6
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 2.0120304001500493,
+              "selected_nominal_s": {
+                "uav_01": 14.557775176541147,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  14.557775176541147,
+                  14.557775176541147
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 15.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              13.852831099997275,
+              15.6,
+              20.21699709999666,
+              22.024916300004406
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": 0,
+            "uav_02": 0
+          }
+        },
+        "p01_patrol": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              22.024916300004406,
+              148.39904129999923
+            ],
+            "nominal_end_s": 115.27130742574441,
+            "tau_s": 5.0,
+            "complete": false,
+            "within_tau": null,
+            "D_s": null,
+            "issues": [
+              "uav_01:incomplete_evidence",
+              "uav_02:incomplete_evidence"
+            ],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 26.0855777506584,
+                    "nominal_s": 1.2823540672287805,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.4734807867596574,
+                    "cumulative_arc_length_m": 2.564708134457561,
+                    "closest_time_interval_s": [
+                      22.024916300004406,
+                      28.06738642699071
+                    ],
+                    "search_domain_s": [
+                      22.024916300004406,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 42.629846481310764,
+                    "nominal_s": 16.664401093858714,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.27744448364445995,
+                    "cumulative_arc_length_m": 33.32880218771743,
+                    "closest_time_interval_s": [
+                      40.85554659086049,
+                      44.69055105169533
+                    ],
+                    "search_domain_s": [
+                      26.0855777506584,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 56.95274972109975,
+                    "nominal_s": 29.975180923664876,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.4259823234920955,
+                    "cumulative_arc_length_m": 59.95036184732975,
+                    "closest_time_interval_s": [
+                      55.29227039046957,
+                      58.973148877869406
+                    ],
+                    "search_domain_s": [
+                      42.629846481310764,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 73.34008984280881,
+                    "nominal_s": 45.35722795029481,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.4378256520659029,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "closest_time_interval_s": [
+                      71.63063587376985,
+                      75.40098696075601
+                    ],
+                    "search_domain_s": [
+                      56.95274972109975,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 86.15538822417673,
+                    "nominal_s": 57.3856537128722,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.20684632903536593,
+                    "cumulative_arc_length_m": 114.7713074257444,
+                    "closest_time_interval_s": [
+                      84.63764538859307,
+                      88.28152075323875
+                    ],
+                    "search_domain_s": [
+                      73.34008984280881,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 58.66800778010098,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 2.5238095954123905,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "closest_time_interval_s": [
+                      147.76664045991356,
+                      148.39904129999923
+                    ],
+                    "search_domain_s": [
+                      86.15538822417673,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 1.2823540672287805,
+                    "cumulative_arc_length_m": 2.564708134457561,
+                    "actual_s": 26.0855777506584,
+                    "match_distance_m": 0.4734807867596574,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      22.024916300004406,
+                      28.06738642699071
+                    ],
+                    "search_after_s": 22.024916300004406
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 16.664401093858714,
+                    "cumulative_arc_length_m": 33.32880218771743,
+                    "actual_s": 42.629846481310764,
+                    "match_distance_m": 0.27744448364445995,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      40.85554659086049,
+                      44.69055105169533
+                    ],
+                    "search_after_s": 26.0855777506584
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 29.975180923664876,
+                    "cumulative_arc_length_m": 59.95036184732975,
+                    "actual_s": 56.95274972109975,
+                    "match_distance_m": 0.4259823234920955,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      55.29227039046957,
+                      58.973148877869406
+                    ],
+                    "search_after_s": 42.629846481310764
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 45.35722795029481,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "actual_s": 73.34008984280881,
+                    "match_distance_m": 0.4378256520659029,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      71.63063587376985,
+                      75.40098696075601
+                    ],
+                    "search_after_s": 56.95274972109975
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.3856537128722,
+                    "cumulative_arc_length_m": 114.7713074257444,
+                    "actual_s": 86.15538822417673,
+                    "match_distance_m": 0.20684632903536593,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      84.63764538859307,
+                      88.28152075323875
+                    ],
+                    "search_after_s": 73.34008984280881
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 58.66800778010098,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "actual_s": 148.39904129999923,
+                    "match_distance_m": 2.5238095954123905,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      147.76664045991356,
+                      148.39904129999923
+                    ],
+                    "search_after_s": 86.15538822417673
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.05005480673091,
+                    "cumulative_arc_length_m": 148.10010961346183,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "missing",
+                    "visit_ordinal": 2,
+                    "search_after_s": 148.39904129999923,
+                    "visit_count": 2
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 87.36083463653708,
+                    "cumulative_arc_length_m": 174.72166927307416,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 102.742881663167,
+                    "cumulative_arc_length_m": 205.485763326334,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.77130742574438,
+                    "cumulative_arc_length_m": 229.54261485148876,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      22.024916300004406,
+                      26.0855777506584
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      1.2823540672287805
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      26.0855777506584,
+                      42.629846481310764
+                    ],
+                    "nominal_interval_s": [
+                      1.2823540672287805,
+                      16.664401093858714
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      42.629846481310764,
+                      56.95274972109975
+                    ],
+                    "nominal_interval_s": [
+                      16.664401093858714,
+                      29.975180923664876
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      56.95274972109975,
+                      73.34008984280881
+                    ],
+                    "nominal_interval_s": [
+                      29.975180923664876,
+                      45.35722795029481
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      73.34008984280881,
+                      86.15538822417673
+                    ],
+                    "nominal_interval_s": [
+                      45.35722795029481,
+                      57.3856537128722
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      86.15538822417673,
+                      148.39904129999923
+                    ],
+                    "nominal_interval_s": [
+                      57.3856537128722,
+                      58.66800778010098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": {
+                  "detected": true,
+                  "maximum_reversal_m": 26.547001437160148,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 830,
+                  "witness": {
+                    "actual_s": 133.4,
+                    "observed_progress_m": 90.78901412304181,
+                    "previous_max_progress_m": 117.33601556020196,
+                    "route_distance_m": 2.8952217624581427
+                  }
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 25.16367496719361,
+                    "nominal_s": 1.2823540672287734,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.6956753470645143,
+                    "cumulative_arc_length_m": 2.564708134457547,
+                    "closest_time_interval_s": [
+                      22.024916300004406,
+                      27.298122236239454
+                    ],
+                    "search_domain_s": [
+                      22.024916300004406,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 41.67886666057371,
+                    "nominal_s": 16.66440109385871,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.4670696055348101,
+                    "cumulative_arc_length_m": 33.32880218771742,
+                    "closest_time_interval_s": [
+                      40.07109443946431,
+                      43.7643027840449
+                    ],
+                    "search_domain_s": [
+                      25.16367496719361,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 56.0,
+                    "nominal_s": 29.97518092366488,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.25984964825716494,
+                    "cumulative_arc_length_m": 59.95036184732976,
+                    "closest_time_interval_s": [
+                      54.2798432887384,
+                      58.135764259325825
+                    ],
+                    "search_domain_s": [
+                      41.67886666057371,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 72.67852817542995,
+                    "nominal_s": 45.35722795029481,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.22454887067658683,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "closest_time_interval_s": [
+                      70.83175524044816,
+                      74.70284801224824
+                    ],
+                    "search_domain_s": [
+                      56.0,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 85.4889636704668,
+                    "nominal_s": 57.38565371287221,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.19919011479052853,
+                    "cumulative_arc_length_m": 114.77130742574442,
+                    "closest_time_interval_s": [
+                      84.01711993604644,
+                      87.95159664591112
+                    ],
+                    "search_domain_s": [
+                      72.67852817542995,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 58.66800778010098,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 2.023236377067412,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "closest_time_interval_s": [
+                      147.03482851835778,
+                      148.39904129999923
+                    ],
+                    "search_domain_s": [
+                      85.4889636704668,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 1.2823540672287734,
+                    "cumulative_arc_length_m": 2.564708134457547,
+                    "actual_s": 25.16367496719361,
+                    "match_distance_m": 0.6956753470645143,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      22.024916300004406,
+                      27.298122236239454
+                    ],
+                    "search_after_s": 22.024916300004406
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 16.66440109385871,
+                    "cumulative_arc_length_m": 33.32880218771742,
+                    "actual_s": 41.67886666057371,
+                    "match_distance_m": 0.4670696055348101,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      40.07109443946431,
+                      43.7643027840449
+                    ],
+                    "search_after_s": 25.16367496719361
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 29.97518092366488,
+                    "cumulative_arc_length_m": 59.95036184732976,
+                    "actual_s": 56.0,
+                    "match_distance_m": 0.25984964825716494,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      54.2798432887384,
+                      58.135764259325825
+                    ],
+                    "search_after_s": 41.67886666057371
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 45.35722795029481,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "actual_s": 72.67852817542995,
+                    "match_distance_m": 0.22454887067658683,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      70.83175524044816,
+                      74.70284801224824
+                    ],
+                    "search_after_s": 56.0
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.38565371287221,
+                    "cumulative_arc_length_m": 114.77130742574442,
+                    "actual_s": 85.4889636704668,
+                    "match_distance_m": 0.19919011479052853,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      84.01711993604644,
+                      87.95159664591112
+                    ],
+                    "search_after_s": 72.67852817542995
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 58.66800778010098,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "actual_s": 148.39904129999923,
+                    "match_distance_m": 2.023236377067412,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      147.03482851835778,
+                      148.39904129999923
+                    ],
+                    "search_after_s": 85.4889636704668
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.05005480673091,
+                    "cumulative_arc_length_m": 148.10010961346183,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "missing",
+                    "visit_ordinal": 2,
+                    "search_after_s": 148.39904129999923,
+                    "visit_count": 2
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 87.36083463653708,
+                    "cumulative_arc_length_m": 174.72166927307416,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 102.74288166316701,
+                    "cumulative_arc_length_m": 205.48576332633402,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.77130742574441,
+                    "cumulative_arc_length_m": 229.54261485148882,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      22.024916300004406,
+                      25.16367496719361
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      1.2823540672287734
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      25.16367496719361,
+                      41.67886666057371
+                    ],
+                    "nominal_interval_s": [
+                      1.2823540672287734,
+                      16.66440109385871
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      41.67886666057371,
+                      56.0
+                    ],
+                    "nominal_interval_s": [
+                      16.66440109385871,
+                      29.97518092366488
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      56.0,
+                      72.67852817542995
+                    ],
+                    "nominal_interval_s": [
+                      29.97518092366488,
+                      45.35722795029481
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      72.67852817542995,
+                      85.4889636704668
+                    ],
+                    "nominal_interval_s": [
+                      45.35722795029481,
+                      57.38565371287221
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      85.4889636704668,
+                      148.39904129999923
+                    ],
+                    "nominal_interval_s": [
+                      57.38565371287221,
+                      58.66800778010098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": {
+                  "detected": true,
+                  "maximum_reversal_m": 26.62155965961233,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 830,
+                  "witness": {
+                    "actual_s": 132.6,
+                    "observed_progress_m": 90.71445590058963,
+                    "previous_max_progress_m": 117.33601556020196,
+                    "route_distance_m": 2.9035097695911394
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02"
+            ]
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              22.024916300004406,
+              148.39904129999923
+            ],
+            "nominal_end_s": 115.27130742574441,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.7833042555248753,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 24.629845899995416,
+                    "nominal_s": 1.2823540672287805,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 41.18587750000006,
+                    "nominal_s": 16.664401093858714,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 55.56460949999746,
+                    "nominal_s": 29.975180923664876,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 72.03087080000114,
+                    "nominal_s": 45.35722795029481,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 84.95016809999652,
+                    "nominal_s": 57.3856537128722,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 86.40156579999893,
+                    "nominal_s": 58.66800778010098,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 102.90466590000142,
+                    "nominal_s": 74.05005480673091,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 117.21964379999554,
+                    "nominal_s": 87.36083463653708,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 133.77447259999462,
+                    "nominal_s": 102.742881663167,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 147.02485190000152,
+                    "nominal_s": 114.77130742574438,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 23.86565949999931,
+                    "nominal_s": 1.2823540672287734,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 40.42235459999938,
+                    "nominal_s": 16.66440109385871,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 54.72519779999857,
+                    "nominal_s": 29.97518092366488,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.20904829999927,
+                    "nominal_s": 45.35722795029481,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 84.48405970000022,
+                    "nominal_s": 57.38565371287221,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 85.57363039999473,
+                    "nominal_s": 58.66800778010098,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 102.07722739999735,
+                    "nominal_s": 74.05005480673091,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 116.43892639999831,
+                    "nominal_s": 87.36083463653708,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 132.99176769999758,
+                    "nominal_s": 102.74288166316701,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 146.54165959999955,
+                    "nominal_s": 114.77130742574441,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 0.7833042555248753,
+              "selected_nominal_s": {
+                "uav_01": 29.975180923664876,
+                "uav_02": 30.75848517918975
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  29.975180923664876,
+                  29.975180923664876
+                ],
+                "uav_02": [
+                  30.75848517918975,
+                  30.75848517918975
+                ]
+              },
+              "actual_s": 55.56460949999746,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 43,
+            "knots_s": [
+              22.024916300004406,
+              23.86565949999931,
+              24.629845899995416,
+              40.42235459999938,
+              41.18587750000006,
+              54.72519779999857,
+              55.56460949999746,
+              71.20904829999927,
+              72.03087080000114,
+              84.48405970000022,
+              84.95016809999652,
+              85.57363039999473,
+              86.40156579999893,
+              102.07722739999735,
+              102.90466590000142,
+              116.43892639999831,
+              117.21964379999554,
+              132.99176769999758,
+              133.77447259999462,
+              146.54165959999955,
+              147.02485190000152,
+              148.39904129999923
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": false,
+          "within_tau": null,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": null,
+          "issues": [
+            "uav_01:missing_route_node:route_index=6",
+            "uav_01:backtracking",
+            "uav_02:missing_route_node:route_index=6",
+            "uav_02:backtracking"
+          ],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": null,
+            "uav_02": null
+          }
+        },
+        "p02_return": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              148.39904129999923,
+              168.95474749999994
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.3237212051107186,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 168.95474749999994,
+                    "nominal_s": 18.866314008111267,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.28558970263889516,
+                    "closest_time_interval_s": [
+                      168.95474749999994,
+                      168.95474749999994
+                    ],
+                    "search_domain_s": [
+                      148.39904129999923,
+                      168.95474749999994
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 18.866314008111267,
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "actual_s": 168.95474749999994,
+                    "match_distance_m": 0.28558970263889516,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      148.39904129999923,
+                      168.95474749999994
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      18.866314008111267
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 208,
+                  "witness": null
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 163.72401291534948,
+                    "nominal_s": 12.545744776391098,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.19351703585867178,
+                    "closest_time_interval_s": [
+                      163.72401291534948,
+                      163.72401291534948
+                    ],
+                    "search_domain_s": [
+                      148.39904129999923,
+                      168.95474749999994
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 164.6,
+                "supplied_terminal_hover_start_s": 164.6,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 12.545744776391098,
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "actual_s": 163.72401291534948,
+                    "match_distance_m": 0.19351703585867178,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      148.39904129999923,
+                      163.72401291534948
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      12.545744776391098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.20458488532893523,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 208,
+                  "witness": {
+                    "actual_s": 149.6,
+                    "observed_progress_m": 0.15507491753082717,
+                    "previous_max_progress_m": 0.3596598028597624,
+                    "route_distance_m": 0.21532146446335634
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 2.3237212051107186,
+              "selected_nominal_s": {
+                "uav_01": 14.869465981501817,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  14.869465981501817,
+                  14.869465981501817
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 164.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 7,
+            "knots_s": [
+              148.39904129999923,
+              163.72401291534948,
+              164.6,
+              168.95474749999994
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              148.39904129999923,
+              168.95474749999994
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.8362592081680837,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 168.2698184999972,
+                    "nominal_s": 18.866314008111267,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 162.9042674999946,
+                    "nominal_s": 12.545744776391098,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 164.6,
+                "supplied_terminal_hover_start_s": 164.6
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 2.8362592081680837,
+              "selected_nominal_s": {
+                "uav_01": 15.382003984559182,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  15.382003984559182,
+                  15.382003984559182
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 164.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              148.39904129999923,
+              162.9042674999946,
+              164.6,
+              168.2698184999972,
+              168.95474749999994
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": 0,
+            "uav_02": 0
+          }
+        }
+      },
+      "per_agent_laps_observed": {
+        "p00_approach": {
+          "uav_01": 0,
+          "uav_02": 0
+        },
+        "p01_patrol": {
+          "uav_01": null,
+          "uav_02": null
+        },
+        "p02_return": {
+          "uav_01": 0,
+          "uav_02": 0
+        }
+      },
+      "complete": false,
+      "within_tau": null,
+      "crosscheck_within_tau": true,
+      "issues": [
+        "p01_patrol:uav_01:missing_route_node:route_index=6",
+        "p01_patrol:uav_01:backtracking",
+        "p01_patrol:uav_02:missing_route_node:route_index=6",
+        "p01_patrol:uav_02:backtracking"
+      ],
+      "v1_diagnostic": {
+        "records": [
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 20.21699709999666,
+            "nominal_s": 18.866314008111267,
+            "deviation_s": 1.3506830918853936,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 20.21699709999666,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 13.852831099997275,
+            "nominal_s": 12.545744776391098,
+            "deviation_s": 1.3070863236061765,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 13.852831099997275,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 2.60492959999101,
+            "nominal_s": 1.2823540672287805,
+            "deviation_s": 1.3225755327622295,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 24.629845899995416,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 19.160961199995654,
+            "nominal_s": 16.664401093858714,
+            "deviation_s": 2.49656010613694,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 41.18587750000006,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 33.53969319999305,
+            "nominal_s": 29.975180923664876,
+            "deviation_s": 3.564512276328177,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 55.56460949999746,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 50.00595449999673,
+            "nominal_s": 45.35722795029481,
+            "deviation_s": 4.6487265497019195,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 72.03087080000114,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 62.92525179999211,
+            "nominal_s": 57.3856537128722,
+            "deviation_s": 5.539598087119913,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 84.95016809999652,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 64.37664949999453,
+            "nominal_s": 58.66800778010098,
+            "deviation_s": 5.708641719893549,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 86.40156579999893,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 80.87974959999701,
+            "nominal_s": 74.05005480673091,
+            "deviation_s": 6.8296947932661,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 102.90466590000142,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 95.19472749999113,
+            "nominal_s": 87.36083463653708,
+            "deviation_s": 7.833892863454054,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 117.21964379999554,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 111.74955629999022,
+            "nominal_s": 102.742881663167,
+            "deviation_s": 9.00667463682322,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 133.77447259999462,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 124.99993559999712,
+            "nominal_s": 114.77130742574438,
+            "deviation_s": 10.228628174252734,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 147.02485190000152,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 1.840743199994904,
+            "nominal_s": 1.2823540672287734,
+            "deviation_s": 0.5583891327661306,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 23.86565949999931,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 18.397438299994974,
+            "nominal_s": 16.66440109385871,
+            "deviation_s": 1.733037206136263,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 40.42235459999938,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 32.70028149999416,
+            "nominal_s": 29.97518092366488,
+            "deviation_s": 2.7251005763292824,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 54.72519779999857,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 49.18413199999486,
+            "nominal_s": 45.35722795029481,
+            "deviation_s": 3.8269040497000475,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 71.20904829999927,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 62.45914339999581,
+            "nominal_s": 57.38565371287221,
+            "deviation_s": 5.0734896871235975,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 84.48405970000022,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 63.54871409999032,
+            "nominal_s": 58.66800778010098,
+            "deviation_s": 4.880706319889342,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 85.57363039999473,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 80.05231109999295,
+            "nominal_s": 74.05005480673091,
+            "deviation_s": 6.002256293262036,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 102.07722739999735,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 94.4140100999939,
+            "nominal_s": 87.36083463653708,
+            "deviation_s": 7.0531754634568244,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 116.43892639999831,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 110.96685139999317,
+            "nominal_s": 102.74288166316701,
+            "deviation_s": 8.223969736826163,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 132.99176769999758,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 124.51674329999514,
+            "nominal_s": 114.77130742574441,
+            "deviation_s": 9.745435874250731,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 146.54165959999955,
+            "event_count": 1
+          },
+          {
+            "phase": "p02_return",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.870777199997974,
+            "nominal_s": 18.866314008111267,
+            "deviation_s": 1.0044631918867069,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 148.39904129999923,
+            "event_s": 168.2698184999972,
+            "event_count": 1
+          },
+          {
+            "phase": "p02_return",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 14.505226199995377,
+            "nominal_s": 12.545744776391098,
+            "deviation_s": 1.959481423604279,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 148.39904129999923,
+            "event_s": 162.9042674999946,
+            "event_count": 1
+          }
+        ],
+        "missing": [],
+        "per_phase": {
+          "p00_approach": {
+            "tau_s": 3.8732628016222534,
+            "nominal_duration_s": 19.366314008111267,
+            "release_s": 0.0,
+            "end_s": 22.024916300004406,
+            "expected_waypoints": 2,
+            "paired_waypoints": 2,
+            "complete": true,
+            "max_abs_s": 1.3506830918853936,
+            "within_tau": true
+          },
+          "p01_patrol": {
+            "tau_s": 5.0,
+            "nominal_duration_s": 115.27130742574441,
+            "release_s": 22.024916300004406,
+            "end_s": 148.39904129999923,
+            "expected_waypoints": 20,
+            "paired_waypoints": 20,
+            "complete": true,
+            "max_abs_s": 10.228628174252734,
+            "within_tau": false
+          },
+          "p02_return": {
+            "tau_s": 3.8732628016222534,
+            "nominal_duration_s": 19.366314008111267,
+            "release_s": 148.39904129999923,
+            "end_s": 168.95474749999994,
+            "expected_waypoints": 2,
+            "paired_waypoints": 2,
+            "complete": true,
+            "max_abs_s": 1.959481423604279,
+            "within_tau": true
+          }
+        },
+        "expected_waypoints": 24,
+        "paired_waypoints": 24,
+        "complete": true,
+        "within_tau": false,
+        "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+      },
+      "v1_is_gate": false,
+      "criterion": "per semantic phase max_t min_simultaneous_fleet_span(sigma_i(t)) <= tau",
+      "no_hover_policy": "terminal singleton: conservative upper bound, no unproved interval relaxation"
+    },
+    "observation": {
+      "version": "ac4_relative_progress_timing_v3",
+      "mapping_version": "ordered_route_progress_v1",
+      "event_mapping_version": "raw_waypoint_event_piecewise_linear_v1",
+      "interval_version": "simultaneous_terminal_interval_min_span_v1",
+      "channel": "observation",
+      "per_phase": {
+        "p00_approach": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              22.024916300004406
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.8170528169181175,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 18.866314008111267,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.14177982767543681,
+                    "closest_time_interval_s": [
+                      22.024916300004406,
+                      22.024916300004406
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      22.024916300004406
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 18.866314008111267,
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "actual_s": 22.024916300004406,
+                    "match_distance_m": 0.14177982767543681,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      22.024916300004406
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      18.866314008111267
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 222,
+                  "witness": null
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 15.482035357685431,
+                    "nominal_s": 12.545744776391098,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.02566147290843814,
+                    "closest_time_interval_s": [
+                      15.482035357685431,
+                      15.482035357685431
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      22.024916300004406
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 15.6,
+                "supplied_terminal_hover_start_s": 15.6,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 12.545744776391098,
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "actual_s": 15.482035357685431,
+                    "match_distance_m": 0.02566147290843814,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      15.482035357685431
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      12.545744776391098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.1575664264185157,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 222,
+                  "witness": {
+                    "actual_s": 19.2,
+                    "observed_progress_m": 24.93392312636368,
+                    "previous_max_progress_m": 25.091489552782196,
+                    "route_distance_m": 0.017536612702324053
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 0.8170528169181175,
+              "selected_nominal_s": {
+                "uav_01": 13.362797593309216,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  13.362797593309216,
+                  13.362797593309216
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 15.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 7,
+            "knots_s": [
+              0.0,
+              15.482035357685431,
+              15.6,
+              22.024916300004406
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              22.024916300004406
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.0120304001500493,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 20.21699709999666,
+                    "nominal_s": 18.866314008111267,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 13.852831099997275,
+                    "nominal_s": 12.545744776391098,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 15.6,
+                "supplied_terminal_hover_start_s": 15.6
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 2.0120304001500493,
+              "selected_nominal_s": {
+                "uav_01": 14.557775176541147,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  14.557775176541147,
+                  14.557775176541147
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 15.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              13.852831099997275,
+              15.6,
+              20.21699709999666,
+              22.024916300004406
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": 0,
+            "uav_02": 0
+          }
+        },
+        "p01_patrol": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              22.024916300004406,
+              148.39904129999923
+            ],
+            "nominal_end_s": 115.27130742574441,
+            "tau_s": 5.0,
+            "complete": false,
+            "within_tau": null,
+            "D_s": null,
+            "issues": [
+              "uav_01:incomplete_evidence",
+              "uav_02:incomplete_evidence"
+            ],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 26.103252236102705,
+                    "nominal_s": 1.2823540672287805,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.5226818284715784,
+                    "cumulative_arc_length_m": 2.564708134457561,
+                    "closest_time_interval_s": [
+                      22.024916300004406,
+                      28.109069805380027
+                    ],
+                    "search_domain_s": [
+                      22.024916300004406,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 42.7,
+                    "nominal_s": 16.664401093858714,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.30063440738709896,
+                    "cumulative_arc_length_m": 33.32880218771743,
+                    "closest_time_interval_s": [
+                      40.92447578470407,
+                      44.72681268293027
+                    ],
+                    "search_domain_s": [
+                      26.103252236102705,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 57.0,
+                    "nominal_s": 29.975180923664876,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.48035146809114637,
+                    "cumulative_arc_length_m": 59.95036184732975,
+                    "closest_time_interval_s": [
+                      55.35694122775518,
+                      59.01415671373469
+                    ],
+                    "search_domain_s": [
+                      42.7,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 73.4,
+                    "nominal_s": 45.35722795029481,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.50309317690136,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "closest_time_interval_s": [
+                      71.7016056917949,
+                      75.44755927052346
+                    ],
+                    "search_domain_s": [
+                      57.0,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 86.2410156238324,
+                    "nominal_s": 57.3856537128722,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.02859083550026051,
+                    "cumulative_arc_length_m": 114.7713074257444,
+                    "closest_time_interval_s": [
+                      84.73256895953804,
+                      88.49512487590707
+                    ],
+                    "search_domain_s": [
+                      73.4,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 58.66800778010098,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 2.689204779320829,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "closest_time_interval_s": [
+                      147.94593688054496,
+                      148.39904129999923
+                    ],
+                    "search_domain_s": [
+                      86.2410156238324,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 1.2823540672287805,
+                    "cumulative_arc_length_m": 2.564708134457561,
+                    "actual_s": 26.103252236102705,
+                    "match_distance_m": 0.5226818284715784,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      22.024916300004406,
+                      28.109069805380027
+                    ],
+                    "search_after_s": 22.024916300004406
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 16.664401093858714,
+                    "cumulative_arc_length_m": 33.32880218771743,
+                    "actual_s": 42.7,
+                    "match_distance_m": 0.30063440738709896,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      40.92447578470407,
+                      44.72681268293027
+                    ],
+                    "search_after_s": 26.103252236102705
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 29.975180923664876,
+                    "cumulative_arc_length_m": 59.95036184732975,
+                    "actual_s": 57.0,
+                    "match_distance_m": 0.48035146809114637,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      55.35694122775518,
+                      59.01415671373469
+                    ],
+                    "search_after_s": 42.7
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 45.35722795029481,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "actual_s": 73.4,
+                    "match_distance_m": 0.50309317690136,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      71.7016056917949,
+                      75.44755927052346
+                    ],
+                    "search_after_s": 57.0
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.3856537128722,
+                    "cumulative_arc_length_m": 114.7713074257444,
+                    "actual_s": 86.2410156238324,
+                    "match_distance_m": 0.02859083550026051,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      84.73256895953804,
+                      88.49512487590707
+                    ],
+                    "search_after_s": 73.4
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 58.66800778010098,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "actual_s": 148.39904129999923,
+                    "match_distance_m": 2.689204779320829,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      147.94593688054496,
+                      148.39904129999923
+                    ],
+                    "search_after_s": 86.2410156238324
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.05005480673091,
+                    "cumulative_arc_length_m": 148.10010961346183,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "missing",
+                    "visit_ordinal": 2,
+                    "search_after_s": 148.39904129999923,
+                    "visit_count": 2
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 87.36083463653708,
+                    "cumulative_arc_length_m": 174.72166927307416,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 102.742881663167,
+                    "cumulative_arc_length_m": 205.485763326334,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.77130742574438,
+                    "cumulative_arc_length_m": 229.54261485148876,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      22.024916300004406,
+                      26.103252236102705
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      1.2823540672287805
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      26.103252236102705,
+                      42.7
+                    ],
+                    "nominal_interval_s": [
+                      1.2823540672287805,
+                      16.664401093858714
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      42.7,
+                      57.0
+                    ],
+                    "nominal_interval_s": [
+                      16.664401093858714,
+                      29.975180923664876
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      57.0,
+                      73.4
+                    ],
+                    "nominal_interval_s": [
+                      29.975180923664876,
+                      45.35722795029481
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      73.4,
+                      86.2410156238324
+                    ],
+                    "nominal_interval_s": [
+                      45.35722795029481,
+                      57.3856537128722
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      86.2410156238324,
+                      148.39904129999923
+                    ],
+                    "nominal_interval_s": [
+                      57.3856537128722,
+                      58.66800778010098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": {
+                  "detected": true,
+                  "maximum_reversal_m": 26.489109668333086,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 829,
+                  "witness": {
+                    "actual_s": 133.5,
+                    "observed_progress_m": 90.84690589186887,
+                    "previous_max_progress_m": 117.33601556020196,
+                    "route_distance_m": 2.8842901549328213
+                  }
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 25.210255932106694,
+                    "nominal_s": 1.2823540672287734,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.669589303563254,
+                    "cumulative_arc_length_m": 2.564708134457547,
+                    "closest_time_interval_s": [
+                      22.024916300004406,
+                      27.343131898975944
+                    ],
+                    "search_domain_s": [
+                      22.024916300004406,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 41.729833758882485,
+                    "nominal_s": 16.66440109385871,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.5130307705185925,
+                    "cumulative_arc_length_m": 33.32880218771742,
+                    "closest_time_interval_s": [
+                      40.13668142563053,
+                      43.80591019457702
+                    ],
+                    "search_domain_s": [
+                      25.210255932106694,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 56.063647402223694,
+                    "nominal_s": 29.97518092366488,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.2988145981013657,
+                    "cumulative_arc_length_m": 59.95036184732976,
+                    "closest_time_interval_s": [
+                      54.36214357024913,
+                      58.17827685299412
+                    ],
+                    "search_domain_s": [
+                      41.729833758882485,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 72.74301609075596,
+                    "nominal_s": 45.35722795029481,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.2648016642430432,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "closest_time_interval_s": [
+                      70.9039022024458,
+                      74.73428187207826
+                    ],
+                    "search_domain_s": [
+                      56.063647402223694,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 85.5672575703203,
+                    "nominal_s": 57.38565371287221,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.020473483303250266,
+                    "cumulative_arc_length_m": 114.77130742574442,
+                    "closest_time_interval_s": [
+                      84.0870465558725,
+                      88.04861794830359
+                    ],
+                    "search_domain_s": [
+                      72.74301609075596,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 58.66800778010098,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 2.1215798692671792,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "closest_time_interval_s": [
+                      147.15182076296497,
+                      148.39904129999923
+                    ],
+                    "search_domain_s": [
+                      85.5672575703203,
+                      148.39904129999923
+                    ],
+                    "source": "ordered_route_progress_v1",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": 148.39904129999923,
+                "supplied_terminal_hover_start_s": 148.1,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 1.2823540672287734,
+                    "cumulative_arc_length_m": 2.564708134457547,
+                    "actual_s": 25.210255932106694,
+                    "match_distance_m": 0.669589303563254,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      22.024916300004406,
+                      27.343131898975944
+                    ],
+                    "search_after_s": 22.024916300004406
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 16.66440109385871,
+                    "cumulative_arc_length_m": 33.32880218771742,
+                    "actual_s": 41.729833758882485,
+                    "match_distance_m": 0.5130307705185925,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      40.13668142563053,
+                      43.80591019457702
+                    ],
+                    "search_after_s": 25.210255932106694
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 29.97518092366488,
+                    "cumulative_arc_length_m": 59.95036184732976,
+                    "actual_s": 56.063647402223694,
+                    "match_distance_m": 0.2988145981013657,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      54.36214357024913,
+                      58.17827685299412
+                    ],
+                    "search_after_s": 41.729833758882485
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 45.35722795029481,
+                    "cumulative_arc_length_m": 90.71445590058963,
+                    "actual_s": 72.74301609075596,
+                    "match_distance_m": 0.2648016642430432,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      70.9039022024458,
+                      74.73428187207826
+                    ],
+                    "search_after_s": 56.063647402223694
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.38565371287221,
+                    "cumulative_arc_length_m": 114.77130742574442,
+                    "actual_s": 85.5672575703203,
+                    "match_distance_m": 0.020473483303250266,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      84.0870465558725,
+                      88.04861794830359
+                    ],
+                    "search_after_s": 72.74301609075596
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 58.66800778010098,
+                    "cumulative_arc_length_m": 117.33601556020196,
+                    "actual_s": 148.39904129999923,
+                    "match_distance_m": 2.1215798692671792,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      147.15182076296497,
+                      148.39904129999923
+                    ],
+                    "search_after_s": 85.5672575703203
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.05005480673091,
+                    "cumulative_arc_length_m": 148.10010961346183,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "missing",
+                    "visit_ordinal": 2,
+                    "search_after_s": 148.39904129999923,
+                    "visit_count": 2
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 87.36083463653708,
+                    "cumulative_arc_length_m": 174.72166927307416,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 102.74288166316701,
+                    "cumulative_arc_length_m": 205.48576332633402,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.77130742574441,
+                    "cumulative_arc_length_m": 229.54261485148882,
+                    "actual_s": null,
+                    "match_distance_m": null,
+                    "evidence_status": "unknown_after_missing_predecessor"
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      22.024916300004406,
+                      25.210255932106694
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      1.2823540672287734
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      25.210255932106694,
+                      41.729833758882485
+                    ],
+                    "nominal_interval_s": [
+                      1.2823540672287734,
+                      16.66440109385871
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      41.729833758882485,
+                      56.063647402223694
+                    ],
+                    "nominal_interval_s": [
+                      16.66440109385871,
+                      29.97518092366488
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      56.063647402223694,
+                      72.74301609075596
+                    ],
+                    "nominal_interval_s": [
+                      29.97518092366488,
+                      45.35722795029481
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      72.74301609075596,
+                      85.5672575703203
+                    ],
+                    "nominal_interval_s": [
+                      45.35722795029481,
+                      57.38565371287221
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      85.5672575703203,
+                      148.39904129999923
+                    ],
+                    "nominal_interval_s": [
+                      57.38565371287221,
+                      58.66800778010098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": {
+                  "detected": true,
+                  "maximum_reversal_m": 26.62155965961233,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 829,
+                  "witness": {
+                    "actual_s": 132.7,
+                    "observed_progress_m": 90.71445590058963,
+                    "previous_max_progress_m": 117.33601556020196,
+                    "route_distance_m": 2.8986008017456384
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ]
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              22.024916300004406,
+              148.39904129999923
+            ],
+            "nominal_end_s": 115.27130742574441,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.7833042555248753,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 24.629845899995416,
+                    "nominal_s": 1.2823540672287805,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 41.18587750000006,
+                    "nominal_s": 16.664401093858714,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 55.56460949999746,
+                    "nominal_s": 29.975180923664876,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 72.03087080000114,
+                    "nominal_s": 45.35722795029481,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 84.95016809999652,
+                    "nominal_s": 57.3856537128722,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 86.40156579999893,
+                    "nominal_s": 58.66800778010098,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 102.90466590000142,
+                    "nominal_s": 74.05005480673091,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 117.21964379999554,
+                    "nominal_s": 87.36083463653708,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 133.77447259999462,
+                    "nominal_s": 102.742881663167,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 147.02485190000152,
+                    "nominal_s": 114.77130742574438,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 22.024916300004406,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 23.86565949999931,
+                    "nominal_s": 1.2823540672287734,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 40.42235459999938,
+                    "nominal_s": 16.66440109385871,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 54.72519779999857,
+                    "nominal_s": 29.97518092366488,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.20904829999927,
+                    "nominal_s": 45.35722795029481,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 84.48405970000022,
+                    "nominal_s": 57.38565371287221,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 85.57363039999473,
+                    "nominal_s": 58.66800778010098,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 102.07722739999735,
+                    "nominal_s": 74.05005480673091,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 116.43892639999831,
+                    "nominal_s": 87.36083463653708,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 132.99176769999758,
+                    "nominal_s": 102.74288166316701,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 146.54165959999955,
+                    "nominal_s": 114.77130742574441,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 148.1,
+                "supplied_terminal_hover_start_s": 148.1
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 0.7833042555248753,
+              "selected_nominal_s": {
+                "uav_01": 29.975180923664876,
+                "uav_02": 30.75848517918975
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  29.975180923664876,
+                  29.975180923664876
+                ],
+                "uav_02": [
+                  30.75848517918975,
+                  30.75848517918975
+                ]
+              },
+              "actual_s": 55.56460949999746,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 45,
+            "knots_s": [
+              22.024916300004406,
+              23.86565949999931,
+              24.629845899995416,
+              40.42235459999938,
+              41.18587750000006,
+              54.72519779999857,
+              55.56460949999746,
+              71.20904829999927,
+              72.03087080000114,
+              84.48405970000022,
+              84.95016809999652,
+              85.57363039999473,
+              86.40156579999893,
+              102.07722739999735,
+              102.90466590000142,
+              116.43892639999831,
+              117.21964379999554,
+              132.99176769999758,
+              133.77447259999462,
+              146.54165959999955,
+              147.02485190000152,
+              148.1,
+              148.39904129999923
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": false,
+          "within_tau": null,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": null,
+          "issues": [
+            "uav_01:missing_route_node:route_index=6",
+            "uav_01:backtracking",
+            "uav_02:missing_route_node:route_index=6",
+            "uav_02:backtracking"
+          ],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": null,
+            "uav_02": null
+          }
+        },
+        "p02_return": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              148.39904129999923,
+              168.95474749999994
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.1401584140828014,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 168.95474749999994,
+                    "nominal_s": 18.866314008111267,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.24676181275573736,
+                    "closest_time_interval_s": [
+                      168.95474749999994,
+                      168.95474749999994
+                    ],
+                    "search_domain_s": [
+                      148.39904129999923,
+                      168.95474749999994
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 18.866314008111267,
+                    "cumulative_arc_length_m": 37.732628016222534,
+                    "actual_s": 168.95474749999994,
+                    "match_distance_m": 0.24676181275573736,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      148.39904129999923,
+                      168.95474749999994
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      18.866314008111267
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.029284843404870226,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 208,
+                  "witness": {
+                    "actual_s": 148.6,
+                    "observed_progress_m": 0.09103990049495028,
+                    "previous_max_progress_m": 0.12032474389982051,
+                    "route_distance_m": 0.039967583384701584
+                  }
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 163.90766393316164,
+                    "nominal_s": 12.545744776391098,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.021385911730642863,
+                    "closest_time_interval_s": [
+                      163.90766393316164,
+                      163.90766393316164
+                    ],
+                    "search_domain_s": [
+                      148.39904129999923,
+                      168.95474749999994
+                    ],
+                    "source": "waypoint_closest_piecewise_linear_v1",
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 164.4,
+                "supplied_terminal_hover_start_s": 164.4,
+                "progress_version": "ordered_route_progress_v1",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 12.545744776391098,
+                    "cumulative_arc_length_m": 25.091489552782196,
+                    "actual_s": 163.90766393316164,
+                    "match_distance_m": 0.021385911730642863,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      148.39904129999923,
+                      163.90766393316164
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      12.545744776391098
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.16141552752029265,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 208,
+                  "witness": {
+                    "actual_s": 149.5,
+                    "observed_progress_m": 0.16354200912105876,
+                    "previous_max_progress_m": 0.3249575366413514,
+                    "route_distance_m": 0.08255180564142138
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 2.1401584140828014,
+              "selected_nominal_s": {
+                "uav_01": 14.6859031904739,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  14.6859031904739,
+                  14.6859031904739
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 164.4,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 7,
+            "knots_s": [
+              148.39904129999923,
+              163.90766393316164,
+              164.4,
+              168.95474749999994
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              148.39904129999923,
+              168.95474749999994
+            ],
+            "nominal_end_s": 19.366314008111267,
+            "tau_s": 3.8732628016222534,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.6463691619135066,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 168.2698184999972,
+                    "nominal_s": 18.866314008111267,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 148.39904129999923,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 162.9042674999946,
+                    "nominal_s": 12.545744776391098,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 164.4,
+                "supplied_terminal_hover_start_s": 164.4
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01"
+            ],
+            "worst": {
+              "span_s": 2.6463691619135066,
+              "selected_nominal_s": {
+                "uav_01": 15.192113938304605,
+                "uav_02": 12.545744776391098
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  15.192113938304605,
+                  15.192113938304605
+                ],
+                "uav_02": [
+                  12.545744776391098,
+                  12.545744776391098
+                ]
+              },
+              "actual_s": 164.4,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              148.39904129999923,
+              162.9042674999946,
+              164.4,
+              168.2698184999972,
+              168.95474749999994
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": 0,
+            "uav_02": 0
+          }
+        }
+      },
+      "per_agent_laps_observed": {
+        "p00_approach": {
+          "uav_01": 0,
+          "uav_02": 0
+        },
+        "p01_patrol": {
+          "uav_01": null,
+          "uav_02": null
+        },
+        "p02_return": {
+          "uav_01": 0,
+          "uav_02": 0
+        }
+      },
+      "complete": false,
+      "within_tau": null,
+      "crosscheck_within_tau": true,
+      "issues": [
+        "p01_patrol:uav_01:missing_route_node:route_index=6",
+        "p01_patrol:uav_01:backtracking",
+        "p01_patrol:uav_02:missing_route_node:route_index=6",
+        "p01_patrol:uav_02:backtracking"
+      ],
+      "v1_diagnostic": {
+        "records": [
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 20.21699709999666,
+            "nominal_s": 18.866314008111267,
+            "deviation_s": 1.3506830918853936,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 20.21699709999666,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 13.852831099997275,
+            "nominal_s": 12.545744776391098,
+            "deviation_s": 1.3070863236061765,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 13.852831099997275,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 2.60492959999101,
+            "nominal_s": 1.2823540672287805,
+            "deviation_s": 1.3225755327622295,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 24.629845899995416,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 19.160961199995654,
+            "nominal_s": 16.664401093858714,
+            "deviation_s": 2.49656010613694,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 41.18587750000006,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 33.53969319999305,
+            "nominal_s": 29.975180923664876,
+            "deviation_s": 3.564512276328177,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 55.56460949999746,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 50.00595449999673,
+            "nominal_s": 45.35722795029481,
+            "deviation_s": 4.6487265497019195,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 72.03087080000114,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 62.92525179999211,
+            "nominal_s": 57.3856537128722,
+            "deviation_s": 5.539598087119913,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 84.95016809999652,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 64.37664949999453,
+            "nominal_s": 58.66800778010098,
+            "deviation_s": 5.708641719893549,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 86.40156579999893,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 80.87974959999701,
+            "nominal_s": 74.05005480673091,
+            "deviation_s": 6.8296947932661,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 102.90466590000142,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 95.19472749999113,
+            "nominal_s": 87.36083463653708,
+            "deviation_s": 7.833892863454054,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 117.21964379999554,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 111.74955629999022,
+            "nominal_s": 102.742881663167,
+            "deviation_s": 9.00667463682322,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 133.77447259999462,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 124.99993559999712,
+            "nominal_s": 114.77130742574438,
+            "deviation_s": 10.228628174252734,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 147.02485190000152,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 1.840743199994904,
+            "nominal_s": 1.2823540672287734,
+            "deviation_s": 0.5583891327661306,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 23.86565949999931,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 18.397438299994974,
+            "nominal_s": 16.66440109385871,
+            "deviation_s": 1.733037206136263,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 40.42235459999938,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 32.70028149999416,
+            "nominal_s": 29.97518092366488,
+            "deviation_s": 2.7251005763292824,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 54.72519779999857,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 49.18413199999486,
+            "nominal_s": 45.35722795029481,
+            "deviation_s": 3.8269040497000475,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 71.20904829999927,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 62.45914339999581,
+            "nominal_s": 57.38565371287221,
+            "deviation_s": 5.0734896871235975,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 84.48405970000022,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 63.54871409999032,
+            "nominal_s": 58.66800778010098,
+            "deviation_s": 4.880706319889342,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 22.024916300004406,
+            "event_s": 85.57363039999473,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 80.05231109999295,
+            "nominal_s": 74.05005480673091,
+            "deviation_s": 6.002256293262036,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 102.07722739999735,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 94.4140100999939,
+            "nominal_s": 87.36083463653708,
+            "deviation_s": 7.0531754634568244,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 116.43892639999831,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 110.96685139999317,
+            "nominal_s": 102.74288166316701,
+            "deviation_s": 8.223969736826163,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 132.99176769999758,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 124.51674329999514,
+            "nominal_s": 114.77130742574441,
+            "deviation_s": 9.745435874250731,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 22.024916300004406,
+            "event_s": 146.54165959999955,
+            "event_count": 1
+          },
+          {
+            "phase": "p02_return",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.870777199997974,
+            "nominal_s": 18.866314008111267,
+            "deviation_s": 1.0044631918867069,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 148.39904129999923,
+            "event_s": 168.2698184999972,
+            "event_count": 1
+          },
+          {
+            "phase": "p02_return",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 14.505226199995377,
+            "nominal_s": 12.545744776391098,
+            "deviation_s": 1.959481423604279,
+            "tau_s": 3.8732628016222534,
+            "within_tau": true,
+            "release_s": 148.39904129999923,
+            "event_s": 162.9042674999946,
+            "event_count": 1
+          }
+        ],
+        "missing": [],
+        "per_phase": {
+          "p00_approach": {
+            "tau_s": 3.8732628016222534,
+            "nominal_duration_s": 19.366314008111267,
+            "release_s": 0.0,
+            "end_s": 22.024916300004406,
+            "expected_waypoints": 2,
+            "paired_waypoints": 2,
+            "complete": true,
+            "max_abs_s": 1.3506830918853936,
+            "within_tau": true
+          },
+          "p01_patrol": {
+            "tau_s": 5.0,
+            "nominal_duration_s": 115.27130742574441,
+            "release_s": 22.024916300004406,
+            "end_s": 148.39904129999923,
+            "expected_waypoints": 20,
+            "paired_waypoints": 20,
+            "complete": true,
+            "max_abs_s": 10.228628174252734,
+            "within_tau": false
+          },
+          "p02_return": {
+            "tau_s": 3.8732628016222534,
+            "nominal_duration_s": 19.366314008111267,
+            "release_s": 148.39904129999923,
+            "end_s": 168.95474749999994,
+            "expected_waypoints": 2,
+            "paired_waypoints": 2,
+            "complete": true,
+            "max_abs_s": 1.959481423604279,
+            "within_tau": true
+          }
+        },
+        "expected_waypoints": 24,
+        "paired_waypoints": 24,
+        "complete": true,
+        "within_tau": false,
+        "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+      },
+      "v1_is_gate": false,
+      "criterion": "per semantic phase max_t min_simultaneous_fleet_span(sigma_i(t)) <= tau",
+      "no_hover_policy": "terminal singleton: conservative upper bound, no unproved interval relaxation"
+    }
+  },
+  "hover_evidence": {
+    "truth": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.10000000000000142,
+        "end_support_error_s": 0.024916300004406366,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 6.4,
+        "end_support_error_s": 0.024916300004406366,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 15.6,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09904129999921452,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.10000000000002274,
+        "end_support_error_s": 0.09904129999921452,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p02_return",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.05474749999993378,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p02_return",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 4.300000000000011,
+        "end_support_error_s": 0.05474749999993378,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 164.6,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      }
+    ],
+    "observation": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.1999999999999993,
+        "end_support_error_s": 0.024916300004406366,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 6.4,
+        "end_support_error_s": 0.024916300004406366,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 15.6,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09904129999921452,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.20000000000001705,
+        "end_support_error_s": 0.09904129999921452,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 148.1,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p02_return",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.05474749999993378,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p02_return",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 4.5,
+        "end_support_error_s": 0.05474749999993378,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 164.4,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      }
+    ]
+  },
+  "truth_primary": true,
+  "observation_crosscheck": true,
+  "criterion": "per semantic phase D <= tau; no change to nominal timing or arrival_s"
+}

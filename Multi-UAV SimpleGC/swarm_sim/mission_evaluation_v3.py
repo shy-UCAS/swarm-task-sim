@@ -8,8 +8,11 @@ from .protocol import semantic_protocol
 from .registry import get_intent
 
 
-def _channel(scene, traces, windows, clocks, intent, return_windows=None):
-    specific = intent.evaluate_channel(scene, traces, windows, clocks)
+def _channel(scene, traces, windows, clocks, intent, return_windows=None,
+             progress_mapping_version="ordered_route_progress_v1"):
+    options = ({"progress_mapping_version": progress_mapping_version}
+               if intent.name == "patrol" else {})
+    specific = intent.evaluate_channel(scene, traces, windows, clocks, **options)
     if not isinstance(specific, dict) or set(specific) != {"conditions", "metrics"}:
         raise ValueError("intent evaluate_channel must return conditions and metrics")
     conditions, metrics = specific["conditions"], specific["metrics"]
@@ -24,7 +27,8 @@ def _channel(scene, traces, windows, clocks, intent, return_windows=None):
     return result, conditions
 
 
-def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoch, clocks=None):
+def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoch, clocks=None,
+                        *, progress_mapping_version="ordered_route_progress_v1"):
     spec = scene["task_spec"]
     if spec.get("schema_version") != 3:
         raise ValueError("v3 mission evaluation requires TaskSpec schema_version 3")
@@ -48,7 +52,8 @@ def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoc
             for window in returned:
                 if window["role"] == "hold_no_op" and window["semantic_phase"] == "return":
                     window["role"] = "return"
-            results[channel] = _channel(scene, samples, service_window_view(full), clocks, intent, returned)
+            results[channel] = _channel(scene, samples, service_window_view(full), clocks, intent, returned,
+                                        progress_mapping_version)
         truth, truth_conditions = results["truth"]
         observation, observation_conditions = results["observation"]
         windows = channel_windows["observation"]

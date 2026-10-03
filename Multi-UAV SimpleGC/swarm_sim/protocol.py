@@ -117,7 +117,10 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError("v0.5 protocol requires versioned route evidence artifacts")
         metrics = json.loads((root / "execution_metrics.json").read_text(encoding="utf-8"))
         ac4 = json.loads((root / "ac4_timing_v3.json").read_text(encoding="utf-8"))
-        expected_versions = dict(route_progress_version=V05_ROUTE_PROGRESS_VERSION,
+        route_version = manifest.get("route_progress_version")
+        if route_version not in (V05_ROUTE_PROGRESS_VERSION, "ordered_route_progress_v2"):
+            raise ValueError("unsupported ordered route progress version")
+        expected_versions = dict(route_progress_version=route_version,
                                  ac4_timing_version=V05_AC4_TIMING_VERSION,
                                  execution_artifacts_version=V05_EXECUTION_ARTIFACTS_VERSION)
         if (any(artifact.get(key) != value for artifact in
@@ -126,10 +129,25 @@ def _validate_v3_artifacts(manifest, root, protocol):
                 or metrics.get("version") != V05_EXECUTION_ARTIFACTS_VERSION
                 or set(ac4.get("channels", {})) != {"truth", "observation"}
                 or any(channel.get("version") != V05_AC4_TIMING_VERSION or
-                       channel.get("mapping_version") != V05_ROUTE_PROGRESS_VERSION
+                       channel.get("mapping_version") != route_version
                        for channel in ac4["channels"].values())
                 or any(ac4.get(key) != value for key, value in processing_versions().items())):
             raise ValueError("inconsistent v0.5 route evidence versions")
+    acceptance_version = manifest.get("acceptance_policy_version")
+    if acceptance_version is not None or "validation_policy" in quality:
+        assessment = quality.get("validation_policy", {})
+        if (acceptance_version != "v05_acceptance_r1_2"
+                or quality.get("acceptance_policy_version") != acceptance_version
+                or assessment.get("version") != acceptance_version
+                or manifest.get("route_progress_version") != "ordered_route_progress_v2"
+                or assessment.get("stage") not in ("validation", "pilot", "batch")
+                or assessment.get("soft_flags_affect_episode_quality") is not False
+                or assessment.get("episode_quality_eligible") is not quality.get("episode_quality_eligible")
+                or not isinstance(assessment.get("soft_flags"), list)
+                or not isinstance(assessment.get("hard_checks"), dict)
+                or assessment.get("hard_failures") != [key for key, passed in assessment["hard_checks"].items() if passed is not True]
+                or assessment.get("individual_pass") is not (not assessment.get("hard_failures"))):
+            raise ValueError("inconsistent r1.2 acceptance diagnostics")
     hold_semantics = task.get("execution", {}).get("hold_semantics")
     onboard_name = "onboard_mission_param_check.json"
     if hold_semantics == "integer_seconds_v1" or onboard_name in manifest.get("artifact_sha256", {}):

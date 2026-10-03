@@ -1,0 +1,2390 @@
+{
+  "version": "v05_r12_diagnostic_report_v1",
+  "diagnostic_only": true,
+  "model_feature_eligible": false,
+  "policy_version": "v05_acceptance_r1_2",
+  "runs": [
+    {
+      "case_id": "VP1",
+      "stage": "validation",
+      "run_id": "20261002T173037Z_a380b812",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2",
+      "time_epoch_host_s": 48147.8666342,
+      "intent": "patrol",
+      "elapsed_s": 243.88881820000097,
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "validation_policy": {
+        "version": "v05_acceptance_r1_2",
+        "stage": "validation",
+        "hard_checks": {
+          "parameter_firmware": true,
+          "onboard_mission_parameters": true,
+          "truth_separation": true,
+          "no_zero_length_segments": true,
+          "run_completed": true,
+          "dual_channel_mission_success": true,
+          "validation_episode_quality": true,
+          "known_patrol_laps_match": true
+        },
+        "hard_failures": [],
+        "soft_flags": [
+          {
+            "code": "AV-2",
+            "status": "exceeded",
+            "channel": "observation",
+            "phase": null,
+            "agent_id": "uav_01",
+            "value": 5,
+            "threshold": 4,
+            "reason": null
+          },
+          {
+            "code": "AC4",
+            "status": "exceeded",
+            "channel": "truth",
+            "phase": "p00_approach",
+            "agent_id": null,
+            "value": 5.887189333160938,
+            "threshold": 4.022393503953943,
+            "reason": null,
+            "source": "primary"
+          },
+          {
+            "code": "AC4",
+            "status": "exceeded",
+            "channel": "truth",
+            "phase": "p00_approach",
+            "agent_id": null,
+            "value": 4.414737248209795,
+            "threshold": 4.022393503953943,
+            "reason": null,
+            "source": "event_crosscheck"
+          },
+          {
+            "code": "AC4",
+            "status": "exceeded",
+            "channel": "observation",
+            "phase": "p00_approach",
+            "agent_id": null,
+            "value": 7.152889075875237,
+            "threshold": 4.022393503953943,
+            "reason": null,
+            "source": "primary"
+          }
+        ],
+        "individual_pass": true,
+        "episode_quality_eligible": true,
+        "soft_flags_affect_episode_quality": false,
+        "external_checks_required": [
+          "frozen_input_and_firmware_identity",
+          "protected_file_hashes",
+          "infrastructure_and_disk"
+        ]
+      },
+      "approach": [
+        {
+          "agent_id": "uav_01",
+          "phase": "p00_approach",
+          "planned_path_length_m": 44.30738369291336,
+          "nominal_motion_duration_s": 14.769127897637787,
+          "nominal_completion_duration_s": 15.269127897637787,
+          "phase_nominal_duration_s": 20.111967519769713,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 208.86510865443515,
+          "signed_shortest_turn_deg": -151.13489134556482,
+          "absolute_turn_deg": 151.13489134556482,
+          "entry_point": {
+            "east_m": -10.422075820135117,
+            "north_m": -5.64668182615668,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 10.967276574178683,
+            "north_m": 33.155893524751505,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.029117999998561572,
+              "arrival_s": 19.3,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 44.672520836668596
+            },
+            "observation": {
+              "start_s": 0.029117999998561572,
+              "arrival_s": 19.3,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 44.58317894015863,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_02",
+          "phase": "p00_approach",
+          "planned_path_length_m": 16.206157423312778,
+          "nominal_motion_duration_s": 5.402052474437593,
+          "nominal_completion_duration_s": 5.902052474437593,
+          "phase_nominal_duration_s": 20.111967519769713,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 181.92574398760468,
+          "signed_shortest_turn_deg": -178.07425601239532,
+          "absolute_turn_deg": 178.07425601239532,
+          "entry_point": {
+            "east_m": 18.583240457116975,
+            "north_m": 17.783311259538742,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 19.12783614727634,
+            "north_m": 33.98031573454756,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.014457199999014847,
+              "arrival_s": 9.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 16.59411296262169
+            },
+            "observation": {
+              "start_s": 0.014457199999014847,
+              "arrival_s": 9.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 16.51365878179021,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_03",
+          "phase": "p00_approach",
+          "planned_path_length_m": 58.83590255930914,
+          "nominal_motion_duration_s": 19.611967519769713,
+          "nominal_completion_duration_s": 20.111967519769713,
+          "phase_nominal_duration_s": 20.111967519769713,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 183.46142683525144,
+          "signed_shortest_turn_deg": -176.53857316474853,
+          "absolute_turn_deg": 176.53857316474853,
+          "entry_point": {
+            "east_m": 23.73608674706114,
+            "north_m": -23.92382862190795,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 27.288395720373998,
+            "north_m": 34.804737944343614,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.04383429999870714,
+              "arrival_s": 24.3,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 59.13969444422869
+            },
+            "observation": {
+              "start_s": 0.04383429999870714,
+              "arrival_s": 24.2,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 58.99959165731808,
+              "motion_departure_s": 1.0
+            }
+          }
+        }
+      ],
+      "phase_metrics": [
+        {
+          "phase": "p00_approach",
+          "semantic_phase": "approach",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 2,
+            "uav_02": 2,
+            "uav_03": 2
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 5.887189333160938,
+              "tau_s": 4.022393503953943,
+              "complete": true,
+              "within_tau": false,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 7.152889075875237,
+              "tau_s": 4.022393503953943,
+              "complete": true,
+              "within_tau": false,
+              "per_agent_laps_observed": {}
+            }
+          }
+        },
+        {
+          "phase": "p01_patrol",
+          "semantic_phase": "patrol",
+          "AV1": {
+            "total_count": 27,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": 0.0,
+            "applicable": true
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 1,
+            "uav_02": 1,
+            "uav_03": 1
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 1.7696554028951743,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {
+                "uav_01": 2,
+                "uav_02": 2,
+                "uav_03": 2
+              }
+            },
+            "observation": {
+              "D_s": 1.847965097549813,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {
+                "uav_01": 2,
+                "uav_02": 2,
+                "uav_03": 2
+              }
+            }
+          }
+        },
+        {
+          "phase": "p02_return",
+          "semantic_phase": "return",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 2,
+            "uav_02": 1,
+            "uav_03": 0
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 2.7321791588368285,
+              "tau_s": 4.022393503953943,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 2.647158893010918,
+              "tau_s": 4.022393503953943,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        }
+      ],
+      "AV2_episode": {
+        "limit": 4,
+        "per_agent": {
+          "uav_01": 5,
+          "uav_02": 4,
+          "uav_03": 3
+        }
+      },
+      "execution_fractions": {
+        "stationary_time_fraction": 0.08503775727099622,
+        "synchronized_time_fraction": 0.00771513353115727
+      }
+    },
+    {
+      "case_id": "VP2",
+      "stage": "validation",
+      "run_id": "20261002T193059Z_bfb4d103",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79",
+      "time_epoch_host_s": 55370.170074500005,
+      "intent": "patrol",
+      "elapsed_s": 310.1866969000039,
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "validation_policy": {
+        "version": "v05_acceptance_r1_2",
+        "stage": "validation",
+        "hard_checks": {
+          "parameter_firmware": true,
+          "onboard_mission_parameters": true,
+          "truth_separation": true,
+          "no_zero_length_segments": true,
+          "run_completed": true,
+          "dual_channel_mission_success": true,
+          "validation_episode_quality": true,
+          "known_patrol_laps_match": true
+        },
+        "hard_failures": [],
+        "soft_flags": [
+          {
+            "code": "AV-2",
+            "status": "exceeded",
+            "channel": "observation",
+            "phase": null,
+            "agent_id": "uav_03",
+            "value": 6,
+            "threshold": 4,
+            "reason": null
+          },
+          {
+            "code": "AC4",
+            "status": "exceeded",
+            "channel": "observation",
+            "phase": "p02_return",
+            "agent_id": null,
+            "value": 5.308822805580153,
+            "threshold": 5.0,
+            "reason": null,
+            "source": "event_crosscheck"
+          }
+        ],
+        "individual_pass": true,
+        "episode_quality_eligible": true,
+        "soft_flags_affect_episode_quality": false,
+        "external_checks_required": [
+          "frozen_input_and_firmware_identity",
+          "protected_file_hashes",
+          "infrastructure_and_disk"
+        ]
+      },
+      "approach": [
+        {
+          "agent_id": "uav_01",
+          "phase": "p00_approach",
+          "planned_path_length_m": 19.007737417102142,
+          "nominal_motion_duration_s": 7.603094966840857,
+          "nominal_completion_duration_s": 8.103094966840857,
+          "phase_nominal_duration_s": 26.57567717083622,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 77.37100936729301,
+          "signed_shortest_turn_deg": 77.37100936729303,
+          "absolute_turn_deg": 77.37100936729303,
+          "entry_point": {
+            "east_m": -24.80984865692549,
+            "north_m": -3.450443683653681,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": -43.35771782581627,
+            "north_m": -7.606238554820391,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.05599959999381099,
+              "arrival_s": 11.2,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 19.16149838034795
+            },
+            "observation": {
+              "start_s": 0.05599959999381099,
+              "arrival_s": 11.2,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 19.08552680682476,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_02",
+          "phase": "p00_approach",
+          "planned_path_length_m": 65.18919292709055,
+          "nominal_motion_duration_s": 26.07567717083622,
+          "nominal_completion_duration_s": 26.57567717083622,
+          "phase_nominal_duration_s": 26.57567717083622,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 85.85871900396043,
+          "signed_shortest_turn_deg": 85.85871900396046,
+          "absolute_turn_deg": 85.85871900396046,
+          "entry_point": {
+            "east_m": 25.014818743035796,
+            "north_m": -12.181109772361655,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": -40.00416591212369,
+            "north_m": -16.888817165304307,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.014596799992432352,
+              "arrival_s": 29.6,
+              "arrival_source": "trajectory_min_distance",
+              "arrival_verified": false,
+              "arrival_reason": "no_post_event_sample_meets_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 65.28910531579858
+            },
+            "observation": {
+              "start_s": 0.014596799992432352,
+              "arrival_s": 29.9,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 65.3178478748715,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_03",
+          "phase": "p00_approach",
+          "planned_path_length_m": 33.06111851471538,
+          "nominal_motion_duration_s": 13.224447405886153,
+          "nominal_completion_duration_s": 13.724447405886153,
+          "phase_nominal_duration_s": 26.57567717083622,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 101.58350455310645,
+          "signed_shortest_turn_deg": 101.58350455310642,
+          "absolute_turn_deg": 101.58350455310642,
+          "entry_point": {
+            "east_m": -4.2628480012988454,
+            "north_m": -32.80993259944592,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": -36.650613998431105,
+            "north_m": -26.17139577578822,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.021743299992522225,
+              "arrival_s": 16.9,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 33.28342196527639
+            },
+            "observation": {
+              "start_s": 0.021743299992522225,
+              "arrival_s": 16.9,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 33.17125159032687,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_04",
+          "phase": "p00_approach",
+          "planned_path_length_m": 53.475342417548305,
+          "nominal_motion_duration_s": 21.390136967019323,
+          "nominal_completion_duration_s": 21.890136967019323,
+          "phase_nominal_duration_s": 26.57567717083622,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 73.1485487129371,
+          "signed_shortest_turn_deg": 73.1485487129371,
+          "absolute_turn_deg": 73.1485487129371,
+          "entry_point": {
+            "east_m": 4.467818087409121,
+            "north_m": 17.17837914343057,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": -46.71126973950886,
+            "north_m": 1.676340055663525,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.017142899996542837,
+              "arrival_s": 25.3,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 53.76733282746423
+            },
+            "observation": {
+              "start_s": 0.017142899996542837,
+              "arrival_s": 25.3,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 53.68517595148156,
+              "motion_departure_s": 1.0
+            }
+          }
+        }
+      ],
+      "phase_metrics": [
+        {
+          "phase": "p00_approach",
+          "semantic_phase": "approach",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 2,
+            "uav_02": 2,
+            "uav_03": 2,
+            "uav_04": 2
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 3.496686531555641,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 3.3346890813286976,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        },
+        {
+          "phase": "p01_patrol",
+          "semantic_phase": "patrol",
+          "AV1": {
+            "total_count": 36,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": 0.0,
+            "applicable": true
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_03": 1,
+            "uav_04": 0
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 0.5323212135333506,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {
+                "uav_01": 2,
+                "uav_02": 2,
+                "uav_03": 2,
+                "uav_04": 2
+              }
+            },
+            "observation": {
+              "D_s": 0.5283187983940252,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {
+                "uav_01": 2,
+                "uav_02": 2,
+                "uav_03": 2,
+                "uav_04": 2
+              }
+            }
+          }
+        },
+        {
+          "phase": "p02_return",
+          "semantic_phase": "return",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 1,
+            "uav_02": 0,
+            "uav_03": 3,
+            "uav_04": 2
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 2.8418483105868297,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 4.4504989014666485,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        }
+      ],
+      "AV2_episode": {
+        "limit": 4,
+        "per_agent": {
+          "uav_01": 3,
+          "uav_02": 2,
+          "uav_03": 6,
+          "uav_04": 4
+        }
+      },
+      "execution_fractions": {
+        "stationary_time_fraction": 0.0820037683189486,
+        "synchronized_time_fraction": 0.005546075085324232
+      }
+    },
+    {
+      "case_id": "VP3",
+      "stage": "validation",
+      "run_id": "20261002T193716Z_75576f40",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a",
+      "time_epoch_host_s": 55746.530308400004,
+      "intent": "patrol",
+      "elapsed_s": 264.3673548000006,
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "validation_policy": {
+        "version": "v05_acceptance_r1_2",
+        "stage": "validation",
+        "hard_checks": {
+          "parameter_firmware": true,
+          "onboard_mission_parameters": true,
+          "truth_separation": true,
+          "no_zero_length_segments": true,
+          "run_completed": true,
+          "dual_channel_mission_success": true,
+          "validation_episode_quality": true,
+          "known_patrol_laps_match": true
+        },
+        "hard_failures": [],
+        "soft_flags": [
+          {
+            "code": "AV-1",
+            "status": "unknown",
+            "channel": "observation",
+            "phase": null,
+            "agent_id": null,
+            "value": null,
+            "threshold": 0.1,
+            "reason": "incomplete_intermediate_waypoint_evidence"
+          },
+          {
+            "code": "AC4",
+            "status": "exceeded",
+            "channel": "truth",
+            "phase": "p00_approach",
+            "agent_id": null,
+            "value": 7.4027856118397,
+            "threshold": 3.686923368272824,
+            "reason": null,
+            "source": "primary"
+          },
+          {
+            "code": "AC4",
+            "status": "exceeded",
+            "channel": "observation",
+            "phase": "p00_approach",
+            "agent_id": null,
+            "value": 8.57880689004869,
+            "threshold": 3.686923368272824,
+            "reason": null,
+            "source": "primary"
+          }
+        ],
+        "individual_pass": true,
+        "episode_quality_eligible": true,
+        "soft_flags_affect_episode_quality": false,
+        "external_checks_required": [
+          "frozen_input_and_firmware_identity",
+          "protected_file_hashes",
+          "infrastructure_and_disk"
+        ]
+      },
+      "approach": [
+        {
+          "agent_id": "uav_01",
+          "phase": "p00_approach",
+          "planned_path_length_m": 44.836542103410295,
+          "nominal_motion_duration_s": 17.934616841364118,
+          "nominal_completion_duration_s": 18.434616841364118,
+          "phase_nominal_duration_s": 18.434616841364118,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 20.746562647552555,
+          "signed_shortest_turn_deg": 20.746562647552565,
+          "absolute_turn_deg": 20.746562647552565,
+          "entry_point": {
+            "east_m": 24.57050541348464,
+            "north_m": 9.437596918373686,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 8.687835805216308,
+            "north_m": -32.49158520941738,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.016823499994643498,
+              "arrival_s": 21.7,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 45.04891387908155
+            },
+            "observation": {
+              "start_s": 0.016823499994643498,
+              "arrival_s": 21.7,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 44.969573491028605,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_02",
+          "phase": "p00_approach",
+          "planned_path_length_m": 21.92973048422405,
+          "nominal_motion_duration_s": 8.77189219368962,
+          "nominal_completion_duration_s": 9.27189219368962,
+          "phase_nominal_duration_s": 18.434616841364118,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 344.5029886059522,
+          "signed_shortest_turn_deg": -15.497011394047831,
+          "absolute_turn_deg": 15.497011394047831,
+          "entry_point": {
+            "east_m": -6.801121524104239,
+            "north_m": -13.912624391780348,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": -0.9417582443279677,
+            "north_m": -35.04508617611383,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.0314243999964674,
+              "arrival_s": 12.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 22.08684062475863
+            },
+            "observation": {
+              "start_s": 0.0314243999964674,
+              "arrival_s": 12.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 22.0651431482619,
+              "motion_departure_s": 1.0
+            }
+          }
+        }
+      ],
+      "phase_metrics": [
+        {
+          "phase": "p00_approach",
+          "semantic_phase": "approach",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 2,
+            "uav_02": 2
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 7.4027856118397,
+              "tau_s": 3.686923368272824,
+              "complete": true,
+              "within_tau": false,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 8.57880689004869,
+              "tau_s": 3.686923368272824,
+              "complete": true,
+              "within_tau": false,
+              "per_agent_laps_observed": {}
+            }
+          }
+        },
+        {
+          "phase": "p01_patrol",
+          "semantic_phase": "patrol",
+          "AV1": {
+            "total_count": 28,
+            "stopped_count": 0,
+            "unknown_count": 28,
+            "stop_rate": null,
+            "applicable": true
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 1,
+            "uav_02": 0
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 0.6319464419082657,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {
+                "uav_01": 3,
+                "uav_02": 3
+              }
+            },
+            "observation": {
+              "D_s": 0.5448109392956333,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {
+                "uav_01": 3,
+                "uav_02": 3
+              }
+            }
+          }
+        }
+      ],
+      "AV2_episode": {
+        "limit": 3,
+        "per_agent": {
+          "uav_01": 3,
+          "uav_02": 2
+        }
+      },
+      "execution_fractions": {
+        "stationary_time_fraction": 0.03413935405410469,
+        "synchronized_time_fraction": 0.006842105263157895
+      }
+    },
+    {
+      "case_id": "VR1",
+      "stage": "validation",
+      "run_id": "20261002T194230Z_85c734e8",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4",
+      "time_epoch_host_s": 56059.667228900005,
+      "intent": "reconnaissance",
+      "elapsed_s": 182.02398629999516,
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "validation_policy": {
+        "version": "v05_acceptance_r1_2",
+        "stage": "validation",
+        "hard_checks": {
+          "parameter_firmware": true,
+          "onboard_mission_parameters": true,
+          "truth_separation": true,
+          "no_zero_length_segments": true,
+          "run_completed": true,
+          "dual_channel_mission_success": true,
+          "validation_episode_quality": true
+        },
+        "hard_failures": [],
+        "soft_flags": [],
+        "individual_pass": true,
+        "episode_quality_eligible": true,
+        "soft_flags_affect_episode_quality": false,
+        "external_checks_required": [
+          "frozen_input_and_firmware_identity",
+          "protected_file_hashes",
+          "infrastructure_and_disk"
+        ]
+      },
+      "approach": [
+        {
+          "agent_id": "uav_01",
+          "phase": "p00_approach",
+          "planned_path_length_m": 53.39826706246833,
+          "nominal_motion_duration_s": 17.79942235415611,
+          "nominal_completion_duration_s": 18.29942235415611,
+          "phase_nominal_duration_s": 18.582103457617894,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 267.53863306146013,
+          "signed_shortest_turn_deg": -92.46136693853987,
+          "absolute_turn_deg": 92.46136693853987,
+          "entry_point": {
+            "east_m": -13.250766041314613,
+            "north_m": 7.025205374410878,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 40.09823609486998,
+            "north_m": 9.318433742467942,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.008895699997083284,
+              "arrival_s": 22.1,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 53.63147953771073
+            },
+            "observation": {
+              "start_s": 0.008895699997083284,
+              "arrival_s": 22.1,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 53.5756011397906,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_02",
+          "phase": "p00_approach",
+          "planned_path_length_m": 54.24631037285368,
+          "nominal_motion_duration_s": 18.082103457617894,
+          "nominal_completion_duration_s": 18.582103457617894,
+          "phase_nominal_duration_s": 18.582103457617894,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 253.082855070143,
+          "signed_shortest_turn_deg": -106.91714492985699,
+          "absolute_turn_deg": 106.91714492985699,
+          "entry_point": {
+            "east_m": -13.250766041314613,
+            "north_m": -24.37139522530958,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 38.64811948448547,
+            "north_m": -8.586343111113973,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.023228999991260935,
+              "arrival_s": 21.9,
+              "arrival_source": "trajectory_min_distance",
+              "arrival_verified": false,
+              "arrival_reason": "no_post_event_sample_meets_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 54.19395695275924
+            },
+            "observation": {
+              "start_s": 0.023228999991260935,
+              "arrival_s": 22.2,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 54.30535581066078,
+              "motion_departure_s": 1.1
+            }
+          }
+        },
+        {
+          "agent_id": "uav_03",
+          "phase": "p00_approach",
+          "planned_path_length_m": 53.394620708702355,
+          "nominal_motion_duration_s": 17.798206902900784,
+          "nominal_completion_duration_s": 18.298206902900784,
+          "phase_nominal_duration_s": 18.582103457617894,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 260.25349748181355,
+          "signed_shortest_turn_deg": -99.74650251818645,
+          "absolute_turn_deg": 99.74650251818645,
+          "entry_point": {
+            "east_m": -13.250766041314613,
+            "north_m": -8.673094925449352,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 39.373177789677726,
+            "north_m": 0.3660453156769856,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.03799559999606572,
+              "arrival_s": 22.2,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 53.6811553058503
+            },
+            "observation": {
+              "start_s": 0.03799559999606572,
+              "arrival_s": 22.1,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 53.60050859421645,
+              "motion_departure_s": 1.0
+            }
+          }
+        }
+      ],
+      "phase_metrics": [
+        {
+          "phase": "p00_approach",
+          "semantic_phase": "approach",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 2,
+            "uav_02": 2,
+            "uav_03": 2
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 0.28389655471710995,
+              "tau_s": 3.716420691523579,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 0.28389655471710995,
+              "tau_s": 3.716420691523579,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        },
+        {
+          "phase": "p01_observe",
+          "semantic_phase": "observe",
+          "AV1": {
+            "total_count": 18,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": 0.0,
+            "applicable": true
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_03": 0
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 0.08877539050045158,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 0.17125465401502282,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        },
+        {
+          "phase": "p02_return",
+          "semantic_phase": "return",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 1,
+            "uav_02": 1,
+            "uav_03": 1
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 0.7103852060586782,
+              "tau_s": 3.712322029190363,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 0.7103852060586782,
+              "tau_s": 3.712322029190363,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        }
+      ],
+      "AV2_episode": {
+        "limit": 4,
+        "per_agent": {
+          "uav_01": 3,
+          "uav_02": 3,
+          "uav_03": 3
+        }
+      },
+      "execution_fractions": {
+        "stationary_time_fraction": 0.01324758399883527,
+        "synchronized_time_fraction": 0.012081784386617101
+      }
+    },
+    {
+      "case_id": "VR2",
+      "stage": "validation",
+      "run_id": "20261002T194633Z_f1b63124",
+      "run_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124",
+      "analysis_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17",
+      "time_epoch_host_s": 56303.232409200005,
+      "intent": "reconnaissance",
+      "elapsed_s": 228.48746720000054,
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "validation_policy": {
+        "version": "v05_acceptance_r1_2",
+        "stage": "validation",
+        "hard_checks": {
+          "parameter_firmware": true,
+          "onboard_mission_parameters": true,
+          "truth_separation": true,
+          "no_zero_length_segments": true,
+          "run_completed": true,
+          "dual_channel_mission_success": true,
+          "validation_episode_quality": true
+        },
+        "hard_failures": [],
+        "soft_flags": [],
+        "individual_pass": true,
+        "episode_quality_eligible": true,
+        "soft_flags_affect_episode_quality": false,
+        "external_checks_required": [
+          "frozen_input_and_firmware_identity",
+          "protected_file_hashes",
+          "infrastructure_and_disk"
+        ]
+      },
+      "approach": [
+        {
+          "agent_id": "uav_01",
+          "phase": "p00_approach",
+          "planned_path_length_m": 59.98898608008017,
+          "nominal_motion_duration_s": 29.994493040040084,
+          "nominal_completion_duration_s": 30.494493040040084,
+          "phase_nominal_duration_s": 33.13147482430026,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 272.6933187742893,
+          "signed_shortest_turn_deg": -87.30668122571069,
+          "absolute_turn_deg": 87.30668122571069,
+          "entry_point": {
+            "east_m": -23.20835686871242,
+            "north_m": -25.416157893169792,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 36.71436305126826,
+            "north_m": -28.235038576633087,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.013400199997704476,
+              "arrival_s": 33.8,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 60.622315371190034
+            },
+            "observation": {
+              "start_s": 0.013400199997704476,
+              "arrival_s": 33.6,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 60.49852697165456,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_02",
+          "phase": "p00_approach",
+          "planned_path_length_m": 63.45484417343666,
+          "nominal_motion_duration_s": 31.72742208671833,
+          "nominal_completion_duration_s": 32.227422086718335,
+          "phase_nominal_duration_s": 33.13147482430026,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 276.0518556188791,
+          "signed_shortest_turn_deg": -83.94814438112093,
+          "absolute_turn_deg": 83.94814438112093,
+          "entry_point": {
+            "east_m": -23.20835686871242,
+            "north_m": -1.0696199644053381,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 39.89284612567819,
+            "north_m": -7.759569869736301,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.028062499994121026,
+              "arrival_s": 35.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 64.06504534398276
+            },
+            "observation": {
+              "start_s": 0.028062499994121026,
+              "arrival_s": 35.4,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 63.97769224622139,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_03",
+          "phase": "p00_approach",
+          "planned_path_length_m": 65.26294964860053,
+          "nominal_motion_duration_s": 32.63147482430026,
+          "nominal_completion_duration_s": 33.13147482430026,
+          "phase_nominal_duration_s": 33.13147482430026,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 277.5947233523695,
+          "signed_shortest_turn_deg": -82.4052766476305,
+          "absolute_turn_deg": 82.4052766476305,
+          "entry_point": {
+            "east_m": -23.20835686871242,
+            "north_m": 11.103648999976887,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 41.48208766288315,
+            "north_m": 2.478164483712094,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.014709099996252917,
+              "arrival_s": 35.3,
+              "arrival_source": "trajectory_min_distance",
+              "arrival_verified": false,
+              "arrival_reason": "no_post_event_sample_meets_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 65.22879484035595
+            },
+            "observation": {
+              "start_s": 0.014709099996252917,
+              "arrival_s": 35.4,
+              "arrival_source": "trajectory_min_distance",
+              "arrival_verified": false,
+              "arrival_reason": "no_post_event_sample_meets_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 65.23067588768278,
+              "motion_departure_s": 1.0
+            }
+          }
+        },
+        {
+          "agent_id": "uav_04",
+          "phase": "p00_approach",
+          "planned_path_length_m": 61.69542825122368,
+          "nominal_motion_duration_s": 30.84771412561184,
+          "nominal_completion_duration_s": 31.34771412561184,
+          "phase_nominal_duration_s": 33.13147482430026,
+          "initial_heading_deg": 0.0,
+          "entry_bearing_deg": 274.41974849898145,
+          "signed_shortest_turn_deg": -85.58025150101855,
+          "absolute_turn_deg": 85.58025150101855,
+          "entry_point": {
+            "east_m": -23.20835686871242,
+            "north_m": -13.242888928787565,
+            "up_m": 8.0
+          },
+          "start_point": {
+            "east_m": 38.30360458847322,
+            "north_m": -17.997304223184695,
+            "up_m": 8.0
+          },
+          "channels": {
+            "truth": {
+              "start_s": 0.028275399992708117,
+              "arrival_s": 34.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 62.28357098901471
+            },
+            "observation": {
+              "start_s": 0.028275399992708117,
+              "arrival_s": 34.5,
+              "arrival_source": "trajectory_stop",
+              "arrival_verified": true,
+              "arrival_reason": "first_sample_meeting_distance_and_speed",
+              "phase_release_s": 0.0,
+              "start_event": "phase_auto_confirmed",
+              "chronology_valid": true,
+              "sampled_horizontal_path_length_m": 62.215164692832076,
+              "motion_departure_s": 1.0
+            }
+          }
+        }
+      ],
+      "phase_metrics": [
+        {
+          "phase": "p00_approach",
+          "semantic_phase": "approach",
+          "AV1": {
+            "total_count": 0,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": null,
+            "applicable": false
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 2,
+            "uav_02": 2,
+            "uav_03": 1,
+            "uav_04": 2
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 1.250375205323909,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 0.9777542508211852,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        },
+        {
+          "phase": "p01_observe",
+          "semantic_phase": "observe",
+          "AV1": {
+            "total_count": 24,
+            "stopped_count": 0,
+            "unknown_count": 0,
+            "stop_rate": 0.0,
+            "applicable": true
+          },
+          "AV2_stop_onset_count_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_03": 1,
+            "uav_04": 0
+          },
+          "AC4": {
+            "truth": {
+              "D_s": 0.4811710388051438,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            },
+            "observation": {
+              "D_s": 0.4793889238466278,
+              "tau_s": 5.0,
+              "complete": true,
+              "within_tau": true,
+              "per_agent_laps_observed": {}
+            }
+          }
+        }
+      ],
+      "AV2_episode": {
+        "limit": 3,
+        "per_agent": {
+          "uav_01": 2,
+          "uav_02": 2,
+          "uav_03": 2,
+          "uav_04": 2
+        }
+      },
+      "execution_fractions": {
+        "stationary_time_fraction": 0.014075260095833477,
+        "synchronized_time_fraction": 0.005855562784645413
+      }
+    }
+  ],
+  "aggregate": {
+    "by_intent_and_phase": [
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "semantic_phase": "approach",
+        "run_count": 3,
+        "AV1": {
+          "stop_rate": {
+            "count": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "expected_count": 0,
+            "unknown_count": 0
+          },
+          "waypoint_count": 0,
+          "stopped_count": 0,
+          "unknown_count": 0
+        },
+        "AV2_stop_onset_count": {
+          "count": 9,
+          "min": 2,
+          "p10": 2.0,
+          "median": 2.0,
+          "p90": 2.0,
+          "max": 2,
+          "expected_count": 9,
+          "unknown_count": 0
+        },
+        "channels": {
+          "truth": {
+            "D_s": {
+              "count": 3,
+              "min": 3.496686531555641,
+              "p10": 3.9747870918767,
+              "median": 5.887189333160938,
+              "p90": 7.099666356103948,
+              "max": 7.4027856118397,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 3,
+              "min": 3.686923368272824,
+              "p10": 3.754017395409048,
+              "median": 4.022393503953943,
+              "p90": 4.8044787007907885,
+              "max": 5.0,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 2,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          },
+          "observation": {
+            "D_s": {
+              "count": 3,
+              "min": 3.3346890813286976,
+              "p10": 4.098329080238005,
+              "median": 7.152889075875237,
+              "p90": 8.293623327213998,
+              "max": 8.57880689004869,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 3,
+              "min": 3.686923368272824,
+              "p10": 3.754017395409048,
+              "median": 4.022393503953943,
+              "p90": 4.8044787007907885,
+              "max": 5.0,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 2,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          }
+        }
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "semantic_phase": "patrol",
+        "run_count": 3,
+        "AV1": {
+          "stop_rate": {
+            "count": 2,
+            "min": 0.0,
+            "p10": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "expected_count": 3,
+            "unknown_count": 1
+          },
+          "waypoint_count": 91,
+          "stopped_count": 0,
+          "unknown_count": 28
+        },
+        "AV2_stop_onset_count": {
+          "count": 9,
+          "min": 0,
+          "p10": 0.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1,
+          "expected_count": 9,
+          "unknown_count": 0
+        },
+        "channels": {
+          "truth": {
+            "D_s": {
+              "count": 3,
+              "min": 0.5323212135333506,
+              "p10": 0.5522462592083336,
+              "median": 0.6319464419082657,
+              "p90": 1.5421136106977926,
+              "max": 1.7696554028951743,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 3,
+              "min": 5.0,
+              "p10": 5.0,
+              "median": 5.0,
+              "p90": 5.0,
+              "max": 5.0,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 9,
+              "min": 2,
+              "p10": 2.0,
+              "median": 2.0,
+              "p90": 3.0,
+              "max": 3,
+              "expected_count": 9,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          },
+          "observation": {
+            "D_s": {
+              "count": 3,
+              "min": 0.5283187983940252,
+              "p10": 0.5316172265743468,
+              "median": 0.5448109392956333,
+              "p90": 1.587334265898977,
+              "max": 1.847965097549813,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 3,
+              "min": 5.0,
+              "p10": 5.0,
+              "median": 5.0,
+              "p90": 5.0,
+              "max": 5.0,
+              "expected_count": 3,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 9,
+              "min": 2,
+              "p10": 2.0,
+              "median": 2.0,
+              "p90": 3.0,
+              "max": 3,
+              "expected_count": 9,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          }
+        }
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "semantic_phase": "return",
+        "run_count": 2,
+        "AV1": {
+          "stop_rate": {
+            "count": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "expected_count": 0,
+            "unknown_count": 0
+          },
+          "waypoint_count": 0,
+          "stopped_count": 0,
+          "unknown_count": 0
+        },
+        "AV2_stop_onset_count": {
+          "count": 7,
+          "min": 0,
+          "p10": 0.0,
+          "median": 1.0,
+          "p90": 2.4000000000000004,
+          "max": 3,
+          "expected_count": 7,
+          "unknown_count": 0
+        },
+        "channels": {
+          "truth": {
+            "D_s": {
+              "count": 2,
+              "min": 2.7321791588368285,
+              "p10": 2.7431460740118285,
+              "median": 2.787013734711829,
+              "p90": 2.8308813954118297,
+              "max": 2.8418483105868297,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 2,
+              "min": 4.022393503953943,
+              "p10": 4.120154153558548,
+              "median": 4.511196751976971,
+              "p90": 4.902239350395394,
+              "max": 5.0,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          },
+          "observation": {
+            "D_s": {
+              "count": 2,
+              "min": 2.647158893010918,
+              "p10": 2.827492893856491,
+              "median": 3.548828897238783,
+              "p90": 4.270164900621076,
+              "max": 4.4504989014666485,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 2,
+              "min": 4.022393503953943,
+              "p10": 4.120154153558548,
+              "median": 4.511196751976971,
+              "p90": 4.902239350395394,
+              "max": 5.0,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          }
+        }
+      },
+      {
+        "stage": "validation",
+        "intent": "reconnaissance",
+        "semantic_phase": "approach",
+        "run_count": 2,
+        "AV1": {
+          "stop_rate": {
+            "count": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "expected_count": 0,
+            "unknown_count": 0
+          },
+          "waypoint_count": 0,
+          "stopped_count": 0,
+          "unknown_count": 0
+        },
+        "AV2_stop_onset_count": {
+          "count": 7,
+          "min": 1,
+          "p10": 1.6,
+          "median": 2.0,
+          "p90": 2.0,
+          "max": 2,
+          "expected_count": 7,
+          "unknown_count": 0
+        },
+        "channels": {
+          "truth": {
+            "D_s": {
+              "count": 2,
+              "min": 0.28389655471710995,
+              "p10": 0.38054441977778986,
+              "median": 0.7671358800205095,
+              "p90": 1.153727340263229,
+              "max": 1.250375205323909,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 2,
+              "min": 3.716420691523579,
+              "p10": 3.844778622371221,
+              "median": 4.35821034576179,
+              "p90": 4.871642069152358,
+              "max": 5.0,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          },
+          "observation": {
+            "D_s": {
+              "count": 2,
+              "min": 0.28389655471710995,
+              "p10": 0.3532823243275175,
+              "median": 0.6308254027691476,
+              "p90": 0.9083684812107776,
+              "max": 0.9777542508211852,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 2,
+              "min": 3.716420691523579,
+              "p10": 3.844778622371221,
+              "median": 4.35821034576179,
+              "p90": 4.871642069152358,
+              "max": 5.0,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          }
+        }
+      },
+      {
+        "stage": "validation",
+        "intent": "reconnaissance",
+        "semantic_phase": "observe",
+        "run_count": 2,
+        "AV1": {
+          "stop_rate": {
+            "count": 2,
+            "min": 0.0,
+            "p10": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "expected_count": 2,
+            "unknown_count": 0
+          },
+          "waypoint_count": 42,
+          "stopped_count": 0,
+          "unknown_count": 0
+        },
+        "AV2_stop_onset_count": {
+          "count": 7,
+          "min": 0,
+          "p10": 0.0,
+          "median": 0.0,
+          "p90": 0.40000000000000036,
+          "max": 1,
+          "expected_count": 7,
+          "unknown_count": 0
+        },
+        "channels": {
+          "truth": {
+            "D_s": {
+              "count": 2,
+              "min": 0.08877539050045158,
+              "p10": 0.1280149553309208,
+              "median": 0.2849732146527977,
+              "p90": 0.4419314739746746,
+              "max": 0.4811710388051438,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 2,
+              "min": 5.0,
+              "p10": 5.0,
+              "median": 5.0,
+              "p90": 5.0,
+              "max": 5.0,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          },
+          "observation": {
+            "D_s": {
+              "count": 2,
+              "min": 0.17125465401502282,
+              "p10": 0.20206808099818332,
+              "median": 0.3253217889308253,
+              "p90": 0.4485754968634673,
+              "max": 0.4793889238466278,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 2,
+              "min": 5.0,
+              "p10": 5.0,
+              "median": 5.0,
+              "p90": 5.0,
+              "max": 5.0,
+              "expected_count": 2,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          }
+        }
+      },
+      {
+        "stage": "validation",
+        "intent": "reconnaissance",
+        "semantic_phase": "return",
+        "run_count": 1,
+        "AV1": {
+          "stop_rate": {
+            "count": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "expected_count": 0,
+            "unknown_count": 0
+          },
+          "waypoint_count": 0,
+          "stopped_count": 0,
+          "unknown_count": 0
+        },
+        "AV2_stop_onset_count": {
+          "count": 3,
+          "min": 1,
+          "p10": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1,
+          "expected_count": 3,
+          "unknown_count": 0
+        },
+        "channels": {
+          "truth": {
+            "D_s": {
+              "count": 1,
+              "min": 0.7103852060586782,
+              "p10": 0.7103852060586782,
+              "median": 0.7103852060586782,
+              "p90": 0.7103852060586782,
+              "max": 0.7103852060586782,
+              "expected_count": 1,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 1,
+              "min": 3.712322029190363,
+              "p10": 3.712322029190363,
+              "median": 3.712322029190363,
+              "p90": 3.712322029190363,
+              "max": 3.712322029190363,
+              "expected_count": 1,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          },
+          "observation": {
+            "D_s": {
+              "count": 1,
+              "min": 0.7103852060586782,
+              "p10": 0.7103852060586782,
+              "median": 0.7103852060586782,
+              "p90": 0.7103852060586782,
+              "max": 0.7103852060586782,
+              "expected_count": 1,
+              "unknown_count": 0
+            },
+            "tau_s": {
+              "count": 1,
+              "min": 3.712322029190363,
+              "p10": 3.712322029190363,
+              "median": 3.712322029190363,
+              "p90": 3.712322029190363,
+              "max": 3.712322029190363,
+              "expected_count": 1,
+              "unknown_count": 0
+            },
+            "D_exceeds_tau_count": 0,
+            "timing_unknown_count": 0,
+            "lap_counts": {
+              "count": 0,
+              "min": null,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "max": null,
+              "expected_count": 0,
+              "unknown_count": 0
+            },
+            "laps_unknown_count": 0
+          }
+        }
+      }
+    ],
+    "soft_flag_counts": [
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "phase": "p00_approach",
+        "channel": "observation",
+        "code": "AC4",
+        "status": "exceeded",
+        "source": "primary",
+        "count": 2
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "phase": "p00_approach",
+        "channel": "truth",
+        "code": "AC4",
+        "status": "exceeded",
+        "source": "event_crosscheck",
+        "count": 1
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "phase": "p00_approach",
+        "channel": "truth",
+        "code": "AC4",
+        "status": "exceeded",
+        "source": "primary",
+        "count": 2
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "phase": "p02_return",
+        "channel": "observation",
+        "code": "AC4",
+        "status": "exceeded",
+        "source": "event_crosscheck",
+        "count": 1
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "phase": null,
+        "channel": "observation",
+        "code": "AV-1",
+        "status": "unknown",
+        "source": null,
+        "count": 1
+      },
+      {
+        "stage": "validation",
+        "intent": "patrol",
+        "phase": null,
+        "channel": "observation",
+        "code": "AV-2",
+        "status": "exceeded",
+        "source": null,
+        "count": 2
+      }
+    ]
+  },
+  "definitions": {
+    "time_basis": "seconds relative to each phase_windows.time_epoch_host_s; not UTC",
+    "departure_event": "phase_windows.start_s, actual phase_auto_confirmed host event",
+    "motion_departure": "first FCU horizontal speed >0.3 m/s sample in approach release-to-arrival window, sustained >=0.2 s; >0.15s gaps break evidence",
+    "arrival": "unchanged phase_windows.arrival_s and arrival_source/arrival_verified; fallback is not verified stationary arrival",
+    "nominal_duration": "planning.nominal_phase_timing.per_agent_arrival_s; completion includes confirmation dwell; phase max separately supplied",
+    "planned_path": "planning.nominal_phase_timing.per_agent_path_length_m",
+    "sampled_path": "horizontal adjacent valid 10Hz samples in [start_s,arrival_s], no extrapolation; gaps => null",
+    "heading": "configured 0 degrees, north=0 clockwise; bearing atan2(deltaEast,deltaNorth); signed shortest turn in [-180,180)",
+    "AV2_phase": "count stop starts in [phase_release_s,end_s); phase counts are diagnostic only; AV2 threshold applies to full episode",
+    "unknown": "nulls excluded from numeric quantiles and counted separately; no imputation"
+  },
+  "source_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12a\\pause1_preparation\\validation_complete\\diagnostic_inputs.json": "998ab971de935c5079fc5b577bb155e509133f77bc65f78b1f7cf1d8c522ea74",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05c_validation_20261002\\execution\\VP1\\attempt_0\\attempts\\4a8712e9f03047a39b8e429d4d6cbc4d\\patrol_0001_v00_20261002T173037Z_a380b812\\metadata.json": "70c455187dcd30b4d72faf5f534b3c8c3480686856f0b17460e3d2c73b7b55d4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\manifest.json": "22edf6baa5afccae9ec4448469ab30384bb912979267341ed86eb138b1ec01ed",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\ac4_timing_v3.json": "9e9dd9f5f55172981d1030b9630c2476c4dd17148eafd14e9535bfcc3b284381",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\allocation.json": "0c5e1cf7c095b6eed53e44c6b5d737a8b8442f336d00ec351ce0d0c7455a96c6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\clock_models.json": "1c7c10d6578b79cc9a28b44e53f6a1439bdaab3cbb1e69745b85411d39cfe80b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\estimation_error.csv": "8e44bc0680ec2b6a50bbb4287bbea439bea7a50ad5800216e7db96ef614bf390",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\execution_constraints.json": "4d2220295c03d16553f82917a8c342fcc4f2a394dde794ef0feb2988749cb3cb",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\execution_metrics.json": "f85c64a35e56b59edfb72e147e01131ef6e02b3565e832c483a24d68b5b7c15e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\labels.json": "5b0a8f203c49501a30e39c2f4a9654dc0822574b37bdd947da83cda59435d753",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\lifecycle_clock_models.json": "80ec04a2b22ec5332f4066bee571966ae5bbba0c3859a8804a524244ada4df77",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\logged_parameters.json": "68ea5dc47de147599ee9b24119a44757a02d99e179b04f2a2cfee31eb46c0cb1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\mission.json": "60e00c67d2c45eabb670a7c3f45543c248e9d5adbdcc8462d7ef990b3740c80b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\observations.csv": "1e3c83d2fa835f5118d92a319446d8076250813a8218db240a694b05339828d3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\observation_processing.json": "2df61db96545aeb452160881a88fd45d37b5776cdd386d97ce8bac5d805d53fe",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\onboard_mission_param_check.json": "d9d87dc70de474959a9cbe2009452f240b12f7bc9aa7f0d0073aaa7f0faa67be",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\phase_windows.json": "6c4956e7e82674f1a9cf604f8c7f8b89c708c0847948a9e15fe62766d0561f9c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\quality.json": "532f36032495eac898a1687fcf5ff14c56e51e4297ac740f5a5c1d5ac7b57a3c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\reference_waypoints.csv": "cab7ac129cd885a956a9aa6ef953008e1e5b6c4e90ace7950b7be424f735c4a7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\semantic_plan.json": "27e6297ed1b9964f0339680847f27e5c86d5e63e740e51cac7a2510da4e9b7c3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\semantic_validation.json": "a8fe8a634e422bd7d71a5eef25f76420e3e2b0c04cbf51bb238ae9e89818ed64",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\shared_scene.json": "baf6f6b408c788a260adc7992d4c079e3266526f38d02e2871ea022b95fc8ac0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\task.json": "3bdcbeb80ca473dcf3ca938597ecc8ff16f3f3273549927b1a884936b7a07f79",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\truth.csv": "eaf0485ed18032fa31bbe3e3ca881a8bbb5bc43baa87cee2f5208a151b85bb8a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\truth_provenance.json": "ef02c17cecd09320baaa80133f1f99e441b0af3e63ab5d15e9edf8b6fae04ce0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\tmp_v05\\r12\\vp1_analysis_v2\\truth_source.csv": "d4c3f6668f6bd2a3c7bf379778a46e0087a01794c320afd2849eb62132405db6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\metadata.json": "6e950655c40d18ae6a60bbd68393465ac7c719e363060625daf0154b3ec46e69",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\manifest.json": "c4201d1622594478b13d7beb1baf9205f2af677c452bb2b85c1902002e1a6358",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\ac4_timing_v3.json": "63f71729fdb6852d0a57003e4ba1ee127a59a6246ba1c2055acc9debb0537519",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\allocation.json": "4ba3ce6791dd87ad37c74edfd061455cbeb53e42d3a719812667cac576448e66",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\clock_models.json": "90812a96439fec99c8baeed10807979a703baf0ea7cc4feab51cec0fab208210",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\estimation_error.csv": "0ec891147c1dbbfbe17e3c1d742d8a84e245dc22be53b8d0d171fdb1ca85c26b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\execution_constraints.json": "9d4687fdca09f956463c5b2f1999a6c2ac5c49c40d095f0f410fb169907d5843",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\execution_metrics.json": "9e4eeac3046a76799dae7e983cfff495f42c5fa7337162793412597b05d64baf",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\labels.json": "930b57f495bb00b6b382161c7069c16fb79842979ada04d3172f96d629dad1ab",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\lifecycle_clock_models.json": "c760947d66fcb29dc54cfef393636e3db85e9f10d7c34ab8e0b4275dbd28591a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\logged_parameters.json": "d1f930be874f51832a897ac3f447ce8298029813fc0bc31816e952b4ff3b609f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\mission.json": "60e00c67d2c45eabb670a7c3f45543c248e9d5adbdcc8462d7ef990b3740c80b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\observations.csv": "bd75ebbd06c93e6d133586038d20cf3390b8b58e761af9fb8814baa24ad458ff",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\observation_processing.json": "ba0a12b34aa6e8c8f464bbefaae3ff253f7245c34aac9b3695b287c716aa57c8",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\onboard_mission_param_check.json": "7854ae46dd5d4bb129597ad38fbcf1b235b8cbef6aa49088e61d5bee8ca558f0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\phase_windows.json": "c2ae5f0b8eac48ad7c57c4e17f43efacdec3b2e765071225f9b9179a057efd9d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\quality.json": "6e5689045afa6ea370901691061ef8dc5eec8ea8887bf8d85901ea4d703a8ef1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\reference_waypoints.csv": "cebd7053aba7acf6cc8b31d0f48ead48900654730d1a296af778e43934ff6463",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\semantic_plan.json": "f7263faee7fc3ab391a254afd9e63b7a64de62ea34c3398354a0ef22e98ec727",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\semantic_validation.json": "9ca27cbcf6463e999aefca571f202ed7b00d826403b45205d5e26a49df7be3d1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\shared_scene.json": "3ee6ff40e7e0de04251cb46ba1139926359687eb3f685cbaf6ff966a7876a164",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\task.json": "22d072e60b444bed6b000eb0aa95df3701a12ee392ca9a3e6d4b300224fbcdf8",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\truth.csv": "bf3c654c5f2035e0ed16115fa8a6869e947319e1bbdd3ff53137e630aeb8f60d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\truth_provenance.json": "653290d565717af2657170d8d0144e341222f22128eda74dc50e843b9c647e12",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP2\\attempt_0\\attempts\\e1c5f628bac34f80a77bf4074951f0e3\\patrol_0116_v00_20261002T193059Z_bfb4d103\\analysis_v050-dev_20261002T193629Z_fd583a79\\truth_source.csv": "54a8552545a7712eca0a6eaa2745aa5376ecc514155b93b85914f48d4e13e20f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\metadata.json": "5040e51134fc72c5c77648d0aeaa0243fe0f6137b2cff876d78c5fdd349b0b92",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\manifest.json": "c16f16fdfd79135c0ff0e0e0675177783b2be6fae05baac9505cfea7163f3c93",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\ac4_timing_v3.json": "e0cbb56839fd62b4b1269e8a031a8d35079765f522a35da28e135f5124015254",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\allocation.json": "2c89d9f399aaa6b045c975dde67b220608134a447d5b44ef52a186b9323d0bd7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\clock_models.json": "32c6a520de3a775c7a98084bf229ea7c21bbff6a23cffc585adce87c5134e9d0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\estimation_error.csv": "aa999b7cd036ab74fa0e0bd6e3814016d285f8ca26b9a14962c5695a0d40cb1d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\execution_constraints.json": "b664264cdd4e3e708da12c79139c0d2085574af5d6eab5822cd27e94747aaa13",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\execution_metrics.json": "750c919b303f5cb0180fd3fccb403a942c7d7e4c258aa9056979735d15330496",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\labels.json": "cf7227f9d06f0c60c00e63bfe8ffcfc8d9d053e58ad5ded4f4d586dd11a6afe7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\lifecycle_clock_models.json": "2a58da28fb2d011542dc44b6a9bd7a36656d2039a25b402c80056e0c9085fca5",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\logged_parameters.json": "48c860ff739c54925106605bd28caef7de419f6d86246b7b8bfa8d52632f025c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\mission.json": "96993c08039bfbb8e70caa512e7fd05eb64b99956089891def3986cd2747e2f0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\observations.csv": "dea273a4db477aee858c908cf9f031f5d52ee0e2a6a7c4b01012417ef4c05abf",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\observation_processing.json": "6d6b8bd18aaa837368c66702ac5293a2b192c6ab503e88e660a88940e393cbc8",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\onboard_mission_param_check.json": "537d35998b9a1f1ca58994c53f72560c543fe9d8f553f7e04f7222973498daa0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\phase_windows.json": "ca06623e95239b961017fb4b0d252df6f835830c27806b5e9120be99bf53f3b2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\quality.json": "59886f9e922bbd8399fa7801706f8f384694f608469f3cabc674fc305fa80823",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\reference_waypoints.csv": "20fccee81536068c10f6a61a4b15e20660825065e7e8d09bbf88979c04db715b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\semantic_plan.json": "40b0d1f24e8da963855e9b776a13f36c8b1abebac6f2aed7f5cb667e8ce758b4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\semantic_validation.json": "56fec77afd9c02d77738db2de4f6285d0b0af39a96382a8c63d1768ee10740ad",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\shared_scene.json": "dbea1be92b76892779789317fc1215d4c9c02cfe7984e24c61bad256639f9e8c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\task.json": "94c69301249479b6432fe508210ab1e568e578483d6a334d16cc431bfc25e709",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\truth.csv": "dd53e8c8b5ca94d082420e87a0fff481c944d6e609ce4b2b7161b26de8561f60",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\truth_provenance.json": "387766ec674d3cab5b8f67dd8b3c51083978d7ca51b5908aacdbae01290f2212",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VP3\\attempt_0\\attempts\\bdbf7377464844e6b20e3d545e315e21\\patrol_0048_v00_20261002T193716Z_75576f40\\analysis_v050-dev_20261002T194147Z_d867b38a\\truth_source.csv": "6f22c1ca62832d8abaa3b5592cd61bf5222df99f2f99401323fae000bb9e2a44",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\metadata.json": "8ee2919760a72816da7171027c0b45868f3c68a365fe3b178687b05b0ac02284",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\manifest.json": "2ad04f5ba6f59b60639c1db8d8eb99b15c83a67be3d3a2b67b264753e6bd5108",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\ac4_timing_v3.json": "80d7d8c4f27664dd7e64f75dac9947ee9f6d5399a8f398ca2a17e439050f6d2a",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\allocation.json": "12d2bf1636e50b8b0773da320f47d67fe3742a872ceebb059510c95c5852d58b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\clock_models.json": "f5d0d5dca91910c26ca45fc3857190559353351ea5e87e974de91e93367b7a8b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\estimation_error.csv": "892b1ed8ab64ce96049c67fcc516d08f4091ff392721bb1dc401ce2e8c571dd1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\execution_constraints.json": "95f85b54bf5a0a48ad79427517032c3922b987482120e1841e86992af4997c8f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\execution_metrics.json": "d50649b81c6cd43b6af141eb04a5e1fbcf6ed87fd71467ae0e35d8de582483f7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\labels.json": "bcd5522220af48e3cebc0e195fcfd3de61141e5ed380ebee379642969a21f657",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\lifecycle_clock_models.json": "18ef7068b8b092c99e06f8a2ba829bd449641cae5dd3bd2b49f70d9a56009c53",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\logged_parameters.json": "39fec9c05147fca652f2cc4ed593c71ae7e950c7edca5a2b52c37cc4a990f520",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\mission.json": "b24d2ed352b399f7d3942adc046e0225fe8910f884f3c31423a75aa814379dd0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\observations.csv": "59b14427119a53a05b6295e417a8bfdc1d0dd8adab3f7438100d6c8e10869329",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\observation_processing.json": "07e5a56b56209db8f19e0d0d2cc1ee8580eab50d4f12fc9d030334ac7714ea65",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\onboard_mission_param_check.json": "5c4f0668f885c3181505d1a6e65f1cb26d81a19019924d42e574cadafc9b7aa7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\phase_windows.json": "dcd590731684cf12f5577b431ae84e72243be07fc05402aa39bb2c4fcb2c121c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\quality.json": "77d686302965b07b129be8649e53c705da36ec88dffaf4b7f6cbafd16139e293",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\reference_waypoints.csv": "d0c00fcb495329db1a95b5274246447eff7a79ea008712b56c51532de39469fc",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\semantic_plan.json": "2c5ae4800944dfece966fadeed39768fc99505d63d3b6432097120b719f781c2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\semantic_validation.json": "8f2c0aa646bd14245706fa76d97e90ab23073131428d7ecf0e542689dfd073a1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\shared_scene.json": "5d32234696209859776989875f03c9a6b1c9cdee38ed9efa65907b69b954952f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\task.json": "cd83d0a89928111e9599550f9005b7ce04c52582322b3ef8e061c34d0f67ed5c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\truth.csv": "fe75f448f4263361953fc237795a00dc250f0b7e5501f24c464cdc2d503575a2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\truth_provenance.json": "396b5effc44bbc34164c649cdd5d084c5962bf693d483b3bff9544cdb5816eb6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR1\\attempt_0\\attempts\\2b97a4ffe492470999e2590dbe98c511\\reconnaissance_0010_v00_20261002T194230Z_85c734e8\\analysis_v050-dev_20261002T194551Z_dfa925b4\\truth_source.csv": "b509ee13a79e2fdad0cc28d59c2d00eb17e17aa8f98650d67146bb56c878f88d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\metadata.json": "f1b081576b3e3767d1f6c0d59fdcd595f076915f7188ac56f76dbc6f0fb28767",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\manifest.json": "d4a35e65571ae5cd84442c0cc409534458aa6287b30fc664863b86153bd93705",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\ac4_timing_v3.json": "bee46f6ebc3973c98d71f3448dadb69bda4a2eb521412662c9b6c6257cb68f92",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\allocation.json": "01b2c62504c69cdc2162cb2cc6c8acb625bd6663771559bf751377005cf0bae3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\clock_models.json": "0e9ee3e46fdf977440f862db9c1c4c2f7de14b64d1d30f72a8ef1f6e3c0edde1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\estimation_error.csv": "c1c334567420327d204ccb1e02f3317ca556b6aa018b9ea7051e7de2a42066cb",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\execution_constraints.json": "8b2238efa62a1820e6a13bdc38b527d5a33e7cb35440cce75da84bd503db0bab",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\execution_metrics.json": "6b5450cddb550e4a11f903f179b8efc3ee0943db6fe2ba9074070060b422a09e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\labels.json": "ee8b794ecb9429a6ad9e1833ede4cf58313ef5b3fae9364b077676b8f81b2c04",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\lifecycle_clock_models.json": "b9b5a5d116369b9bfc5be4dafb9c165fcff4f550d96c7a05271ff94a5be0936d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\logged_parameters.json": "be5d7c217239c1bd49f60353cb5243fb5eced2146c11100bf3e584cbda1386ee",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\mission.json": "9bf495605f78a25b3059394e25d1a5cd1d7ffe11c88cbe27025c9536c16901b9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\observations.csv": "e57068d96f2a8f5eb82c584694fb94ff2d89885860b7375878302523cbf1b42b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\observation_processing.json": "df78747d5aaec63739b24c355f3a295c70747a4bf5d098b018ee3ce296a83424",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\onboard_mission_param_check.json": "84208269a1ea57d5a5e7fb0a403d79e07e399816c56830f00357858034482d2d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\phase_windows.json": "a0282f14aaaf8bff21fa839e9b3179d92b0a3e924d739249b3db07eeadfdda4e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\quality.json": "e6e111acbee80c2a384582dbea9bae12e44eddf3ed5213bd458e188115154b01",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\reference_waypoints.csv": "8a1fb7eeb6b21d296cf9efde3ffdc8319552dfb12e23932f12e9e0b19653c270",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\semantic_plan.json": "aa856102458d4beff0482de34e9ba0b0117268e323e9238da2f2124e9dc4b429",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\semantic_validation.json": "3cd6327c928c9af2cb86eba72c78cd7c75e23c485fa8ca0829050c6423aafb99",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\shared_scene.json": "a51e819b6daee943c48b30660f7720c480beb22747befe095e89b218dd645c7c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\task.json": "3e9b4a068d443036ee608ad7c775cc06addd22e7d0ad18a514c6d86d84bac661",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\truth.csv": "d19f590ef17c7eb3e6393248075e8dc0cf4b3eaaad2a03a4d8fcdf7cb93709e2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\truth_provenance.json": "8adac567df76ca23a354932ba79d316462620106c53be0f95fa353d9104f5929",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_validation_20261002\\execution\\VR2\\attempt_0\\attempts\\c9167aac2f6d45b4b33112f418270b9e\\reconnaissance_0002_v00_20261002T194633Z_f1b63124\\analysis_v050-dev_20261002T195128Z_3aca8e17\\truth_source.csv": "2d5957f3f2ec2fe04c2d868b550f4e1e7baabcb1c65f15c2d375c39bdcf65fe5"
+  }
+}

@@ -325,9 +325,11 @@ def _phase_window(agent, phase_name, windows):
     return start, min(successors) if successors else stop, all(w.get("complete_execution_window", False) for w in selected)
 
 
-def _ordered_visits(scene, traces, windows, repeated, dt):
+def _ordered_visits(scene, traces, windows, repeated, dt, progress_mapping_version="ordered_route_progress_v1"):
     """Map repeated route targets to observed visits; never invent missing visits."""
-    from .ac4_timing import ordered_route_progress
+    from .ac4_timing import ordered_route_progress, ordered_route_progress_v2
+    mapper = {"ordered_route_progress_v1": ordered_route_progress,
+              "ordered_route_progress_v2": ordered_route_progress_v2}[progress_mapping_version]
 
     by_phase = {}
     for phase, agent, start_point in repeated:
@@ -347,7 +349,7 @@ def _ordered_visits(scene, traces, windows, repeated, dt):
             if not execution_complete:
                 item["issues"].append("incomplete_execution_window")
             try:
-                mapped = ordered_route_progress(traces.get(agent, []), route, nominal,
+                mapped = mapper(traces.get(agent, []), route, nominal,
                     start_s=start, end_s=end,
                     max_gap_s=scene.get("max_gap_s", scene.get("task_spec", {}).get("execution", {}).get("max_gap_s", 1.5 * dt)),
                     start_point=start_point)
@@ -404,7 +406,8 @@ def _summarize_v2_waypoints(records):
                 by_scan_line_length_m=grouped, records=records)
 
 
-def compute_execution_metrics_v2(scene, traces, windows, events=None, metadata=None, time_epoch=None, nominal_arrivals=None):
+def compute_execution_metrics_v2(scene, traces, windows, events=None, metadata=None, time_epoch=None, nominal_arrivals=None,
+                                 *, progress_mapping_version="ordered_route_progress_v1"):
     """Versioned visit-aware diagnostics for routes that revisit a position.
 
     The v1 entry point remains frozen. For routes without a repeated position,
@@ -421,7 +424,7 @@ def compute_execution_metrics_v2(scene, traces, windows, events=None, metadata=N
     windows = windows.get("windows", []) if isinstance(windows, dict) else windows
     windows = windows or []
     dt = result["sampling_dt_s"]
-    phases = _ordered_visits(scene, traces, windows, repeated, dt)
+    phases = _ordered_visits(scene, traces, windows, repeated, dt, progress_mapping_version)
     assignment_by_stop = {}
     for threshold, report in result["thresholds"].items():
         for (agent, phase_name), phase in phases.items():
@@ -476,7 +479,7 @@ def compute_execution_metrics_v2(scene, traces, windows, events=None, metadata=N
             records.append(dict(agent_id=agent, semantic_phase=phase["semantic_phase"],
                 waypoint_index=planner_indices[route_index] if route_index < len(planner_indices) else route_index,
                 route_index=route_index, point=point, scan_line_length_m=None,
-                matched_visit_s=stamp, visit_mapping_version="ordered_route_progress_v1",
+                matched_visit_s=stamp, visit_mapping_version=progress_mapping_version,
                 minimum_passing_speed_m_s=minimum,
                 stopped=True if intervals else False if visit_complete else None,
                 evidence_complete=visit_complete, window_s=phase["window_s"], stop_intervals_s=intervals,

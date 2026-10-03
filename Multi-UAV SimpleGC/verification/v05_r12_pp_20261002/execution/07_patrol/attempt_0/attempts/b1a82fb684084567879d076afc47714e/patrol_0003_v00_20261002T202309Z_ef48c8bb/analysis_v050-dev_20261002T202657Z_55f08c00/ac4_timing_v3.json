@@ -1,0 +1,4178 @@
+{
+  "route_progress_version": "ordered_route_progress_v2",
+  "ac4_timing_version": "ac4_relative_progress_timing_v3",
+  "execution_artifacts_version": "execution_artifacts_v2",
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1",
+  "channels": {
+    "truth": {
+      "version": "ac4_relative_progress_timing_v3",
+      "mapping_version": "ordered_route_progress_v2",
+      "event_mapping_version": "raw_waypoint_event_piecewise_linear_v1",
+      "interval_version": "simultaneous_terminal_interval_min_span_v1",
+      "channel": "truth",
+      "per_phase": {
+        "p00_approach": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              23.56192899999587
+            ],
+            "nominal_end_s": 21.019479366022153,
+            "tau_s": 4.203895873204431,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 1.3307821369939212,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 14.6,
+                    "nominal_s": 11.936122625520403,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.20439884185017582,
+                    "cumulative_arc_length_m": 23.872245251040805,
+                    "closest_time_interval_s": [
+                      14.6,
+                      14.6
+                    ],
+                    "visit_interval_s": [
+                      12.6,
+                      23.56192899999587
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      23.56192899999587
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 15.0,
+                "supplied_terminal_hover_start_s": 15.0,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 11.936122625520403,
+                    "cumulative_arc_length_m": 23.872245251040805,
+                    "actual_s": 14.6,
+                    "match_distance_m": 0.20439884185017582,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      12.6,
+                      23.56192899999587
+                    ],
+                    "search_after_s": 0.0,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      14.6
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      11.936122625520403
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.12845490505775103,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 237,
+                  "witness": {
+                    "actual_s": 18.6,
+                    "observed_progress_m": 23.743790345983054,
+                    "previous_max_progress_m": 23.872245251040805,
+                    "route_distance_m": 0.19713039912222077
+                  }
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 23.2,
+                    "nominal_s": 20.519479366022153,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.22136796755211507,
+                    "cumulative_arc_length_m": 41.03895873204431,
+                    "closest_time_interval_s": [
+                      23.2,
+                      23.2
+                    ],
+                    "visit_interval_s": [
+                      21.4,
+                      23.56192899999587
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      23.56192899999587
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 20.519479366022153,
+                    "cumulative_arc_length_m": 41.03895873204431,
+                    "actual_s": 23.2,
+                    "match_distance_m": 0.22136796755211507,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      21.4,
+                      23.56192899999587
+                    ],
+                    "search_after_s": 0.0,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      23.2
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      20.519479366022153
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 237,
+                  "witness": null
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 1.3307821369939212,
+              "selected_nominal_s": {
+                "uav_01": 11.936122625520403,
+                "uav_02": 13.266904762514324
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  11.936122625520403,
+                  11.936122625520403
+                ],
+                "uav_02": [
+                  13.266904762514324,
+                  13.266904762514324
+                ]
+              },
+              "actual_s": 15.0,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              14.6,
+              15.0,
+              23.2,
+              23.56192899999587
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              23.56192899999587
+            ],
+            "nominal_end_s": 21.019479366022153,
+            "tau_s": 4.203895873204431,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 2.0010419478931443,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 13.231172899992089,
+                    "nominal_s": 11.936122625520403,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 15.0,
+                "supplied_terminal_hover_start_s": 15.0
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 22.084276099994895,
+                    "nominal_s": 20.519479366022153,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 2.0010419478931443,
+              "selected_nominal_s": {
+                "uav_01": 11.936122625520403,
+                "uav_02": 13.937164573413547
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  11.936122625520403,
+                  11.936122625520403
+                ],
+                "uav_02": [
+                  13.937164573413547,
+                  13.937164573413547
+                ]
+              },
+              "actual_s": 15.0,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              13.231172899992089,
+              15.0,
+              22.084276099994895,
+              23.56192899999587
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": 0,
+            "uav_02": 0
+          }
+        },
+        "p01_patrol": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              23.56192899999587,
+              150.65952159999142
+            ],
+            "nominal_end_s": 114.71048626873126,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.7271807053977426,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 29.7,
+                    "nominal_s": 3.991290388139708,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.19563013985068975,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "closest_time_interval_s": [
+                      29.7,
+                      29.7
+                    ],
+                    "visit_interval_s": [
+                      28.0,
+                      32.2
+                    ],
+                    "search_domain_s": [
+                      23.56192899999587,
+                      32.2
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 44.8,
+                    "nominal_s": 17.644910986216438,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.2093212218667937,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "closest_time_interval_s": [
+                      44.8,
+                      44.8
+                    ],
+                    "visit_interval_s": [
+                      43.0,
+                      47.2
+                    ],
+                    "search_domain_s": [
+                      29.7,
+                      47.2
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 60.8,
+                    "nominal_s": 32.543911955322514,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.2212302623139182,
+                    "cumulative_arc_length_m": 65.08782391064503,
+                    "closest_time_interval_s": [
+                      60.8,
+                      60.8
+                    ],
+                    "visit_interval_s": [
+                      59.2,
+                      63.2
+                    ],
+                    "search_domain_s": [
+                      44.8,
+                      63.2
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 75.8,
+                    "nominal_s": 46.19753255339924,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.18454333458832614,
+                    "cumulative_arc_length_m": 92.39506510679848,
+                    "closest_time_interval_s": [
+                      75.8,
+                      75.8
+                    ],
+                    "visit_interval_s": [
+                      74.0,
+                      78.1
+                    ],
+                    "search_domain_s": [
+                      60.8,
+                      78.1
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 87.5,
+                    "nominal_s": 57.10524313436562,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.3146533369140306,
+                    "cumulative_arc_length_m": 114.21048626873124,
+                    "closest_time_interval_s": [
+                      87.5,
+                      87.5
+                    ],
+                    "visit_interval_s": [
+                      86.1,
+                      89.2
+                    ],
+                    "search_domain_s": [
+                      75.8,
+                      89.2
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 91.7,
+                    "nominal_s": 61.09653352250533,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 0.21446999320799756,
+                    "cumulative_arc_length_m": 122.19306704501066,
+                    "closest_time_interval_s": [
+                      91.7,
+                      91.7
+                    ],
+                    "visit_interval_s": [
+                      90.1,
+                      94.3
+                    ],
+                    "search_domain_s": [
+                      87.5,
+                      94.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 106.9,
+                    "nominal_s": 74.75015412058207,
+                    "route_index": 6,
+                    "seq": 8,
+                    "minimum_distance_m": 0.234665402535764,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "closest_time_interval_s": [
+                      106.9,
+                      106.9
+                    ],
+                    "visit_interval_s": [
+                      105.1,
+                      109.4
+                    ],
+                    "search_domain_s": [
+                      91.7,
+                      109.4
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 123.0,
+                    "nominal_s": 89.64915508968815,
+                    "route_index": 7,
+                    "seq": 9,
+                    "minimum_distance_m": 0.19415801660434034,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "closest_time_interval_s": [
+                      123.0,
+                      123.0
+                    ],
+                    "visit_interval_s": [
+                      121.3,
+                      125.4
+                    ],
+                    "search_domain_s": [
+                      106.9,
+                      125.4
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 137.8,
+                    "nominal_s": 103.30277568776488,
+                    "route_index": 8,
+                    "seq": 10,
+                    "minimum_distance_m": 0.1826455354476281,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "closest_time_interval_s": [
+                      137.8,
+                      137.8
+                    ],
+                    "visit_interval_s": [
+                      136.1,
+                      140.3
+                    ],
+                    "search_domain_s": [
+                      123.0,
+                      140.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 149.8,
+                    "nominal_s": 114.21048626873126,
+                    "route_index": 9,
+                    "seq": 11,
+                    "minimum_distance_m": 0.32239985556478734,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "closest_time_interval_s": [
+                      149.8,
+                      149.8
+                    ],
+                    "visit_interval_s": [
+                      148.1,
+                      150.65952159999142
+                    ],
+                    "search_domain_s": [
+                      137.8,
+                      150.65952159999142
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 3,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 3.991290388139708,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "actual_s": 29.7,
+                    "match_distance_m": 0.19563013985068975,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      28.0,
+                      32.2
+                    ],
+                    "search_after_s": 23.56192899999587,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 17.644910986216438,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "actual_s": 44.8,
+                    "match_distance_m": 0.2093212218667937,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      43.0,
+                      47.2
+                    ],
+                    "search_after_s": 29.7,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 32.543911955322514,
+                    "cumulative_arc_length_m": 65.08782391064503,
+                    "actual_s": 60.8,
+                    "match_distance_m": 0.2212302623139182,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      59.2,
+                      63.2
+                    ],
+                    "search_after_s": 44.8,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 46.19753255339924,
+                    "cumulative_arc_length_m": 92.39506510679848,
+                    "actual_s": 75.8,
+                    "match_distance_m": 0.18454333458832614,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      74.0,
+                      78.1
+                    ],
+                    "search_after_s": 60.8,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.10524313436562,
+                    "cumulative_arc_length_m": 114.21048626873124,
+                    "actual_s": 87.5,
+                    "match_distance_m": 0.3146533369140306,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      86.1,
+                      89.2
+                    ],
+                    "search_after_s": 75.8,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 61.09653352250533,
+                    "cumulative_arc_length_m": 122.19306704501066,
+                    "actual_s": 91.7,
+                    "match_distance_m": 0.21446999320799756,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      90.1,
+                      94.3
+                    ],
+                    "search_after_s": 87.5,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.75015412058207,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "actual_s": 106.9,
+                    "match_distance_m": 0.234665402535764,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      105.1,
+                      109.4
+                    ],
+                    "search_after_s": 91.7,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 89.64915508968815,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "actual_s": 123.0,
+                    "match_distance_m": 0.19415801660434034,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      121.3,
+                      125.4
+                    ],
+                    "search_after_s": 106.9,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 103.30277568776488,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "actual_s": 137.8,
+                    "match_distance_m": 0.1826455354476281,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      136.1,
+                      140.3
+                    ],
+                    "search_after_s": 123.0,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.21048626873126,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "actual_s": 149.8,
+                    "match_distance_m": 0.32239985556478734,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 3,
+                    "visit_interval_s": [
+                      148.1,
+                      150.65952159999142
+                    ],
+                    "search_after_s": 137.8,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      23.56192899999587,
+                      29.7
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      3.991290388139708
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      29.7,
+                      44.8
+                    ],
+                    "nominal_interval_s": [
+                      3.991290388139708,
+                      17.644910986216438
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      44.8,
+                      60.8
+                    ],
+                    "nominal_interval_s": [
+                      17.644910986216438,
+                      32.543911955322514
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      60.8,
+                      75.8
+                    ],
+                    "nominal_interval_s": [
+                      32.543911955322514,
+                      46.19753255339924
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      75.8,
+                      87.5
+                    ],
+                    "nominal_interval_s": [
+                      46.19753255339924,
+                      57.10524313436562
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      87.5,
+                      91.7
+                    ],
+                    "nominal_interval_s": [
+                      57.10524313436562,
+                      61.09653352250533
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      91.7,
+                      106.9
+                    ],
+                    "nominal_interval_s": [
+                      61.09653352250533,
+                      74.75015412058207
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      106.9,
+                      123.0
+                    ],
+                    "nominal_interval_s": [
+                      74.75015412058207,
+                      89.64915508968815
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      123.0,
+                      137.8
+                    ],
+                    "nominal_interval_s": [
+                      89.64915508968815,
+                      103.30277568776488
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      137.8,
+                      149.8
+                    ],
+                    "nominal_interval_s": [
+                      103.30277568776488,
+                      114.21048626873126
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 2,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 1273,
+                  "witness": null
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 30.4,
+                    "nominal_s": 3.991290388139708,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.2541089026789528,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "closest_time_interval_s": [
+                      30.4,
+                      30.4
+                    ],
+                    "visit_interval_s": [
+                      28.6,
+                      32.8
+                    ],
+                    "search_domain_s": [
+                      23.56192899999587,
+                      32.8
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 45.3,
+                    "nominal_s": 17.644910986216438,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.21920869549152258,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "closest_time_interval_s": [
+                      45.3,
+                      45.3
+                    ],
+                    "visit_interval_s": [
+                      43.5,
+                      47.6
+                    ],
+                    "search_domain_s": [
+                      30.4,
+                      47.6
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 61.2,
+                    "nominal_s": 32.54391195532253,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.20724809944332562,
+                    "cumulative_arc_length_m": 65.08782391064506,
+                    "closest_time_interval_s": [
+                      61.2,
+                      61.2
+                    ],
+                    "visit_interval_s": [
+                      59.6,
+                      63.8
+                    ],
+                    "search_domain_s": [
+                      45.3,
+                      63.8
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 76.5,
+                    "nominal_s": 46.197532553399256,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.2079143906986783,
+                    "cumulative_arc_length_m": 92.39506510679851,
+                    "closest_time_interval_s": [
+                      76.5,
+                      76.5
+                    ],
+                    "visit_interval_s": [
+                      74.7,
+                      78.8
+                    ],
+                    "search_domain_s": [
+                      61.2,
+                      78.8
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 88.1,
+                    "nominal_s": 57.10524313436564,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.2997456649311171,
+                    "cumulative_arc_length_m": 114.21048626873127,
+                    "closest_time_interval_s": [
+                      88.1,
+                      88.1
+                    ],
+                    "visit_interval_s": [
+                      86.8,
+                      90.0
+                    ],
+                    "search_domain_s": [
+                      76.5,
+                      90.0
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 92.5,
+                    "nominal_s": 61.09653352250534,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 0.19803471885837298,
+                    "cumulative_arc_length_m": 122.19306704501068,
+                    "closest_time_interval_s": [
+                      92.5,
+                      92.5
+                    ],
+                    "visit_interval_s": [
+                      90.9,
+                      95.0
+                    ],
+                    "search_domain_s": [
+                      88.1,
+                      95.0
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 107.4,
+                    "nominal_s": 74.75015412058207,
+                    "route_index": 6,
+                    "seq": 8,
+                    "minimum_distance_m": 0.18288483701864655,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "closest_time_interval_s": [
+                      107.4,
+                      107.4
+                    ],
+                    "visit_interval_s": [
+                      105.7,
+                      109.8
+                    ],
+                    "search_domain_s": [
+                      92.5,
+                      109.8
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 123.4,
+                    "nominal_s": 89.64915508968815,
+                    "route_index": 7,
+                    "seq": 9,
+                    "minimum_distance_m": 0.2243142030950278,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "closest_time_interval_s": [
+                      123.4,
+                      123.4
+                    ],
+                    "visit_interval_s": [
+                      121.7,
+                      126.0
+                    ],
+                    "search_domain_s": [
+                      107.4,
+                      126.0
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 138.6,
+                    "nominal_s": 103.30277568776488,
+                    "route_index": 8,
+                    "seq": 10,
+                    "minimum_distance_m": 0.273310571758121,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "closest_time_interval_s": [
+                      138.6,
+                      138.6
+                    ],
+                    "visit_interval_s": [
+                      136.8,
+                      141.1
+                    ],
+                    "search_domain_s": [
+                      123.4,
+                      141.1
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 150.6,
+                    "nominal_s": 114.21048626873126,
+                    "route_index": 9,
+                    "seq": 11,
+                    "minimum_distance_m": 0.29975106012353836,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "closest_time_interval_s": [
+                      150.6,
+                      150.6
+                    ],
+                    "visit_interval_s": [
+                      148.9,
+                      150.65952159999142
+                    ],
+                    "search_domain_s": [
+                      138.6,
+                      150.65952159999142
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 3,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 3.991290388139708,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "actual_s": 30.4,
+                    "match_distance_m": 0.2541089026789528,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      28.6,
+                      32.8
+                    ],
+                    "search_after_s": 23.56192899999587,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 17.644910986216438,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "actual_s": 45.3,
+                    "match_distance_m": 0.21920869549152258,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      43.5,
+                      47.6
+                    ],
+                    "search_after_s": 30.4,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 32.54391195532253,
+                    "cumulative_arc_length_m": 65.08782391064506,
+                    "actual_s": 61.2,
+                    "match_distance_m": 0.20724809944332562,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      59.6,
+                      63.8
+                    ],
+                    "search_after_s": 45.3,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 46.197532553399256,
+                    "cumulative_arc_length_m": 92.39506510679851,
+                    "actual_s": 76.5,
+                    "match_distance_m": 0.2079143906986783,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      74.7,
+                      78.8
+                    ],
+                    "search_after_s": 61.2,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.10524313436564,
+                    "cumulative_arc_length_m": 114.21048626873127,
+                    "actual_s": 88.1,
+                    "match_distance_m": 0.2997456649311171,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      86.8,
+                      90.0
+                    ],
+                    "search_after_s": 76.5,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 61.09653352250534,
+                    "cumulative_arc_length_m": 122.19306704501068,
+                    "actual_s": 92.5,
+                    "match_distance_m": 0.19803471885837298,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      90.9,
+                      95.0
+                    ],
+                    "search_after_s": 88.1,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.75015412058207,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "actual_s": 107.4,
+                    "match_distance_m": 0.18288483701864655,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      105.7,
+                      109.8
+                    ],
+                    "search_after_s": 92.5,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 89.64915508968815,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "actual_s": 123.4,
+                    "match_distance_m": 0.2243142030950278,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      121.7,
+                      126.0
+                    ],
+                    "search_after_s": 107.4,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 103.30277568776488,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "actual_s": 138.6,
+                    "match_distance_m": 0.273310571758121,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      136.8,
+                      141.1
+                    ],
+                    "search_after_s": 123.4,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.21048626873126,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "actual_s": 150.6,
+                    "match_distance_m": 0.29975106012353836,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 3,
+                    "visit_interval_s": [
+                      148.9,
+                      150.65952159999142
+                    ],
+                    "search_after_s": 138.6,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      23.56192899999587,
+                      30.4
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      3.991290388139708
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      30.4,
+                      45.3
+                    ],
+                    "nominal_interval_s": [
+                      3.991290388139708,
+                      17.644910986216438
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      45.3,
+                      61.2
+                    ],
+                    "nominal_interval_s": [
+                      17.644910986216438,
+                      32.54391195532253
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      61.2,
+                      76.5
+                    ],
+                    "nominal_interval_s": [
+                      32.54391195532253,
+                      46.197532553399256
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      76.5,
+                      88.1
+                    ],
+                    "nominal_interval_s": [
+                      46.197532553399256,
+                      57.10524313436564
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      88.1,
+                      92.5
+                    ],
+                    "nominal_interval_s": [
+                      57.10524313436564,
+                      61.09653352250534
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      92.5,
+                      107.4
+                    ],
+                    "nominal_interval_s": [
+                      61.09653352250534,
+                      74.75015412058207
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      107.4,
+                      123.4
+                    ],
+                    "nominal_interval_s": [
+                      74.75015412058207,
+                      89.64915508968815
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      123.4,
+                      138.6
+                    ],
+                    "nominal_interval_s": [
+                      89.64915508968815,
+                      103.30277568776488
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      138.6,
+                      150.6
+                    ],
+                    "nominal_interval_s": [
+                      103.30277568776488,
+                      114.21048626873126
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 2,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0786104563418859,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 1273,
+                  "witness": {
+                    "actual_s": 24.1,
+                    "observed_progress_m": 0.0,
+                    "previous_max_progress_m": 0.0786104563418859,
+                    "route_distance_m": 0.21773913785881602
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 0.7271807053977426,
+              "selected_nominal_s": {
+                "uav_01": 104.02995639316262,
+                "uav_02": 103.30277568776488
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  104.02995639316262,
+                  104.02995639316262
+                ],
+                "uav_02": [
+                  103.30277568776488,
+                  103.30277568776488
+                ]
+              },
+              "actual_s": 138.6,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 43,
+            "knots_s": [
+              23.56192899999587,
+              29.7,
+              30.4,
+              44.8,
+              45.3,
+              60.8,
+              61.2,
+              75.8,
+              76.5,
+              87.5,
+              88.1,
+              91.7,
+              92.5,
+              106.9,
+              107.4,
+              123.0,
+              123.4,
+              137.8,
+              138.6,
+              149.8,
+              150.6,
+              150.65952159999142
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              23.56192899999587,
+              150.65952159999142
+            ],
+            "nominal_end_s": 114.71048626873126,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.6275819172514829,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.371610799993505,
+                    "nominal_s": 3.991290388139708,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 43.353823399993416,
+                    "nominal_s": 17.644910986216438,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 59.53145669999503,
+                    "nominal_s": 32.543911955322514,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 74.42976729999646,
+                    "nominal_s": 46.19753255339924,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 86.54862629999116,
+                    "nominal_s": 57.10524313436562,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 90.63168509999377,
+                    "nominal_s": 61.09653352250533,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 105.5123170999941,
+                    "nominal_s": 74.75015412058207,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 121.69079479999345,
+                    "nominal_s": 89.64915508968815,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 136.61139549999643,
+                    "nominal_s": 103.30277568776488,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 149.064400999996,
+                    "nominal_s": 114.21048626873126,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.95964119999553,
+                    "nominal_s": 3.991290388139708,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 43.88630389999162,
+                    "nominal_s": 17.644910986216438,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 60.080632599994715,
+                    "nominal_s": 32.54391195532253,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 75.11154579999129,
+                    "nominal_s": 46.197532553399256,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 87.07939029999397,
+                    "nominal_s": 57.10524313436564,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 91.2944523999904,
+                    "nominal_s": 61.09653352250534,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 106.13511889999063,
+                    "nominal_s": 74.75015412058207,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 122.32861049999337,
+                    "nominal_s": 89.64915508968815,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 137.29207429999224,
+                    "nominal_s": 103.30277568776488,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 149.68680649999442,
+                    "nominal_s": 114.21048626873126,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 0.6275819172514829,
+              "selected_nominal_s": {
+                "uav_01": 61.09653352250533,
+                "uav_02": 60.46895160525385
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  61.09653352250533,
+                  61.09653352250533
+                ],
+                "uav_02": [
+                  60.46895160525385,
+                  60.46895160525385
+                ]
+              },
+              "actual_s": 90.63168509999377,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 43,
+            "knots_s": [
+              23.56192899999587,
+              28.371610799993505,
+              28.95964119999553,
+              43.353823399993416,
+              43.88630389999162,
+              59.53145669999503,
+              60.080632599994715,
+              74.42976729999646,
+              75.11154579999129,
+              86.54862629999116,
+              87.07939029999397,
+              90.63168509999377,
+              91.2944523999904,
+              105.5123170999941,
+              106.13511889999063,
+              121.69079479999345,
+              122.32861049999337,
+              136.61139549999643,
+              137.29207429999224,
+              149.064400999996,
+              149.68680649999442,
+              150.65952159999142
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": 2,
+            "uav_02": 2
+          }
+        }
+      },
+      "per_agent_laps_observed": {
+        "p00_approach": {
+          "uav_01": 0,
+          "uav_02": 0
+        },
+        "p01_patrol": {
+          "uav_01": 2,
+          "uav_02": 2
+        }
+      },
+      "complete": true,
+      "within_tau": true,
+      "crosscheck_within_tau": true,
+      "issues": [],
+      "v1_diagnostic": {
+        "records": [
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 13.231172899992089,
+            "nominal_s": 11.936122625520403,
+            "deviation_s": 1.295050274471686,
+            "tau_s": 4.203895873204431,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 13.231172899992089,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 22.084276099994895,
+            "nominal_s": 20.519479366022153,
+            "deviation_s": 1.5647967339727415,
+            "tau_s": 4.203895873204431,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 22.084276099994895,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 4.809681799997634,
+            "nominal_s": 3.991290388139708,
+            "deviation_s": 0.8183914118579256,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 28.371610799993505,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 19.791894399997545,
+            "nominal_s": 17.644910986216438,
+            "deviation_s": 2.1469834137811077,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 43.353823399993416,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 35.96952769999916,
+            "nominal_s": 32.543911955322514,
+            "deviation_s": 3.425615744676648,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 59.53145669999503,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 50.867838300000585,
+            "nominal_s": 46.19753255339924,
+            "deviation_s": 4.670305746601343,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 74.42976729999646,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 62.986697299995285,
+            "nominal_s": 57.10524313436562,
+            "deviation_s": 5.881454165629663,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 86.54862629999116,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 67.0697560999979,
+            "nominal_s": 61.09653352250533,
+            "deviation_s": 5.973222577492571,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 90.63168509999377,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 81.95038809999824,
+            "nominal_s": 74.75015412058207,
+            "deviation_s": 7.2002339794161685,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 105.5123170999941,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 98.12886579999758,
+            "nominal_s": 89.64915508968815,
+            "deviation_s": 8.479710710309433,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 121.69079479999345,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 113.04946650000056,
+            "nominal_s": 103.30277568776488,
+            "deviation_s": 9.746690812235684,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 136.61139549999643,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 125.50247200000013,
+            "nominal_s": 114.21048626873126,
+            "deviation_s": 11.291985731268866,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 149.064400999996,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 5.39771219999966,
+            "nominal_s": 3.991290388139708,
+            "deviation_s": 1.4064218118599516,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 28.95964119999553,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 20.324374899995746,
+            "nominal_s": 17.644910986216438,
+            "deviation_s": 2.6794639137793084,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 43.88630389999162,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 36.518703599998844,
+            "nominal_s": 32.54391195532253,
+            "deviation_s": 3.9747916446763156,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 60.080632599994715,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 51.54961679999542,
+            "nominal_s": 46.197532553399256,
+            "deviation_s": 5.3520842465961636,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 75.11154579999129,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.517461299998104,
+            "nominal_s": 57.10524313436564,
+            "deviation_s": 6.412218165632467,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 87.07939029999397,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 67.73252339999453,
+            "nominal_s": 61.09653352250534,
+            "deviation_s": 6.6359898774891946,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 91.2944523999904,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 82.57318989999476,
+            "nominal_s": 74.75015412058207,
+            "deviation_s": 7.823035779412692,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 106.13511889999063,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 98.7666814999975,
+            "nominal_s": 89.64915508968815,
+            "deviation_s": 9.117526410309353,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 122.32861049999337,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 113.73014529999637,
+            "nominal_s": 103.30277568776488,
+            "deviation_s": 10.427369612231487,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 137.29207429999224,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 126.12487749999855,
+            "nominal_s": 114.21048626873126,
+            "deviation_s": 11.914391231267288,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 149.68680649999442,
+            "event_count": 1
+          }
+        ],
+        "missing": [],
+        "per_phase": {
+          "p00_approach": {
+            "tau_s": 4.203895873204431,
+            "nominal_duration_s": 21.019479366022153,
+            "release_s": 0.0,
+            "end_s": 23.56192899999587,
+            "expected_waypoints": 2,
+            "paired_waypoints": 2,
+            "complete": true,
+            "max_abs_s": 1.5647967339727415,
+            "within_tau": true
+          },
+          "p01_patrol": {
+            "tau_s": 5.0,
+            "nominal_duration_s": 114.71048626873126,
+            "release_s": 23.56192899999587,
+            "end_s": 150.65952159999142,
+            "expected_waypoints": 20,
+            "paired_waypoints": 20,
+            "complete": true,
+            "max_abs_s": 11.914391231267288,
+            "within_tau": false
+          }
+        },
+        "expected_waypoints": 22,
+        "paired_waypoints": 22,
+        "complete": true,
+        "within_tau": false,
+        "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+      },
+      "v1_is_gate": false,
+      "criterion": "per semantic phase max_t min_simultaneous_fleet_span(sigma_i(t)) <= tau",
+      "no_hover_policy": "terminal singleton: conservative upper bound, no unproved interval relaxation"
+    },
+    "observation": {
+      "version": "ac4_relative_progress_timing_v3",
+      "mapping_version": "ordered_route_progress_v2",
+      "event_mapping_version": "raw_waypoint_event_piecewise_linear_v1",
+      "interval_version": "simultaneous_terminal_interval_min_span_v1",
+      "channel": "observation",
+      "per_phase": {
+        "p00_approach": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              23.56192899999587
+            ],
+            "nominal_end_s": 21.019479366022153,
+            "tau_s": 4.203895873204431,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 1.129699705835586,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 14.8,
+                    "nominal_s": 11.936122625520403,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.12149110877427599,
+                    "cumulative_arc_length_m": 23.872245251040805,
+                    "closest_time_interval_s": [
+                      14.8,
+                      14.8
+                    ],
+                    "visit_interval_s": [
+                      12.7,
+                      23.56192899999587
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      23.56192899999587
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 14.9,
+                "supplied_terminal_hover_start_s": 14.9,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 11.936122625520403,
+                    "cumulative_arc_length_m": 23.872245251040805,
+                    "actual_s": 14.8,
+                    "match_distance_m": 0.12149110877427599,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      12.7,
+                      23.56192899999587
+                    ],
+                    "search_after_s": 0.0,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      14.8
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      11.936122625520403
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.1494559491386127,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 237,
+                  "witness": {
+                    "actual_s": 18.5,
+                    "observed_progress_m": 23.722789301902193,
+                    "previous_max_progress_m": 23.872245251040805,
+                    "route_distance_m": 0.11063397802221772
+                  }
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 23.4,
+                    "nominal_s": 20.519479366022153,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.10221071199175313,
+                    "cumulative_arc_length_m": 41.03895873204431,
+                    "closest_time_interval_s": [
+                      23.4,
+                      23.4
+                    ],
+                    "visit_interval_s": [
+                      21.5,
+                      23.56192899999587
+                    ],
+                    "search_domain_s": [
+                      0.0,
+                      23.56192899999587
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 20.519479366022153,
+                    "cumulative_arc_length_m": 41.03895873204431,
+                    "actual_s": 23.4,
+                    "match_distance_m": 0.10221071199175313,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      21.5,
+                      23.56192899999587
+                    ],
+                    "search_after_s": 0.0,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      0.0,
+                      23.4
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      20.519479366022153
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 0,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 237,
+                  "witness": null
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 1.129699705835586,
+              "selected_nominal_s": {
+                "uav_01": 11.936122625520403,
+                "uav_02": 13.065822331355989
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  11.936122625520403,
+                  11.936122625520403
+                ],
+                "uav_02": [
+                  13.065822331355989,
+                  13.065822331355989
+                ]
+              },
+              "actual_s": 14.9,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              14.8,
+              14.9,
+              23.4,
+              23.56192899999587
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              23.56192899999587
+            ],
+            "nominal_end_s": 21.019479366022153,
+            "tau_s": 4.203895873204431,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 1.9081275174037184,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 13.231172899992089,
+                    "nominal_s": 11.936122625520403,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": 14.9,
+                "supplied_terminal_hover_start_s": 14.9
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 22.084276099994895,
+                    "nominal_s": 20.519479366022153,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 1.9081275174037184,
+              "selected_nominal_s": {
+                "uav_01": 11.936122625520403,
+                "uav_02": 13.844250142924121
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  11.936122625520403,
+                  11.936122625520403
+                ],
+                "uav_02": [
+                  13.844250142924121,
+                  13.844250142924121
+                ]
+              },
+              "actual_s": 14.9,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              13.231172899992089,
+              14.9,
+              22.084276099994895,
+              23.56192899999587
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": 0,
+            "uav_02": 0
+          }
+        },
+        "p01_patrol": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              23.56192899999587,
+              150.65952159999142
+            ],
+            "nominal_end_s": 114.71048626873126,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.8113173159396467,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 29.8,
+                    "nominal_s": 3.991290388139708,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.10313876353592784,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "closest_time_interval_s": [
+                      29.8,
+                      29.8
+                    ],
+                    "visit_interval_s": [
+                      28.0,
+                      32.3
+                    ],
+                    "search_domain_s": [
+                      23.56192899999587,
+                      32.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 44.9,
+                    "nominal_s": 17.644910986216438,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.04081467292295533,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "closest_time_interval_s": [
+                      44.9,
+                      44.9
+                    ],
+                    "visit_interval_s": [
+                      43.1,
+                      47.2
+                    ],
+                    "search_domain_s": [
+                      29.8,
+                      47.2
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 60.9,
+                    "nominal_s": 32.543911955322514,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.202495112896521,
+                    "cumulative_arc_length_m": 65.08782391064503,
+                    "closest_time_interval_s": [
+                      60.9,
+                      60.9
+                    ],
+                    "visit_interval_s": [
+                      59.2,
+                      63.3
+                    ],
+                    "search_domain_s": [
+                      44.9,
+                      63.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 75.9,
+                    "nominal_s": 46.19753255339924,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.16229257856283377,
+                    "cumulative_arc_length_m": 92.39506510679848,
+                    "closest_time_interval_s": [
+                      75.9,
+                      75.9
+                    ],
+                    "visit_interval_s": [
+                      74.0,
+                      78.2
+                    ],
+                    "search_domain_s": [
+                      60.9,
+                      78.2
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 87.6,
+                    "nominal_s": 57.10524313436562,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.17171877859084939,
+                    "cumulative_arc_length_m": 114.21048626873124,
+                    "closest_time_interval_s": [
+                      87.6,
+                      87.6
+                    ],
+                    "visit_interval_s": [
+                      86.1,
+                      89.3
+                    ],
+                    "search_domain_s": [
+                      75.9,
+                      89.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 91.8,
+                    "nominal_s": 61.09653352250533,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 0.06393260152273977,
+                    "cumulative_arc_length_m": 122.19306704501066,
+                    "closest_time_interval_s": [
+                      91.8,
+                      91.8
+                    ],
+                    "visit_interval_s": [
+                      90.2,
+                      94.3
+                    ],
+                    "search_domain_s": [
+                      87.6,
+                      94.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 107.0,
+                    "nominal_s": 74.75015412058207,
+                    "route_index": 6,
+                    "seq": 8,
+                    "minimum_distance_m": 0.025332507385531517,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "closest_time_interval_s": [
+                      107.0,
+                      107.0
+                    ],
+                    "visit_interval_s": [
+                      105.2,
+                      109.4
+                    ],
+                    "search_domain_s": [
+                      91.8,
+                      109.4
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 123.1,
+                    "nominal_s": 89.64915508968815,
+                    "route_index": 7,
+                    "seq": 9,
+                    "minimum_distance_m": 0.1762682696945694,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "closest_time_interval_s": [
+                      123.1,
+                      123.1
+                    ],
+                    "visit_interval_s": [
+                      121.4,
+                      125.5
+                    ],
+                    "search_domain_s": [
+                      107.0,
+                      125.5
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 137.9,
+                    "nominal_s": 103.30277568776488,
+                    "route_index": 8,
+                    "seq": 10,
+                    "minimum_distance_m": 0.12542106394565125,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "closest_time_interval_s": [
+                      137.9,
+                      137.9
+                    ],
+                    "visit_interval_s": [
+                      136.2,
+                      140.3
+                    ],
+                    "search_domain_s": [
+                      123.1,
+                      140.3
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 150.0,
+                    "nominal_s": 114.21048626873126,
+                    "route_index": 9,
+                    "seq": 11,
+                    "minimum_distance_m": 0.18292501084387122,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "closest_time_interval_s": [
+                      150.0,
+                      150.0
+                    ],
+                    "visit_interval_s": [
+                      148.2,
+                      150.65952159999142
+                    ],
+                    "search_domain_s": [
+                      137.9,
+                      150.65952159999142
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 3,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 3.991290388139708,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "actual_s": 29.8,
+                    "match_distance_m": 0.10313876353592784,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      28.0,
+                      32.3
+                    ],
+                    "search_after_s": 23.56192899999587,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 17.644910986216438,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "actual_s": 44.9,
+                    "match_distance_m": 0.04081467292295533,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      43.1,
+                      47.2
+                    ],
+                    "search_after_s": 29.8,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 32.543911955322514,
+                    "cumulative_arc_length_m": 65.08782391064503,
+                    "actual_s": 60.9,
+                    "match_distance_m": 0.202495112896521,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      59.2,
+                      63.3
+                    ],
+                    "search_after_s": 44.9,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 46.19753255339924,
+                    "cumulative_arc_length_m": 92.39506510679848,
+                    "actual_s": 75.9,
+                    "match_distance_m": 0.16229257856283377,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      74.0,
+                      78.2
+                    ],
+                    "search_after_s": 60.9,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.10524313436562,
+                    "cumulative_arc_length_m": 114.21048626873124,
+                    "actual_s": 87.6,
+                    "match_distance_m": 0.17171877859084939,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      86.1,
+                      89.3
+                    ],
+                    "search_after_s": 75.9,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 61.09653352250533,
+                    "cumulative_arc_length_m": 122.19306704501066,
+                    "actual_s": 91.8,
+                    "match_distance_m": 0.06393260152273977,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      90.2,
+                      94.3
+                    ],
+                    "search_after_s": 87.6,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.75015412058207,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "actual_s": 107.0,
+                    "match_distance_m": 0.025332507385531517,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      105.2,
+                      109.4
+                    ],
+                    "search_after_s": 91.8,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 89.64915508968815,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "actual_s": 123.1,
+                    "match_distance_m": 0.1762682696945694,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      121.4,
+                      125.5
+                    ],
+                    "search_after_s": 107.0,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 103.30277568776488,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "actual_s": 137.9,
+                    "match_distance_m": 0.12542106394565125,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      136.2,
+                      140.3
+                    ],
+                    "search_after_s": 123.1,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.21048626873126,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "actual_s": 150.0,
+                    "match_distance_m": 0.18292501084387122,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 3,
+                    "visit_interval_s": [
+                      148.2,
+                      150.65952159999142
+                    ],
+                    "search_after_s": 137.9,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      23.56192899999587,
+                      29.8
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      3.991290388139708
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      29.8,
+                      44.9
+                    ],
+                    "nominal_interval_s": [
+                      3.991290388139708,
+                      17.644910986216438
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      44.9,
+                      60.9
+                    ],
+                    "nominal_interval_s": [
+                      17.644910986216438,
+                      32.543911955322514
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      60.9,
+                      75.9
+                    ],
+                    "nominal_interval_s": [
+                      32.543911955322514,
+                      46.19753255339924
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      75.9,
+                      87.6
+                    ],
+                    "nominal_interval_s": [
+                      46.19753255339924,
+                      57.10524313436562
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      87.6,
+                      91.8
+                    ],
+                    "nominal_interval_s": [
+                      57.10524313436562,
+                      61.09653352250533
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      91.8,
+                      107.0
+                    ],
+                    "nominal_interval_s": [
+                      61.09653352250533,
+                      74.75015412058207
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      107.0,
+                      123.1
+                    ],
+                    "nominal_interval_s": [
+                      74.75015412058207,
+                      89.64915508968815
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      123.1,
+                      137.9
+                    ],
+                    "nominal_interval_s": [
+                      89.64915508968815,
+                      103.30277568776488
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      137.9,
+                      150.0
+                    ],
+                    "nominal_interval_s": [
+                      103.30277568776488,
+                      114.21048626873126
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 2,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.0,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 1273,
+                  "witness": null
+                }
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 30.5,
+                    "nominal_s": 3.991290388139708,
+                    "route_index": 0,
+                    "seq": 2,
+                    "minimum_distance_m": 0.27188035345098177,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "closest_time_interval_s": [
+                      30.5,
+                      30.5
+                    ],
+                    "visit_interval_s": [
+                      28.7,
+                      32.8
+                    ],
+                    "search_domain_s": [
+                      23.56192899999587,
+                      32.8
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 45.3,
+                    "nominal_s": 17.644910986216438,
+                    "route_index": 1,
+                    "seq": 3,
+                    "minimum_distance_m": 0.20481202134389054,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "closest_time_interval_s": [
+                      45.3,
+                      45.3
+                    ],
+                    "visit_interval_s": [
+                      43.6,
+                      47.7
+                    ],
+                    "search_domain_s": [
+                      30.5,
+                      47.7
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 61.3,
+                    "nominal_s": 32.54391195532253,
+                    "route_index": 2,
+                    "seq": 4,
+                    "minimum_distance_m": 0.06032522217752993,
+                    "cumulative_arc_length_m": 65.08782391064506,
+                    "closest_time_interval_s": [
+                      61.3,
+                      61.3
+                    ],
+                    "visit_interval_s": [
+                      59.6,
+                      63.8
+                    ],
+                    "search_domain_s": [
+                      45.3,
+                      63.8
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 76.6,
+                    "nominal_s": 46.197532553399256,
+                    "route_index": 3,
+                    "seq": 5,
+                    "minimum_distance_m": 0.05063719437120793,
+                    "cumulative_arc_length_m": 92.39506510679851,
+                    "closest_time_interval_s": [
+                      76.6,
+                      76.6
+                    ],
+                    "visit_interval_s": [
+                      74.8,
+                      78.9
+                    ],
+                    "search_domain_s": [
+                      61.3,
+                      78.9
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 1,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 88.2,
+                    "nominal_s": 57.10524313436564,
+                    "route_index": 4,
+                    "seq": 6,
+                    "minimum_distance_m": 0.15413667432750797,
+                    "cumulative_arc_length_m": 114.21048626873127,
+                    "closest_time_interval_s": [
+                      88.2,
+                      88.2
+                    ],
+                    "visit_interval_s": [
+                      86.8,
+                      90.1
+                    ],
+                    "search_domain_s": [
+                      76.6,
+                      90.1
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 92.6,
+                    "nominal_s": 61.09653352250534,
+                    "route_index": 5,
+                    "seq": 7,
+                    "minimum_distance_m": 0.17114844583181285,
+                    "cumulative_arc_length_m": 122.19306704501068,
+                    "closest_time_interval_s": [
+                      92.6,
+                      92.6
+                    ],
+                    "visit_interval_s": [
+                      91.0,
+                      95.0
+                    ],
+                    "search_domain_s": [
+                      88.2,
+                      95.0
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 107.5,
+                    "nominal_s": 74.75015412058207,
+                    "route_index": 6,
+                    "seq": 8,
+                    "minimum_distance_m": 0.14782440302833344,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "closest_time_interval_s": [
+                      107.5,
+                      107.5
+                    ],
+                    "visit_interval_s": [
+                      105.8,
+                      109.9
+                    ],
+                    "search_domain_s": [
+                      92.6,
+                      109.9
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 123.5,
+                    "nominal_s": 89.64915508968815,
+                    "route_index": 7,
+                    "seq": 9,
+                    "minimum_distance_m": 0.04850873976157363,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "closest_time_interval_s": [
+                      123.5,
+                      123.5
+                    ],
+                    "visit_interval_s": [
+                      121.8,
+                      126.0
+                    ],
+                    "search_domain_s": [
+                      107.5,
+                      126.0
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 138.8,
+                    "nominal_s": 103.30277568776488,
+                    "route_index": 8,
+                    "seq": 10,
+                    "minimum_distance_m": 0.061100538888405734,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "closest_time_interval_s": [
+                      138.8,
+                      138.8
+                    ],
+                    "visit_interval_s": [
+                      136.9,
+                      141.1
+                    ],
+                    "search_domain_s": [
+                      123.5,
+                      141.1
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 2,
+                    "evidence_status": "matched"
+                  },
+                  {
+                    "actual_s": 150.6,
+                    "nominal_s": 114.21048626873126,
+                    "route_index": 9,
+                    "seq": 11,
+                    "minimum_distance_m": 0.3054072224460464,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "closest_time_interval_s": [
+                      150.6,
+                      150.6
+                    ],
+                    "visit_interval_s": [
+                      149.0,
+                      150.65952159999142
+                    ],
+                    "search_domain_s": [
+                      138.8,
+                      150.65952159999142
+                    ],
+                    "source": "ordered_route_progress_v2",
+                    "visit_ordinal": 3,
+                    "evidence_status": "matched"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [
+                  {
+                    "route_index": 0,
+                    "seq": 2,
+                    "nominal_s": 3.991290388139708,
+                    "cumulative_arc_length_m": 7.982580776279416,
+                    "actual_s": 30.5,
+                    "match_distance_m": 0.27188035345098177,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      28.7,
+                      32.8
+                    ],
+                    "search_after_s": 23.56192899999587,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 1,
+                    "seq": 3,
+                    "nominal_s": 17.644910986216438,
+                    "cumulative_arc_length_m": 35.289821972432875,
+                    "actual_s": 45.3,
+                    "match_distance_m": 0.20481202134389054,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      43.6,
+                      47.7
+                    ],
+                    "search_after_s": 30.5,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 2,
+                    "seq": 4,
+                    "nominal_s": 32.54391195532253,
+                    "cumulative_arc_length_m": 65.08782391064506,
+                    "actual_s": 61.3,
+                    "match_distance_m": 0.06032522217752993,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      59.6,
+                      63.8
+                    ],
+                    "search_after_s": 45.3,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 3,
+                    "seq": 5,
+                    "nominal_s": 46.197532553399256,
+                    "cumulative_arc_length_m": 92.39506510679851,
+                    "actual_s": 76.6,
+                    "match_distance_m": 0.05063719437120793,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 1,
+                    "visit_interval_s": [
+                      74.8,
+                      78.9
+                    ],
+                    "search_after_s": 61.3,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 4,
+                    "seq": 6,
+                    "nominal_s": 57.10524313436564,
+                    "cumulative_arc_length_m": 114.21048626873127,
+                    "actual_s": 88.2,
+                    "match_distance_m": 0.15413667432750797,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      86.8,
+                      90.1
+                    ],
+                    "search_after_s": 76.6,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 5,
+                    "seq": 7,
+                    "nominal_s": 61.09653352250534,
+                    "cumulative_arc_length_m": 122.19306704501068,
+                    "actual_s": 92.6,
+                    "match_distance_m": 0.17114844583181285,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      91.0,
+                      95.0
+                    ],
+                    "search_after_s": 88.2,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 6,
+                    "seq": 8,
+                    "nominal_s": 74.75015412058207,
+                    "cumulative_arc_length_m": 149.50030824116413,
+                    "actual_s": 107.5,
+                    "match_distance_m": 0.14782440302833344,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      105.8,
+                      109.9
+                    ],
+                    "search_after_s": 92.6,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 7,
+                    "seq": 9,
+                    "nominal_s": 89.64915508968815,
+                    "cumulative_arc_length_m": 179.2983101793763,
+                    "actual_s": 123.5,
+                    "match_distance_m": 0.04850873976157363,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      121.8,
+                      126.0
+                    ],
+                    "search_after_s": 107.5,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 8,
+                    "seq": 10,
+                    "nominal_s": 103.30277568776488,
+                    "cumulative_arc_length_m": 206.60555137552976,
+                    "actual_s": 138.8,
+                    "match_distance_m": 0.061100538888405734,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 2,
+                    "visit_interval_s": [
+                      136.9,
+                      141.1
+                    ],
+                    "search_after_s": 123.5,
+                    "sample_only": true
+                  },
+                  {
+                    "route_index": 9,
+                    "seq": 11,
+                    "nominal_s": 114.21048626873126,
+                    "cumulative_arc_length_m": 228.42097253746252,
+                    "actual_s": 150.6,
+                    "match_distance_m": 0.3054072224460464,
+                    "evidence_status": "matched",
+                    "visit_ordinal": 3,
+                    "visit_interval_s": [
+                      149.0,
+                      150.65952159999142
+                    ],
+                    "search_after_s": 138.8,
+                    "sample_only": true
+                  }
+                ],
+                "progress_segments": [
+                  {
+                    "actual_interval_s": [
+                      23.56192899999587,
+                      30.5
+                    ],
+                    "nominal_interval_s": [
+                      0.0,
+                      3.991290388139708
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      30.5,
+                      45.3
+                    ],
+                    "nominal_interval_s": [
+                      3.991290388139708,
+                      17.644910986216438
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      45.3,
+                      61.3
+                    ],
+                    "nominal_interval_s": [
+                      17.644910986216438,
+                      32.54391195532253
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      61.3,
+                      76.6
+                    ],
+                    "nominal_interval_s": [
+                      32.54391195532253,
+                      46.197532553399256
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      76.6,
+                      88.2
+                    ],
+                    "nominal_interval_s": [
+                      46.197532553399256,
+                      57.10524313436564
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      88.2,
+                      92.6
+                    ],
+                    "nominal_interval_s": [
+                      57.10524313436564,
+                      61.09653352250534
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      92.6,
+                      107.5
+                    ],
+                    "nominal_interval_s": [
+                      61.09653352250534,
+                      74.75015412058207
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      107.5,
+                      123.5
+                    ],
+                    "nominal_interval_s": [
+                      74.75015412058207,
+                      89.64915508968815
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      123.5,
+                      138.8
+                    ],
+                    "nominal_interval_s": [
+                      89.64915508968815,
+                      103.30277568776488
+                    ]
+                  },
+                  {
+                    "actual_interval_s": [
+                      138.8,
+                      150.6
+                    ],
+                    "nominal_interval_s": [
+                      103.30277568776488,
+                      114.21048626873126
+                    ]
+                  }
+                ],
+                "per_agent_laps_observed": 2,
+                "backtracking_evidence": {
+                  "detected": false,
+                  "maximum_reversal_m": 0.016781852554058393,
+                  "tolerance_m": 0.5,
+                  "samples_checked": 1273,
+                  "witness": {
+                    "actual_s": 23.9,
+                    "observed_progress_m": 0.0,
+                    "previous_max_progress_m": 0.016781852554058393,
+                    "route_distance_m": 0.09967446327569518
+                  }
+                }
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 0.8113173159396467,
+              "selected_nominal_s": {
+                "uav_01": 104.11409300370453,
+                "uav_02": 103.30277568776488
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  104.11409300370453,
+                  104.11409300370453
+                ],
+                "uav_02": [
+                  103.30277568776488,
+                  103.30277568776488
+                ]
+              },
+              "actual_s": 138.8,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 43,
+            "knots_s": [
+              23.56192899999587,
+              29.8,
+              30.5,
+              44.9,
+              45.3,
+              60.9,
+              61.3,
+              75.9,
+              76.6,
+              87.6,
+              88.2,
+              91.8,
+              92.6,
+              107.0,
+              107.5,
+              123.1,
+              123.5,
+              137.9,
+              138.8,
+              150.0,
+              150.6,
+              150.65952159999142
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              23.56192899999587,
+              150.65952159999142
+            ],
+            "nominal_end_s": 114.71048626873126,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.6275819172514829,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.371610799993505,
+                    "nominal_s": 3.991290388139708,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 43.353823399993416,
+                    "nominal_s": 17.644910986216438,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 59.53145669999503,
+                    "nominal_s": 32.543911955322514,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 74.42976729999646,
+                    "nominal_s": 46.19753255339924,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 86.54862629999116,
+                    "nominal_s": 57.10524313436562,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 90.63168509999377,
+                    "nominal_s": 61.09653352250533,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 105.5123170999941,
+                    "nominal_s": 74.75015412058207,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 121.69079479999345,
+                    "nominal_s": 89.64915508968815,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 136.61139549999643,
+                    "nominal_s": 103.30277568776488,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 149.064400999996,
+                    "nominal_s": 114.21048626873126,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 23.56192899999587,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.95964119999553,
+                    "nominal_s": 3.991290388139708,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 43.88630389999162,
+                    "nominal_s": 17.644910986216438,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 60.080632599994715,
+                    "nominal_s": 32.54391195532253,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 75.11154579999129,
+                    "nominal_s": 46.197532553399256,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 87.07939029999397,
+                    "nominal_s": 57.10524313436564,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 91.2944523999904,
+                    "nominal_s": 61.09653352250534,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 106.13511889999063,
+                    "nominal_s": 74.75015412058207,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 122.32861049999337,
+                    "nominal_s": 89.64915508968815,
+                    "seq": 9,
+                    "route_index": 7,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 137.29207429999224,
+                    "nominal_s": 103.30277568776488,
+                    "seq": 10,
+                    "route_index": 8,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 149.68680649999442,
+                    "nominal_s": 114.21048626873126,
+                    "seq": 11,
+                    "route_index": 9,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02"
+            ],
+            "worst": {
+              "span_s": 0.6275819172514829,
+              "selected_nominal_s": {
+                "uav_01": 61.09653352250533,
+                "uav_02": 60.46895160525385
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  61.09653352250533,
+                  61.09653352250533
+                ],
+                "uav_02": [
+                  60.46895160525385,
+                  60.46895160525385
+                ]
+              },
+              "actual_s": 90.63168509999377,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 43,
+            "knots_s": [
+              23.56192899999587,
+              28.371610799993505,
+              28.95964119999553,
+              43.353823399993416,
+              43.88630389999162,
+              59.53145669999503,
+              60.080632599994715,
+              74.42976729999646,
+              75.11154579999129,
+              86.54862629999116,
+              87.07939029999397,
+              90.63168509999377,
+              91.2944523999904,
+              105.5123170999941,
+              106.13511889999063,
+              121.69079479999345,
+              122.32861049999337,
+              136.61139549999643,
+              137.29207429999224,
+              149.064400999996,
+              149.68680649999442,
+              150.65952159999142
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": true,
+          "within_tau": true,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": true,
+          "issues": [],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": 2,
+            "uav_02": 2
+          }
+        }
+      },
+      "per_agent_laps_observed": {
+        "p00_approach": {
+          "uav_01": 0,
+          "uav_02": 0
+        },
+        "p01_patrol": {
+          "uav_01": 2,
+          "uav_02": 2
+        }
+      },
+      "complete": true,
+      "within_tau": true,
+      "crosscheck_within_tau": true,
+      "issues": [],
+      "v1_diagnostic": {
+        "records": [
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 13.231172899992089,
+            "nominal_s": 11.936122625520403,
+            "deviation_s": 1.295050274471686,
+            "tau_s": 4.203895873204431,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 13.231172899992089,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 22.084276099994895,
+            "nominal_s": 20.519479366022153,
+            "deviation_s": 1.5647967339727415,
+            "tau_s": 4.203895873204431,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 22.084276099994895,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 4.809681799997634,
+            "nominal_s": 3.991290388139708,
+            "deviation_s": 0.8183914118579256,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 28.371610799993505,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 19.791894399997545,
+            "nominal_s": 17.644910986216438,
+            "deviation_s": 2.1469834137811077,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 43.353823399993416,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 35.96952769999916,
+            "nominal_s": 32.543911955322514,
+            "deviation_s": 3.425615744676648,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 59.53145669999503,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 50.867838300000585,
+            "nominal_s": 46.19753255339924,
+            "deviation_s": 4.670305746601343,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 74.42976729999646,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 62.986697299995285,
+            "nominal_s": 57.10524313436562,
+            "deviation_s": 5.881454165629663,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 86.54862629999116,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 67.0697560999979,
+            "nominal_s": 61.09653352250533,
+            "deviation_s": 5.973222577492571,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 90.63168509999377,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 81.95038809999824,
+            "nominal_s": 74.75015412058207,
+            "deviation_s": 7.2002339794161685,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 105.5123170999941,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 98.12886579999758,
+            "nominal_s": 89.64915508968815,
+            "deviation_s": 8.479710710309433,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 121.69079479999345,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 113.04946650000056,
+            "nominal_s": 103.30277568776488,
+            "deviation_s": 9.746690812235684,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 136.61139549999643,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_01",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 125.50247200000013,
+            "nominal_s": 114.21048626873126,
+            "deviation_s": 11.291985731268866,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 149.064400999996,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 5.39771219999966,
+            "nominal_s": 3.991290388139708,
+            "deviation_s": 1.4064218118599516,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 28.95964119999553,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 20.324374899995746,
+            "nominal_s": 17.644910986216438,
+            "deviation_s": 2.6794639137793084,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 43.88630389999162,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 36.518703599998844,
+            "nominal_s": 32.54391195532253,
+            "deviation_s": 3.9747916446763156,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 23.56192899999587,
+            "event_s": 60.080632599994715,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 51.54961679999542,
+            "nominal_s": 46.197532553399256,
+            "deviation_s": 5.3520842465961636,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 75.11154579999129,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.517461299998104,
+            "nominal_s": 57.10524313436564,
+            "deviation_s": 6.412218165632467,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 87.07939029999397,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 67.73252339999453,
+            "nominal_s": 61.09653352250534,
+            "deviation_s": 6.6359898774891946,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 91.2944523999904,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 82.57318989999476,
+            "nominal_s": 74.75015412058207,
+            "deviation_s": 7.823035779412692,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 106.13511889999063,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 9,
+            "route_index": 7,
+            "actual_s": 98.7666814999975,
+            "nominal_s": 89.64915508968815,
+            "deviation_s": 9.117526410309353,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 122.32861049999337,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 10,
+            "route_index": 8,
+            "actual_s": 113.73014529999637,
+            "nominal_s": 103.30277568776488,
+            "deviation_s": 10.427369612231487,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 137.29207429999224,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_patrol",
+            "agent_id": "uav_02",
+            "seq": 11,
+            "route_index": 9,
+            "actual_s": 126.12487749999855,
+            "nominal_s": 114.21048626873126,
+            "deviation_s": 11.914391231267288,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 23.56192899999587,
+            "event_s": 149.68680649999442,
+            "event_count": 1
+          }
+        ],
+        "missing": [],
+        "per_phase": {
+          "p00_approach": {
+            "tau_s": 4.203895873204431,
+            "nominal_duration_s": 21.019479366022153,
+            "release_s": 0.0,
+            "end_s": 23.56192899999587,
+            "expected_waypoints": 2,
+            "paired_waypoints": 2,
+            "complete": true,
+            "max_abs_s": 1.5647967339727415,
+            "within_tau": true
+          },
+          "p01_patrol": {
+            "tau_s": 5.0,
+            "nominal_duration_s": 114.71048626873126,
+            "release_s": 23.56192899999587,
+            "end_s": 150.65952159999142,
+            "expected_waypoints": 20,
+            "paired_waypoints": 20,
+            "complete": true,
+            "max_abs_s": 11.914391231267288,
+            "within_tau": false
+          }
+        },
+        "expected_waypoints": 22,
+        "paired_waypoints": 22,
+        "complete": true,
+        "within_tau": false,
+        "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+      },
+      "v1_is_gate": false,
+      "criterion": "per semantic phase max_t min_simultaneous_fleet_span(sigma_i(t)) <= tau",
+      "no_hover_policy": "terminal singleton: conservative upper bound, no unproved interval relaxation"
+    }
+  },
+  "hover_evidence": {
+    "truth": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 8.5,
+        "end_support_error_s": 0.06192899999587098,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 15.0,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.06192899999587098,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.059521599991427365,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_source_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.059521599991427365,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      }
+    ],
+    "observation": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 8.6,
+        "end_support_error_s": 0.06192899999587098,
+        "terminal_suffix_supported_through_end": true,
+        "established": true,
+        "start_s": 14.9,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.06192899999587098,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.059521599991427365,
+        "terminal_suffix_supported_through_end": true,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_patrol",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.059521599991427365,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      }
+    ]
+  },
+  "truth_primary": true,
+  "observation_crosscheck": true,
+  "criterion": "per semantic phase D <= tau; no change to nominal timing or arrival_s"
+}

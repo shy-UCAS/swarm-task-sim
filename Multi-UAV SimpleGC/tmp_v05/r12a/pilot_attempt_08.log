@@ -1,0 +1,76 @@
+[   1.62s] uav_02: connected {'sysid': 2}
+[   1.62s] uav_01: connected {'sysid': 1}
+[   1.62s] uav_01: firmware_version_request_tx {'request_type': 'COMMAND_LONG', 'purpose': 'autopilot_version', 'target_sysid': 1, 'target_component': 1, 'missing_index': None, 'correlation_id': '7851f2b547794fb7a60f0356720c01b2:0', 'send_before_monotonic_s': 58447.3790237, 'send_after_monotonic_s': 58447.3791082, 'success': True, 'error': None}
+[   1.62s] uav_02: firmware_version_request_tx {'request_type': 'COMMAND_LONG', 'purpose': 'autopilot_version', 'target_sysid': 2, 'target_component': 1, 'missing_index': None, 'correlation_id': 'a37bd9ab2a2d4d9ca6dc7f5a4697050e:0', 'send_before_monotonic_s': 58447.3790826, 'send_after_monotonic_s': 58447.3791406, 'success': True, 'error': None}
+[  11.63s] uav_01: parameter_request_tx {'request_type': 'PARAM_REQUEST_LIST', 'purpose': 'first', 'target_sysid': 1, 'target_component': 1, 'missing_index': None, 'correlation_id': '7851f2b547794fb7a60f0356720c01b2:1', 'send_before_monotonic_s': 58457.3878088, 'send_after_monotonic_s': 58457.3880941, 'success': True, 'error': None}
+[  11.63s] uav_02: parameter_request_tx {'request_type': 'PARAM_REQUEST_LIST', 'purpose': 'first', 'target_sysid': 2, 'target_component': 1, 'missing_index': None, 'correlation_id': 'a37bd9ab2a2d4d9ca6dc7f5a4697050e:1', 'send_before_monotonic_s': 58457.3880513, 'send_after_monotonic_s': 58457.3883035, 'success': True, 'error': None}
+[  12.19s] uav_02: parameter_readback_complete {'read_id': 'a37bd9ab2a2d4d9ca6dc7f5a4697050e', 'parameter_count': 1202, 'wpnav_count': 7}
+[  12.20s] uav_01: parameter_readback_complete {'read_id': '7851f2b547794fb7a60f0356720c01b2', 'parameter_count': 1202, 'wpnav_count': 7}
+[  12.21s] swarm: preflight_verified {'version': 'v3_preflight_provenance_v1', 'parameter_comparison_version': 'wp_s_parameter_comparison_v2'}
+[  42.75s] uav_01: armed_confirmed {'source_boot_s': 39.966, 'source_sample_age_s': 0.09243219999916619}
+[  42.75s] uav_01: takeoff_command_sent {'source_boot_s': 39.966, 'source_sample_age_s': 0.0926091000001179}
+[  42.76s] uav_02: armed_confirmed {'source_boot_s': 40.067, 'source_sample_age_s': 0.013282900006743148}
+[  42.76s] uav_02: takeoff_command_sent {'source_boot_s': 40.067, 'source_sample_age_s': 0.013361200006329454}
+[  50.91s] uav_02: airborne_ready 
+[  50.94s] uav_01: airborne_ready 
+[  50.94s] swarm: phase_budget {'phase': 'p00_approach', 'nominal_duration_s': 21.019479366022153, 'multiplier': 3.0, 'allowance_s': 30.0, 'scenario_remaining_s': 1149.0570468000005, 'phase_timeout_override_s': None, 'effective_timeout_s': 93.05843809806646, 'scope': 'upload through terminal geometric confirmation; no automatic phase retry'}
+[  50.94s] uav_01: phase_upload_started {'phase': 'p00_approach', 'mission_item_count': 3}
+[  50.94s] uav_02: phase_upload_started {'phase': 'p00_approach', 'mission_item_count': 3}
+[  51.97s] uav_01: phase_upload_complete {'phase': 'p00_approach', 'duration_s': 1.0275795999987167}
+[  52.00s] uav_02: phase_upload_complete {'phase': 'p00_approach', 'duration_s': 1.059430399996927}
+[  52.01s] swarm: phase_release_scheduled {'phase': 'p00_approach', 'release_t': 52.30274220000865}
+[  52.31s] uav_02: phase_start_sent {'phase': 'p00_approach'}
+[  52.31s] uav_01: phase_start_sent {'phase': 'p00_approach'}
+[  52.31s] uav_01: phase_auto_confirmed {'phase': 'p00_approach'}
+[  52.31s] uav_01: waypoint_reached {'phase': 'p00_approach', 'seq': 1, 'route_index': None, 'planner_index': None, 'terminal': False, 'recv_monotonic_s': 58498.06834, 'time_source': 'single_rx_host_receive'}
+[  52.33s] uav_02: phase_auto_confirmed {'phase': 'p00_approach'}
+[  52.33s] uav_02: waypoint_reached {'phase': 'p00_approach', 'seq': 1, 'route_index': None, 'planner_index': None, 'terminal': False, 'recv_monotonic_s': 58498.0830804, 'time_source': 'single_rx_host_receive'}
+[  65.53s] uav_01: waypoint_reached {'phase': 'p00_approach', 'seq': 2, 'route_index': 0, 'planner_index': 0, 'terminal': True, 'recv_monotonic_s': 58511.2896318, 'time_source': 'single_rx_host_receive'}
+[  65.53s] uav_01: phase_finished {'phase': 'p00_approach'}
+[  74.39s] uav_02: waypoint_reached {'phase': 'p00_approach', 'seq': 2, 'route_index': 0, 'planner_index': 0, 'terminal': True, 'recv_monotonic_s': 58520.142735, 'time_source': 'single_rx_host_receive'}
+[  74.39s] uav_02: phase_finished {'phase': 'p00_approach'}
+[  74.96s] uav_01: task_target_verified {'phase': 'p00_approach', 'source_dwell_s': 0.5009999999999906, 'tolerance_m': 1.0, 'position_error_m': 0.16121578011471446}
+[  75.33s] uav_02: task_target_verified {'phase': 'p00_approach', 'source_dwell_s': 0.5, 'tolerance_m': 1.0, 'position_error_m': 0.2986319923891347}
+[  75.34s] swarm: phase_budget {'phase': 'p01_patrol', 'nominal_duration_s': 114.71048626873126, 'multiplier': 3.0, 'allowance_s': 30.0, 'scenario_remaining_s': 1124.6645662999945, 'phase_timeout_override_s': None, 'effective_timeout_s': 374.1314588061938, 'scope': 'upload through terminal geometric confirmation; no automatic phase retry'}
+[  75.34s] uav_01: phase_upload_started {'phase': 'p01_patrol', 'mission_item_count': 12}
+[  75.34s] uav_02: phase_upload_started {'phase': 'p01_patrol', 'mission_item_count': 12}
+[  75.49s] uav_01: phase_upload_complete {'phase': 'p01_patrol', 'duration_s': 0.15340509999805363}
+[  75.56s] uav_02: phase_upload_complete {'phase': 'p01_patrol', 'duration_s': 0.228644599999825}
+[  75.57s] swarm: phase_release_scheduled {'phase': 'p01_patrol', 'release_t': 75.86467120000452}
+[  75.87s] uav_02: phase_start_sent {'phase': 'p01_patrol'}
+[  75.87s] uav_01: phase_start_sent {'phase': 'p01_patrol'}
+[  75.87s] uav_01: phase_auto_confirmed {'phase': 'p01_patrol'}
+[  75.87s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 1, 'route_index': None, 'planner_index': None, 'terminal': False, 'recv_monotonic_s': 58521.6274845, 'time_source': 'single_rx_host_receive'}
+[  75.89s] uav_02: phase_auto_confirmed {'phase': 'p01_patrol'}
+[  75.89s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 1, 'route_index': None, 'planner_index': None, 'terminal': False, 'recv_monotonic_s': 58521.6423981, 'time_source': 'single_rx_host_receive'}
+[  80.67s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 2, 'route_index': 0, 'planner_index': 0, 'terminal': False, 'recv_monotonic_s': 58526.4300697, 'time_source': 'single_rx_host_receive'}
+[  81.26s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 2, 'route_index': 0, 'planner_index': 0, 'terminal': False, 'recv_monotonic_s': 58527.0181001, 'time_source': 'single_rx_host_receive'}
+[  95.66s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 3, 'route_index': 1, 'planner_index': 1, 'terminal': False, 'recv_monotonic_s': 58541.4122823, 'time_source': 'single_rx_host_receive'}
+[  96.19s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 3, 'route_index': 1, 'planner_index': 1, 'terminal': False, 'recv_monotonic_s': 58541.9447628, 'time_source': 'single_rx_host_receive'}
+[ 111.83s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 4, 'route_index': 2, 'planner_index': 2, 'terminal': False, 'recv_monotonic_s': 58557.5899156, 'time_source': 'single_rx_host_receive'}
+[ 112.38s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 4, 'route_index': 2, 'planner_index': 2, 'terminal': False, 'recv_monotonic_s': 58558.1390915, 'time_source': 'single_rx_host_receive'}
+[ 126.73s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 5, 'route_index': 3, 'planner_index': 3, 'terminal': False, 'recv_monotonic_s': 58572.4882262, 'time_source': 'single_rx_host_receive'}
+[ 127.41s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 5, 'route_index': 3, 'planner_index': 3, 'terminal': False, 'recv_monotonic_s': 58573.1700047, 'time_source': 'single_rx_host_receive'}
+[ 138.85s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 6, 'route_index': 4, 'planner_index': 4, 'terminal': False, 'recv_monotonic_s': 58584.6070852, 'time_source': 'single_rx_host_receive'}
+[ 139.38s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 6, 'route_index': 4, 'planner_index': 4, 'terminal': False, 'recv_monotonic_s': 58585.1378492, 'time_source': 'single_rx_host_receive'}
+[ 142.93s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 7, 'route_index': 5, 'planner_index': 5, 'terminal': False, 'recv_monotonic_s': 58588.690144, 'time_source': 'single_rx_host_receive'}
+[ 143.60s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 7, 'route_index': 5, 'planner_index': 5, 'terminal': False, 'recv_monotonic_s': 58589.3529113, 'time_source': 'single_rx_host_receive'}
+[ 157.82s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 8, 'route_index': 6, 'planner_index': 6, 'terminal': False, 'recv_monotonic_s': 58603.570776, 'time_source': 'single_rx_host_receive'}
+[ 158.44s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 8, 'route_index': 6, 'planner_index': 6, 'terminal': False, 'recv_monotonic_s': 58604.1935778, 'time_source': 'single_rx_host_receive'}
+[ 173.99s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 9, 'route_index': 7, 'planner_index': 7, 'terminal': False, 'recv_monotonic_s': 58619.7492537, 'time_source': 'single_rx_host_receive'}
+[ 174.63s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 9, 'route_index': 7, 'planner_index': 7, 'terminal': False, 'recv_monotonic_s': 58620.3870694, 'time_source': 'single_rx_host_receive'}
+[ 188.91s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 10, 'route_index': 8, 'planner_index': 8, 'terminal': False, 'recv_monotonic_s': 58634.6698544, 'time_source': 'single_rx_host_receive'}
+[ 189.59s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 10, 'route_index': 8, 'planner_index': 8, 'terminal': False, 'recv_monotonic_s': 58635.3505332, 'time_source': 'single_rx_host_receive'}
+[ 201.37s] uav_01: waypoint_reached {'phase': 'p01_patrol', 'seq': 11, 'route_index': 9, 'planner_index': 9, 'terminal': True, 'recv_monotonic_s': 58647.1228599, 'time_source': 'single_rx_host_receive'}
+[ 201.37s] uav_01: phase_finished {'phase': 'p01_patrol'}
+[ 201.99s] uav_02: waypoint_reached {'phase': 'p01_patrol', 'seq': 11, 'route_index': 9, 'planner_index': 9, 'terminal': True, 'recv_monotonic_s': 58647.7452654, 'time_source': 'single_rx_host_receive'}
+[ 201.99s] uav_02: phase_finished {'phase': 'p01_patrol'}
+[ 202.57s] uav_01: task_target_verified {'phase': 'p01_patrol', 'source_dwell_s': 0.5009999999999764, 'tolerance_m': 1.0, 'position_error_m': 0.2894235251817685}
+[ 202.96s] uav_02: task_target_verified {'phase': 'p01_patrol', 'source_dwell_s': 0.5, 'tolerance_m': 1.0, 'position_error_m': 0.2565623015333516}
+[ 202.96s] uav_01: landing_started {'source_boot_s': 196.767, 'source_sample_age_s': 0.01999690000229748}
+[ 202.96s] uav_02: landing_started {'source_boot_s': 196.767, 'source_sample_age_s': 0.003602800003136508}
+[ 222.64s] uav_01: landed 
+[ 222.66s] uav_02: landed 
+Result: completed; usable: False; data: F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation\Multi-UAV SimpleGC\verification\v05_r12_pp_20261002\execution\07_patrol\attempt_0\attempts\b1a82fb684084567879d076afc47714e\patrol_0003_v00_20261002T202309Z_ef48c8bb
+{"version": "v05_r12_pilot_controller_v1", "completed": false, "stopped_reason": "known_consistent_labels", "aggregate": {"logical_completed": 8, "attempts": 8, "qualified": 8, "accepted_for_pp": 8, "pair_qualified": 4, "pair_accepted_for_pp": 4, "by_intent": {"reconnaissance": {"attempted": 4, "qualified": 4, "accepted_for_pp": 4, "success_given_quality": 4, "success_fraction_given_quality": 1.0, "success_given_pp_acceptance": 4, "success_fraction_given_pp_acceptance": 1.0}, "patrol": {"attempted": 4, "qualified": 4, "accepted_for_pp": 4, "success_given_quality": 3, "success_fraction_given_quality": 0.75, "success_given_pp_acceptance": 3, "success_fraction_given_pp_acceptance": 0.75}}}}
+ERROR conda.cli.main_run:execute(142): `conda run python scripts/run_v05_r12_pp.py next` failed. (See above for error)

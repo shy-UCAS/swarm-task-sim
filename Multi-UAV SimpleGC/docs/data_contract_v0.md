@@ -1,6 +1,6 @@
 # v0.5 最小双意图数据契约（`data_contract_v0`）
 
-本契约适用于 v0.5 修订版 r1 及其 r1.1 补充下生成的侦察、巡逻 `mission_v3` 数据集和独立的 `language_zh_v0` 描述层。r1.1 新增 `random_spawn_v2` 与 `dual_intent_v05b`；[v05c 续补](v0.5_r1.1_v05c_addendum.md)仅在该采样器中增加固定初始航向策略。原 `dual_intent_v05`、`dual_intent_v05b` profile、DR 结果、诊断及失败的 VP1 运行作为独立档案保留，不覆盖或改写。数据集的单位是完整 episode；描述层只引用已经导出的、经过哈希核对的 episode。本文规定算法侧能使用的输入、监督标签、划分和版本核对，不把验证器或规划器的内部证据混入模型输入。
+本契约适用于 v0.5 修订版 r1、r1.1 及 [r1.2 验收分级补充](v0.5_r1.2_addendum.md)下生成的侦察、巡逻 `mission_v3` 数据集和独立的 `language_zh_v0` 描述层。r1.1 新增 `random_spawn_v2` 与 `dual_intent_v05b`；[v05c 续补](v0.5_r1.1_v05c_addendum.md)仅在该采样器中增加固定初始航向策略。原 `dual_intent_v05`、`dual_intent_v05b`、`dual_intent_v05c` profile、DR、诊断、VP1 原始运行/分析及其 r1 FAIL 判定作为独立档案保留，不覆盖或改写；r1.2 重分析与新判定另存。数据集的单位是完整 episode；描述层只引用已经导出的、经过哈希核对的 episode。本文规定算法侧能使用的输入、监督标签、划分和版本核对，不把验证器或规划器的内部证据混入模型输入。
 
 ## 1. 模型输入
 
@@ -81,11 +81,15 @@ v05c 的 `heading_policy="fixed_zero"` 使所有飞机的初始航向为 \(0^\ci
 
 意图样本以 `episode_quality_eligible` 为质量门槛，不能用 `mission_success` 取代它；任务成功率在质量合格样本中按 `mission_success` 单独统计。描述层再要求 `semantic_consistency="agree"`。应分别公布全部 episode、质量合格 episode、质量合格且语义一致 episode、描述成功和跳过数，不能把缺失/不一致的事实或未知时钟解释成通过。失败任务不得自动被丢弃或被写成另一子条件失败。
 
+r1.2 将验收分为硬、软两类，适用于验证、试生产和批量。参数与固件、机载任务参数、受保护文件哈希、真值最小机间距低于 `min_separation_m`、零长度航段，以及完整证据证明巡逻圈数不等于计划 \(K\)，仍为硬门禁；验证运行任一通道任务失败或语义不一致也为硬门禁。AV-1、AV-2、AC4 的 \(D>\tau\) 或 \(D\) 不可计算、圈数为 `null` 仅标记并报告，均不停止且不影响 `episode_quality_eligible`。未知仍不可宣称通过。SITL 不模拟机体碰撞，机间安全通过真值间距直接判断；\(D\) 是规划时序假设的诊断指标。质量合格率、磁盘空间、基础设施故障的原停止条件保留；未分类异常若影响或无法判断是否影响轨迹、标签或描述正确性，立即停止，参数差异一律视为影响。
+
+软门禁标记位于分析/episode 质量附件 `quality.json.validation_policy.soft_flags`，与 `validation_policy.version="v05_acceptance_r1_2"`、`stage`、`hard_checks`、`hard_failures`、`individual_pass`、`episode_quality_eligible` 一起保存。各标记含 `code`、`status`、`channel`、`phase`、`agent_id`、`value`、`threshold`、`reason`，AC4 的 `source` 区分主值/事件交叉核对；只列触发或未知项，原数值与完整证据仍在相应 AC4、执行指标附件。`external_checks_required` 明列须由控制台账核对的受保护文件、冻结输入/固件身份、基础设施与磁盘，不能以分析层通过代替。此质量附件由 manifest 哈希绑定。`individual_pass` 是阶段验收结果，不能替代任务标签或质量资格。质量与诊断字段不属于模型输入。汇总应按意图/阶段给出分布、已知/未知数量与分母。
+
 ## 8. 消费方版本与完整性检查
 
 加载前须核对数据集 `schema_version=2`，episode manifest 的哈希、质量策略指纹 `quality_policy_sha256`，以及数据集与 episode 完全一致的语义协议六字段：`task_kind=mission_v3`、`ontology_version=multi_intent_mission_v1`、`label_schema_version=3`、`semantic_validation_version=multi_intent_validation_v2`、`eligibility_protocol_version=multi_intent_quality_v1`、`execution_constraints_version=multi_intent_execution_limits_v2`。不同协议或质量策略不能默默混合。`load_episode(..., verify_hashes=True)` 执行基础附件和协议校验，但消费方仍须检查其自身所需的事实与描述版本。
 
-v0.5 route 分析还须核对 `observation_processing_version=v3_observation_v1`、`duplicate_policy_version=exact_duplicate_drop_v1`、`timeline_policy_version=full_stream_strict_v1`、`clock_model_version=passive_system_time_piecewise_v1`、`route_progress_version=ordered_route_progress_v1`、`ac4_timing_version=ac4_relative_progress_timing_v3`、`execution_artifacts_version=execution_artifacts_v2`，以及 `labels.json` 的 `label_provenance.validator_versions`。描述消费方另核对 `observer_facts_v0`、`pattern_detector_v0`、`templates_zh_v0`、`language_zh_v0` 和 manifest SHA256；版本变更不能把旧指标或旧描述当作同一口径。
+v0.5 route 分析还须核对 `observation_processing_version=v3_observation_v1`、`duplicate_policy_version=exact_duplicate_drop_v1`、`timeline_policy_version=full_stream_strict_v1`、`clock_model_version=passive_system_time_piecewise_v1`、`ac4_timing_version=ac4_relative_progress_timing_v3`、`execution_artifacts_version=execution_artifacts_v2`，以及 `labels.json` 的 `label_provenance.validator_versions`。历史 `route_progress_version=ordered_route_progress_v1` 保留；r1.2 新分析明确使用 `ordered_route_progress_v2`，匹配前一节点时刻之后第一次有效经过内最近样本，进入/离开滞回半径为 \(3.0/3.5\,\mathrm{m}\)，不能静默混用 v1/v2 结果。描述消费方另核对 `observer_facts_v0`、`pattern_detector_v0`、`templates_zh_v0`、`language_zh_v0` 和 manifest SHA256；版本变更不能把旧指标或旧描述当作同一口径。
 
 ## 9. 与论文 Stage B 字段的对应
 
@@ -113,5 +117,7 @@ v0.5 route 分析还须核对 `observation_processing_version=v3_observation_v1`
 这些都属于后续"可信 benchmark"阶段的工作。
 
 本轮仍使用合作式 FCU 遥测、已知身份、理想化观察模型和公开矩形区域，不代表真实传感器、复杂设施或天气条件。语义阶段采用屏障，转角切弯、匀速名义时序与 `arrival_s` 兜底可能影响阶段边界和时序解释；`arrival_s=trajectory_min_distance` 不保证已经低速或稳定悬停。若数据集的时钟等级只达到 `acceptable`，不能宣称已满足严格同步基准。尚无窗口级样本、统一归一化、近重复检测或分布外测试划分。以上限制及本轮实际验证中新增的限制，以暂停 1 合并报告和最终报告中的实测证据为准；不能预先声称 SITL 验证已通过。
+
+r1.2 正式固定终点驻留 `terminal_hold_s=0`，语义为 `integer_seconds_v1`，取消 VP4 和 HD；v0.4 实际执行驻留为 0 是本决定的依据。初始航向固定为 \(0^\circ\)，阶段边界约 \(1\,\mathrm{s}\) 的精度仍是已知限制。各运行进场航程、名义时长、出发/到达时刻和初始航向到进场终点方向的转角列入暂停 1 的诊断附件，不参与门禁或选例，不作为输入特征。
 
 v0.5 的 v05c 验证与试生产只支持 \(0^\circ\) 初始航向，不支持随机初始航向。历史 v05b VP1 显示 `SIM_PLD_YAW` 读回值与 `--home` 航向相关；目前这是基于三机读回对应关系的**推断**，尚未建立固件内部映射或大于 \(180^\circ\) 航向的实测规则。`wp_s_parameter_comparison_v2` 保持不变，任何未解释的参数差异仍阻止起飞。将来若要支持随机航向，必须先取得航向大于 \(180^\circ\) 时 `SIM_PLD_YAW` 如何取值的实测证据，再建立与航向绑定的版本化参数比较规则；不能把该参数无条件放入豁免名单。

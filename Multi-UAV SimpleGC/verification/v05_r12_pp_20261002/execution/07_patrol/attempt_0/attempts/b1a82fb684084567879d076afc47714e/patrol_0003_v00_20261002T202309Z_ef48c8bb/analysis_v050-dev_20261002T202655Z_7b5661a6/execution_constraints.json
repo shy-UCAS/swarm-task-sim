@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "constraint_validation_version": "multi_intent_execution_limits_v2",
+  "hard_constraints_pass": true,
+  "per_agent": {
+    "uav_01": {
+      "hard_constraints_pass": true,
+      "world_bounds_pass": true,
+      "path_length_pass": true,
+      "airborne_time_pass": true,
+      "truth": {
+        "world_bounds_pass": true,
+        "path_length_pass": true,
+        "path_length_m": 270.86080773946736,
+        "path_length_is_lower_bound": false,
+        "evidence_complete": true,
+        "transition_events_complete": true,
+        "sampled_edge_allowance_s": 0.1,
+        "violations": [],
+        "transition_lower_bound": "not_applicable; flight_up minimum applies only to stabilized cruise",
+        "method": "piecewise-linear sampled positions; no interpolation through invalid/gap intervals"
+      },
+      "observation": {
+        "world_bounds_pass": true,
+        "path_length_pass": true,
+        "path_length_m": 269.8247753722868,
+        "path_length_is_lower_bound": false,
+        "evidence_complete": true,
+        "transition_events_complete": true,
+        "sampled_edge_allowance_s": 0.1,
+        "violations": [],
+        "transition_lower_bound": "not_applicable; flight_up minimum applies only to stabilized cruise",
+        "method": "piecewise-linear sampled positions; no interpolation through invalid/gap intervals"
+      },
+      "armed_to_landed_host_s": 179.8975025000036,
+      "armed_to_landed_source_s": 176.02281465681506,
+      "duration_time_basis": "passive_FCU_source_seconds",
+      "duration_proxy": "armed_confirmed_to_landed; includes ground margins",
+      "lifecycle_complete": true,
+      "reason": "complete_lifecycle",
+      "available_airborne_budget_s": 840.0,
+      "reserve_time_s": 60.0,
+      "lifecycle_window_s": [
+        42.74701420000201,
+        222.64451670000562
+      ],
+      "proxy_dynamics": {
+        "status": "evaluated_proxy",
+        "hard_gate": false,
+        "horizontal_speed_max_m_s": 1.9954197553397128,
+        "vertical_speed_abs_max_m_s": 2.27,
+        "horizontal_acceleration_max_m_s2": 1.612451549659813,
+        "horizontal_speed_exceeds_nominal": false,
+        "vertical_speed_exceeds_nominal": true,
+        "horizontal_acceleration_exceeds_nominal": false,
+        "valid_difference_intervals": 1798,
+        "max_host_gap_s": 0.5,
+        "time_basis": "passive_FCU_source_seconds",
+        "method": "first difference of FCU estimated horizontal velocity",
+        "limitation": "uncalibrated telemetry proxy, not SIM truth acceleration or a physical feasibility proof"
+      },
+      "lifecycle_separation_pass": true
+    },
+    "uav_02": {
+      "hard_constraints_pass": true,
+      "world_bounds_pass": true,
+      "path_length_pass": true,
+      "airborne_time_pass": true,
+      "truth": {
+        "world_bounds_pass": true,
+        "path_length_pass": true,
+        "path_length_m": 287.82931965638835,
+        "path_length_is_lower_bound": false,
+        "evidence_complete": true,
+        "transition_events_complete": true,
+        "sampled_edge_allowance_s": 0.1,
+        "violations": [],
+        "transition_lower_bound": "not_applicable; flight_up minimum applies only to stabilized cruise",
+        "method": "piecewise-linear sampled positions; no interpolation through invalid/gap intervals"
+      },
+      "observation": {
+        "world_bounds_pass": true,
+        "path_length_pass": true,
+        "path_length_m": 286.7053141684976,
+        "path_length_is_lower_bound": false,
+        "evidence_complete": true,
+        "transition_events_complete": true,
+        "sampled_edge_allowance_s": 0.1,
+        "violations": [],
+        "transition_lower_bound": "not_applicable; flight_up minimum applies only to stabilized cruise",
+        "method": "piecewise-linear sampled positions; no interpolation through invalid/gap intervals"
+      },
+      "armed_to_landed_host_s": 179.89774880000186,
+      "armed_to_landed_source_s": 175.96741300414737,
+      "duration_time_basis": "passive_FCU_source_seconds",
+      "duration_proxy": "armed_confirmed_to_landed; includes ground margins",
+      "lifecycle_complete": true,
+      "reason": "complete_lifecycle",
+      "available_airborne_budget_s": 840.0,
+      "reserve_time_s": 60.0,
+      "lifecycle_window_s": [
+        42.76243819999945,
+        222.66018700000132
+      ],
+      "proxy_dynamics": {
+        "status": "evaluated_proxy",
+        "hard_gate": false,
+        "horizontal_speed_max_m_s": 1.9925255665689505,
+        "vertical_speed_abs_max_m_s": 2.26,
+        "horizontal_acceleration_max_m_s2": 1.7829798703533033,
+        "horizontal_speed_exceeds_nominal": false,
+        "vertical_speed_exceeds_nominal": true,
+        "horizontal_acceleration_exceeds_nominal": false,
+        "valid_difference_intervals": 1798,
+        "max_host_gap_s": 0.5,
+        "time_basis": "passive_FCU_source_seconds",
+        "method": "first difference of FCU estimated horizontal velocity",
+        "limitation": "uncalibrated telemetry proxy, not SIM truth acceleration or a physical feasibility proof"
+      },
+      "lifecycle_separation_pass": true
+    }
+  },
+  "lifecycle_separation_pass": true,
+  "lifecycle_separation": {
+    "truth": {
+      "passed": true,
+      "minimum_m": 8.123471156729547,
+      "min_separation_m": 5.0,
+      "per_pair": [
+        {
+          "agents": [
+            "uav_01",
+            "uav_02"
+          ],
+          "minimum_m": 8.123471156729547,
+          "passed": true,
+          "status": "clear_observed",
+          "evidence_complete": true,
+          "assessed_pair_intervals": 1800,
+          "risk_pair_intervals": 0,
+          "assessed_simultaneous_points": 1801,
+          "risk_simultaneous_points": 0
+        }
+      ],
+      "status": "clear_observed",
+      "fleet_window_s": [
+        42.74701420000201,
+        222.66018700000132
+      ],
+      "sampled_edge_allowance_s": 0.1,
+      "method": "simultaneous piecewise-linear relative motion, plus valid isolated positions; no invalid/gap bridging",
+      "scope": "earliest armed_confirmed through latest landed for every pair, including grounded neighbours"
+    },
+    "observation": {
+      "passed": true,
+      "minimum_m": 8.13104471020231,
+      "min_separation_m": 5.0,
+      "per_pair": [
+        {
+          "agents": [
+            "uav_01",
+            "uav_02"
+          ],
+          "minimum_m": 8.13104471020231,
+          "passed": true,
+          "status": "clear_observed",
+          "evidence_complete": true,
+          "assessed_pair_intervals": 1800,
+          "risk_pair_intervals": 0,
+          "assessed_simultaneous_points": 1801,
+          "risk_simultaneous_points": 0
+        }
+      ],
+      "status": "clear_observed",
+      "fleet_window_s": [
+        42.74701420000201,
+        222.66018700000132
+      ],
+      "sampled_edge_allowance_s": 0.1,
+      "method": "simultaneous piecewise-linear relative motion, plus valid isolated positions; no invalid/gap bridging",
+      "scope": "earliest armed_confirmed through latest landed for every pair, including grounded neighbours"
+    }
+  },
+  "scope": "armed-confirmed through landed, separate from the exported mission observation window",
+  "bounds_semantics": "horizontal and upper-altitude limits throughout; lower flight_up bound only from airborne_ready through landing_started; transition lower bound not applicable",
+  "hard_constraints": [
+    "world_bounds",
+    "executed_path_length",
+    "airborne_time_with_reserve",
+    "lifecycle_pair_separation"
+  ],
+  "unverified_constraints": [
+    "calibrated_physical_acceleration",
+    "battery_electrochemistry",
+    "collision_physics"
+  ],
+  "numerical_evidence": "sampled piecewise-linear proxy; passive source mapping is not physical lockstep",
+  "control_mode": "semantic_phase_route_v1",
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1"
+}

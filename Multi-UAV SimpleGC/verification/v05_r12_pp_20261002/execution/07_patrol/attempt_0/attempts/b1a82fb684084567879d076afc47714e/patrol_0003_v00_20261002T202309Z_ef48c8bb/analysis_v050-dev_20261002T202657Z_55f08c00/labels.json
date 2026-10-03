@@ -1,0 +1,4478 @@
+{
+  "schema_version": 3,
+  "task_kind": "mission_v3",
+  "requested_intent": "patrol",
+  "assigned_intent": "patrol",
+  "objective": "perimeter_patrol",
+  "planned_phases": [
+    "approach",
+    "patrol"
+  ],
+  "planned_behaviors": [
+    "perimeter_loop"
+  ],
+  "observed_behaviors": [
+    {
+      "name": "perimeter_loop",
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "status": "failed",
+      "evidence_basis": "SIM_truth_positions_perimeter_revisit",
+      "rule_version": "perimeter_revisit_v1",
+      "min_segment_visits": 3,
+      "max_revisit_gap_s": 33.53106700000499
+    }
+  ],
+  "unverified_behaviors": {
+    "split": "not_evaluated",
+    "merge": "not_evaluated",
+    "formation_change": "not_evaluated"
+  },
+  "mission_success": false,
+  "mission_success_observation": true,
+  "semantic_consistency": "disagree",
+  "mission_metrics": {
+    "truth": {
+      "perimeter_revisit": {
+        "version": "perimeter_revisit_v1",
+        "service_window_s": [
+          23.568932999995013,
+          150.6
+        ],
+        "evidence_complete": true,
+        "evidence_issues": [],
+        "segment_count": 24,
+        "required_visits_per_segment": 4,
+        "nominal_revisit_interval_s": 28.55262156718282,
+        "allowed_gap_s": 57.10524313436564,
+        "group_segment_visit_counts": {
+          "side_00_part_000": 3,
+          "side_00_part_001": 4,
+          "side_00_part_002": 4,
+          "side_00_part_003": 4,
+          "side_00_part_004": 4,
+          "side_00_part_005": 4,
+          "side_01_part_000": 4,
+          "side_01_part_001": 4,
+          "side_01_part_002": 4,
+          "side_01_part_003": 4,
+          "side_01_part_004": 4,
+          "side_01_part_005": 4,
+          "side_02_part_000": 3,
+          "side_02_part_001": 4,
+          "side_02_part_002": 4,
+          "side_02_part_003": 4,
+          "side_02_part_004": 4,
+          "side_02_part_005": 4,
+          "side_03_part_000": 4,
+          "side_03_part_001": 4,
+          "side_03_part_002": 4,
+          "side_03_part_003": 4,
+          "side_03_part_004": 4,
+          "side_03_part_005": 4
+        },
+        "segments": [
+          {
+            "segment_id": "side_00_part_000",
+            "side": 0,
+            "piece": 0,
+            "start_xy_m": [
+              -18.111769432116496,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              -13.145435775747801,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368695,
+            "count": 3,
+            "observed_lower_bound": 3,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 57.1,
+                "end_s": 63.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 87.6,
+                "end_s": 94.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 119.2,
+                "end_s": 125.7
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_01"
+            ],
+            "max_gap_s": 33.53106700000499,
+            "max_gap_types": [
+              "initial"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 33.53106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 57.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999993,
+                "from_s": 57.1,
+                "to_s": 87.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.60000000000001,
+                "from_s": 87.6,
+                "to_s": 119.2
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 24.89999999999999,
+                "from_s": 125.7,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_001",
+            "side": 0,
+            "piece": 1,
+            "start_xy_m": [
+              -13.145435775747801,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              -8.179102119379106,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368695,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 54.5,
+                "end_s": 60.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 85.0,
+                "end_s": 90.5
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 116.7,
+                "end_s": 122.1
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 147.1,
+                "end_s": 149.8
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_01"
+            ],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 30.931067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 54.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 54.5,
+                "to_s": 85.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 85.0,
+                "to_s": 116.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 116.7,
+                "to_s": 147.1
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.799999999999983,
+                "from_s": 149.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_002",
+            "side": 0,
+            "piece": 2,
+            "start_xy_m": [
+              -8.179102119379106,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              -3.212768463010409,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368697,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 52.0,
+                "end_s": 57.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 82.6,
+                "end_s": 88.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 114.2,
+                "end_s": 119.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 144.7,
+                "end_s": 149.8
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_01"
+            ],
+            "max_gap_s": 31.60000000000001,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 28.431067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 52.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.599999999999994,
+                "from_s": 52.0,
+                "to_s": 82.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.60000000000001,
+                "from_s": 82.6,
+                "to_s": 114.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999986,
+                "from_s": 114.2,
+                "to_s": 144.7
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.799999999999983,
+                "from_s": 149.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_003",
+            "side": 0,
+            "piece": 3,
+            "start_xy_m": [
+              -3.212768463010409,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              1.753565193358284,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 49.5,
+                "end_s": 55.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 80.1,
+                "end_s": 85.5
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 111.7,
+                "end_s": 117.1
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 142.3,
+                "end_s": 147.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.60000000000001,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 25.931067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 49.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.599999999999994,
+                "from_s": 49.5,
+                "to_s": 80.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.60000000000001,
+                "from_s": 80.1,
+                "to_s": 111.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.60000000000001,
+                "from_s": 111.7,
+                "to_s": 142.3
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 3.0999999999999943,
+                "from_s": 147.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_004",
+            "side": 0,
+            "piece": 4,
+            "start_xy_m": [
+              1.753565193358284,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              6.7198988497269845,
+              -21.888281271510316
+            ],
+            "length_m": 4.9663336563687,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 46.9,
+                "end_s": 52.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 77.4,
+                "end_s": 83.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 109.1,
+                "end_s": 114.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 139.6,
+                "end_s": 145.1
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.69999999999999,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 23.331067000004985,
+                "from_s": 23.568932999995013,
+                "to_s": 46.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000007,
+                "from_s": 46.9,
+                "to_s": 77.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 77.4,
+                "to_s": 109.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 109.1,
+                "to_s": 139.6
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 5.5,
+                "from_s": 145.1,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_005",
+            "side": 0,
+            "piece": 5,
+            "start_xy_m": [
+              6.7198988497269845,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 43.5,
+                "end_s": 49.9
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 73.9,
+                "end_s": 80.4
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 105.7,
+                "end_s": 112.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 136.1,
+                "end_s": 142.7
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 19.931067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 43.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 43.5,
+                "to_s": 73.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 73.9,
+                "to_s": 105.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 105.7,
+                "to_s": 136.1
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 7.900000000000006,
+                "from_s": 142.7,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_000",
+            "side": 1,
+            "piece": 0,
+            "start_xy_m": [
+              11.686232506095678,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -17.33707440548474
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 41.2,
+                "end_s": 47.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 71.7,
+                "end_s": 77.8
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 103.4,
+                "end_s": 109.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 133.8,
+                "end_s": 140.0
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 17.63106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 41.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 41.2,
+                "to_s": 71.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 71.7,
+                "to_s": 103.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 103.4,
+                "to_s": 133.8
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 10.599999999999994,
+                "from_s": 140.0,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_001",
+            "side": 1,
+            "piece": 1,
+            "start_xy_m": [
+              11.686232506095678,
+              -17.33707440548474
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -12.785867539459163
+            ],
+            "length_m": 4.551206866025575,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 38.9,
+                "end_s": 44.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 69.4,
+                "end_s": 74.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 101.0,
+                "end_s": 106.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 131.5,
+                "end_s": 136.7
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.599999999999994,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 15.331067000004985,
+                "from_s": 23.568932999995013,
+                "to_s": 38.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000007,
+                "from_s": 38.9,
+                "to_s": 69.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 69.4,
+                "to_s": 101.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 101.0,
+                "to_s": 131.5
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 13.900000000000006,
+                "from_s": 136.7,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_002",
+            "side": 1,
+            "piece": 2,
+            "start_xy_m": [
+              11.686232506095678,
+              -12.785867539459163
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -8.234660673433586
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 36.6,
+                "end_s": 41.8
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 67.0,
+                "end_s": 72.3
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 98.8,
+                "end_s": 104.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 129.2,
+                "end_s": 134.4
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 13.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 36.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.4,
+                "from_s": 36.6,
+                "to_s": 67.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 67.0,
+                "to_s": 98.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 98.8,
+                "to_s": 129.2
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 16.19999999999999,
+                "from_s": 134.4,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_003",
+            "side": 1,
+            "piece": 3,
+            "start_xy_m": [
+              11.686232506095678,
+              -8.234660673433586
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -3.6834538074080108
+            ],
+            "length_m": 4.551206866025575,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 34.2,
+                "end_s": 39.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 64.7,
+                "end_s": 70.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 96.5,
+                "end_s": 101.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 126.9,
+                "end_s": 132.1
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 10.63106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 34.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 34.2,
+                "to_s": 64.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 64.7,
+                "to_s": 96.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 96.5,
+                "to_s": 126.9
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 18.5,
+                "from_s": 132.1,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_004",
+            "side": 1,
+            "piece": 4,
+            "start_xy_m": [
+              11.686232506095678,
+              -3.6834538074080108
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              0.8677530586175664
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 31.7,
+                "end_s": 37.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 62.2,
+                "end_s": 67.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 94.0,
+                "end_s": 99.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 124.4,
+                "end_s": 129.9
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 8.131067000004986,
+                "from_s": 23.568932999995013,
+                "to_s": 31.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000004,
+                "from_s": 31.7,
+                "to_s": 62.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 62.2,
+                "to_s": 94.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 94.0,
+                "to_s": 124.4
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 20.69999999999999,
+                "from_s": 129.9,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_005",
+            "side": 1,
+            "piece": 5,
+            "start_xy_m": [
+              11.686232506095678,
+              0.8677530586175664
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              5.4189599246431435
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 28.6,
+                "end_s": 34.9
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 59.1,
+                "end_s": 65.4
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 90.9,
+                "end_s": 97.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 121.3,
+                "end_s": 127.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.800000000000004,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 5.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 28.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 28.6,
+                "to_s": 59.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.800000000000004,
+                "from_s": 59.1,
+                "to_s": 90.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 90.9,
+                "to_s": 121.3
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 23.099999999999994,
+                "from_s": 127.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_000",
+            "side": 2,
+            "piece": 0,
+            "start_xy_m": [
+              11.686232506095678,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              6.719898849726983,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368695,
+            "count": 3,
+            "observed_lower_bound": 3,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 56.6,
+                "end_s": 63.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 88.2,
+                "end_s": 94.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 118.8,
+                "end_s": 125.1
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_02"
+            ],
+            "max_gap_s": 33.03106700000499,
+            "max_gap_types": [
+              "initial"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 33.03106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 56.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.6,
+                "from_s": 56.6,
+                "to_s": 88.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.599999999999994,
+                "from_s": 88.2,
+                "to_s": 118.8
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 25.5,
+                "from_s": 125.1,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_001",
+            "side": 2,
+            "piece": 1,
+            "start_xy_m": [
+              6.719898849726983,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              1.7535651933582876,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368695,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 54.1,
+                "end_s": 59.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 85.8,
+                "end_s": 91.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 116.2,
+                "end_s": 121.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 148.0,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_02"
+            ],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 30.531067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 54.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.699999999999996,
+                "from_s": 54.1,
+                "to_s": 85.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 85.8,
+                "to_s": 116.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 116.2,
+                "to_s": 148.0
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_002",
+            "side": 2,
+            "piece": 2,
+            "start_xy_m": [
+              1.7535651933582876,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -3.212768463010409,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368697,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 51.6,
+                "end_s": 57.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 83.2,
+                "end_s": 88.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 113.7,
+                "end_s": 119.2
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 145.5,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_02"
+            ],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 28.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 51.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.6,
+                "from_s": 51.6,
+                "to_s": 83.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 83.2,
+                "to_s": 113.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 113.7,
+                "to_s": 145.5
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_003",
+            "side": 2,
+            "piece": 3,
+            "start_xy_m": [
+              -3.212768463010409,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -8.179102119379102,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 49.1,
+                "end_s": 54.5
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 80.8,
+                "end_s": 86.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 111.2,
+                "end_s": 116.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 143.0,
+                "end_s": 148.4
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 25.531067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 49.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.699999999999996,
+                "from_s": 49.1,
+                "to_s": 80.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 80.8,
+                "to_s": 111.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 111.2,
+                "to_s": 143.0
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 2.1999999999999886,
+                "from_s": 148.4,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_004",
+            "side": 2,
+            "piece": 4,
+            "start_xy_m": [
+              -8.179102119379102,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -13.145435775747803,
+              5.4189599246431435
+            ],
+            "length_m": 4.9663336563687,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 46.5,
+                "end_s": 52.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 78.1,
+                "end_s": 83.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 108.6,
+                "end_s": 114.2
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 140.4,
+                "end_s": 145.9
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.80000000000001,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 22.931067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 46.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 46.5,
+                "to_s": 78.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 78.1,
+                "to_s": 108.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.80000000000001,
+                "from_s": 108.6,
+                "to_s": 140.4
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 4.699999999999989,
+                "from_s": 145.9,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_005",
+            "side": 2,
+            "piece": 5,
+            "start_xy_m": [
+              -13.145435775747803,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 43.0,
+                "end_s": 49.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 74.7,
+                "end_s": 81.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 105.1,
+                "end_s": 111.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 136.8,
+                "end_s": 143.4
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000017,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 19.431067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 43.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 43.0,
+                "to_s": 74.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 74.7,
+                "to_s": 105.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000017,
+                "from_s": 105.1,
+                "to_s": 136.8
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 7.199999999999989,
+                "from_s": 143.4,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_000",
+            "side": 3,
+            "piece": 0,
+            "start_xy_m": [
+              -18.111769432116496,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              0.8677530586175672
+            ],
+            "length_m": 4.551206866025576,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 40.7,
+                "end_s": 46.9
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 72.2,
+                "end_s": 78.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 102.7,
+                "end_s": 109.1
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 134.5,
+                "end_s": 140.8
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 17.13106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 40.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.5,
+                "from_s": 40.7,
+                "to_s": 72.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 72.2,
+                "to_s": 102.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 102.7,
+                "to_s": 134.5
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 9.799999999999983,
+                "from_s": 140.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_001",
+            "side": 3,
+            "piece": 1,
+            "start_xy_m": [
+              -18.111769432116496,
+              0.8677530586175672
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -3.683453807408009
+            ],
+            "length_m": 4.551206866025576,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 38.3,
+                "end_s": 43.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 70.0,
+                "end_s": 75.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 100.5,
+                "end_s": 105.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 132.2,
+                "end_s": 137.4
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 14.731067000004984,
+                "from_s": 23.568932999995013,
+                "to_s": 38.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 38.3,
+                "to_s": 70.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 70.0,
+                "to_s": 100.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 100.5,
+                "to_s": 132.2
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 13.199999999999989,
+                "from_s": 137.4,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_002",
+            "side": 3,
+            "piece": 2,
+            "start_xy_m": [
+              -18.111769432116496,
+              -3.683453807408009
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -8.234660673433586
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 36.0,
+                "end_s": 41.3
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 67.6,
+                "end_s": 72.9
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 98.1,
+                "end_s": 103.3
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 129.9,
+                "end_s": 135.1
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.80000000000001,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 12.431067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 36.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 36.0,
+                "to_s": 67.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 67.6,
+                "to_s": 98.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.80000000000001,
+                "from_s": 98.1,
+                "to_s": 129.9
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 15.5,
+                "from_s": 135.1,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_003",
+            "side": 3,
+            "piece": 3,
+            "start_xy_m": [
+              -18.111769432116496,
+              -8.234660673433586
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -12.785867539459161
+            ],
+            "length_m": 4.551206866025575,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 33.7,
+                "end_s": 38.9
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 65.4,
+                "end_s": 70.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 95.9,
+                "end_s": 101.1
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 127.6,
+                "end_s": 132.8
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 10.13106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 33.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 33.7,
+                "to_s": 65.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 65.4,
+                "to_s": 95.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 95.9,
+                "to_s": 127.6
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 17.799999999999983,
+                "from_s": 132.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_004",
+            "side": 3,
+            "piece": 4,
+            "start_xy_m": [
+              -18.111769432116496,
+              -12.785867539459161
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -17.33707440548474
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 31.2,
+                "end_s": 36.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 62.9,
+                "end_s": 68.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 93.4,
+                "end_s": 98.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 125.1,
+                "end_s": 130.4
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.7,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 7.631067000004986,
+                "from_s": 23.568932999995013,
+                "to_s": 31.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.7,
+                "from_s": 31.2,
+                "to_s": 62.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000007,
+                "from_s": 62.9,
+                "to_s": 93.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 93.4,
+                "to_s": 125.1
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 20.19999999999999,
+                "from_s": 130.4,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_005",
+            "side": 3,
+            "piece": 5,
+            "start_xy_m": [
+              -18.111769432116496,
+              -17.33707440548474
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -21.888281271510316
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 28.0,
+                "end_s": 34.3
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 59.6,
+                "end_s": 66.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 90.1,
+                "end_s": 96.5
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 121.7,
+                "end_s": 128.2
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.60000000000001,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 4.431067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 28.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.6,
+                "from_s": 28.0,
+                "to_s": 59.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999993,
+                "from_s": 59.6,
+                "to_s": 90.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.60000000000001,
+                "from_s": 90.1,
+                "to_s": 121.7
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 22.400000000000006,
+                "from_s": 128.2,
+                "to_s": 150.6
+              }
+            ]
+          }
+        ],
+        "per_agent_progress": {
+          "uav_01": {
+            "per_agent_laps_observed": 2,
+            "first_complete_lap_time_s": 87.5,
+            "evidence_complete": true,
+            "issues": [],
+            "node_evidence": [
+              {
+                "route_index": 0,
+                "seq": 2,
+                "nominal_s": 3.991290388139708,
+                "cumulative_arc_length_m": 7.982580776279416,
+                "actual_s": 29.7,
+                "match_distance_m": 0.19563013985068975,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  28.0,
+                  32.2
+                ],
+                "search_after_s": 23.568932999995013,
+                "sample_only": true
+              },
+              {
+                "route_index": 1,
+                "seq": 3,
+                "nominal_s": 17.644910986216438,
+                "cumulative_arc_length_m": 35.289821972432875,
+                "actual_s": 44.8,
+                "match_distance_m": 0.2093212218667937,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  43.0,
+                  47.2
+                ],
+                "search_after_s": 29.7,
+                "sample_only": true
+              },
+              {
+                "route_index": 2,
+                "seq": 4,
+                "nominal_s": 32.543911955322514,
+                "cumulative_arc_length_m": 65.08782391064503,
+                "actual_s": 60.8,
+                "match_distance_m": 0.2212302623139182,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  59.2,
+                  63.2
+                ],
+                "search_after_s": 44.8,
+                "sample_only": true
+              },
+              {
+                "route_index": 3,
+                "seq": 5,
+                "nominal_s": 46.19753255339924,
+                "cumulative_arc_length_m": 92.39506510679848,
+                "actual_s": 75.8,
+                "match_distance_m": 0.18454333458832614,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  74.0,
+                  78.1
+                ],
+                "search_after_s": 60.8,
+                "sample_only": true
+              },
+              {
+                "route_index": 4,
+                "seq": 6,
+                "nominal_s": 57.10524313436562,
+                "cumulative_arc_length_m": 114.21048626873124,
+                "actual_s": 87.5,
+                "match_distance_m": 0.3146533369140306,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  86.1,
+                  89.2
+                ],
+                "search_after_s": 75.8,
+                "sample_only": true
+              },
+              {
+                "route_index": 5,
+                "seq": 7,
+                "nominal_s": 61.09653352250533,
+                "cumulative_arc_length_m": 122.19306704501066,
+                "actual_s": 91.7,
+                "match_distance_m": 0.21446999320799756,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  90.1,
+                  94.3
+                ],
+                "search_after_s": 87.5,
+                "sample_only": true
+              },
+              {
+                "route_index": 6,
+                "seq": 8,
+                "nominal_s": 74.75015412058207,
+                "cumulative_arc_length_m": 149.50030824116413,
+                "actual_s": 106.9,
+                "match_distance_m": 0.234665402535764,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  105.1,
+                  109.4
+                ],
+                "search_after_s": 91.7,
+                "sample_only": true
+              },
+              {
+                "route_index": 7,
+                "seq": 9,
+                "nominal_s": 89.64915508968815,
+                "cumulative_arc_length_m": 179.2983101793763,
+                "actual_s": 123.0,
+                "match_distance_m": 0.19415801660434034,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  121.3,
+                  125.4
+                ],
+                "search_after_s": 106.9,
+                "sample_only": true
+              },
+              {
+                "route_index": 8,
+                "seq": 10,
+                "nominal_s": 103.30277568776488,
+                "cumulative_arc_length_m": 206.60555137552976,
+                "actual_s": 137.8,
+                "match_distance_m": 0.1826455354476281,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  136.1,
+                  140.3
+                ],
+                "search_after_s": 123.0,
+                "sample_only": true
+              },
+              {
+                "route_index": 9,
+                "seq": 11,
+                "nominal_s": 114.21048626873126,
+                "cumulative_arc_length_m": 228.42097253746252,
+                "actual_s": 149.8,
+                "match_distance_m": 0.32239985556478734,
+                "evidence_status": "matched",
+                "visit_ordinal": 3,
+                "visit_interval_s": [
+                  148.1,
+                  149.8
+                ],
+                "search_after_s": 137.8,
+                "sample_only": true
+              }
+            ]
+          },
+          "uav_02": {
+            "per_agent_laps_observed": 2,
+            "first_complete_lap_time_s": null,
+            "evidence_complete": true,
+            "issues": [],
+            "node_evidence": [
+              {
+                "route_index": 0,
+                "seq": 2,
+                "nominal_s": 3.991290388139708,
+                "cumulative_arc_length_m": 7.982580776279416,
+                "actual_s": 30.4,
+                "match_distance_m": 0.2541089026789528,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  28.6,
+                  32.8
+                ],
+                "search_after_s": 23.58384579999256,
+                "sample_only": true
+              },
+              {
+                "route_index": 1,
+                "seq": 3,
+                "nominal_s": 17.644910986216438,
+                "cumulative_arc_length_m": 35.289821972432875,
+                "actual_s": 45.3,
+                "match_distance_m": 0.21920869549152258,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  43.5,
+                  47.6
+                ],
+                "search_after_s": 30.4,
+                "sample_only": true
+              },
+              {
+                "route_index": 2,
+                "seq": 4,
+                "nominal_s": 32.54391195532253,
+                "cumulative_arc_length_m": 65.08782391064506,
+                "actual_s": 61.2,
+                "match_distance_m": 0.20724809944332562,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  59.6,
+                  63.8
+                ],
+                "search_after_s": 45.3,
+                "sample_only": true
+              },
+              {
+                "route_index": 3,
+                "seq": 5,
+                "nominal_s": 46.197532553399256,
+                "cumulative_arc_length_m": 92.39506510679851,
+                "actual_s": 76.5,
+                "match_distance_m": 0.2079143906986783,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  74.7,
+                  78.8
+                ],
+                "search_after_s": 61.2,
+                "sample_only": true
+              },
+              {
+                "route_index": 4,
+                "seq": 6,
+                "nominal_s": 57.10524313436564,
+                "cumulative_arc_length_m": 114.21048626873127,
+                "actual_s": 88.1,
+                "match_distance_m": 0.2997456649311171,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  86.8,
+                  90.0
+                ],
+                "search_after_s": 76.5,
+                "sample_only": true
+              },
+              {
+                "route_index": 5,
+                "seq": 7,
+                "nominal_s": 61.09653352250534,
+                "cumulative_arc_length_m": 122.19306704501068,
+                "actual_s": 92.5,
+                "match_distance_m": 0.19803471885837298,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  90.9,
+                  95.0
+                ],
+                "search_after_s": 88.1,
+                "sample_only": true
+              },
+              {
+                "route_index": 6,
+                "seq": 8,
+                "nominal_s": 74.75015412058207,
+                "cumulative_arc_length_m": 149.50030824116413,
+                "actual_s": 107.4,
+                "match_distance_m": 0.18288483701864655,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  105.7,
+                  109.8
+                ],
+                "search_after_s": 92.5,
+                "sample_only": true
+              },
+              {
+                "route_index": 7,
+                "seq": 9,
+                "nominal_s": 89.64915508968815,
+                "cumulative_arc_length_m": 179.2983101793763,
+                "actual_s": 123.4,
+                "match_distance_m": 0.2243142030950278,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  121.7,
+                  126.0
+                ],
+                "search_after_s": 107.4,
+                "sample_only": true
+              },
+              {
+                "route_index": 8,
+                "seq": 10,
+                "nominal_s": 103.30277568776488,
+                "cumulative_arc_length_m": 206.60555137552976,
+                "actual_s": 138.6,
+                "match_distance_m": 0.273310571758121,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  136.8,
+                  141.1
+                ],
+                "search_after_s": 123.4,
+                "sample_only": true
+              },
+              {
+                "route_index": 9,
+                "seq": 11,
+                "nominal_s": 114.21048626873126,
+                "cumulative_arc_length_m": 228.42097253746252,
+                "actual_s": 150.6,
+                "match_distance_m": 0.29975106012353836,
+                "evidence_status": "matched",
+                "visit_ordinal": 3,
+                "visit_interval_s": [
+                  148.9,
+                  150.6
+                ],
+                "search_after_s": 138.6,
+                "sample_only": true
+              }
+            ]
+          }
+        },
+        "per_agent_laps_observed": {
+          "uav_01": 2,
+          "uav_02": 2
+        },
+        "first_boundary_coverage_time_s": 57.1,
+        "first_complete_lap_time_s": 87.5,
+        "min_segment_visits": 3,
+        "max_revisit_gap_s": 33.53106700000499,
+        "loop_segment_coverage": 1.0,
+        "visits_pass": false,
+        "max_gap_pass": true,
+        "patrol_success": false
+      },
+      "per_agent_laps_observed": {
+        "uav_01": 2,
+        "uav_02": 2
+      },
+      "first_boundary_coverage_time_s": 57.1,
+      "first_complete_lap_time_s": 87.5,
+      "return_to_launch": {
+        "required": false,
+        "success": true,
+        "per_agent": {}
+      },
+      "mission_success": false
+    },
+    "observation": {
+      "perimeter_revisit": {
+        "version": "perimeter_revisit_v1",
+        "service_window_s": [
+          23.568932999995013,
+          150.6
+        ],
+        "evidence_complete": true,
+        "evidence_issues": [],
+        "segment_count": 24,
+        "required_visits_per_segment": 4,
+        "nominal_revisit_interval_s": 28.55262156718282,
+        "allowed_gap_s": 57.10524313436564,
+        "group_segment_visit_counts": {
+          "side_00_part_000": 4,
+          "side_00_part_001": 4,
+          "side_00_part_002": 4,
+          "side_00_part_003": 4,
+          "side_00_part_004": 4,
+          "side_00_part_005": 4,
+          "side_01_part_000": 4,
+          "side_01_part_001": 4,
+          "side_01_part_002": 4,
+          "side_01_part_003": 4,
+          "side_01_part_004": 4,
+          "side_01_part_005": 4,
+          "side_02_part_000": 4,
+          "side_02_part_001": 4,
+          "side_02_part_002": 4,
+          "side_02_part_003": 4,
+          "side_02_part_004": 4,
+          "side_02_part_005": 4,
+          "side_03_part_000": 4,
+          "side_03_part_001": 4,
+          "side_03_part_002": 4,
+          "side_03_part_003": 4,
+          "side_03_part_004": 4,
+          "side_03_part_005": 4
+        },
+        "segments": [
+          {
+            "segment_id": "side_00_part_000",
+            "side": 0,
+            "piece": 0,
+            "start_xy_m": [
+              -18.111769432116496,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              -13.145435775747801,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368695,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 57.1,
+                "end_s": 63.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 87.7,
+                "end_s": 94.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 119.3,
+                "end_s": 125.8
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 150.1,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_01"
+            ],
+            "max_gap_s": 33.53106700000499,
+            "max_gap_types": [
+              "initial"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 33.53106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 57.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.6,
+                "from_s": 57.1,
+                "to_s": 87.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 87.7,
+                "to_s": 119.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.799999999999997,
+                "from_s": 119.3,
+                "to_s": 150.1
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_001",
+            "side": 0,
+            "piece": 1,
+            "start_xy_m": [
+              -13.145435775747801,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              -8.179102119379106,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368695,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 54.6,
+                "end_s": 60.1
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 85.1,
+                "end_s": 90.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 116.8,
+                "end_s": 122.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 147.2,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_01"
+            ],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 31.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 54.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999993,
+                "from_s": 54.6,
+                "to_s": 85.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 85.1,
+                "to_s": 116.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 116.8,
+                "to_s": 147.2
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_002",
+            "side": 0,
+            "piece": 2,
+            "start_xy_m": [
+              -8.179102119379106,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              -3.212768463010409,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368697,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 52.1,
+                "end_s": 57.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 82.6,
+                "end_s": 88.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 114.3,
+                "end_s": 119.8
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 144.8,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_01"
+            ],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 28.531067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 52.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999993,
+                "from_s": 52.1,
+                "to_s": 82.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 82.6,
+                "to_s": 114.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000014,
+                "from_s": 114.3,
+                "to_s": 144.8
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_003",
+            "side": 0,
+            "piece": 3,
+            "start_xy_m": [
+              -3.212768463010409,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              1.753565193358284,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 49.6,
+                "end_s": 55.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 80.1,
+                "end_s": 85.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 111.8,
+                "end_s": 117.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 142.3,
+                "end_s": 147.6
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 26.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 49.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999993,
+                "from_s": 49.6,
+                "to_s": 80.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 80.1,
+                "to_s": 111.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000014,
+                "from_s": 111.8,
+                "to_s": 142.3
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 3.0,
+                "from_s": 147.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_004",
+            "side": 0,
+            "piece": 4,
+            "start_xy_m": [
+              1.753565193358284,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              6.7198988497269845,
+              -21.888281271510316
+            ],
+            "length_m": 4.9663336563687,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 46.9,
+                "end_s": 52.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 77.4,
+                "end_s": 83.1
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 109.1,
+                "end_s": 114.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 139.6,
+                "end_s": 145.2
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.69999999999999,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 23.331067000004985,
+                "from_s": 23.568932999995013,
+                "to_s": 46.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000007,
+                "from_s": 46.9,
+                "to_s": 77.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 77.4,
+                "to_s": 109.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 109.1,
+                "to_s": 139.6
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 5.400000000000006,
+                "from_s": 145.2,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_00_part_005",
+            "side": 0,
+            "piece": 5,
+            "start_xy_m": [
+              6.7198988497269845,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -21.888281271510316
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 43.6,
+                "end_s": 50.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 74.0,
+                "end_s": 80.5
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 105.8,
+                "end_s": 112.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 136.2,
+                "end_s": 142.7
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 20.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 43.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.4,
+                "from_s": 43.6,
+                "to_s": 74.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 74.0,
+                "to_s": 105.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 105.8,
+                "to_s": 136.2
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 7.900000000000006,
+                "from_s": 142.7,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_000",
+            "side": 1,
+            "piece": 0,
+            "start_xy_m": [
+              11.686232506095678,
+              -21.888281271510316
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -17.33707440548474
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 41.3,
+                "end_s": 47.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 71.8,
+                "end_s": 77.9
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 103.5,
+                "end_s": 109.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 133.9,
+                "end_s": 140.0
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 17.731067000004984,
+                "from_s": 23.568932999995013,
+                "to_s": 41.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 41.3,
+                "to_s": 71.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 71.8,
+                "to_s": 103.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 103.5,
+                "to_s": 133.9
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 10.599999999999994,
+                "from_s": 140.0,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_001",
+            "side": 1,
+            "piece": 1,
+            "start_xy_m": [
+              11.686232506095678,
+              -17.33707440548474
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -12.785867539459163
+            ],
+            "length_m": 4.551206866025575,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 39.0,
+                "end_s": 44.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 69.4,
+                "end_s": 74.8
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 101.1,
+                "end_s": 106.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 131.6,
+                "end_s": 136.8
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.69999999999999,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 15.431067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 39.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 39.0,
+                "to_s": 69.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 69.4,
+                "to_s": 101.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 101.1,
+                "to_s": 131.6
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 13.799999999999983,
+                "from_s": 136.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_002",
+            "side": 1,
+            "piece": 2,
+            "start_xy_m": [
+              11.686232506095678,
+              -12.785867539459163
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -8.234660673433586
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 36.6,
+                "end_s": 41.9
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 67.1,
+                "end_s": 72.4
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 98.8,
+                "end_s": 104.1
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 129.3,
+                "end_s": 134.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 13.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 36.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999993,
+                "from_s": 36.6,
+                "to_s": 67.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 67.1,
+                "to_s": 98.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000014,
+                "from_s": 98.8,
+                "to_s": 129.3
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 16.099999999999994,
+                "from_s": 134.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_003",
+            "side": 1,
+            "piece": 3,
+            "start_xy_m": [
+              11.686232506095678,
+              -8.234660673433586
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              -3.6834538074080108
+            ],
+            "length_m": 4.551206866025575,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 34.3,
+                "end_s": 39.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 64.7,
+                "end_s": 70.1
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 96.5,
+                "end_s": 101.8
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 127.0,
+                "end_s": 132.2
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 10.731067000004984,
+                "from_s": 23.568932999995013,
+                "to_s": 34.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 34.3,
+                "to_s": 64.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 64.7,
+                "to_s": 96.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 96.5,
+                "to_s": 127.0
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 18.400000000000006,
+                "from_s": 132.2,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_004",
+            "side": 1,
+            "piece": 4,
+            "start_xy_m": [
+              11.686232506095678,
+              -3.6834538074080108
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              0.8677530586175664
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 31.8,
+                "end_s": 37.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 62.3,
+                "end_s": 67.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 94.0,
+                "end_s": 99.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 124.4,
+                "end_s": 129.9
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 8.231067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 31.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.499999999999996,
+                "from_s": 31.8,
+                "to_s": 62.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 62.3,
+                "to_s": 94.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 94.0,
+                "to_s": 124.4
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 20.69999999999999,
+                "from_s": 129.9,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_01_part_005",
+            "side": 1,
+            "piece": 5,
+            "start_xy_m": [
+              11.686232506095678,
+              0.8677530586175664
+            ],
+            "end_xy_m": [
+              11.686232506095678,
+              5.4189599246431435
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 28.7,
+                "end_s": 35.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 59.2,
+                "end_s": 65.4
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 91.0,
+                "end_s": 97.2
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 121.4,
+                "end_s": 127.6
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 5.131067000004986,
+                "from_s": 23.568932999995013,
+                "to_s": 28.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000004,
+                "from_s": 28.7,
+                "to_s": 59.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 59.2,
+                "to_s": 91.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 91.0,
+                "to_s": 121.4
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 23.0,
+                "from_s": 127.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_000",
+            "side": 2,
+            "piece": 0,
+            "start_xy_m": [
+              11.686232506095678,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              6.719898849726983,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368695,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_02",
+                "start_s": 25.3,
+                "end_s": 32.5
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 56.7,
+                "end_s": 63.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 88.3,
+                "end_s": 94.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 118.9,
+                "end_s": 125.2
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.599999999999994,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 1.7310670000049875,
+                "from_s": 23.568932999995013,
+                "to_s": 25.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.400000000000002,
+                "from_s": 25.3,
+                "to_s": 56.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 56.7,
+                "to_s": 88.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.60000000000001,
+                "from_s": 88.3,
+                "to_s": 118.9
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 25.39999999999999,
+                "from_s": 125.2,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_001",
+            "side": 2,
+            "piece": 1,
+            "start_xy_m": [
+              6.719898849726983,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              1.7535651933582876,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368695,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 54.2,
+                "end_s": 59.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 85.9,
+                "end_s": 91.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 116.3,
+                "end_s": 121.8
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 148.1,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_02"
+            ],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 30.63106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 54.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 54.2,
+                "to_s": 85.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 85.9,
+                "to_s": 116.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 116.3,
+                "to_s": 148.1
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_002",
+            "side": 2,
+            "piece": 2,
+            "start_xy_m": [
+              1.7535651933582876,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -3.212768463010409,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368697,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 51.6,
+                "end_s": 57.1
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 83.3,
+                "end_s": 88.8
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 113.8,
+                "end_s": 119.2
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 145.5,
+                "end_s": 150.6
+              }
+            ],
+            "initially_occupied_by": [
+              "uav_02"
+            ],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 28.031067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 51.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.699999999999996,
+                "from_s": 51.6,
+                "to_s": 83.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 83.3,
+                "to_s": 113.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 113.8,
+                "to_s": 145.5
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 0.0,
+                "from_s": 150.6,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_003",
+            "side": 2,
+            "piece": 3,
+            "start_xy_m": [
+              -3.212768463010409,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -8.179102119379102,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 49.2,
+                "end_s": 54.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 80.9,
+                "end_s": 86.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 111.3,
+                "end_s": 116.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 143.0,
+                "end_s": 148.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 25.63106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 49.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 49.2,
+                "to_s": 80.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.39999999999999,
+                "from_s": 80.9,
+                "to_s": 111.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 111.3,
+                "to_s": 143.0
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 2.0999999999999943,
+                "from_s": 148.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_004",
+            "side": 2,
+            "piece": 4,
+            "start_xy_m": [
+              -8.179102119379102,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -13.145435775747803,
+              5.4189599246431435
+            ],
+            "length_m": 4.9663336563687,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 46.5,
+                "end_s": 52.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 78.1,
+                "end_s": 83.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 108.6,
+                "end_s": 114.2
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 140.4,
+                "end_s": 146.0
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.80000000000001,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 22.931067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 46.5
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 46.5,
+                "to_s": 78.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 78.1,
+                "to_s": 108.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.80000000000001,
+                "from_s": 108.6,
+                "to_s": 140.4
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 4.599999999999994,
+                "from_s": 146.0,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_02_part_005",
+            "side": 2,
+            "piece": 5,
+            "start_xy_m": [
+              -13.145435775747803,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              5.4189599246431435
+            ],
+            "length_m": 4.966333656368693,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 43.1,
+                "end_s": 49.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 74.8,
+                "end_s": 81.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 105.2,
+                "end_s": 111.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 136.9,
+                "end_s": 143.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 19.531067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 43.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.699999999999996,
+                "from_s": 43.1,
+                "to_s": 74.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.400000000000006,
+                "from_s": 74.8,
+                "to_s": 105.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 105.2,
+                "to_s": 136.9
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 7.099999999999994,
+                "from_s": 143.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_000",
+            "side": 3,
+            "piece": 0,
+            "start_xy_m": [
+              -18.111769432116496,
+              5.4189599246431435
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              0.8677530586175672
+            ],
+            "length_m": 4.551206866025576,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 40.7,
+                "end_s": 46.9
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 72.3,
+                "end_s": 78.6
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 102.8,
+                "end_s": 109.1
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 134.6,
+                "end_s": 140.8
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 17.13106700000499,
+                "from_s": 23.568932999995013,
+                "to_s": 40.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 40.7,
+                "to_s": 72.3
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 72.3,
+                "to_s": 102.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 102.8,
+                "to_s": 134.6
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 9.799999999999983,
+                "from_s": 140.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_001",
+            "side": 3,
+            "piece": 1,
+            "start_xy_m": [
+              -18.111769432116496,
+              0.8677530586175672
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -3.683453807408009
+            ],
+            "length_m": 4.551206866025576,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 38.4,
+                "end_s": 43.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 70.1,
+                "end_s": 75.4
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 100.6,
+                "end_s": 105.8
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 132.3,
+                "end_s": 137.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000017,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 14.831067000004985,
+                "from_s": 23.568932999995013,
+                "to_s": 38.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.699999999999996,
+                "from_s": 38.4,
+                "to_s": 70.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 70.1,
+                "to_s": 100.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000017,
+                "from_s": 100.6,
+                "to_s": 132.3
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 13.099999999999994,
+                "from_s": 137.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_002",
+            "side": 3,
+            "piece": 2,
+            "start_xy_m": [
+              -18.111769432116496,
+              -3.683453807408009
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -8.234660673433586
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 36.1,
+                "end_s": 41.3
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 67.7,
+                "end_s": 73.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 98.2,
+                "end_s": 103.4
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 129.9,
+                "end_s": 135.2
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.700000000000003,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 12.531067000004988,
+                "from_s": 23.568932999995013,
+                "to_s": 36.1
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.6,
+                "from_s": 36.1,
+                "to_s": 67.7
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 67.7,
+                "to_s": 98.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.700000000000003,
+                "from_s": 98.2,
+                "to_s": 129.9
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 15.400000000000006,
+                "from_s": 135.2,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_003",
+            "side": 3,
+            "piece": 3,
+            "start_xy_m": [
+              -18.111769432116496,
+              -8.234660673433586
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -12.785867539459161
+            ],
+            "length_m": 4.551206866025575,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 33.8,
+                "end_s": 39.0
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 65.4,
+                "end_s": 70.7
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 95.9,
+                "end_s": 101.2
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 127.7,
+                "end_s": 132.8
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.799999999999997,
+            "max_gap_types": [
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 10.231067000004984,
+                "from_s": 23.568932999995013,
+                "to_s": 33.8
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.60000000000001,
+                "from_s": 33.8,
+                "to_s": 65.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.5,
+                "from_s": 65.4,
+                "to_s": 95.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.799999999999997,
+                "from_s": 95.9,
+                "to_s": 127.7
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 17.799999999999983,
+                "from_s": 132.8,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_004",
+            "side": 3,
+            "piece": 4,
+            "start_xy_m": [
+              -18.111769432116496,
+              -12.785867539459161
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -17.33707440548474
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 31.2,
+                "end_s": 36.7
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 62.9,
+                "end_s": 68.3
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 93.4,
+                "end_s": 98.8
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 125.1,
+                "end_s": 130.5
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.7,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 7.631067000004986,
+                "from_s": 23.568932999995013,
+                "to_s": 31.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.7,
+                "from_s": 31.2,
+                "to_s": 62.9
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.500000000000007,
+                "from_s": 62.9,
+                "to_s": 93.4
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.69999999999999,
+                "from_s": 93.4,
+                "to_s": 125.1
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 20.099999999999994,
+                "from_s": 130.5,
+                "to_s": 150.6
+              }
+            ]
+          },
+          {
+            "segment_id": "side_03_part_005",
+            "side": 3,
+            "piece": 5,
+            "start_xy_m": [
+              -18.111769432116496,
+              -17.33707440548474
+            ],
+            "end_xy_m": [
+              -18.111769432116496,
+              -21.888281271510316
+            ],
+            "length_m": 4.551206866025577,
+            "count": 4,
+            "observed_lower_bound": 4,
+            "visits": [
+              {
+                "agent_id": "uav_01",
+                "start_s": 28.0,
+                "end_s": 34.4
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 59.6,
+                "end_s": 66.0
+              },
+              {
+                "agent_id": "uav_01",
+                "start_s": 90.2,
+                "end_s": 96.6
+              },
+              {
+                "agent_id": "uav_02",
+                "start_s": 121.8,
+                "end_s": 128.3
+              }
+            ],
+            "initially_occupied_by": [],
+            "max_gap_s": 31.6,
+            "max_gap_types": [
+              "internal",
+              "internal"
+            ],
+            "gaps": [
+              {
+                "kind": "initial",
+                "duration_s": 4.431067000004987,
+                "from_s": 23.568932999995013,
+                "to_s": 28.0
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.6,
+                "from_s": 28.0,
+                "to_s": 59.6
+              },
+              {
+                "kind": "internal",
+                "duration_s": 30.6,
+                "from_s": 59.6,
+                "to_s": 90.2
+              },
+              {
+                "kind": "internal",
+                "duration_s": 31.599999999999994,
+                "from_s": 90.2,
+                "to_s": 121.8
+              },
+              {
+                "kind": "terminal",
+                "duration_s": 22.299999999999983,
+                "from_s": 128.3,
+                "to_s": 150.6
+              }
+            ]
+          }
+        ],
+        "per_agent_progress": {
+          "uav_01": {
+            "per_agent_laps_observed": 2,
+            "first_complete_lap_time_s": 87.6,
+            "evidence_complete": true,
+            "issues": [],
+            "node_evidence": [
+              {
+                "route_index": 0,
+                "seq": 2,
+                "nominal_s": 3.991290388139708,
+                "cumulative_arc_length_m": 7.982580776279416,
+                "actual_s": 29.8,
+                "match_distance_m": 0.10313876353592784,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  28.0,
+                  32.3
+                ],
+                "search_after_s": 23.568932999995013,
+                "sample_only": true
+              },
+              {
+                "route_index": 1,
+                "seq": 3,
+                "nominal_s": 17.644910986216438,
+                "cumulative_arc_length_m": 35.289821972432875,
+                "actual_s": 44.9,
+                "match_distance_m": 0.04081467292295533,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  43.1,
+                  47.2
+                ],
+                "search_after_s": 29.8,
+                "sample_only": true
+              },
+              {
+                "route_index": 2,
+                "seq": 4,
+                "nominal_s": 32.543911955322514,
+                "cumulative_arc_length_m": 65.08782391064503,
+                "actual_s": 60.9,
+                "match_distance_m": 0.202495112896521,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  59.2,
+                  63.3
+                ],
+                "search_after_s": 44.9,
+                "sample_only": true
+              },
+              {
+                "route_index": 3,
+                "seq": 5,
+                "nominal_s": 46.19753255339924,
+                "cumulative_arc_length_m": 92.39506510679848,
+                "actual_s": 75.9,
+                "match_distance_m": 0.16229257856283377,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  74.0,
+                  78.2
+                ],
+                "search_after_s": 60.9,
+                "sample_only": true
+              },
+              {
+                "route_index": 4,
+                "seq": 6,
+                "nominal_s": 57.10524313436562,
+                "cumulative_arc_length_m": 114.21048626873124,
+                "actual_s": 87.6,
+                "match_distance_m": 0.17171877859084939,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  86.1,
+                  89.3
+                ],
+                "search_after_s": 75.9,
+                "sample_only": true
+              },
+              {
+                "route_index": 5,
+                "seq": 7,
+                "nominal_s": 61.09653352250533,
+                "cumulative_arc_length_m": 122.19306704501066,
+                "actual_s": 91.8,
+                "match_distance_m": 0.06393260152273977,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  90.2,
+                  94.3
+                ],
+                "search_after_s": 87.6,
+                "sample_only": true
+              },
+              {
+                "route_index": 6,
+                "seq": 8,
+                "nominal_s": 74.75015412058207,
+                "cumulative_arc_length_m": 149.50030824116413,
+                "actual_s": 107.0,
+                "match_distance_m": 0.025332507385531517,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  105.2,
+                  109.4
+                ],
+                "search_after_s": 91.8,
+                "sample_only": true
+              },
+              {
+                "route_index": 7,
+                "seq": 9,
+                "nominal_s": 89.64915508968815,
+                "cumulative_arc_length_m": 179.2983101793763,
+                "actual_s": 123.1,
+                "match_distance_m": 0.1762682696945694,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  121.4,
+                  125.5
+                ],
+                "search_after_s": 107.0,
+                "sample_only": true
+              },
+              {
+                "route_index": 8,
+                "seq": 10,
+                "nominal_s": 103.30277568776488,
+                "cumulative_arc_length_m": 206.60555137552976,
+                "actual_s": 137.9,
+                "match_distance_m": 0.12542106394565125,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  136.2,
+                  140.3
+                ],
+                "search_after_s": 123.1,
+                "sample_only": true
+              },
+              {
+                "route_index": 9,
+                "seq": 11,
+                "nominal_s": 114.21048626873126,
+                "cumulative_arc_length_m": 228.42097253746252,
+                "actual_s": 150.0,
+                "match_distance_m": 0.18292501084387122,
+                "evidence_status": "matched",
+                "visit_ordinal": 3,
+                "visit_interval_s": [
+                  148.2,
+                  150.6
+                ],
+                "search_after_s": 137.9,
+                "sample_only": true
+              }
+            ]
+          },
+          "uav_02": {
+            "per_agent_laps_observed": 2,
+            "first_complete_lap_time_s": null,
+            "evidence_complete": true,
+            "issues": [],
+            "node_evidence": [
+              {
+                "route_index": 0,
+                "seq": 2,
+                "nominal_s": 3.991290388139708,
+                "cumulative_arc_length_m": 7.982580776279416,
+                "actual_s": 30.5,
+                "match_distance_m": 0.27188035345098177,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  28.7,
+                  32.8
+                ],
+                "search_after_s": 23.58384579999256,
+                "sample_only": true
+              },
+              {
+                "route_index": 1,
+                "seq": 3,
+                "nominal_s": 17.644910986216438,
+                "cumulative_arc_length_m": 35.289821972432875,
+                "actual_s": 45.3,
+                "match_distance_m": 0.20481202134389054,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  43.6,
+                  47.7
+                ],
+                "search_after_s": 30.5,
+                "sample_only": true
+              },
+              {
+                "route_index": 2,
+                "seq": 4,
+                "nominal_s": 32.54391195532253,
+                "cumulative_arc_length_m": 65.08782391064506,
+                "actual_s": 61.3,
+                "match_distance_m": 0.06032522217752993,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  59.6,
+                  63.8
+                ],
+                "search_after_s": 45.3,
+                "sample_only": true
+              },
+              {
+                "route_index": 3,
+                "seq": 5,
+                "nominal_s": 46.197532553399256,
+                "cumulative_arc_length_m": 92.39506510679851,
+                "actual_s": 76.6,
+                "match_distance_m": 0.05063719437120793,
+                "evidence_status": "matched",
+                "visit_ordinal": 1,
+                "visit_interval_s": [
+                  74.8,
+                  78.9
+                ],
+                "search_after_s": 61.3,
+                "sample_only": true
+              },
+              {
+                "route_index": 4,
+                "seq": 6,
+                "nominal_s": 57.10524313436564,
+                "cumulative_arc_length_m": 114.21048626873127,
+                "actual_s": 88.2,
+                "match_distance_m": 0.15413667432750797,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  86.8,
+                  90.1
+                ],
+                "search_after_s": 76.6,
+                "sample_only": true
+              },
+              {
+                "route_index": 5,
+                "seq": 7,
+                "nominal_s": 61.09653352250534,
+                "cumulative_arc_length_m": 122.19306704501068,
+                "actual_s": 92.6,
+                "match_distance_m": 0.17114844583181285,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  91.0,
+                  95.0
+                ],
+                "search_after_s": 88.2,
+                "sample_only": true
+              },
+              {
+                "route_index": 6,
+                "seq": 8,
+                "nominal_s": 74.75015412058207,
+                "cumulative_arc_length_m": 149.50030824116413,
+                "actual_s": 107.5,
+                "match_distance_m": 0.14782440302833344,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  105.8,
+                  109.9
+                ],
+                "search_after_s": 92.6,
+                "sample_only": true
+              },
+              {
+                "route_index": 7,
+                "seq": 9,
+                "nominal_s": 89.64915508968815,
+                "cumulative_arc_length_m": 179.2983101793763,
+                "actual_s": 123.5,
+                "match_distance_m": 0.04850873976157363,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  121.8,
+                  126.0
+                ],
+                "search_after_s": 107.5,
+                "sample_only": true
+              },
+              {
+                "route_index": 8,
+                "seq": 10,
+                "nominal_s": 103.30277568776488,
+                "cumulative_arc_length_m": 206.60555137552976,
+                "actual_s": 138.8,
+                "match_distance_m": 0.061100538888405734,
+                "evidence_status": "matched",
+                "visit_ordinal": 2,
+                "visit_interval_s": [
+                  136.9,
+                  141.1
+                ],
+                "search_after_s": 123.5,
+                "sample_only": true
+              },
+              {
+                "route_index": 9,
+                "seq": 11,
+                "nominal_s": 114.21048626873126,
+                "cumulative_arc_length_m": 228.42097253746252,
+                "actual_s": 150.6,
+                "match_distance_m": 0.3054072224460464,
+                "evidence_status": "matched",
+                "visit_ordinal": 3,
+                "visit_interval_s": [
+                  149.0,
+                  150.6
+                ],
+                "search_after_s": 138.8,
+                "sample_only": true
+              }
+            ]
+          }
+        },
+        "per_agent_laps_observed": {
+          "uav_01": 2,
+          "uav_02": 2
+        },
+        "first_boundary_coverage_time_s": 57.1,
+        "first_complete_lap_time_s": 87.6,
+        "min_segment_visits": 4,
+        "max_revisit_gap_s": 33.53106700000499,
+        "loop_segment_coverage": 1.0,
+        "visits_pass": true,
+        "max_gap_pass": true,
+        "patrol_success": true
+      },
+      "per_agent_laps_observed": {
+        "uav_01": 2,
+        "uav_02": 2
+      },
+      "first_boundary_coverage_time_s": 57.1,
+      "first_complete_lap_time_s": 87.6,
+      "return_to_launch": {
+        "required": false,
+        "success": true,
+        "per_agent": {}
+      },
+      "mission_success": true
+    }
+  },
+  "run_status": "completed",
+  "label_provenance": {
+    "requested_intent": "TaskSpec author; not inferred hidden intent",
+    "mission_success": "SIM_truth_positions with passive source-clock alignment",
+    "mission_success_observation": "FCU estimated positions; independent intent evidence pass",
+    "semantic_windows": "semantic_route_windows_v1",
+    "semantic_validation_version": "multi_intent_validation_v2",
+    "validator_versions": {
+      "patrol": "perimeter_revisit_v1"
+    },
+    "scope": "registered intent evidence rules; no inferred tactical intent",
+    "observation_processing_version": "v3_observation_v1",
+    "duplicate_policy_version": "exact_duplicate_drop_v1",
+    "timeline_policy_version": "full_stream_strict_v1",
+    "clock_model_version": "passive_system_time_piecewise_v1",
+    "route_progress_version": "ordered_route_progress_v2",
+    "ac4_timing_version": "ac4_relative_progress_timing_v3",
+    "execution_artifacts_version": "execution_artifacts_v2"
+  }
+}

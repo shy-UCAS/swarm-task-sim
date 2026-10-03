@@ -51,8 +51,23 @@ def _uses_v05_route_evidence(spec):
              "max_s" in execution.get("async_timing_tolerance", {})))
 
 
-def analyze_run_v3(directory, quality_policy=None):
+def analyze_run_v3(directory, quality_policy=None, *,
+                   progress_mapping_version="ordered_route_progress_v1",
+                   acceptance_policy=None, acceptance_stage="validation",
+                   output_directory=None, update_latest=True):
     directory=Path(directory).resolve()
+    if progress_mapping_version not in ("ordered_route_progress_v1", "ordered_route_progress_v2"):
+        raise ValueError("unsupported ordered route progress version")
+    if acceptance_policy not in (None, "v05_acceptance_r1_2"):
+        raise ValueError("unsupported acceptance policy")
+    if acceptance_policy and progress_mapping_version != "ordered_route_progress_v2":
+        raise ValueError("r1.2 analysis requires ordered_route_progress_v2")
+    if output_directory is not None:
+        output_directory=Path(output_directory).resolve()
+        if output_directory.exists():
+            raise ValueError("analysis output already exists; never overwrite")
+        if update_latest and output_directory.parent != directory:
+            raise ValueError("external reanalysis must preserve the run's analysis_latest.json")
     metadata=json.loads((directory/"metadata.json").read_text(encoding="utf-8"))
     scene=metadata["scenario"]
     scenario_path=directory/"scenario.json"
@@ -145,7 +160,8 @@ def analyze_run_v3(directory, quality_policy=None):
         estimation_error_note="FCU vs BIN SIM source-time comparison; internal FCU filtering latency remains; passive fit is not absolute synchronization")
     events=_read_packets(directory/"events.jsonl")
     semantic=evaluate_mission_v3(scene,semantic_traces,semantic_truth_traces,events=events,
-                                 metadata=metadata,time_epoch=epoch,clocks=clocks)
+                                 metadata=metadata,time_epoch=epoch,clocks=clocks,
+                                 progress_mapping_version=progress_mapping_version)
     semantic["semantic_validation"]["evaluation_support"]=dict(extra_end_bracket_s=semantic_grid[-1] if len(semantic_grid)>count else None,
         exported_grid_last_s=grid[-1] if grid else None,mission_end_s=None if unstarted else end-epoch,model_input_grid_unchanged=True,
         semantics="one internal boundary-support sample; never exported as an observation; no invalid/gap bridging")
@@ -163,13 +179,14 @@ def analyze_run_v3(directory, quality_policy=None):
     nominal=nominal_arrival_evidence(scene,events,metadata,epoch)
     v05_route_evidence=_uses_v05_route_evidence(spec)
     metrics_fn=compute_execution_metrics_v2 if v05_route_evidence else compute_execution_metrics
+    metrics_options=({"progress_mapping_version":progress_mapping_version} if v05_route_evidence else {})
     metrics=metrics_fn(scene,traces,semantic["phase_windows"],events=events,metadata=metadata,time_epoch=epoch,
-                       nominal_arrivals=nominal["records"])
+                       nominal_arrivals=nominal["records"],**metrics_options)
     metrics["nominal_timing_deviation_s"]["assessment"]=nominal
     v05_versions={}
     ac4_report=None
     if v05_route_evidence:
-        v05_versions=dict(route_progress_version=ORDERED_ROUTE_PROGRESS_VERSION,
+        v05_versions=dict(route_progress_version=progress_mapping_version,
                           ac4_timing_version=AC4_TIMING_V3_VERSION,
                           execution_artifacts_version=EXECUTION_ARTIFACTS_V2)
         releases=[event.get("phase") for event in events if event.get("event")=="phase_release_scheduled"]
@@ -182,7 +199,8 @@ def analyze_run_v3(directory, quality_policy=None):
                              if hover_supported else ({},[]))
             hover_evidence[channel]=evidence
             ac4_channels[channel]=evaluate_ac4_timing_v3(scene,channel_traces,events,metadata,epoch,
-                                                          channel=channel,terminal_hover_starts=starts)
+                                                          channel=channel,terminal_hover_starts=starts,
+                                                          progress_mapping_version=progress_mapping_version)
         ac4_report=dict(**v05_versions,**versions,channels=ac4_channels,hover_evidence=hover_evidence,
                         truth_primary=True,observation_crosscheck=True,
                         criterion="per semantic phase D <= tau; no change to nominal timing or arrival_s")
@@ -190,6 +208,13 @@ def analyze_run_v3(directory, quality_policy=None):
         quality["ac4_v3_truth_within_tau"]=ac4_channels["truth"]["within_tau"]
         quality["ac4_v3_observation_within_tau"]=ac4_channels["observation"]["within_tau"]
         labels["label_provenance"].update(v05_versions)
+    if acceptance_policy:
+        from .validation_policy import assess_run
+        if not v05_route_evidence:
+            raise ValueError("r1.2 acceptance requires v0.5 route evidence")
+        quality["validation_policy"]=assess_run(scene,metadata,quality,labels,metrics,ac4_report,onboard,
+                                                stage=acceptance_stage)
+        quality["acceptance_policy_version"]=acceptance_policy
     extra={"mission.json":spec["mission"],"shared_scene.json":spec["scenario"],"allocation.json":scene["planning"],
         "semantic_plan.json":scene["semantic_plan"],"semantic_validation.json":dict(semantic["semantic_validation"],**versions),
         "phase_windows.json":dict(semantic["phase_windows"],**versions),"execution_constraints.json":dict(constraints,**versions),
@@ -198,7 +223,7 @@ def analyze_run_v3(directory, quality_policy=None):
         "observation_processing.json":dict(**versions,per_agent=audits,raw_evidence_preserved=True)}
     if ac4_report is not None:
         extra["ac4_timing_v3.json"]=ac4_report
-    output=directory/("analysis_v"+__version__.replace(".","")+"_"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_")+uuid.uuid4().hex[:8])
+    output=output_directory or directory/("analysis_v"+__version__.replace(".","")+"_"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_")+uuid.uuid4().hex[:8])
     output.mkdir()
     fields=["t_s","agent_id","valid"]
     write_csv(output/"observations.csv",fields+["time_basis","east_m","north_m","up_m","ve_m_s","vn_m_s","vu_m_s"],observation_rows)
@@ -232,7 +257,10 @@ def analyze_run_v3(directory, quality_policy=None):
         semantic_consistency=labels["semantic_consistency"],clock_quality=clock_quality,
         agent_ids=sorted(v["id"] for v in scene["vehicles"]),
         artifact_sha256={p.name:digest(p) for p in output.iterdir() if p.is_file()})
+    if acceptance_policy:
+        manifest["acceptance_policy_version"]=acceptance_policy
     validate_artifact_protocol(manifest,output)
     write_json(output/"manifest.json",manifest)
-    write_json(directory/"analysis_latest.json",dict(directory=output.name,manifest_sha256=digest(output/"manifest.json")))
+    if update_latest:
+        write_json(directory/"analysis_latest.json",dict(directory=output.name,manifest_sha256=digest(output/"manifest.json")))
     return output,quality,labels

@@ -1,0 +1,153 @@
+{
+  "schema_version": 3,
+  "task_kind": "mission_v3",
+  "requested_intent": "reconnaissance",
+  "assigned_intent": "reconnaissance",
+  "objective": "area_coverage",
+  "planned_phases": [
+    "approach",
+    "observe"
+  ],
+  "planned_behaviors": [
+    "area_scan"
+  ],
+  "observed_behaviors": [
+    {
+      "name": "coverage",
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "status": "verified",
+      "evidence_basis": "SIM_truth_positions",
+      "rule_version": "shared_coverage_v2"
+    }
+  ],
+  "unverified_behaviors": {
+    "split": "not_evaluated",
+    "merge": "not_evaluated",
+    "formation_change": "not_evaluated"
+  },
+  "mission_success": true,
+  "mission_success_observation": true,
+  "semantic_consistency": "agree",
+  "mission_metrics": {
+    "truth": {
+      "coverage": {
+        "requested_grid_m": 1.0,
+        "cells": 840,
+        "nx": 30,
+        "ny": 28,
+        "cell_width_m": 0.9932667312737391,
+        "cell_height_m": 0.9752586141483378,
+        "discretization": "equal_area_cell_centers",
+        "area_weighting": "uniform",
+        "model": "ideal_horizontal_disk",
+        "model_version": "ideal_horizontal_disk_v1",
+        "covered_cells": 840,
+        "global_coverage_ratio": 1.0,
+        "required_ratio": 0.9,
+        "success": true,
+        "evidence_complete": true,
+        "repeated_cells": 126,
+        "repeated_coverage_cell_ratio": 0.15,
+        "repeated_fraction_of_covered": 0.15,
+        "observing_agents": 2,
+        "per_agent": {
+          "uav_01": {
+            "covered_cells": 486,
+            "coverage_ratio": 0.5785714285714286,
+            "evidence_complete": true,
+            "service_windows": 1,
+            "missing_service_windows": 0,
+            "valid_service_points": 2213,
+            "leave_one_out_coverage_drop": 0.42857142857142855
+          },
+          "uav_02": {
+            "covered_cells": 480,
+            "coverage_ratio": 0.5714285714285714,
+            "evidence_complete": true,
+            "service_windows": 1,
+            "missing_service_windows": 0,
+            "valid_service_points": 2222,
+            "leave_one_out_coverage_drop": 0.42142857142857143
+          }
+        }
+      },
+      "return_to_launch": {
+        "required": false,
+        "success": true,
+        "per_agent": {}
+      },
+      "mission_success": true
+    },
+    "observation": {
+      "coverage": {
+        "requested_grid_m": 1.0,
+        "cells": 840,
+        "nx": 30,
+        "ny": 28,
+        "cell_width_m": 0.9932667312737391,
+        "cell_height_m": 0.9752586141483378,
+        "discretization": "equal_area_cell_centers",
+        "area_weighting": "uniform",
+        "model": "ideal_horizontal_disk",
+        "model_version": "ideal_horizontal_disk_v1",
+        "covered_cells": 840,
+        "global_coverage_ratio": 1.0,
+        "required_ratio": 0.9,
+        "success": true,
+        "evidence_complete": true,
+        "repeated_cells": 124,
+        "repeated_coverage_cell_ratio": 0.14761904761904762,
+        "repeated_fraction_of_covered": 0.14761904761904762,
+        "observing_agents": 2,
+        "per_agent": {
+          "uav_01": {
+            "covered_cells": 484,
+            "coverage_ratio": 0.5761904761904761,
+            "evidence_complete": true,
+            "service_windows": 1,
+            "missing_service_windows": 0,
+            "valid_service_points": 2216,
+            "leave_one_out_coverage_drop": 0.42857142857142855
+          },
+          "uav_02": {
+            "covered_cells": 480,
+            "coverage_ratio": 0.5714285714285714,
+            "evidence_complete": true,
+            "service_windows": 1,
+            "missing_service_windows": 0,
+            "valid_service_points": 2222,
+            "leave_one_out_coverage_drop": 0.4238095238095238
+          }
+        }
+      },
+      "return_to_launch": {
+        "required": false,
+        "success": true,
+        "per_agent": {}
+      },
+      "mission_success": true
+    }
+  },
+  "run_status": "completed",
+  "label_provenance": {
+    "requested_intent": "TaskSpec author; not inferred hidden intent",
+    "mission_success": "SIM_truth_positions with passive source-clock alignment",
+    "mission_success_observation": "FCU estimated positions; independent intent evidence pass",
+    "semantic_windows": "semantic_route_windows_v1",
+    "semantic_validation_version": "multi_intent_validation_v2",
+    "validator_versions": {
+      "reconnaissance": "shared_coverage_v2"
+    },
+    "scope": "registered intent evidence rules; no inferred tactical intent",
+    "observation_processing_version": "v3_observation_v1",
+    "duplicate_policy_version": "exact_duplicate_drop_v1",
+    "timeline_policy_version": "full_stream_strict_v1",
+    "clock_model_version": "passive_system_time_piecewise_v1",
+    "route_progress_version": "ordered_route_progress_v1",
+    "ac4_timing_version": "ac4_relative_progress_timing_v3",
+    "execution_artifacts_version": "execution_artifacts_v2"
+  }
+}

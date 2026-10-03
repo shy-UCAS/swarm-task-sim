@@ -25,8 +25,10 @@ MAPPING_VERSION = "waypoint_closest_piecewise_linear_v1"
 INTERVAL_VERSION = "simultaneous_terminal_interval_min_span_v1"
 EVENT_MAPPING_VERSION = "raw_waypoint_event_piecewise_linear_v1"
 ORDERED_ROUTE_PROGRESS_VERSION = "ordered_route_progress_v1"
+ORDERED_ROUTE_PROGRESS_V2_VERSION = "ordered_route_progress_v2"
 AC4_TIMING_V3_VERSION = "ac4_relative_progress_timing_v3"
 MATCH_TOLERANCE_M = 3.0
+VISIT_EXIT_TOLERANCE_M = 3.5
 BACKTRACK_TOLERANCE_M = .5
 EPS = 1e-9
 
@@ -451,6 +453,137 @@ def ordered_route_progress(rows, targets, nominal_times, *, start_s, end_s, max_
     return result
 
 
+def _sample_visit_intervals(rows, target, entry_tolerance, exit_tolerance):
+    """Observed passages: enter at <= entry, leave at > exit (3D metres).
+
+    The wider exit threshold prevents boundary jitter from splitting a passage.
+    The input may include interpolated phase bounds solely to establish the
+    initial passage. The caller excludes those synthetic bounds from matches.
+    """
+    visits, active = [], None
+    for stamp, position in rows:
+        distance = math.dist(position[:3], target)
+        if active is None:
+            if distance <= entry_tolerance + EPS:
+                active = []
+        elif distance > exit_tolerance + EPS:
+            visits.append(active)
+            active = None
+        if active is not None:
+            active.append((distance, stamp))
+    if active is not None:
+        visits.append(active)
+    return visits
+
+
+def ordered_route_progress_v2(rows, targets, nominal_times, *, start_s, end_s, max_gap_s,
+                              match_tolerance_m=MATCH_TOLERANCE_M,
+                              lap_node_indices=None, start_point=None):
+    """First eligible passage after each predecessor, closest actual sample.
+
+    A passage already entered before the preceding *different* node matched is
+    still eligible: only its samples after that match may be used. A passage
+    used for the same coordinate (including the release anchor) cannot prove a
+    later lap. There is no global-closest fallback for unique or repeated nodes.
+    V1 remains available, including its original continuous-point behavior.
+    """
+    number_ok = all(_finite(value) for value in (start_s, end_s, max_gap_s, match_tolerance_m))
+    if (len(targets) != len(nominal_times) or not number_ok or max_gap_s <= 0
+            or match_tolerance_m != MATCH_TOLERANCE_M or end_s <= start_s):
+        raise ValueError("invalid_ordered_route_v2_model_or_bounds")
+    if any(not _finite(value) or value < 0 for value in nominal_times) or any(
+            later <= earlier for earlier, later in zip(nominal_times, nominal_times[1:])):
+        raise ValueError("invalid_ordered_route_nominal_times")
+    if lap_node_indices is not None and (not isinstance(lap_node_indices, (list, tuple))
+            or any(type(index) is not int or not 0 <= index < len(targets) for index in lap_node_indices)
+            or len(set(lap_node_indices)) != len(lap_node_indices)):
+        raise ValueError("invalid_lap_node_indices")
+    target_xyz = [_planned_xyz(target) for target in targets]
+    anchor = dict(actual_s=start_s, nominal_s=0., cumulative_arc_length_m=0.,
+                  source="scheduled_phase_release")
+    result = dict(version=ORDERED_ROUTE_PROGRESS_V2_VERSION, mapping_version=ORDERED_ROUTE_PROGRESS_V2_VERSION,
+        nodes=[anchor], node_evidence=[], progress_segments=[], issues=[], evidence_complete=False,
+        match_tolerance_m=MATCH_TOLERANCE_M, visit_exit_tolerance_m=VISIT_EXIT_TOLERANCE_M,
+        backtrack_tolerance_m=BACKTRACK_TOLERANCE_M, per_agent_laps_observed=None,
+        laps_evidence_status="unknown", method="first_ordered_hysteresis_passage_then_closest_sample")
+    try:
+        clipped = _clipped_trace(rows, start_s, end_s, max_gap_s)
+        planned_start = _planned_xyz(start_point) if start_point is not None else clipped[0][1][:3]
+    except ValueError as exc:
+        result["issues"] = [str(exc)]
+        return result
+    actual_sample_times = {stamp for stamp, _ in rows if start_s <= stamp <= end_s}
+    planned, arcs = [planned_start, *target_xyz], [0.]
+    for a, b in zip(planned, planned[1:]):
+        length = math.dist(a, b)
+        if length < .05:
+            result["issues"] = ["zero_length_planned_segment"]
+            return result
+        arcs.append(arcs[-1] + length)
+    lap_indices = ([index for index, target in enumerate(target_xyz)
+                    if math.dist(target, planned_start) <= 1e-6]
+                   if lap_node_indices is None else list(lap_node_indices))
+    result["lap_node_indices"] = lap_indices
+    for index, (target, nominal) in enumerate(zip(target_xyz, nominal_times)):
+        previous = result["nodes"][-1]["actual_s"]
+        visits = _sample_visit_intervals(clipped, target, MATCH_TOLERANCE_M, VISIT_EXIT_TOLERANCE_M)
+        prior_same_coordinate = [node["actual_s"] for node, coordinate in zip(result["nodes"], planned)
+                                 if math.dist(target, coordinate) <= 1e-6]
+        selected = None
+        for visit_index, visit in enumerate(visits):
+            low, high = visit[0][1], visit[-1][1]
+            if high <= previous + EPS:
+                continue
+            # The phase may begin within this ball without an original sample
+            # exactly at release. In that case the initial passage is consumed.
+            initial_passage = (visit_index == 0 and low <= start_s + EPS
+                               and math.dist(planned_start, target) <= 1e-6)
+            if initial_passage or any(low - EPS <= stamp <= high + EPS for stamp in prior_same_coordinate):
+                continue
+            candidates = [(distance, stamp) for distance, stamp in visit
+                          if stamp in actual_sample_times and stamp > previous + EPS
+                          and distance <= MATCH_TOLERANCE_M + EPS]
+            if candidates:
+                distance, stamp = min(candidates)
+                selected = distance, stamp, low, high, visit_index + 1
+                break
+        if selected is None:
+            result["issues"].append(f"missing_route_node:route_index={index}")
+            result["node_evidence"].append(dict(route_index=index, seq=index + 2, nominal_s=nominal,
+                cumulative_arc_length_m=arcs[index + 1], actual_s=None, match_distance_m=None,
+                evidence_status="missing", search_after_s=previous, visit_count=len(visits)))
+            for later in range(index + 1, len(targets)):
+                result["node_evidence"].append(dict(route_index=later, seq=later + 2,
+                    nominal_s=nominal_times[later], cumulative_arc_length_m=arcs[later + 1],
+                    actual_s=None, match_distance_m=None, evidence_status="unknown_after_missing_predecessor"))
+            break
+        distance, stamp, low, high, visit_ordinal = selected
+        node = dict(actual_s=stamp, nominal_s=nominal, route_index=index, seq=index + 2,
+            minimum_distance_m=distance, cumulative_arc_length_m=arcs[index + 1],
+            closest_time_interval_s=[stamp, stamp], visit_interval_s=[low, high],
+            search_domain_s=[previous, high], source=ORDERED_ROUTE_PROGRESS_V2_VERSION,
+            visit_ordinal=visit_ordinal, evidence_status="matched")
+        result["nodes"].append(node)
+        result["node_evidence"].append(dict(route_index=index, seq=index + 2, nominal_s=nominal,
+            cumulative_arc_length_m=arcs[index + 1], actual_s=stamp, match_distance_m=distance,
+            evidence_status="matched", visit_ordinal=visit_ordinal, visit_interval_s=[low, high],
+            search_after_s=previous, sample_only=True))
+    reverse = _backtracking_evidence(clipped, planned[:len(result["nodes"])], arcs[:len(result["nodes"])],
+                                     result["nodes"], BACKTRACK_TOLERANCE_M)
+    result["backtracking_evidence"] = reverse
+    if reverse["detected"]:
+        result["issues"].append("backtracking")
+    result["progress_segments"] = [dict(actual_interval_s=[a["actual_s"], b["actual_s"]],
+        nominal_interval_s=[a["nominal_s"], b["nominal_s"]]) for a, b in zip(result["nodes"], result["nodes"][1:])]
+    matched = {node.get("route_index") for node in result["nodes"][1:]}
+    laps = sum(index in matched for index in lap_indices)
+    result["laps_lower_bound"] = laps
+    result["evidence_complete"] = not result["issues"] and len(result["nodes"]) == len(targets) + 1
+    result["per_agent_laps_observed"] = laps if result["evidence_complete"] else None
+    result["laps_evidence_status"] = "exact" if result["evidence_complete"] else "unknown"
+    return result
+
+
 def evaluate_ac4_timing(scene, traces, events, metadata, time_epoch, *,
                         channel="observation", terminal_hover_starts=None):
     """Versioned per-phase closest-node primary and raw-event crosscheck.
@@ -555,12 +688,17 @@ def evaluate_ac4_timing(scene, traces, events, metadata, time_epoch, *,
 
 
 def evaluate_ac4_timing_v3(scene, traces, events, metadata, time_epoch, *,
-                           channel="observation", terminal_hover_starts=None):
+                           channel="observation", terminal_hover_starts=None,
+                           progress_mapping_version=ORDERED_ROUTE_PROGRESS_VERSION):
     """AC4 v3: ordered position visits, unchanged v2 fleet-span calculation.
 
     Event sequence numbers provide an independent crosscheck. V2 remains a
     separate entry point so frozen historical analyses are never reinterpreted.
     """
+    progress_mapper = {ORDERED_ROUTE_PROGRESS_VERSION: ordered_route_progress,
+                       ORDERED_ROUTE_PROGRESS_V2_VERSION: ordered_route_progress_v2}.get(progress_mapping_version)
+    if progress_mapper is None:
+        raise ValueError(f"unsupported_progress_mapping_version:{progress_mapping_version}")
     models = scene.get("planning", {}).get("nominal_phase_timing", {})
     shift = metadata["run_epoch_monotonic_s"] - time_epoch
     hover_by_phase = terminal_hover_starts or {}
@@ -623,7 +761,7 @@ def evaluate_ac4_timing_v3(scene, traces, events, metadata, time_epoch, *,
                 start_point = phase.get("start_positions", {}).get(agent)
             if route is not None and len(route) == len(nominal):
                 try:
-                    progress = ordered_route_progress(traces.get(agent, []), route, nominal,
+                    progress = progress_mapper(traces.get(agent, []), route, nominal,
                         start_s=start, end_s=end, max_gap_s=max_gap, start_point=start_point,
                         lap_node_indices=None if phase.get("semantic_phase") == "patrol" else [])
                 except ValueError as exc:
@@ -645,7 +783,7 @@ def evaluate_ac4_timing_v3(scene, traces, events, metadata, time_epoch, *,
                             supplied_terminal_hover_start_s=hover)
             primary[agent] = mapping(progress["nodes"], progress_issues)
             cross[agent] = mapping(raw_nodes, event_issues)
-            primary[agent]["progress_version"] = ORDERED_ROUTE_PROGRESS_VERSION
+            primary[agent]["progress_version"] = progress_mapping_version
             primary[agent]["node_evidence"] = progress.get("node_evidence", [])
             primary[agent]["progress_segments"] = progress.get("progress_segments", [])
             primary[agent]["per_agent_laps_observed"] = progress["per_agent_laps_observed"]
@@ -661,7 +799,7 @@ def evaluate_ac4_timing_v3(scene, traces, events, metadata, time_epoch, *,
                             crosscheck_agrees=(a["within_tau"] == b["within_tau"]) if complete else None,
                             issues=issues, channel=channel, per_agent_laps_observed=laps[name])
         all_issues.extend(f"{name}:{issue}" for issue in issues)
-    return dict(version=AC4_TIMING_V3_VERSION, mapping_version=ORDERED_ROUTE_PROGRESS_VERSION,
+    return dict(version=AC4_TIMING_V3_VERSION, mapping_version=progress_mapping_version,
                 event_mapping_version=EVENT_MAPPING_VERSION, interval_version=INTERVAL_VERSION,
                 channel=channel, per_phase=phases, per_agent_laps_observed=laps,
                 complete=bool(phases) and all(p["complete"] for p in phases.values()),
