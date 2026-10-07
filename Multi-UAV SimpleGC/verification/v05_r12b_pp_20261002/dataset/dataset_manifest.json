@@ -1,0 +1,2238 @@
+{
+  "schema_version": 2,
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "semantic_protocol": {
+    "task_kind": "mission_v3",
+    "ontology_version": "multi_intent_mission_v1",
+    "label_schema_version": 3,
+    "semantic_validation_version": "multi_intent_validation_v3",
+    "eligibility_protocol_version": "multi_intent_quality_v1",
+    "execution_constraints_version": "multi_intent_execution_limits_v2"
+  },
+  "mixed_semantic_protocols": false,
+  "mixed_quality_policies": false,
+  "split_salt": "simplegc-v02",
+  "split_method": "SHA256 of family_id; target proportions 70/15/15, not balanced on small sets",
+  "identity_policy": "all derived variants/retries/windows must inherit the originating family_id before splitting",
+  "missing_family_policy": "retained, unassigned, ineligible; never infer family from run_id",
+  "training_input": "episodes/<run_id>/observations.csv only: ENU position/velocity and valid mask; group by t_s and agent_id",
+  "privileged_outputs": "task, reference, truth, labels and metadata must not be fed as observation features",
+  "episodes": [
+    {
+      "run_id": "20261002T195249Z_f877e8c3",
+      "scenario_id": "reconnaissance_0000_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP01_inherited",
+      "family_id": "scene_d2d71e13fe21e19d9ab8",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\00_reconnaissance\\attempt_0\\attempts\\74ed019db3864043bb5ac0e395787333\\reconnaissance_0000_v00_20261002T195249Z_f877e8c3",
+      "analysis_manifest_sha256": "b0254cec546f4aea024d26126b34e62852f5a7f53aff6203eea129f6cd9c8c83",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP01_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T195249Z_f877e8c3"
+    },
+    {
+      "run_id": "20261002T195621Z_a7eb6541",
+      "scenario_id": "patrol_0000_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP02_inherited",
+      "family_id": "scene_d2d71e13fe21e19d9ab8",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\01_patrol\\attempt_0\\attempts\\e9c51fd0243b4f7aba7ce0e5bb2c8194\\patrol_0000_v00_20261002T195621Z_a7eb6541",
+      "analysis_manifest_sha256": "4ae539cb81b3ecfff21f7b7bce3b74eb997a55e624d04854b29b99758b317c7b",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP02_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T195621Z_a7eb6541"
+    },
+    {
+      "run_id": "20261002T200045Z_bb259eec",
+      "scenario_id": "reconnaissance_0001_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03"
+      ],
+      "source_analysis_directory": "PP03_inherited",
+      "family_id": "scene_90268350bc0e8ad8541b",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 3.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\02_reconnaissance\\attempt_0\\attempts\\2703a0dd2401479fa569eae73a1d772e\\reconnaissance_0001_v00_20261002T200045Z_bb259eec",
+      "analysis_manifest_sha256": "645a2d1ab57a676fcd7446b243fd8cd8541e856e500cbacdf38abd209a62e437",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP03_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T200045Z_bb259eec"
+    },
+    {
+      "run_id": "20261002T200433Z_f09b4a0c",
+      "scenario_id": "patrol_0001_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03"
+      ],
+      "source_analysis_directory": "PP04_inherited",
+      "family_id": "scene_90268350bc0e8ad8541b",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 3.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\03_patrol\\attempt_0\\attempts\\9e515405bc854324a3cf4af047471f15\\patrol_0001_v00_20261002T200433Z_f09b4a0c",
+      "analysis_manifest_sha256": "a1f0ffdac3eb134603fc728ed79e4e7cafd29a2305c1fbc05f2c41440a992de3",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP04_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T200433Z_f09b4a0c"
+    },
+    {
+      "run_id": "20261002T200859Z_f177aa58",
+      "scenario_id": "reconnaissance_0002_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04"
+      ],
+      "source_analysis_directory": "PP05_inherited",
+      "family_id": "scene_f001ef55d2991ddfa3a0",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable",
+          "uav_04": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\04_reconnaissance\\attempt_0\\attempts\\a267efb7ab1342439e841cad5bcab3bc\\reconnaissance_0002_v00_20261002T200859Z_f177aa58",
+      "analysis_manifest_sha256": "879692871ad1af899be7cee7c0bfa8e4208ff65dc4faf243b82b374880a76420",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP05_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T200859Z_f177aa58"
+    },
+    {
+      "run_id": "20261002T201410Z_a923be74",
+      "scenario_id": "patrol_0002_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04"
+      ],
+      "source_analysis_directory": "PP06_inherited",
+      "family_id": "scene_f001ef55d2991ddfa3a0",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable",
+          "uav_04": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\05_patrol\\attempt_0\\attempts\\dc150bd22bed4d5cb1cc4362b19e6184\\patrol_0002_v00_20261002T201410Z_a923be74",
+      "analysis_manifest_sha256": "bd16b0a46f5c8f7379e39341b23292b9fbc42efafef4615db74354e6bf129879",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP06_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T201410Z_a923be74"
+    },
+    {
+      "run_id": "20261002T202007Z_7dceef98",
+      "scenario_id": "reconnaissance_0003_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP07_inherited",
+      "family_id": "scene_493cc74f58f524f8f173",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\06_reconnaissance\\attempt_0\\attempts\\4b10190515664e7a86074f08762ccee0\\reconnaissance_0003_v00_20261002T202007Z_7dceef98",
+      "analysis_manifest_sha256": "22e51e3c5f380eaa30be3281a556f21cacfc3d953ac2e89e78b5056d35f4b115",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP07_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T202007Z_7dceef98"
+    },
+    {
+      "run_id": "20261002T202309Z_ef48c8bb",
+      "scenario_id": "patrol_0003_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP08_inherited",
+      "family_id": "scene_493cc74f58f524f8f173",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12_pp_20261002\\execution\\07_patrol\\attempt_0\\attempts\\b1a82fb684084567879d076afc47714e\\patrol_0003_v00_20261002T202309Z_ef48c8bb",
+      "analysis_manifest_sha256": "1d1d03e2ac7c37f334b0e2377eb8cfb7351d01f79b523809f77ea9b2c1336c19",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP08_inherited",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261002T202309Z_ef48c8bb"
+    },
+    {
+      "run_id": "20261003T035249Z_3ad11f6d",
+      "scenario_id": "reconnaissance_0004_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03"
+      ],
+      "source_analysis_directory": "PP09_attempt_0",
+      "family_id": "scene_b804ef5ef15160c66bfb",
+      "split": "test",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\08_reconnaissance\\attempt_0\\attempts\\35570c1b45964097a70b873b48b72485\\reconnaissance_0004_v00_20261003T035249Z_3ad11f6d",
+      "analysis_manifest_sha256": "697e73736633a83b21ac14f50234bd128adbe0edc5dcc194352d9d25d0634ff4",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP09_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T035249Z_3ad11f6d"
+    },
+    {
+      "run_id": "20261003T035718Z_29df35cb",
+      "scenario_id": "patrol_0004_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03"
+      ],
+      "source_analysis_directory": "PP10_attempt_0",
+      "family_id": "scene_b804ef5ef15160c66bfb",
+      "split": "test",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\09_patrol\\attempt_0\\attempts\\e4d31187dccf42eaa03a7c13a4111a34\\patrol_0004_v00_20261003T035718Z_29df35cb",
+      "analysis_manifest_sha256": "a43e4975de7470ce5f358ba0026f77485daebe7d43fedec0eb34c8474cceb905",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP10_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T035718Z_29df35cb"
+    },
+    {
+      "run_id": "20261003T040225Z_75fc53bf",
+      "scenario_id": "reconnaissance_0005_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04"
+      ],
+      "source_analysis_directory": "PP11_attempt_0",
+      "family_id": "scene_651fde4834f9ae9c31da",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable",
+          "uav_04": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\10_reconnaissance\\attempt_0\\attempts\\3cb15cfa975a4644b53a19325f2a8b3a\\reconnaissance_0005_v00_20261003T040225Z_75fc53bf",
+      "analysis_manifest_sha256": "4fb66e466e18bd46cda505c7084818326b2f00a919fc996bd70adb9800f2810f",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP11_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T040225Z_75fc53bf"
+    },
+    {
+      "run_id": "20261003T040757Z_a194019a",
+      "scenario_id": "patrol_0005_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04"
+      ],
+      "source_analysis_directory": "PP12_attempt_0",
+      "family_id": "scene_651fde4834f9ae9c31da",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable",
+          "uav_04": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\11_patrol\\attempt_0\\attempts\\e82fc3389cdf4ac7a5d4dffbe147dec0\\patrol_0005_v00_20261003T040757Z_a194019a",
+      "analysis_manifest_sha256": "e11fb34f042099dc078ed7d89ab0beb8947a9a0057e849f2d4b7259f1a58b3fa",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP12_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T040757Z_a194019a"
+    },
+    {
+      "run_id": "20261003T041404Z_7252c081",
+      "scenario_id": "reconnaissance_0006_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP13_attempt_0",
+      "family_id": "scene_e9322c926105d297e53e",
+      "split": "test",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.5,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\12_reconnaissance\\attempt_0\\attempts\\35532055f06a45fc8b1514e85d2f2353\\reconnaissance_0006_v00_20261003T041404Z_7252c081",
+      "analysis_manifest_sha256": "456308201886f7bdaade9be6b480e30de8ae7de8486382f381b842bf9c29415d",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP13_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T041404Z_7252c081"
+    },
+    {
+      "run_id": "20261003T041658Z_00fdbac2",
+      "scenario_id": "patrol_0006_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP14_attempt_0",
+      "family_id": "scene_e9322c926105d297e53e",
+      "split": "test",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 3,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.5,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\13_patrol\\attempt_0\\attempts\\3bf89ace7af44f208e1f2c93239f0d99\\patrol_0006_v00_20261003T041658Z_00fdbac2",
+      "analysis_manifest_sha256": "1f893e15deb12c408712148a6dafe5cc373634c04c27a60e5ed7b9637ed34f71",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP14_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T041658Z_00fdbac2"
+    },
+    {
+      "run_id": "20261003T042137Z_23cac07b",
+      "scenario_id": "reconnaissance_0007_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03"
+      ],
+      "source_analysis_directory": "PP15_attempt_0",
+      "family_id": "scene_f5fe3359e94465e164b3",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.5,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\14_reconnaissance\\attempt_0\\attempts\\ff697a24eb6e4c1cbeef9c85026bcf2e\\reconnaissance_0007_v00_20261003T042137Z_23cac07b",
+      "analysis_manifest_sha256": "cd81f24f434f34e9b1fc5e4ec2a5c276e443ed791364efb4d93318e1d0bae831",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP15_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T042137Z_23cac07b"
+    },
+    {
+      "run_id": "20261003T042523Z_9301f0d3",
+      "scenario_id": "patrol_0007_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03"
+      ],
+      "source_analysis_directory": "PP16_attempt_0",
+      "family_id": "scene_f5fe3359e94465e164b3",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.5,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\15_patrol\\attempt_0\\attempts\\b9bb1cc094a945a5a7ac0eeb8cbbf16c\\patrol_0007_v00_20261003T042523Z_9301f0d3",
+      "analysis_manifest_sha256": "629c1f334a68bfe061a23eb37db96b0f4ddc804d51a43fc36c3466d519f62298",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP16_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T042523Z_9301f0d3"
+    },
+    {
+      "run_id": "20261003T042957Z_ac9f8289",
+      "scenario_id": "reconnaissance_0008_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04"
+      ],
+      "source_analysis_directory": "PP17_attempt_0",
+      "family_id": "scene_8e0728f59651d3922182",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable",
+          "uav_04": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.5,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\16_reconnaissance\\attempt_0\\attempts\\5a2bf0e27ea146739505985f54b413f2\\reconnaissance_0008_v00_20261003T042957Z_ac9f8289",
+      "analysis_manifest_sha256": "28e48e56ea00e9df5cc9125138b8c8fcabc940c23556e8f8bce837b71be51197",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP17_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T042957Z_ac9f8289"
+    },
+    {
+      "run_id": "20261003T043507Z_13f2d85e",
+      "scenario_id": "patrol_0008_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02",
+        "uav_03",
+        "uav_04"
+      ],
+      "source_analysis_directory": "PP18_attempt_0",
+      "family_id": "scene_8e0728f59651d3922182",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable",
+          "uav_03": "acceptable",
+          "uav_04": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": false,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.5,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\17_patrol\\attempt_0\\attempts\\abb5a6ecec4b43af8e90bc897b4c5800\\patrol_0008_v00_20261003T043507Z_13f2d85e",
+      "analysis_manifest_sha256": "62f72bcbd9d5557cd46ca50eeede9bd98f8252025c0b2133f1acea6b55bfe405",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP18_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T043507Z_13f2d85e"
+    },
+    {
+      "run_id": "20261003T044108Z_860d6fcc",
+      "scenario_id": "reconnaissance_0009_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP19_attempt_0",
+      "family_id": "scene_822cf8d4865a82be661c",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "reconnaissance",
+          "intent_params": {
+            "coverage_required": 0.9,
+            "objective": "area_coverage",
+            "observation_model": {
+              "activation": "observe_phase_only",
+              "grid_m": 1.0,
+              "height_tolerance_m": 1.0,
+              "radius_m": 4.0,
+              "type": "ideal_horizontal_disk"
+            }
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\18_reconnaissance\\attempt_0\\attempts\\f8a4b07b413c4ebcbee34f4a0d0316a7\\reconnaissance_0009_v00_20261003T044108Z_860d6fcc",
+      "analysis_manifest_sha256": "8cca05fab25dc05c064eca0b3b69d4184fa8ed087f145552dd95e7bf1e1de7d4",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "reconnaissance",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP19_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T044108Z_860d6fcc"
+    },
+    {
+      "run_id": "20261003T044442Z_55910a6b",
+      "scenario_id": "patrol_0009_v00",
+      "semantic_protocol": {
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "execution_constraints_version": "multi_intent_execution_limits_v2"
+      },
+      "agent_ids": [
+        "uav_01",
+        "uav_02"
+      ],
+      "source_analysis_directory": "PP20_attempt_0",
+      "family_id": "scene_822cf8d4865a82be661c",
+      "split": "train",
+      "benchmark_eligible": true,
+      "strict_benchmark_eligible": false,
+      "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+      "clock_quality": {
+        "overall": "acceptable",
+        "per_agent": {
+          "uav_01": "acceptable",
+          "uav_02": "acceptable"
+        },
+        "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+      },
+      "analysis_version": "0.5.0-dev",
+      "simulator_version": "0.5.0-dev",
+      "evaluation_context": {
+        "record_hz": 10.0,
+        "max_gap_s": 0.5,
+        "min_separation_m": 5.0,
+        "mission": {
+          "intent": "patrol",
+          "intent_params": {
+            "laps": 2,
+            "max_revisit_gap_factor": 2.0,
+            "objective": "perimeter_patrol",
+            "segment_length_m": 5.0,
+            "standoff_m": 0.0,
+            "visit_radius_m": 3.0
+          },
+          "return_required": true,
+          "target_region_id": "R1"
+        },
+        "platform": {
+          "dynamics_validation": "execution_proxy_only",
+          "id": "basic_multirotor_nominal_v1",
+          "max_airborne_time_s": 900.0,
+          "max_climb_rate_m_s": 2.0,
+          "max_horizontal_accel_m_s2": 3.0,
+          "max_path_length_m": 1000.0,
+          "max_speed_m_s": 6.0,
+          "reserve_time_s": 60.0
+        },
+        "world": {
+          "east_bounds_m": [
+            -100.0,
+            100.0
+          ],
+          "flight_up_bounds_m": [
+            3.0,
+            40.0
+          ],
+          "north_bounds_m": [
+            -100.0,
+            100.0
+          ]
+        },
+        "execution": {
+          "arrival_tolerance_m": 1.0,
+          "async_timing_tolerance": {
+            "fraction_of_phase": 0.2,
+            "max_s": 5.0,
+            "min_s": 3.0
+          },
+          "backend": "AUTO",
+          "confirmation_dwell_s": 0.5,
+          "control_mode": "semantic_phase_route_v1",
+          "hold_semantics": "integer_seconds_v1",
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "ready_timeout_s": 90.0,
+          "record_hz": 10.0,
+          "speed_m_s": 2.0,
+          "takeoff_alt_m": 8.0,
+          "terminal_hold_s": 0.0,
+          "timeout_s": 1200.0
+        }
+      },
+      "run_status": "completed",
+      "source_run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\execution\\19_patrol\\attempt_0\\attempts\\38162db0efd14ce698b012cc05860252\\patrol_0009_v00_20261003T044442Z_55910a6b",
+      "analysis_manifest_sha256": "34f77176712bc80bd5e0597c371f0ffa872204668b21c63d52ee759de2bb1f03",
+      "family_scheme": "scene_content_v1",
+      "control_mode": "semantic_phase_route_v1",
+      "episode_quality_eligible": true,
+      "mission_success": true,
+      "semantic_consistency": "agree",
+      "intent": "patrol",
+      "source_analysis_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP20_attempt_0",
+      "analysis_selection_mode": "explicit_manifest_binding",
+      "directory": "episodes/20261003T044442Z_55910a6b"
+    }
+  ],
+  "counts": {
+    "total": 20,
+    "eligible": 20,
+    "strict_eligible": 0,
+    "failed_runs": 0,
+    "episode_quality_eligible": 20,
+    "mission_success": 20,
+    "semantic_agree": 20
+  },
+  "limitation": "no automatic task-family discovery, sliding windows, text generation or sensor simulation",
+  "family_scheme": "scene_content_v1",
+  "control_modes": [
+    "semantic_phase_route_v1"
+  ],
+  "allow_mixed_control_modes": false,
+  "mixed_control_modes": false
+}

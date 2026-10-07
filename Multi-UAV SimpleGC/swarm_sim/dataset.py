@@ -17,10 +17,27 @@ def family_split(family_id, salt="simplegc-v02"):
     return "train" if bucket < 70 else ("validation" if bucket < 85 else "test")
 
 
-def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control_modes=False):
+def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control_modes=False,
+                  analysis_selections=None):
     if not isinstance(allow_mixed_control_modes, bool):
         raise ValueError("allow_mixed_control_modes must be boolean")
     output = Path(output).resolve()
+    run_paths = [Path(path).resolve() for path in run_paths]
+    if analysis_selections is not None and not isinstance(analysis_selections, dict):
+        raise ValueError("analysis_selections must be a run-path mapping")
+    selections = {}
+    for name, selection in (analysis_selections or {}).items():
+        if not isinstance(name, str) or not name:
+            raise ValueError("analysis selection requires a run path")
+        selected_run = Path(name).resolve()
+        if selected_run not in run_paths or selected_run in selections:
+            raise ValueError("unknown or duplicate run in analysis_selections")
+        if (not isinstance(selection, dict) or set(selection) != {"directory", "manifest_sha256"}
+                or not isinstance(selection["directory"], str) or not selection["directory"]
+                or not isinstance(selection["manifest_sha256"], str)
+                or not re.fullmatch(r"[0-9a-f]{64}", selection["manifest_sha256"])):
+            raise ValueError("analysis selection requires a directory and SHA256 binding")
+        selections[selected_run] = selection
     # Validate all inputs before making an export; source runs are never re-evaluated silently.
     entries = []
     seen = set()
@@ -29,14 +46,26 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
     control_modes = set()
     for path in run_paths:
         root = Path(path).resolve()
-        pointer = json.loads((root / "analysis_latest.json").read_text(encoding="utf-8"))
-        analysis = (root / pointer["directory"]).resolve()
-        if analysis.parent != root:
+        explicit = root in selections
+        pointer = selections[root] if explicit else json.loads((root / "analysis_latest.json").read_text(encoding="utf-8"))
+        analysis = (Path(pointer["directory"]).resolve() if explicit else (root / pointer["directory"]).resolve())
+        if not explicit and analysis.parent != root:
             raise ValueError("analysis pointer must reference a direct child of the run")
+        if explicit and output.is_relative_to(analysis):
+            raise ValueError("dataset output must be outside its selected analysis")
         manifest_path = analysis / "manifest.json"
         if digest(manifest_path) != pointer["manifest_sha256"]:
             raise ValueError(f"analysis manifest changed: {analysis}")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if explicit and (not isinstance(manifest.get("run_directory"), str)
+                         or Path(manifest["run_directory"]).resolve() != root):
+            raise ValueError("explicit analysis is bound to a different source run")
+        if explicit:
+            if "metadata.json" not in manifest.get("source_sha256", {}):
+                raise ValueError("explicit analysis requires hashed source metadata")
+            source_metadata = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
+            if manifest.get("run_id") != source_metadata.get("run_id"):
+                raise ValueError("explicit analysis run_id differs from source metadata")
         protocol = manifest_protocol(manifest)
         protocols[json.dumps(protocol, sort_keys=True)] = protocol
         if len(protocols) > 1:
@@ -86,6 +115,9 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
         if protocol["task_kind"] == "mission_v3":
             entries[-1][1].update({key: manifest.get(key) for key in ("family_scheme", "control_mode", "episode_quality_eligible",
                                   "mission_success", "semantic_consistency", "intent")})
+        if explicit:
+            entries[-1][1].update(source_analysis_path=str(analysis),
+                                  analysis_selection_mode="explicit_manifest_binding")
     if not entries:
         raise ValueError("provide at least one analyzed run")
     output.mkdir(parents=True, exist_ok=False)

@@ -12,6 +12,7 @@ from .observations import finite_number
 
 
 VERSION = "perimeter_revisit_v1"
+VERSION_V2 = "perimeter_revisit_v2"
 EPS = 1e-8
 
 
@@ -132,9 +133,12 @@ def _progress(scene, traces, window, progress_mapping_version="ordered_route_pro
                 node_evidence=result.get("node_evidence", []))
 
 
-def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version="ordered_route_progress_v1"):
+def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version="ordered_route_progress_v1",
+                     validator_version=VERSION):
     """Evaluate visits and three gap types on one channel, without substitution."""
     del clocks  # Positions already belong to the caller's selected channel.
+    if validator_version not in (VERSION, VERSION_V2):
+        raise ValueError("unsupported perimeter revisit validator version")
     spec = scene["task_spec"]
     params = spec["mission"]["intent_params"]
     region = next(r for r in spec["scenario"]["regions"]
@@ -212,9 +216,11 @@ def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version
                      if p["first_complete_lap_time_s"] is not None), default=None)
     visits_pass = None if not complete else min_visits >= required_count
     gap_pass = None if not complete else max_gap <= allowed_gap + EPS
-    patrol_success = (False if False in (visits_pass, gap_pass) else
-                      True if visits_pass is True and gap_pass is True else None)
-    details = dict(version=VERSION, service_window_s=[start, end], evidence_complete=complete,
+    conditions = (dict(visits=visits_pass, max_gap=gap_pass) if validator_version == VERSION
+                  else dict(max_gap=gap_pass))
+    patrol_success = (False if False in conditions.values() else
+                      True if all(value is True for value in conditions.values()) else None)
+    details = dict(version=validator_version, service_window_s=[start, end], evidence_complete=complete,
                    evidence_issues=failures, segment_count=len(segments), required_visits_per_segment=required_count,
                    nominal_revisit_interval_s=nominal_interval, allowed_gap_s=allowed_gap,
                    group_segment_visit_counts={s["segment_id"]: s["count"] for s in table},
@@ -225,7 +231,10 @@ def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version
                    min_segment_visits=min_visits, max_revisit_gap_s=max_gap,
                    loop_segment_coverage=coverage, visits_pass=visits_pass,
                    max_gap_pass=gap_pass, patrol_success=patrol_success)
-    return dict(conditions=dict(visits=visits_pass, max_gap=gap_pass),
+    if validator_version == VERSION_V2:
+        details["visit_count_role"] = "diagnostic_only"
+        details["success_conditions"] = ["max_gap"]
+    return dict(conditions=conditions,
                 metrics=dict(perimeter_revisit=details,
                              per_agent_laps_observed=details["per_agent_laps_observed"],
                              first_boundary_coverage_time_s=first_coverage,
@@ -238,6 +247,6 @@ def behavior_labels(scene, truth):
     return dict(planned_behaviors=["perimeter_loop"], observed_behaviors=[dict(
         name="perimeter_loop", agent_ids=[v["id"] for v in scene["vehicles"]],
         status="verified" if observed is True else "failed" if observed is False else "unknown",
-        evidence_basis="SIM_truth_positions_perimeter_revisit", rule_version=VERSION,
+        evidence_basis="SIM_truth_positions_perimeter_revisit", rule_version=result.get("version", VERSION),
         min_segment_visits=result.get("min_segment_visits"),
         max_revisit_gap_s=result.get("max_revisit_gap_s"))])

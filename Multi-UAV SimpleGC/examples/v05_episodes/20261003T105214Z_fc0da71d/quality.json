@@ -1,0 +1,663 @@
+{
+  "schema_version": 3,
+  "task_kind": "mission_v3",
+  "ontology_version": "multi_intent_mission_v1",
+  "label_schema_version": 3,
+  "semantic_validation_version": "multi_intent_validation_v3",
+  "eligibility_protocol_version": "multi_intent_quality_v1",
+  "execution_constraints_version": "multi_intent_execution_limits_v2",
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1",
+  "frames": 943,
+  "observation_window": {
+    "status": "complete",
+    "reason": null,
+    "scheduled_start_host_s": 29808.4120292,
+    "recorded_lifecycle_end_host_s": 29924.6431287,
+    "recorded_mission_end_host_s": 29902.7056299,
+    "effective_start_host_s": 29808.4120292,
+    "effective_end_host_s": 29902.7056299
+  },
+  "observation_valid_fraction": {
+    "uav_01": 0.0,
+    "uav_02": 0.0,
+    "uav_03": 0.0
+  },
+  "truth_valid_fraction": {
+    "uav_01": 0.0,
+    "uav_02": 0.0,
+    "uav_03": 0.0
+  },
+  "timing_diagnostic_pass": false,
+  "clock_quality": {
+    "overall": "unknown",
+    "per_agent": {
+      "uav_01": "unknown",
+      "uav_02": "unknown",
+      "uav_03": "unknown"
+    },
+    "metric": "heldout_host_receive_residual_p95; not an absolute synchronization bound"
+  },
+  "quality_policy": {
+    "version": "0.2.2",
+    "clock_strict_p95_s": 0.02,
+    "clock_acceptable_p95_s": 0.05,
+    "horizontal_velocity_sanity_m_s": 50.0,
+    "vertical_velocity_sanity_m_s": 30.0,
+    "horizontal_position_bound_m": 2500.0,
+    "min_up_m": -100.0,
+    "max_up_m": 200.0,
+    "min_observation_valid_fraction": 0.99,
+    "min_truth_valid_fraction": 0.99,
+    "observation_filter": "global_position_v1",
+    "invalid_sample_interpolation": "barrier"
+  },
+  "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+  "evaluation_context": {
+    "record_hz": 10.0,
+    "max_gap_s": 0.5,
+    "min_separation_m": 5.0,
+    "mission": {
+      "intent": "reconnaissance",
+      "intent_params": {
+        "coverage_required": 0.9,
+        "objective": "area_coverage",
+        "observation_model": {
+          "activation": "observe_phase_only",
+          "grid_m": 1.0,
+          "height_tolerance_m": 1.0,
+          "radius_m": 4.0,
+          "type": "ideal_horizontal_disk"
+        }
+      },
+      "return_required": false,
+      "target_region_id": "R1"
+    },
+    "platform": {
+      "dynamics_validation": "execution_proxy_only",
+      "id": "basic_multirotor_nominal_v1",
+      "max_airborne_time_s": 900.0,
+      "max_climb_rate_m_s": 2.0,
+      "max_horizontal_accel_m_s2": 3.0,
+      "max_path_length_m": 1000.0,
+      "max_speed_m_s": 6.0,
+      "reserve_time_s": 60.0
+    },
+    "world": {
+      "east_bounds_m": [
+        -100.0,
+        100.0
+      ],
+      "flight_up_bounds_m": [
+        3.0,
+        40.0
+      ],
+      "north_bounds_m": [
+        -100.0,
+        100.0
+      ]
+    },
+    "execution": {
+      "arrival_tolerance_m": 1.0,
+      "async_timing_tolerance": {
+        "fraction_of_phase": 0.2,
+        "max_s": 5.0,
+        "min_s": 3.0
+      },
+      "backend": "AUTO",
+      "confirmation_dwell_s": 0.5,
+      "control_mode": "semantic_phase_route_v1",
+      "hold_semantics": "integer_seconds_v1",
+      "max_gap_s": 0.5,
+      "min_separation_m": 5.0,
+      "ready_timeout_s": 90.0,
+      "record_hz": 10.0,
+      "speed_m_s": 2.0,
+      "takeoff_alt_m": 8.0,
+      "terminal_hold_s": 0.0,
+      "timeout_s": 1200.0
+    }
+  },
+  "observation_filter": {
+    "uav_01": {
+      "message_type": "GLOBAL_POSITION_INT",
+      "counting_unit": "raw_message",
+      "rejection_reason_order": [
+        "missing_fields",
+        "invalid_type",
+        "non_finite",
+        "invalid_timestamp",
+        "position_out_of_bounds",
+        "horizontal_speed_out_of_bounds",
+        "vertical_speed_out_of_bounds"
+      ],
+      "primary_reason_only": true,
+      "whole_run": {
+        "total_messages": 1601,
+        "accepted": 1600,
+        "rejected": 1,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 1,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window": {
+        "total_messages": 923,
+        "accepted": 923,
+        "rejected": 0,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 0,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window_host_receive_s": [
+        29808.4120292,
+        29902.7056299
+      ]
+    },
+    "uav_02": {
+      "message_type": "GLOBAL_POSITION_INT",
+      "counting_unit": "raw_message",
+      "rejection_reason_order": [
+        "missing_fields",
+        "invalid_type",
+        "non_finite",
+        "invalid_timestamp",
+        "position_out_of_bounds",
+        "horizontal_speed_out_of_bounds",
+        "vertical_speed_out_of_bounds"
+      ],
+      "primary_reason_only": true,
+      "whole_run": {
+        "total_messages": 1602,
+        "accepted": 1601,
+        "rejected": 1,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 1,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window": {
+        "total_messages": 922,
+        "accepted": 922,
+        "rejected": 0,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 0,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window_host_receive_s": [
+        29808.4120292,
+        29902.7056299
+      ]
+    },
+    "uav_03": {
+      "message_type": "GLOBAL_POSITION_INT",
+      "counting_unit": "raw_message",
+      "rejection_reason_order": [
+        "missing_fields",
+        "invalid_type",
+        "non_finite",
+        "invalid_timestamp",
+        "position_out_of_bounds",
+        "horizontal_speed_out_of_bounds",
+        "vertical_speed_out_of_bounds"
+      ],
+      "primary_reason_only": true,
+      "whole_run": {
+        "total_messages": 1601,
+        "accepted": 1600,
+        "rejected": 1,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 1,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window": {
+        "total_messages": 923,
+        "accepted": 923,
+        "rejected": 0,
+        "dropped": {
+          "missing_fields": 0,
+          "invalid_type": 0,
+          "non_finite": 0,
+          "invalid_timestamp": 0,
+          "position_out_of_bounds": 0,
+          "horizontal_speed_out_of_bounds": 0,
+          "vertical_speed_out_of_bounds": 0
+        }
+      },
+      "evaluation_window_host_receive_s": [
+        29808.4120292,
+        29902.7056299
+      ]
+    }
+  },
+  "observation_timeline_errors": {
+    "uav_01": null,
+    "uav_02": null,
+    "uav_03": null
+  },
+  "observation_processing_audit": {
+    "uav_01": {
+      "version": "exact_duplicate_drop_v1",
+      "scope": "v3 only; full stream; no window clipping",
+      "observation_processing_version": "v3_observation_v1",
+      "duplicate_policy_version": "exact_duplicate_drop_v1",
+      "timeline_policy_version": "full_stream_strict_v1",
+      "clock_model_version": "passive_system_time_piecewise_v1",
+      "equality": "all message fields; type-sensitive canonical JSON; receive stamp excluded",
+      "counts": {
+        "GLOBAL_POSITION_INT": {
+          "total": 1602,
+          "kept": 1601,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        },
+        "SYSTEM_TIME": {
+          "total": 1602,
+          "kept": 1601,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        }
+      },
+      "details": [
+        {
+          "raw_line": 3013,
+          "kind": "GLOBAL_POSITION_INT",
+          "sysid": 1,
+          "source_time_boot_ms": 9834,
+          "recv_monotonic_s": 29768.2173172,
+          "first_line": 2987,
+          "first_recv_monotonic_s": 29768.2166597,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        },
+        {
+          "raw_line": 3028,
+          "kind": "SYSTEM_TIME",
+          "sysid": 1,
+          "source_time_boot_ms": 9834,
+          "recv_monotonic_s": 29768.2175743,
+          "first_line": 3002,
+          "first_recv_monotonic_s": 29768.2170109,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        }
+      ],
+      "dropped_count": 2
+    },
+    "uav_02": {
+      "version": "exact_duplicate_drop_v1",
+      "scope": "v3 only; full stream; no window clipping",
+      "observation_processing_version": "v3_observation_v1",
+      "duplicate_policy_version": "exact_duplicate_drop_v1",
+      "timeline_policy_version": "full_stream_strict_v1",
+      "clock_model_version": "passive_system_time_piecewise_v1",
+      "equality": "all message fields; type-sensitive canonical JSON; receive stamp excluded",
+      "counts": {
+        "GLOBAL_POSITION_INT": {
+          "total": 1602,
+          "kept": 1602,
+          "exact_duplicates": 0,
+          "dropped": 0,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        },
+        "SYSTEM_TIME": {
+          "total": 1602,
+          "kept": 1602,
+          "exact_duplicates": 0,
+          "dropped": 0,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        }
+      },
+      "details": [],
+      "dropped_count": 0
+    },
+    "uav_03": {
+      "version": "exact_duplicate_drop_v1",
+      "scope": "v3 only; full stream; no window clipping",
+      "observation_processing_version": "v3_observation_v1",
+      "duplicate_policy_version": "exact_duplicate_drop_v1",
+      "timeline_policy_version": "full_stream_strict_v1",
+      "clock_model_version": "passive_system_time_piecewise_v1",
+      "equality": "all message fields; type-sensitive canonical JSON; receive stamp excluded",
+      "counts": {
+        "GLOBAL_POSITION_INT": {
+          "total": 1602,
+          "kept": 1601,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        },
+        "SYSTEM_TIME": {
+          "total": 1602,
+          "kept": 1601,
+          "exact_duplicates": 1,
+          "dropped": 1,
+          "conflicts": 0,
+          "rollbacks": 0,
+          "invalid": 0,
+          "host_errors": 0,
+          "timeline_invalid": false
+        }
+      },
+      "details": [
+        {
+          "raw_line": 3013,
+          "kind": "GLOBAL_POSITION_INT",
+          "sysid": 3,
+          "source_time_boot_ms": 9834,
+          "recv_monotonic_s": 29768.215795,
+          "first_line": 2987,
+          "first_recv_monotonic_s": 29768.2145314,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        },
+        {
+          "raw_line": 3028,
+          "kind": "SYSTEM_TIME",
+          "sysid": 3,
+          "source_time_boot_ms": 9834,
+          "recv_monotonic_s": 29768.2163112,
+          "first_line": 3002,
+          "first_recv_monotonic_s": 29768.2148813,
+          "classification": "exact_duplicate",
+          "dropped": true,
+          "host_time_rollback": false,
+          "inside_flight_window": false,
+          "inside_observe_window": null
+        }
+      ],
+      "dropped_count": 2
+    }
+  },
+  "invalid_intervals": {
+    "uav_01": [
+      {
+        "start_s": 0.0,
+        "end_s": 94.2,
+        "reason": "invalid_observation"
+      }
+    ],
+    "uav_02": [
+      {
+        "start_s": 0.0,
+        "end_s": 94.2,
+        "reason": "invalid_observation"
+      }
+    ],
+    "uav_03": [
+      {
+        "start_s": 0.0,
+        "end_s": 94.2,
+        "reason": "invalid_observation"
+      }
+    ]
+  },
+  "timing_residual_threshold_s": 0.05,
+  "minimum_separation_m": null,
+  "separation_status": "unknown",
+  "unassessed_pair_intervals": 2826,
+  "risk_pair_intervals": 0,
+  "truth_separation": {
+    "status": "unknown",
+    "minimum_m": null,
+    "unassessed_pair_intervals": 2826,
+    "risk_pair_intervals": 0,
+    "method": "piecewise-linear relative motion on passively aligned positions"
+  },
+  "data_quality_pass": false,
+  "truth_available_pass": false,
+  "run_completed": true,
+  "estimation_error": {
+    "uav_01": {
+      "samples": 0,
+      "rms_m": null,
+      "p95_m": null,
+      "max_m": null
+    },
+    "uav_02": {
+      "samples": 0,
+      "rms_m": null,
+      "p95_m": null,
+      "max_m": null
+    },
+    "uav_03": {
+      "samples": 0,
+      "rms_m": null,
+      "p95_m": null,
+      "max_m": null
+    }
+  },
+  "estimation_error_note": "FCU vs BIN SIM source-time comparison; internal FCU filtering latency remains; passive fit is not absolute synchronization",
+  "onboard_mission_param_check_version": "onboard_mission_param_check_v1",
+  "onboard_mission_param_check_status": "unknown",
+  "onboard_mission_param_check_required": true,
+  "onboard_mission_param_check_pass": false,
+  "execution_constraints_pass": null,
+  "mission_success": null,
+  "semantic_consistency": "unknown",
+  "benchmark_eligible": false,
+  "strict_benchmark_eligible": false,
+  "episode_quality_eligible": false,
+  "route_progress_version": "ordered_route_progress_v2",
+  "ac4_timing_version": "ac4_relative_progress_timing_v3",
+  "execution_artifacts_version": "execution_artifacts_v2",
+  "ac4_v3_truth_within_tau": null,
+  "ac4_v3_observation_within_tau": null,
+  "validation_policy": {
+    "version": "v05_acceptance_r1_2b",
+    "stage": "batch",
+    "hard_checks": {
+      "parameter_firmware": true,
+      "onboard_mission_parameters": false,
+      "truth_separation": true
+    },
+    "hard_failures": [
+      "onboard_mission_parameters"
+    ],
+    "soft_flags": [
+      {
+        "code": "AV-1",
+        "status": "unknown",
+        "channel": "observation",
+        "phase": null,
+        "agent_id": null,
+        "value": null,
+        "threshold": 0.1,
+        "reason": "incomplete_intermediate_waypoint_evidence"
+      },
+      {
+        "code": "AV-2",
+        "status": "unknown",
+        "channel": "observation",
+        "phase": null,
+        "agent_id": "uav_01",
+        "value": null,
+        "threshold": 3,
+        "reason": null
+      },
+      {
+        "code": "AV-2",
+        "status": "unknown",
+        "channel": "observation",
+        "phase": null,
+        "agent_id": "uav_02",
+        "value": null,
+        "threshold": 3,
+        "reason": null
+      },
+      {
+        "code": "AV-2",
+        "status": "unknown",
+        "channel": "observation",
+        "phase": null,
+        "agent_id": "uav_03",
+        "value": null,
+        "threshold": 3,
+        "reason": null
+      },
+      {
+        "code": "AC4",
+        "status": "unknown",
+        "channel": "truth",
+        "phase": "p00_approach",
+        "agent_id": null,
+        "value": null,
+        "threshold": 3.0,
+        "reason": null,
+        "source": "primary"
+      },
+      {
+        "code": "AC4",
+        "status": "unknown",
+        "channel": "truth",
+        "phase": "p01_observe",
+        "agent_id": null,
+        "value": null,
+        "threshold": 5.0,
+        "reason": null,
+        "source": "primary"
+      },
+      {
+        "code": "AC4",
+        "status": "unknown",
+        "channel": "observation",
+        "phase": "p00_approach",
+        "agent_id": null,
+        "value": null,
+        "threshold": 3.0,
+        "reason": null,
+        "source": "primary"
+      },
+      {
+        "code": "AC4",
+        "status": "unknown",
+        "channel": "observation",
+        "phase": "p01_observe",
+        "agent_id": null,
+        "value": null,
+        "threshold": 5.0,
+        "reason": null,
+        "source": "primary"
+      }
+    ],
+    "semantic_flags": [
+      {
+        "code": "episode_quality_ineligible",
+        "channel": null,
+        "agent_id": null,
+        "value": false,
+        "reason": null
+      }
+    ],
+    "new_anomalies": [
+      {
+        "code": "truth_separation_unknown",
+        "channel": null,
+        "agent_id": null,
+        "value": {
+          "status": "unknown",
+          "minimum_m": null,
+          "unassessed_pair_intervals": 2826,
+          "risk_pair_intervals": 0,
+          "method": "piecewise-linear relative motion on passively aligned positions"
+        },
+        "reason": "no_known_violation; retain_unassessed_evidence"
+      },
+      {
+        "code": "task_result_unknown",
+        "channel": "truth",
+        "agent_id": null,
+        "value": null,
+        "reason": null
+      },
+      {
+        "code": "task_result_unknown",
+        "channel": "observation",
+        "agent_id": null,
+        "value": null,
+        "reason": null
+      },
+      {
+        "code": "label_consistency_unknown",
+        "channel": null,
+        "agent_id": null,
+        "value": "unknown",
+        "reason": null
+      }
+    ],
+    "individual_pass": false,
+    "episode_quality_eligible": false,
+    "soft_flags_affect_episode_quality": false,
+    "aggregate_anomaly": true,
+    "aggregate_anomaly_reasons": [
+      "episode_quality_ineligible"
+    ],
+    "external_checks_required": [
+      "frozen_input_and_firmware_identity",
+      "protected_file_hashes",
+      "infrastructure_and_disk"
+    ]
+  },
+  "acceptance_policy_version": "v05_acceptance_r1_2b"
+}

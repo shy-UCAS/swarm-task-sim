@@ -1,0 +1,2148 @@
+{
+  "route_progress_version": "ordered_route_progress_v2",
+  "ac4_timing_version": "ac4_relative_progress_timing_v3",
+  "execution_artifacts_version": "execution_artifacts_v2",
+  "observation_processing_version": "v3_observation_v1",
+  "duplicate_policy_version": "exact_duplicate_drop_v1",
+  "timeline_policy_version": "full_stream_strict_v1",
+  "clock_model_version": "passive_system_time_piecewise_v1",
+  "channels": {
+    "truth": {
+      "version": "ac4_relative_progress_timing_v3",
+      "mapping_version": "ordered_route_progress_v2",
+      "event_mapping_version": "raw_waypoint_event_piecewise_linear_v1",
+      "interval_version": "simultaneous_terminal_interval_min_span_v1",
+      "channel": "truth",
+      "per_phase": {
+        "p00_approach": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              8.130131499998242
+            ],
+            "nominal_end_s": 5.844199753617565,
+            "tau_s": 3.0,
+            "complete": false,
+            "within_tau": null,
+            "D_s": null,
+            "issues": [
+              "uav_01:incomplete_evidence",
+              "uav_02:incomplete_evidence",
+              "uav_03:incomplete_evidence"
+            ],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ]
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              8.130131499998242
+            ],
+            "nominal_end_s": 5.844199753617565,
+            "tau_s": 3.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.48505509007531966,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 6.28062090000094,
+                    "nominal_s": 5.062468956104812,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 6.617135799999232,
+                    "nominal_s": 5.344199753617565,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 6.023366599998553,
+                    "nominal_s": 4.859144663542246,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ],
+            "worst": {
+              "span_s": 0.48505509007531966,
+              "selected_nominal_s": {
+                "uav_01": 5.062468956104812,
+                "uav_02": 5.344199753617565,
+                "uav_03": 4.859144663542246
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  5.062468956104812,
+                  5.062468956104812
+                ],
+                "uav_02": [
+                  5.344199753617565,
+                  5.344199753617565
+                ],
+                "uav_03": [
+                  4.859144663542246,
+                  4.859144663542246
+                ]
+              },
+              "actual_s": 6.617135799999232,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              6.023366599998553,
+              6.28062090000094,
+              6.617135799999232,
+              8.130131499998242
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": false,
+          "within_tau": null,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": null,
+          "issues": [
+            "uav_01:invalid_trajectory_in_common_domain",
+            "uav_02:invalid_trajectory_in_common_domain",
+            "uav_03:invalid_trajectory_in_common_domain"
+          ],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": null,
+            "uav_02": null,
+            "uav_03": null
+          }
+        },
+        "p01_observe": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              8.130131499998242,
+              94.29360069999893
+            ],
+            "nominal_end_s": 76.93609723576958,
+            "tau_s": 5.0,
+            "complete": false,
+            "within_tau": null,
+            "D_s": null,
+            "issues": [
+              "uav_01:incomplete_evidence",
+              "uav_02:incomplete_evidence",
+              "uav_03:incomplete_evidence"
+            ],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ]
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              8.130131499998242,
+              94.29360069999893
+            ],
+            "nominal_end_s": 76.93609723576958,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.36269741653782717,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.016539600001124,
+                    "nominal_s": 17.980171021613334,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 30.588016400000924,
+                    "nominal_s": 19.485308738052083,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 49.87434849999772,
+                    "nominal_s": 37.46547975966541,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 52.16782659999808,
+                    "nominal_s": 38.97061747610416,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.55384319999939,
+                    "nominal_s": 56.9507884977175,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 73.69100389999949,
+                    "nominal_s": 58.45592621415624,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 93.50465959999929,
+                    "nominal_s": 76.43609723576958,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.077357300000585,
+                    "nominal_s": 17.980171021613334,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 30.34003809999922,
+                    "nominal_s": 19.48530873805208,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 49.53591249999954,
+                    "nominal_s": 37.46547975966541,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 52.004651600000216,
+                    "nominal_s": 38.97061747610416,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.32278890000089,
+                    "nominal_s": 56.9507884977175,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 73.48423840000032,
+                    "nominal_s": 58.45592621415624,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 93.19390560000102,
+                    "nominal_s": 76.43609723576958,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.030406999998377,
+                    "nominal_s": 17.980171021613334,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 30.256511200001114,
+                    "nominal_s": 19.485308738052083,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 49.48530309999842,
+                    "nominal_s": 37.46547975966541,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 51.800757000000885,
+                    "nominal_s": 38.97061747610416,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.32738189999873,
+                    "nominal_s": 56.9507884977175,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 73.4381844999989,
+                    "nominal_s": 58.45592621415624,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 93.14498810000077,
+                    "nominal_s": 76.43609723576958,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ],
+            "worst": {
+              "span_s": 0.36269741653782717,
+              "selected_nominal_s": {
+                "uav_01": 37.102782343127586,
+                "uav_02": 37.418075528508254,
+                "uav_03": 37.46547975966541
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  37.102782343127586,
+                  37.102782343127586
+                ],
+                "uav_02": [
+                  37.418075528508254,
+                  37.418075528508254
+                ],
+                "uav_03": [
+                  37.46547975966541,
+                  37.46547975966541
+                ]
+              },
+              "actual_s": 49.48530309999842,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 45,
+            "knots_s": [
+              8.130131499998242,
+              28.016539600001124,
+              28.030406999998377,
+              28.077357300000585,
+              30.256511200001114,
+              30.34003809999922,
+              30.588016400000924,
+              49.48530309999842,
+              49.53591249999954,
+              49.87434849999772,
+              51.800757000000885,
+              52.004651600000216,
+              52.16782659999808,
+              71.32278890000089,
+              71.32738189999873,
+              71.55384319999939,
+              73.4381844999989,
+              73.48423840000032,
+              73.69100389999949,
+              93.14498810000077,
+              93.19390560000102,
+              93.50465959999929,
+              94.29360069999893
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": false,
+          "within_tau": null,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": null,
+          "issues": [
+            "uav_01:invalid_trajectory_in_common_domain",
+            "uav_02:invalid_trajectory_in_common_domain",
+            "uav_03:invalid_trajectory_in_common_domain"
+          ],
+          "channel": "truth",
+          "per_agent_laps_observed": {
+            "uav_01": null,
+            "uav_02": null,
+            "uav_03": null
+          }
+        }
+      },
+      "per_agent_laps_observed": {
+        "p00_approach": {
+          "uav_01": null,
+          "uav_02": null,
+          "uav_03": null
+        },
+        "p01_observe": {
+          "uav_01": null,
+          "uav_02": null,
+          "uav_03": null
+        }
+      },
+      "complete": false,
+      "within_tau": null,
+      "crosscheck_within_tau": true,
+      "issues": [
+        "p00_approach:uav_01:invalid_trajectory_in_common_domain",
+        "p00_approach:uav_02:invalid_trajectory_in_common_domain",
+        "p00_approach:uav_03:invalid_trajectory_in_common_domain",
+        "p01_observe:uav_01:invalid_trajectory_in_common_domain",
+        "p01_observe:uav_02:invalid_trajectory_in_common_domain",
+        "p01_observe:uav_03:invalid_trajectory_in_common_domain"
+      ],
+      "v1_diagnostic": {
+        "records": [
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 6.28062090000094,
+            "nominal_s": 5.062468956104812,
+            "deviation_s": 1.2181519438961281,
+            "tau_s": 3.0,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 6.28062090000094,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 6.617135799999232,
+            "nominal_s": 5.344199753617565,
+            "deviation_s": 1.272936046381667,
+            "tau_s": 3.0,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 6.617135799999232,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_03",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 6.023366599998553,
+            "nominal_s": 4.859144663542246,
+            "deviation_s": 1.1642219364563076,
+            "tau_s": 3.0,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 6.023366599998553,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.886408100002882,
+            "nominal_s": 17.980171021613334,
+            "deviation_s": 1.9062370783895481,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 28.016539600001124,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 22.457884900002682,
+            "nominal_s": 19.485308738052083,
+            "deviation_s": 2.972576161950599,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 30.588016400000924,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 41.74421699999948,
+            "nominal_s": 37.46547975966541,
+            "deviation_s": 4.278737240334067,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 49.87434849999772,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 44.03769509999984,
+            "nominal_s": 38.97061747610416,
+            "deviation_s": 5.067077623895678,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 52.16782659999808,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.42371170000115,
+            "nominal_s": 56.9507884977175,
+            "deviation_s": 6.472923202283653,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 71.55384319999939,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 65.56087240000124,
+            "nominal_s": 58.45592621415624,
+            "deviation_s": 7.104946185845002,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 73.69100389999949,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 85.37452810000104,
+            "nominal_s": 76.43609723576958,
+            "deviation_s": 8.938430864231464,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 93.50465959999929,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.947225800002343,
+            "nominal_s": 17.980171021613334,
+            "deviation_s": 1.9670547783890093,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 28.077357300000585,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 22.209906600000977,
+            "nominal_s": 19.48530873805208,
+            "deviation_s": 2.7245978619488973,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 30.34003809999922,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 41.4057810000013,
+            "nominal_s": 37.46547975966541,
+            "deviation_s": 3.9403012403358844,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 49.53591249999954,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 43.87452010000197,
+            "nominal_s": 38.97061747610416,
+            "deviation_s": 4.903902623897814,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 52.004651600000216,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.192657400002645,
+            "nominal_s": 56.9507884977175,
+            "deviation_s": 6.241868902285148,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 71.32278890000089,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 65.35410690000208,
+            "nominal_s": 58.45592621415624,
+            "deviation_s": 6.898180685845837,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 73.48423840000032,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 85.06377410000277,
+            "nominal_s": 76.43609723576958,
+            "deviation_s": 8.627676864233194,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 93.19390560000102,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.900275500000134,
+            "nominal_s": 17.980171021613334,
+            "deviation_s": 1.9201044783868007,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 28.030406999998377,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 22.12637970000287,
+            "nominal_s": 19.485308738052083,
+            "deviation_s": 2.6410709619507884,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 30.256511200001114,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 41.355171600000176,
+            "nominal_s": 37.46547975966541,
+            "deviation_s": 3.8896918403347627,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 49.48530309999842,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 43.67062550000264,
+            "nominal_s": 38.97061747610416,
+            "deviation_s": 4.700008023898484,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 51.800757000000885,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.197250400000485,
+            "nominal_s": 56.9507884977175,
+            "deviation_s": 6.246461902282988,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 71.32738189999873,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 65.30805300000065,
+            "nominal_s": 58.45592621415624,
+            "deviation_s": 6.852126785844412,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 73.4381844999989,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 85.01485660000253,
+            "nominal_s": 76.43609723576958,
+            "deviation_s": 8.578759364232951,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 93.14498810000077,
+            "event_count": 1
+          }
+        ],
+        "missing": [],
+        "per_phase": {
+          "p00_approach": {
+            "tau_s": 3.0,
+            "nominal_duration_s": 5.844199753617565,
+            "release_s": 0.0,
+            "end_s": 8.130131499998242,
+            "expected_waypoints": 3,
+            "paired_waypoints": 3,
+            "complete": true,
+            "max_abs_s": 1.272936046381667,
+            "within_tau": true
+          },
+          "p01_observe": {
+            "tau_s": 5.0,
+            "nominal_duration_s": 76.93609723576958,
+            "release_s": 8.130131499998242,
+            "end_s": 94.29360069999893,
+            "expected_waypoints": 21,
+            "paired_waypoints": 21,
+            "complete": true,
+            "max_abs_s": 8.938430864231464,
+            "within_tau": false
+          }
+        },
+        "expected_waypoints": 24,
+        "paired_waypoints": 24,
+        "complete": true,
+        "within_tau": false,
+        "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+      },
+      "v1_is_gate": false,
+      "criterion": "per semantic phase max_t min_simultaneous_fleet_span(sigma_i(t)) <= tau",
+      "no_hover_policy": "terminal singleton: conservative upper bound, no unproved interval relaxation"
+    },
+    "observation": {
+      "version": "ac4_relative_progress_timing_v3",
+      "mapping_version": "ordered_route_progress_v2",
+      "event_mapping_version": "raw_waypoint_event_piecewise_linear_v1",
+      "interval_version": "simultaneous_terminal_interval_min_span_v1",
+      "channel": "observation",
+      "per_phase": {
+        "p00_approach": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              8.130131499998242
+            ],
+            "nominal_end_s": 5.844199753617565,
+            "tau_s": 3.0,
+            "complete": false,
+            "within_tau": null,
+            "D_s": null,
+            "issues": [
+              "uav_01:incomplete_evidence",
+              "uav_02:incomplete_evidence",
+              "uav_03:incomplete_evidence"
+            ],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ]
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              0.0,
+              8.130131499998242
+            ],
+            "nominal_end_s": 5.844199753617565,
+            "tau_s": 3.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.48505509007531966,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 6.28062090000094,
+                    "nominal_s": 5.062468956104812,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 6.617135799999232,
+                    "nominal_s": 5.344199753617565,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 0.0,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 6.023366599998553,
+                    "nominal_s": 4.859144663542246,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ],
+            "worst": {
+              "span_s": 0.48505509007531966,
+              "selected_nominal_s": {
+                "uav_01": 5.062468956104812,
+                "uav_02": 5.344199753617565,
+                "uav_03": 4.859144663542246
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  5.062468956104812,
+                  5.062468956104812
+                ],
+                "uav_02": [
+                  5.344199753617565,
+                  5.344199753617565
+                ],
+                "uav_03": [
+                  4.859144663542246,
+                  4.859144663542246
+                ]
+              },
+              "actual_s": 6.617135799999232,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 9,
+            "knots_s": [
+              0.0,
+              6.023366599998553,
+              6.28062090000094,
+              6.617135799999232,
+              8.130131499998242
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": false,
+          "within_tau": null,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": null,
+          "issues": [
+            "uav_01:invalid_trajectory_in_common_domain",
+            "uav_02:invalid_trajectory_in_common_domain",
+            "uav_03:invalid_trajectory_in_common_domain"
+          ],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": null,
+            "uav_02": null,
+            "uav_03": null
+          }
+        },
+        "p01_observe": {
+          "primary": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              8.130131499998242,
+              94.29360069999893
+            ],
+            "nominal_end_s": 76.93609723576958,
+            "tau_s": 5.0,
+            "complete": false,
+            "within_tau": null,
+            "D_s": null,
+            "issues": [
+              "uav_01:incomplete_evidence",
+              "uav_02:incomplete_evidence",
+              "uav_03:incomplete_evidence"
+            ],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "cumulative_arc_length_m": 0.0,
+                    "source": "scheduled_phase_release"
+                  }
+                ],
+                "evidence_complete": false,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null,
+                "progress_version": "ordered_route_progress_v2",
+                "node_evidence": [],
+                "progress_segments": [],
+                "per_agent_laps_observed": null,
+                "backtracking_evidence": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ]
+          },
+          "crosscheck": {
+            "version": "ac4_relative_progress_timing_v3",
+            "interval_version": "simultaneous_terminal_interval_min_span_v1",
+            "common_actual_domain_s": [
+              8.130131499998242,
+              94.29360069999893
+            ],
+            "nominal_end_s": 76.93609723576958,
+            "tau_s": 5.0,
+            "complete": true,
+            "within_tau": true,
+            "D_s": 0.36269741653782717,
+            "issues": [],
+            "criterion": "D <= tau",
+            "mappings": {
+              "uav_01": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.016539600001124,
+                    "nominal_s": 17.980171021613334,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 30.588016400000924,
+                    "nominal_s": 19.485308738052083,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 49.87434849999772,
+                    "nominal_s": 37.46547975966541,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 52.16782659999808,
+                    "nominal_s": 38.97061747610416,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.55384319999939,
+                    "nominal_s": 56.9507884977175,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 73.69100389999949,
+                    "nominal_s": 58.45592621415624,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 93.50465959999929,
+                    "nominal_s": 76.43609723576958,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_02": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.077357300000585,
+                    "nominal_s": 17.980171021613334,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 30.34003809999922,
+                    "nominal_s": 19.48530873805208,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 49.53591249999954,
+                    "nominal_s": 37.46547975966541,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 52.004651600000216,
+                    "nominal_s": 38.97061747610416,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.32278890000089,
+                    "nominal_s": 56.9507884977175,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 73.48423840000032,
+                    "nominal_s": 58.45592621415624,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 93.19390560000102,
+                    "nominal_s": 76.43609723576958,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              },
+              "uav_03": {
+                "nodes": [
+                  {
+                    "actual_s": 8.130131499998242,
+                    "nominal_s": 0.0,
+                    "source": "scheduled_phase_release"
+                  },
+                  {
+                    "actual_s": 28.030406999998377,
+                    "nominal_s": 17.980171021613334,
+                    "seq": 2,
+                    "route_index": 0,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 30.256511200001114,
+                    "nominal_s": 19.485308738052083,
+                    "seq": 3,
+                    "route_index": 1,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 49.48530309999842,
+                    "nominal_s": 37.46547975966541,
+                    "seq": 4,
+                    "route_index": 2,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 51.800757000000885,
+                    "nominal_s": 38.97061747610416,
+                    "seq": 5,
+                    "route_index": 3,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 71.32738189999873,
+                    "nominal_s": 56.9507884977175,
+                    "seq": 6,
+                    "route_index": 4,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 73.4381844999989,
+                    "nominal_s": 58.45592621415624,
+                    "seq": 7,
+                    "route_index": 5,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  },
+                  {
+                    "actual_s": 93.14498810000077,
+                    "nominal_s": 76.43609723576958,
+                    "seq": 8,
+                    "route_index": 6,
+                    "source": "raw_waypoint_event_piecewise_linear_v1"
+                  }
+                ],
+                "evidence_complete": true,
+                "terminal_hover_start_s": null,
+                "supplied_terminal_hover_start_s": null
+              }
+            },
+            "conservative_terminal_singletons": [
+              "uav_01",
+              "uav_02",
+              "uav_03"
+            ],
+            "worst": {
+              "span_s": 0.36269741653782717,
+              "selected_nominal_s": {
+                "uav_01": 37.102782343127586,
+                "uav_02": 37.418075528508254,
+                "uav_03": 37.46547975966541
+              },
+              "nominal_intervals_s": {
+                "uav_01": [
+                  37.102782343127586,
+                  37.102782343127586
+                ],
+                "uav_02": [
+                  37.418075528508254,
+                  37.418075528508254
+                ],
+                "uav_03": [
+                  37.46547975966541,
+                  37.46547975966541
+                ]
+              },
+              "actual_s": 49.48530309999842,
+              "side": "left_limit"
+            },
+            "evaluated_limits": 45,
+            "knots_s": [
+              8.130131499998242,
+              28.016539600001124,
+              28.030406999998377,
+              28.077357300000585,
+              30.256511200001114,
+              30.34003809999922,
+              30.588016400000924,
+              49.48530309999842,
+              49.53591249999954,
+              49.87434849999772,
+              51.800757000000885,
+              52.004651600000216,
+              52.16782659999808,
+              71.32278890000089,
+              71.32738189999873,
+              71.55384319999939,
+              73.4381844999989,
+              73.48423840000032,
+              73.69100389999949,
+              93.14498810000077,
+              93.19390560000102,
+              93.50465959999929,
+              94.29360069999893
+            ],
+            "maximum_method": "exact union of affine knots and hover-transition one-sided limits"
+          },
+          "complete": false,
+          "within_tau": null,
+          "crosscheck_within_tau": true,
+          "crosscheck_agrees": null,
+          "issues": [
+            "uav_01:invalid_trajectory_in_common_domain",
+            "uav_02:invalid_trajectory_in_common_domain",
+            "uav_03:invalid_trajectory_in_common_domain"
+          ],
+          "channel": "observation",
+          "per_agent_laps_observed": {
+            "uav_01": null,
+            "uav_02": null,
+            "uav_03": null
+          }
+        }
+      },
+      "per_agent_laps_observed": {
+        "p00_approach": {
+          "uav_01": null,
+          "uav_02": null,
+          "uav_03": null
+        },
+        "p01_observe": {
+          "uav_01": null,
+          "uav_02": null,
+          "uav_03": null
+        }
+      },
+      "complete": false,
+      "within_tau": null,
+      "crosscheck_within_tau": true,
+      "issues": [
+        "p00_approach:uav_01:invalid_trajectory_in_common_domain",
+        "p00_approach:uav_02:invalid_trajectory_in_common_domain",
+        "p00_approach:uav_03:invalid_trajectory_in_common_domain",
+        "p01_observe:uav_01:invalid_trajectory_in_common_domain",
+        "p01_observe:uav_02:invalid_trajectory_in_common_domain",
+        "p01_observe:uav_03:invalid_trajectory_in_common_domain"
+      ],
+      "v1_diagnostic": {
+        "records": [
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 6.28062090000094,
+            "nominal_s": 5.062468956104812,
+            "deviation_s": 1.2181519438961281,
+            "tau_s": 3.0,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 6.28062090000094,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 6.617135799999232,
+            "nominal_s": 5.344199753617565,
+            "deviation_s": 1.272936046381667,
+            "tau_s": 3.0,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 6.617135799999232,
+            "event_count": 1
+          },
+          {
+            "phase": "p00_approach",
+            "agent_id": "uav_03",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 6.023366599998553,
+            "nominal_s": 4.859144663542246,
+            "deviation_s": 1.1642219364563076,
+            "tau_s": 3.0,
+            "within_tau": true,
+            "release_s": 0.0,
+            "event_s": 6.023366599998553,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.886408100002882,
+            "nominal_s": 17.980171021613334,
+            "deviation_s": 1.9062370783895481,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 28.016539600001124,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 22.457884900002682,
+            "nominal_s": 19.485308738052083,
+            "deviation_s": 2.972576161950599,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 30.588016400000924,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 41.74421699999948,
+            "nominal_s": 37.46547975966541,
+            "deviation_s": 4.278737240334067,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 49.87434849999772,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 44.03769509999984,
+            "nominal_s": 38.97061747610416,
+            "deviation_s": 5.067077623895678,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 52.16782659999808,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.42371170000115,
+            "nominal_s": 56.9507884977175,
+            "deviation_s": 6.472923202283653,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 71.55384319999939,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 65.56087240000124,
+            "nominal_s": 58.45592621415624,
+            "deviation_s": 7.104946185845002,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 73.69100389999949,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_01",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 85.37452810000104,
+            "nominal_s": 76.43609723576958,
+            "deviation_s": 8.938430864231464,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 93.50465959999929,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.947225800002343,
+            "nominal_s": 17.980171021613334,
+            "deviation_s": 1.9670547783890093,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 28.077357300000585,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 22.209906600000977,
+            "nominal_s": 19.48530873805208,
+            "deviation_s": 2.7245978619488973,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 30.34003809999922,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 41.4057810000013,
+            "nominal_s": 37.46547975966541,
+            "deviation_s": 3.9403012403358844,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 49.53591249999954,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 43.87452010000197,
+            "nominal_s": 38.97061747610416,
+            "deviation_s": 4.903902623897814,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 52.004651600000216,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.192657400002645,
+            "nominal_s": 56.9507884977175,
+            "deviation_s": 6.241868902285148,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 71.32278890000089,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 65.35410690000208,
+            "nominal_s": 58.45592621415624,
+            "deviation_s": 6.898180685845837,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 73.48423840000032,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_02",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 85.06377410000277,
+            "nominal_s": 76.43609723576958,
+            "deviation_s": 8.627676864233194,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 93.19390560000102,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 2,
+            "route_index": 0,
+            "actual_s": 19.900275500000134,
+            "nominal_s": 17.980171021613334,
+            "deviation_s": 1.9201044783868007,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 28.030406999998377,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 3,
+            "route_index": 1,
+            "actual_s": 22.12637970000287,
+            "nominal_s": 19.485308738052083,
+            "deviation_s": 2.6410709619507884,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 30.256511200001114,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 4,
+            "route_index": 2,
+            "actual_s": 41.355171600000176,
+            "nominal_s": 37.46547975966541,
+            "deviation_s": 3.8896918403347627,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 49.48530309999842,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 5,
+            "route_index": 3,
+            "actual_s": 43.67062550000264,
+            "nominal_s": 38.97061747610416,
+            "deviation_s": 4.700008023898484,
+            "tau_s": 5.0,
+            "within_tau": true,
+            "release_s": 8.130131499998242,
+            "event_s": 51.800757000000885,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 6,
+            "route_index": 4,
+            "actual_s": 63.197250400000485,
+            "nominal_s": 56.9507884977175,
+            "deviation_s": 6.246461902282988,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 71.32738189999873,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 7,
+            "route_index": 5,
+            "actual_s": 65.30805300000065,
+            "nominal_s": 58.45592621415624,
+            "deviation_s": 6.852126785844412,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 73.4381844999989,
+            "event_count": 1
+          },
+          {
+            "phase": "p01_observe",
+            "agent_id": "uav_03",
+            "seq": 8,
+            "route_index": 6,
+            "actual_s": 85.01485660000253,
+            "nominal_s": 76.43609723576958,
+            "deviation_s": 8.578759364232951,
+            "tau_s": 5.0,
+            "within_tau": false,
+            "release_s": 8.130131499998242,
+            "event_s": 93.14498810000077,
+            "event_count": 1
+          }
+        ],
+        "missing": [],
+        "per_phase": {
+          "p00_approach": {
+            "tau_s": 3.0,
+            "nominal_duration_s": 5.844199753617565,
+            "release_s": 0.0,
+            "end_s": 8.130131499998242,
+            "expected_waypoints": 3,
+            "paired_waypoints": 3,
+            "complete": true,
+            "max_abs_s": 1.272936046381667,
+            "within_tau": true
+          },
+          "p01_observe": {
+            "tau_s": 5.0,
+            "nominal_duration_s": 76.93609723576958,
+            "release_s": 8.130131499998242,
+            "end_s": 94.29360069999893,
+            "expected_waypoints": 21,
+            "paired_waypoints": 21,
+            "complete": true,
+            "max_abs_s": 8.938430864231464,
+            "within_tau": false
+          }
+        },
+        "expected_waypoints": 24,
+        "paired_waypoints": 24,
+        "complete": true,
+        "within_tau": false,
+        "time_basis": "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        "criterion": "abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown"
+      },
+      "v1_is_gate": false,
+      "criterion": "per semantic phase max_t min_simultaneous_fleet_span(sigma_i(t)) <= tau",
+      "no_hover_policy": "terminal singleton: conservative upper bound, no unproved interval relaxation"
+    }
+  },
+  "hover_evidence": {
+    "truth": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_host_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.030131499998242717,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_host_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.030131499998242717,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_03",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_host_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.030131499998242717,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_observe",
+        "agent_id": "uav_01",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_host_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09360069999893028,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_observe",
+        "agent_id": "uav_02",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_host_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09360069999893028,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_observe",
+        "agent_id": "uav_03",
+        "channel": "truth",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "sim_horizontal_backward_difference_host_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09360069999893028,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      }
+    ],
+    "observation": [
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.030131499998242717,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.030131499998242717,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p00_approach",
+        "agent_id": "uav_03",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.030131499998242717,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_observe",
+        "agent_id": "uav_01",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09360069999893028,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_observe",
+        "agent_id": "uav_02",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09360069999893028,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      },
+      {
+        "phase": "p01_observe",
+        "agent_id": "uav_03",
+        "channel": "observation",
+        "version": "terminal_hover_measured_suffix_v1",
+        "speed_processing_version": "fcu_horizontal_velocity_v1",
+        "threshold_m_s": 0.3,
+        "distance_tolerance_m": 1.0,
+        "minimum_measured_duration_s": 0.2,
+        "measured_duration_s": 0.0,
+        "end_support_error_s": 0.09360069999893028,
+        "terminal_suffix_supported_through_end": false,
+        "established": false,
+        "start_s": null,
+        "when_not_established": "retain conservative terminal singleton; no arrival_s rewrite"
+      }
+    ]
+  },
+  "truth_primary": true,
+  "observation_crosscheck": true,
+  "criterion": "per semantic phase D <= tau; no change to nominal timing or arrival_s"
+}

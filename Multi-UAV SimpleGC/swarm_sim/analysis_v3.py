@@ -53,15 +53,19 @@ def _uses_v05_route_evidence(spec):
 
 def analyze_run_v3(directory, quality_policy=None, *,
                    progress_mapping_version="ordered_route_progress_v1",
+                   patrol_validator_version="perimeter_revisit_v1",
                    acceptance_policy=None, acceptance_stage="validation",
                    output_directory=None, update_latest=True):
     directory=Path(directory).resolve()
     if progress_mapping_version not in ("ordered_route_progress_v1", "ordered_route_progress_v2"):
         raise ValueError("unsupported ordered route progress version")
-    if acceptance_policy not in (None, "v05_acceptance_r1_2"):
+    if acceptance_policy not in (None, "v05_acceptance_r1_2", "v05_acceptance_r1_2b"):
         raise ValueError("unsupported acceptance policy")
     if acceptance_policy and progress_mapping_version != "ordered_route_progress_v2":
         raise ValueError("r1.2 analysis requires ordered_route_progress_v2")
+    if acceptance_policy == "v05_acceptance_r1_2b" and (
+            patrol_validator_version != "perimeter_revisit_v2" or acceptance_stage not in ("pilot", "batch")):
+        raise ValueError("r1.2b analysis requires perimeter_revisit_v2 and pilot/batch stage")
     if output_directory is not None:
         output_directory=Path(output_directory).resolve()
         if output_directory.exists():
@@ -78,7 +82,7 @@ def analyze_run_v3(directory, quality_policy=None, *,
     if spec["schema_version"] != 3:
         raise ValueError("v3 analysis requires TaskSpec schema_version 3")
     policy=resolve_policy(quality_policy)
-    versions=processing_versions(); protocol=semantic_protocol(scene)
+    versions=processing_versions(); protocol=semantic_protocol(scene, patrol_validator_version=patrol_validator_version)
     lifecycle_epoch=metadata["run_epoch_monotonic_s"]
     lifecycle_end=lifecycle_epoch+metadata["elapsed_s"]
     epoch=metadata.get("flight_epoch_monotonic_s",lifecycle_epoch)
@@ -161,7 +165,8 @@ def analyze_run_v3(directory, quality_policy=None, *,
     events=_read_packets(directory/"events.jsonl")
     semantic=evaluate_mission_v3(scene,semantic_traces,semantic_truth_traces,events=events,
                                  metadata=metadata,time_epoch=epoch,clocks=clocks,
-                                 progress_mapping_version=progress_mapping_version)
+                                 progress_mapping_version=progress_mapping_version,
+                                 patrol_validator_version=patrol_validator_version)
     semantic["semantic_validation"]["evaluation_support"]=dict(extra_end_bracket_s=semantic_grid[-1] if len(semantic_grid)>count else None,
         exported_grid_last_s=grid[-1] if grid else None,mission_end_s=None if unstarted else end-epoch,model_input_grid_unchanged=True,
         semantics="one internal boundary-support sample; never exported as an observation; no invalid/gap bridging")
@@ -209,7 +214,10 @@ def analyze_run_v3(directory, quality_policy=None, *,
         quality["ac4_v3_observation_within_tau"]=ac4_channels["observation"]["within_tau"]
         labels["label_provenance"].update(v05_versions)
     if acceptance_policy:
-        from .validation_policy import assess_run
+        if acceptance_policy == "v05_acceptance_r1_2b":
+            from .validation_policy_r12b import assess_run
+        else:
+            from .validation_policy import assess_run
         if not v05_route_evidence:
             raise ValueError("r1.2 acceptance requires v0.5 route evidence")
         quality["validation_policy"]=assess_run(scene,metadata,quality,labels,metrics,ac4_report,onboard,

@@ -259,7 +259,11 @@ def _checked_result(facts: dict[str, Any]) -> tuple[str, bool, dict[str, bool | 
     conditions = dict(raw)
     if "return" not in conditions and "return_to_launch" in conditions:
         conditions["return"] = conditions.pop("return_to_launch")
-    needed = {"coverage", "return"} if labels["assigned_intent"] == "reconnaissance" else {"visits", "max_gap", "return"}
+    patrol_v2 = facts.get("provenance", {}).get("versions", {}).get("semantic_validation_version") == "multi_intent_validation_v3"
+    needed = ({"coverage", "return"} if labels["assigned_intent"] == "reconnaissance"
+              else {"max_gap", "return"} if patrol_v2 else {"visits", "max_gap", "return"})
+    if labels["assigned_intent"] == "patrol" and patrol_v2 and "visits" in conditions:
+        raise ValueError("perimeter_revisit_v2 cannot use visits as a success condition")
     if not needed <= conditions.keys() or any(type(conditions[name]) not in (bool, type(None)) for name in needed):
         raise ValueError("mission_result has missing or invalid subconditions")
     values = [conditions[name] for name in sorted(needed)]
@@ -315,9 +319,10 @@ def _plans(facts: dict[str, Any]) -> list[_SentencePlan]:
             key = "T3.coverage_pass" if coverage is True else "T3.coverage_fail" if coverage is False else "T3.coverage_unknown"
             plans.append(_SentencePlan(key, (condition_id,), {}))
     else:
-        visits = conditions["visits"]
-        key = "T3.visits_pass" if visits is True else "T3.visits_fail" if visits is False else "T3.visits_unknown"
-        plans.append(_SentencePlan(key, ("labels.mission_result.conditions.visits",), {}))
+        if "visits" in conditions:
+            visits = conditions["visits"]
+            key = "T3.visits_pass" if visits is True else "T3.visits_fail" if visits is False else "T3.visits_unknown"
+            plans.append(_SentencePlan(key, ("labels.mission_result.conditions.visits",), {}))
         gap_result = conditions["max_gap"]
         gap = _available_observed(facts, "max_revisit_gap_s", disagreements)
         gap_available = isinstance(gap, (int, float)) and not isinstance(gap, bool) and math.isfinite(gap) and gap >= 0

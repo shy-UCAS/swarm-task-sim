@@ -359,7 +359,8 @@ def _events(metrics_by_channel, checked, disagreements):
         value = _compare(f"events.ev_{kind}.t", left, right, checked, disagreements)
         if _finite(value):
             result.append(dict(id=f"ev_{kind}", kind=kind, t=value,
-                               boundary_source="perimeter_revisit_v1"))
+                               boundary_source=metrics_by_channel["truth"]["perimeter_revisit"].get(
+                                   "version", "perimeter_revisit_v1")))
     return result
 
 
@@ -398,9 +399,10 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                 for field in local["truth"]}
     conditions = semantic.get("condition_results", {}).get("truth", {})
     if task["mission"]["intent"] == "patrol":
-        normalized_conditions = {"visits": conditions.get("visits"),
-                                 "max_gap": conditions.get("max_gap"),
+        normalized_conditions = {"max_gap": conditions.get("max_gap"),
                                  "return": conditions.get("return_to_launch")}
+        if metrics["truth"]["perimeter_revisit"].get("version") != "perimeter_revisit_v2":
+            normalized_conditions["visits"] = conditions.get("visits")
     else:
         normalized_conditions = {"coverage": conditions.get("coverage"),
                                  "return": conditions.get("return_to_launch")}
