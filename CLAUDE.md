@@ -1,6 +1,6 @@
 # 项目交接
 
-本仓库用 ArduCopter SITL 生成多无人机轨迹、双通道标签及描述；v0.5 用于算法链路开发。
+本仓库用 ArduCopter SITL 生成多无人机轨迹、双通道标签及描述；v0.5 已完成并冻结，用于算法链路开发。新会话先读根目录 `README.md`，其中保存当前进度和新旧仓库边界。
 
 - `Multi-UAV SimpleGC/`：当前多机工程；`swarm_sim/` 源码，`tests/` 测试，`scripts/` 执行与复核，`docs/` 规则/报告，`verification/` 实跑台账，`tmp_v05/` 离线证据，`generation_profiles/` 配置。
 - `SimpleGC/`：原始单机工程；`.claude/progress/`：仓库级进度快照。
@@ -12,15 +12,15 @@ Windows 只用 PowerShell 7；首次运行检查 `$PSVersionTable.PSVersion` 主
 Python 前先读 `Multi-UAV SimpleGC/.conda-env`（当前 `llm`），遵循项目 `AGENTS.md`；在该项目目录运行：
 
 ```powershell
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python -m unittest discover -s tests
+& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python -m unittest discover -s tests -p test_publication_runtime.py
 & 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python main.py --help
 ```
 
-Git 一律在 `F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation` 仓库根执行（子目录可能触发 dubious ownership）：`git status --short`、`git diff --check`。提交/推送按用户本轮授权；当前将全部改动本地提交，不推送，再执行 B002–B240。SITL 命令须先核对当前规则、预算和台账；停止后的恢复必须依据用户授权并保留说明。
+Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git diff --check`；Python 通常在 `Multi-UAV SimpleGC` 中执行。原 `Simulation` 仅作冻结归档，不从其旧 main 开发或推送。发布 PR #1 已合并，目录迁移完成；提交/推送按当前用户授权执行。141 项发布检查见 `.github/workflows/unit-tests.yml`，完整历史集成测试需要另行取得归档。当前没有自动接续的仿真任务。
 
 ## 铁律与报告
 
-- 不修改或删除旧证据、原运行、已有分析/判定和受保护文件；新版本分析另存目录并绑定来源。历史停止记录和旧哈希保留；用户已授权本轮在原批量台账写入简短修复/恢复说明后接续，不另建恢复机制。
+- 不修改或删除旧证据、原运行、已有分析/判定和受保护文件；新版本分析另存目录并绑定来源。历史停止记录和旧哈希保留；旧阶段的接续授权不等于当前授权，不修改冻结台账来启动新实验。
 - 未经用户指令不改阈值、门禁和已有判定；失败如实保留，不能重跑洗掉失败；停止时写停止报告并更新进度快照。
 - 报告按“结论 → 异常 → 证据位置”；数字带分母。代码摘录必须从源码原样复制并标注行号；正文公式用 `\(...\)`。
 
@@ -33,6 +33,6 @@ Git 一律在 `F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation` 
 
 ## 新会话恢复顺序
 
-1. 先读 `.claude/progress/` 中最新进度快照，并核对当前代码和证据。
-2. 再读 `Multi-UAV SimpleGC/docs/v0.5_当前有效规则.md`。
-3. 最后按最新用户指令执行任务。暂停 1 已确认，返航描述核对通过；用户已授权最简修复 B001 分析目录问题，用原数据补做 v2/v3 离线分析，不重飞，原 STOP 与初报保留。本地提交后继续 B002–B240，完成全量验收与最终报告后停在暂停 2；实际状态、预算与门禁见当前规则。
+1. 先读根目录 `README.md` 并核对 Git 状态；本机 `.claude/progress/` 的最新快照可辅助恢复，但新克隆不保证存在。
+2. 再读 `Multi-UAV SimpleGC/docs/v0.5_final_report.md`，以及本次任务涉及的有效规则、源码和证据；历史规则文件的“剩余步骤”不代表当前进度。
+3. v0.5 已完成 260 次运行和收尾；Git 发布、迁移均完成。后续工作依据新的用户指令，不自动启动仿真、批量生成或改写旧证据。
