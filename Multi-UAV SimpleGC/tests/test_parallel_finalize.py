@@ -1,5 +1,6 @@
 """Offline finalization contract and real export over synthetic flight evidence."""
 
+import copy
 import io
 import os
 from contextlib import ExitStack, redirect_stderr, redirect_stdout
@@ -11,8 +12,9 @@ from unittest.mock import patch
 from scripts import run_parallel_batch as cli
 from swarm_sim import parallel_batch as batch
 from swarm_sim import parallel_worker as worker
-from swarm_sim.dataset import family_split
-from swarm_sim.generation import file_hash, save_json
+from swarm_sim.dataset import build_dataset, family_split
+from swarm_sim.generation import canonical_hash, file_hash, save_json
+from swarm_sim.tasks import compile_task
 from test_parallel_worker import fixture, synthetic_runner
 
 
@@ -195,6 +197,99 @@ class ParallelFinalizeTests(unittest.TestCase):
         self.assertEqual([r["run_id"] for r in report["loaded"]], [result["run_id"]])
         self.assertEqual(report["loaded"][0]["corners"], 4)
         self.assertTrue(batch.read(self.root / "control.json")["finalized"])
+
+    def test_out_of_order_completion_preserves_export_order_and_manifest_hash(self):
+        plan, _, first_scene = fixture(self.root)
+        plan.update(root=str(self.root), max_attempts=2, split_salt="completion-order-salt")
+        bundle = Path(plan["bundle"])
+        second_task = batch.read(bundle / "task.json")
+        second_task.pop("family_id")
+        second_task.pop("family_scheme")
+        second_task["task_id"] += "_second_family"
+        second_task["scenario"]["world"]["east_bounds_m"][1] += 1
+        second_scene = compile_task(second_task)
+        self.assertNotEqual(first_scene["family_id"], second_scene["family_id"])
+        save_json(bundle / "task_second.json", second_task)
+        save_json(bundle / "scene_second.json", second_scene)
+        first_entry = plan["tasks"][0]["entry"]
+        second_entry = dict(first_entry, mission_id="second_frozen_mission",
+            family_id=second_scene["family_id"], task="task_second.json", scene="scene_second.json",
+            task_sha256=file_hash(bundle / "task_second.json"),
+            scene_sha256=file_hash(bundle / "scene_second.json"))
+        listing = batch.read(bundle / "mission_list.json")
+        listing["missions"].append(second_entry)
+        save_json(bundle / "mission_list.json", listing)
+        save_json(bundle / "generation_manifest.json", dict(artifact_sha256={
+            path.name: file_hash(path) for path in bundle.glob("*.json")
+            if path.name != "generation_manifest.json"}))
+        plan["tasks"] = [dict(global_index=i, shard_id=i, mission_id=entry["mission_id"],
+            family_id=entry["family_id"], split=family_split(entry["family_id"], plan["split_salt"]),
+            entry=entry) for i, entry in enumerate((first_entry, second_entry))]
+        attempts, results = [], []
+        # Deliberately oppose lexical run-id order to the frozen global order.
+        expected_run_ids = ["z_global_first", "a_global_second"]
+        for i, scene in enumerate((first_scene, second_scene)):
+            task = plan["tasks"][i]
+            attempt = dict(attempt_id=f"a{i:06d}", attempt_index=0, global_index=i, shard_id=i,
+                mission_id=task["mission_id"], family_id=task["family_id"], base_port=19100+100*i,
+                attempt_directory=str(self.root / "shards" / f"shard_{i:02d}" / "attempts" / f"a{i:06d}"))
+            runner = synthetic_runner(dict(plan, tasks=[task]), scene)
+
+            def identified_runner(path, **kwargs):
+                ledger = runner(path, **kwargs)
+                run = Path(ledger["missions"][0]["attempts"][0]["run_directory"])
+                metadata = batch.read(run / "metadata.json")
+                metadata["run_id"] = expected_run_ids[i]
+                save_json(run / "metadata.json", metadata)
+                return ledger
+
+            # Only the simulator boundary is replaced; production analysis,
+            # result verification, merging and dataset export all execute.
+            with patch("scripts.run_mission_list.run_mission_list", side_effect=identified_runner):
+                result = worker.execute_attempt(plan, attempt)
+            self.assertIsNone(result["infrastructure_error"])
+            plan["protocol"] = result["semantic_protocol"]
+            result_path = Path(attempt["attempt_directory"]) / "result.json"
+            save_json(result_path, result)
+            attempt["result_sha256"] = file_hash(result_path)
+            attempts.append(attempt)
+            results.append(result)
+
+        frozen_plan_hash = canonical_hash(plan)
+        manifests = []
+        for name, order in (("ordered", [0, 1]), ("reversed", [1, 0])):
+            state = batch.new_state(plan)
+            state["attempts"] = [copy.deepcopy(attempts[i]) for i in order]
+            for attempt in state["attempts"]:
+                batch.register_completion(state, attempt, results[attempt["global_index"]])
+            state["completed"] = True
+            control_path = self.root / f"{name}_control.json"
+            save_json(control_path, state)
+            persisted = batch.read(control_path)
+            self.assertEqual(persisted["completion_order"], [f"a{i:06d}" for i in order])
+            self.assertEqual([a["completion_seq"] for a in persisted["attempts"]], [1, 2])
+            self.assertIsNone(persisted["stopped_reason"])
+            rows = batch.merge_records(plan, persisted)
+            self.assertEqual([r["global_index"] for r in rows], [0, 1])
+            self.assertEqual([r["run_id"] for r in rows], expected_run_ids)
+            output = self.root / f"dataset_{name}"
+            exported = build_dataset([r["run_directory"] for r in rows], output,
+                salt=plan["split_salt"], analysis_selections={r["run_directory"]: dict(
+                    directory=r["analysis_directory"], manifest_sha256=file_hash(
+                        Path(r["analysis_directory"]) / "manifest.json")) for r in rows})
+            self.assertEqual([e["run_id"] for e in exported["episodes"]], expected_run_ids)
+            self.assertEqual([e["split"] for e in exported["episodes"]],
+                             [task["split"] for task in plan["tasks"]])
+            manifests.append(output / "dataset_manifest.json")
+
+        # Export roots do not enter the manifest. Both exports read exactly the
+        # same immutable run/analysis paths, so only completion order can differ.
+        self.assertEqual(manifests[0].read_bytes(), manifests[1].read_bytes())
+        self.assertEqual(file_hash(manifests[0]), file_hash(manifests[1]))
+        self.assertEqual(canonical_hash(plan), frozen_plan_hash)
+        for result in results:
+            self.assertTrue(all(file_hash(Path(path)) == digest
+                                for path, digest in result["evidence_sha256"].items()))
 
     def test_patrol_timing_uses_primary_phase_and_separates_unknown_denominators(self):
         bundle = self.root / "bundle"

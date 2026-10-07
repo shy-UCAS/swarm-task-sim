@@ -265,6 +265,52 @@ class ParallelWorkerTests(unittest.TestCase):
         self.assertIn("analysis_error", checked["infrastructure_error"])
         self.assertIn("infrastructure_execution_completed", checked["hard_failures"])
 
+    def test_quality_failure_and_unknown_do_not_stop_but_confirmed_violation_does(self):
+        from scripts.run_v05_batch import assess_artifacts as v05_assess_artifacts
+        from swarm_sim.parallel_batch import new_state, register_completion
+
+        result, _ = self.execute()
+        metadata = worker._read(Path(result["run_directory"]) / "metadata.json")
+        artifacts = {name: worker._read(Path(result["analysis_directory"]) / (name + ".json"))
+                     for name in worker.ARTIFACTS}
+        cases = (
+            ("quality_only", "clear_observed", 9.0, "pass", 0, True, None),
+            ("unknown", "risk", None, "unknown", 0, None, None),
+            ("confirmed_separation", "risk", 4.99, "unknown", 0, False, "truth_separation"),
+            ("confirmed_onboard", "clear_observed", 9.0, "mismatch", 1, True, "onboard_mission_parameters"),
+        )
+        for name, status, minimum, onboard, mismatches, separation_check, stop_key in cases:
+            with self.subTest(case=name):
+                changed = copy.deepcopy(artifacts)
+                changed["quality"].update(episode_quality_eligible=False,
+                    truth_separation=dict(status=status, minimum_m=minimum))
+                changed["onboard_mission_param_check"].update(status=onboard,
+                    pass_gate=onboard == "pass", counts=dict(mismatch_count=mismatches))
+                changed["quality"]["validation_policy"] = worker.assess_run(self.scene, metadata,
+                    changed["quality"], changed["labels"], changed["execution_metrics"],
+                    changed["ac4_timing_v3"], changed["onboard_mission_param_check"], stage="batch")
+                checked = worker.assess_artifacts(self.scene, metadata, changed, self.plan)
+                legacy = v05_assess_artifacts(self.scene, metadata, changed, self.plan)
+                for key in ("batch_hard_checks", "hard_failures", "assessment"):
+                    self.assertEqual(checked[key], legacy[key])
+                self.assertIs(checked["batch_hard_checks"]["truth_separation"], separation_check)
+                if onboard == "unknown":
+                    self.assertIsNone(checked["batch_hard_checks"]["onboard_mission_parameters"])
+                self.assertIsNone(checked["infrastructure_error"])
+                state, attempt = new_state(self.plan), copy.deepcopy(self.attempt)
+                state["attempts"].append(attempt)
+                register_completion(state, attempt, dict(checked, run_id=result["run_id"]))
+                self.assertEqual(state["rolling"]["window_count"], 1)
+                self.assertEqual(state["rolling"]["anomaly_count"], 1)
+                self.assertFalse(state["rolling"]["stop"])
+                if stop_key:
+                    self.assertIn(stop_key, state["stopped_reason"])
+                    self.assertEqual(state["stop_attempt_id"], attempt["attempt_id"])
+                else:
+                    self.assertEqual(checked["hard_failures"], [])
+                    self.assertIsNone(state["stopped_reason"])
+                    self.assertIsNone(state["stop_attempt_id"])
+
 
 if __name__ == "__main__":
     unittest.main()
