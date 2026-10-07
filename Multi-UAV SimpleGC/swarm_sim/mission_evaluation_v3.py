@@ -9,8 +9,8 @@ from .registry import get_intent
 
 
 def _channel(scene, traces, windows, clocks, intent, return_windows=None,
-             progress_mapping_version="ordered_route_progress_v1"):
-    options = ({"progress_mapping_version": progress_mapping_version}
+             progress_mapping_version="ordered_route_progress_v1", patrol_validator_version="perimeter_revisit_v1"):
+    options = ({"progress_mapping_version": progress_mapping_version, "validator_version": patrol_validator_version}
                if intent.name == "patrol" else {})
     specific = intent.evaluate_channel(scene, traces, windows, clocks, **options)
     if not isinstance(specific, dict) or set(specific) != {"conditions", "metrics"}:
@@ -28,7 +28,8 @@ def _channel(scene, traces, windows, clocks, intent, return_windows=None,
 
 
 def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoch, clocks=None,
-                        *, progress_mapping_version="ordered_route_progress_v1"):
+                        *, progress_mapping_version="ordered_route_progress_v1",
+                        patrol_validator_version="perimeter_revisit_v1"):
     spec = scene["task_spec"]
     if spec.get("schema_version") != 3:
         raise ValueError("v3 mission evaluation requires TaskSpec schema_version 3")
@@ -37,7 +38,8 @@ def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoc
         raise ValueError("unsupported v3 execution control mode")
     clocks = clocks or {}
     intent = get_intent(spec["mission"]["intent"])
-    protocol = semantic_protocol(scene)
+    protocol = semantic_protocol(scene, patrol_validator_version=patrol_validator_version)
+    validator_version = patrol_validator_version if intent.name == "patrol" else intent.validator_version
     if mode == "semantic_phase_route_v1":
         from .route_windows import build_route_windows, route_window_artifact, service_window_view
 
@@ -53,15 +55,17 @@ def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoc
                 if window["role"] == "hold_no_op" and window["semantic_phase"] == "return":
                     window["role"] = "return"
             results[channel] = _channel(scene, samples, service_window_view(full), clocks, intent, returned,
-                                        progress_mapping_version)
+                                        progress_mapping_version, patrol_validator_version)
         truth, truth_conditions = results["truth"]
         observation, observation_conditions = results["observation"]
         windows = channel_windows["observation"]
         window_artifact = route_window_artifact(scene, channel_windows, time_epoch)
     else:
         windows = execution_windows(scene, events, metadata, time_epoch)
-        truth, truth_conditions = _channel(scene, truth_traces, windows, clocks, intent)
-        observation, observation_conditions = _channel(scene, traces, windows, clocks, intent)
+        truth, truth_conditions = _channel(scene, truth_traces, windows, clocks, intent,
+            progress_mapping_version=progress_mapping_version, patrol_validator_version=patrol_validator_version)
+        observation, observation_conditions = _channel(scene, traces, windows, clocks, intent,
+            progress_mapping_version=progress_mapping_version, patrol_validator_version=patrol_validator_version)
     left, right = truth["mission_success"], observation["mission_success"]
     consistency = "unknown" if left is None or right is None else ("agree" if left == right else "disagree")
     if set(truth_conditions) != set(observation_conditions):
@@ -84,7 +88,7 @@ def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoc
             mission_success_observation="FCU estimated positions; independent intent evidence pass",
             semantic_windows="semantic_route_windows_v1" if mode == "semantic_phase_route_v1" else "execution_events + compiled_semantic_plan",
             semantic_validation_version=protocol["semantic_validation_version"],
-            validator_versions={intent.name: intent.validator_version},
+            validator_versions={intent.name: validator_version},
             scope="registered intent evidence rules; no inferred tactical intent"))
     validation = dict(schema_version=1, semantic_validation_version=protocol["semantic_validation_version"],
         mission_success=left, mission_success_observation=right, semantic_consistency=consistency,

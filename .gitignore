@@ -1,12 +1,296 @@
+# Code/configuration/reports live in Git; complete simulation data stays local.
+# Existing tracked files must also be removed from the publication index.
 __pycache__/
 *.py[cod]
 .pytest_cache/
 tests/.tmp/
+.vscode/
+/.claude/
+/.git-publication/
+/Multi-UAV SimpleGC/LLM Chat/
+/Multi-UAV SimpleGC/runs/
+/Multi-UAV SimpleGC/datasets/
+/Multi-UAV SimpleGC/saveData/
+/Multi-UAV SimpleGC/loadData/
+/SimpleGC/runs/
+/SimpleGC/datasets/
+/SimpleGC/saveData/
+/SimpleGC/loadData/
+/Multi-UAV SimpleGC/verification/**/execution/
+/Multi-UAV SimpleGC/verification/**/runs/
+/Multi-UAV SimpleGC/verification/**/analyses*/
+/Multi-UAV SimpleGC/verification/**/analysis_v*/
+/Multi-UAV SimpleGC/verification/**/runtime_snapshot*/
+/Multi-UAV SimpleGC/verification/**/dataset*/**
+!/Multi-UAV SimpleGC/verification/**/dataset*/
+!/Multi-UAV SimpleGC/verification/**/dataset*/dataset_manifest.json
+!/Multi-UAV SimpleGC/verification/**/dataset*/description_audit.json
+!/Multi-UAV SimpleGC/verification/**/dataset*/audit.json
+!/Multi-UAV SimpleGC/verification/**/dataset*/summary.json
+!/Multi-UAV SimpleGC/verification/**/dataset*/report.json
+/Multi-UAV SimpleGC/verification/**/*.csv
+/Multi-UAV SimpleGC/verification/**/*.jsonl
+/Multi-UAV SimpleGC/verification/**/*.bin
+/Multi-UAV SimpleGC/verification/**/*.BIN
+/Multi-UAV SimpleGC/verification/**/*.log
+/Multi-UAV SimpleGC/tmp_v04/**
+!/Multi-UAV SimpleGC/tmp_v04/**/
+!/Multi-UAV SimpleGC/tmp_v04/**/*.py
+!/Multi-UAV SimpleGC/tmp_v04/**/*.ps1
+!/Multi-UAV SimpleGC/tmp_v04/**/*.md
+!/Multi-UAV SimpleGC/tmp_v04/**/*.json
+/Multi-UAV SimpleGC/tmp_v05/**
+!/Multi-UAV SimpleGC/tmp_v05/**/
+!/Multi-UAV SimpleGC/tmp_v05/**/*.py
+!/Multi-UAV SimpleGC/tmp_v05/**/*.ps1
+!/Multi-UAV SimpleGC/tmp_v05/**/*.md
+!/Multi-UAV SimpleGC/tmp_v05/**/*.json
+/Multi-UAV SimpleGC/tmp_v05/**/generated*/
+/Multi-UAV SimpleGC/tmp_v05/**/analysis*/
+/Multi-UAV SimpleGC/tmp_v05/**/execution*/
+/Multi-UAV SimpleGC/tmp_v05/**/runs*/
+/Multi-UAV SimpleGC/tmp_v05/**/dataset*/
+!/Multi-UAV SimpleGC/tmp_v05/dr_v05c/generated_130/
+!/Multi-UAV SimpleGC/tmp_v05/dr_v05c/generated_130/**
+/Multi-UAV SimpleGC/ArducopterSITL/**/eeprom.bin
+/Multi-UAV SimpleGC/ArducopterSITL/**/logs/
+/Multi-UAV SimpleGC/ArducopterSITL/**/terrain/
+/SimpleGC/ArducopterSITL/**/eeprom.bin
+/SimpleGC/ArducopterSITL/**/logs/
+/SimpleGC/ArducopterSITL/**/terrain/
+/Multi-UAV SimpleGC/ArducopterSITL/*.mp4
+/SimpleGC/ArducopterSITL/*.mp4
+/Multi-UAV SimpleGC/audit_v04/tmp/
 
-# Local SITL evidence and scratch recomputations. Referenced review artifacts
-# are intentionally committed as explicit exceptions.
-Multi-UAV SimpleGC/tmp_v04/
-Multi-UAV SimpleGC/audit_v04/tmp/
-Multi-UAV SimpleGC/runs/spike_v04_*/
-Multi-UAV SimpleGC/verification/v04_*/
-Multi-UAV SimpleGC/LLM Chat/
+# Additional historical artifacts omitted from the publication.
+/Multi-UAV SimpleGC/tmp_v04/v06_20261002/arrival_brake_diagnostic.json
+/Multi-UAV SimpleGC/verification/replay_gui_v01/plan_preview.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01/replay_2.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01/replay_3.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01/replay_6.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01/replay_failed.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_final/plan_preview.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_final/replay_2.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_final/replay_3.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_final/replay_6.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_final/replay_failed.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_verified/plan_preview.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_verified/replay_2.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_verified/replay_3.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_verified/replay_6.png
+/Multi-UAV SimpleGC/verification/replay_gui_v01_verified/replay_failed.png
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_01/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_02/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_02/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/7955ca8003e7428a94fb1c811f8ce982/recon_0001_v00_20260930T153848Z_46d1aaa3/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_02/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_03/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_04/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_04/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_04/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_05/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_05/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_05/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_06/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_06/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/8d19a79c53b74646b3a96d550144e123/recon_0002_v00_20260930T154116Z_ed102766/sitl/uav_06/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_01/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_01/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_02/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_03/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_03/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_04/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_04/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_04/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_04/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_05/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_05/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_05/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_05/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_06/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_06/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_06/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_20260930/attempts/c3702ec934c44ac6b12e58d619134d58/recon_0000_v00_20260930T153623Z_af3f4fcd/sitl/uav_06/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_01/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_02/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_03/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/24de244719f8450785c3a3a992ab326d/recon_0004_v00_20260930T155457Z_200822e7/sitl/uav_03/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_01/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_01/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_02/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/39ac9d85ec84461da28e9de6ebc9677d/recon_0008_v00_20260930T160457Z_bcd46846/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_01/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_01/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_02/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_03/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_03/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_04/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_04/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_04/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_04/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_05/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_05/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_05/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_05/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_06/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_06/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_06/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/3e1a733be4994cd6a378a790557fd4d2/recon_0003_v00_20260930T155237Z_12275488/sitl/uav_06/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_02/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/4f28d2ef58014c6fb175b74bdaeadb18/recon_0009_v00_20260930T160719Z_a58405a9/sitl/uav_03/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_01/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_01/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_02/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_03/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/83df2e62783a4f8a8e0a0a40e6f130e7/recon_0007_v00_20260930T160246Z_f7b6895d/sitl/uav_03/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_02/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_03/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_04/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_04/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_04/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_05/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_05/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_05/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_06/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_06/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/aa6d8b9ca4384508b4fa2fd382caddc4/recon_0005_v00_20260930T155726Z_bd656d6a/sitl/uav_06/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_01/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_01/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_01/terrain/N29E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_01/terrain/N29E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_02/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_02/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_02/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_02/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_03/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_03/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_03/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_03/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_04/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_04/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_04/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_04/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_05/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_05/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_05/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_05/terrain/N30E120.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_06/defaults.parm
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_06/logs/LASTLOG.TXT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_06/terrain/N30E119.DAT
+/Multi-UAV SimpleGC/verification/v03_pilot_remaining_20260930/attempts/ee92a36219d8475f8f67bd31c4511cee/recon_0006_v00_20260930T160032Z_3eb54ff1/sitl/uav_06/terrain/N30E120.DAT
+
+# Explicit retained historical inputs and review summaries.
+!/SimpleGC/
+!/SimpleGC/ArducopterSITL/
+!/SimpleGC/ArducopterSITL/swarm/
+!/SimpleGC/ArducopterSITL/swarm/1/
+!/SimpleGC/ArducopterSITL/swarm/2/
+!/SimpleGC/ArducopterSITL/swarm/3/
+!/SimpleGC/ArducopterSITL/swarm/4/
+!/SimpleGC/ArducopterSITL/swarm/5/
+!/SimpleGC/ArducopterSITL/swarm/1/logs/
+!/SimpleGC/ArducopterSITL/swarm/1/terrain/
+!/SimpleGC/ArducopterSITL/swarm/2/terrain/
+!/SimpleGC/ArducopterSITL/swarm/3/terrain/
+!/SimpleGC/ArducopterSITL/swarm/4/terrain/
+!/SimpleGC/ArducopterSITL/swarm/5/terrain/
+!/SimpleGC/ArducopterSITL/swarm/1/logs/LASTLOG.TXT
+!/SimpleGC/ArducopterSITL/swarm/1/terrain/N37E122.DAT
+!/SimpleGC/ArducopterSITL/swarm/1/terrain/N39E116.DAT
+!/SimpleGC/ArducopterSITL/swarm/2/terrain/N37E122.DAT
+!/SimpleGC/ArducopterSITL/swarm/2/terrain/N39E116.DAT
+!/SimpleGC/ArducopterSITL/swarm/3/terrain/N37E122.DAT
+!/SimpleGC/ArducopterSITL/swarm/3/terrain/N39E116.DAT
+!/SimpleGC/ArducopterSITL/swarm/4/terrain/N37E122.DAT
+!/SimpleGC/ArducopterSITL/swarm/4/terrain/N39E116.DAT
+!/SimpleGC/ArducopterSITL/swarm/5/terrain/N37E122.DAT
+!/SimpleGC/ArducopterSITL/swarm/5/terrain/N39E116.DAT
+
+# Exclude artifacts in traversable exception parents.
+/SimpleGC/ArducopterSITL/swarm/1/logs/00000001.BIN
+/SimpleGC/ArducopterSITL/swarm/1/logs/00000002.BIN
+/SimpleGC/ArducopterSITL/swarm/1/logs/00000003.BIN
+/SimpleGC/ArducopterSITL/swarm/1/logs/00000004.BIN
+
+# Runtime dependency: exact WP-S baseline files; all other run data stays local.
+!/Multi-UAV SimpleGC/runs/
+/Multi-UAV SimpleGC/runs/*
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153235Z_5eddb7ae/
+/Multi-UAV SimpleGC/runs/spike_v04_20261001T153235Z_5eddb7ae/*
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153235Z_5eddb7ae/spike_metrics.json
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153235Z_5eddb7ae/metadata.json
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153235Z_5eddb7ae/firmware_parameters.json
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153806Z_42150c31/
+/Multi-UAV SimpleGC/runs/spike_v04_20261001T153806Z_42150c31/*
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153806Z_42150c31/spike_metrics.json
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153806Z_42150c31/metadata.json
+!/Multi-UAV SimpleGC/runs/spike_v04_20261001T153806Z_42150c31/firmware_parameters.json

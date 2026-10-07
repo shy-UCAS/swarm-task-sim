@@ -13,7 +13,7 @@ from pathlib import Path
 
 from .episode_loader import load_episode
 from .generation import file_hash
-from .protocol import V05_SEMANTIC_VERSION
+from .protocol import V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION
 from .recording import write_json
 
 
@@ -58,7 +58,8 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
         raise ValueError("dataset_manifest.json is required")
     manifest_hash = file_hash(manifest_path)
     manifest = _read_json(manifest_path)
-    if manifest.get("semantic_protocol", {}).get("semantic_validation_version") != V05_SEMANTIC_VERSION:
+    semantic_version = manifest.get("semantic_protocol", {}).get("semantic_validation_version")
+    if semantic_version not in (V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION):
         raise ValueError("zh_v0 descriptions require the v0.5 multi-intent semantic protocol")
     entries = manifest.get("episodes")
     if not isinstance(entries, list) or not entries:
@@ -83,7 +84,7 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
         seen_ids.add(run_id)
         loaded = load_episode(episode, verify_hashes=True)
         metadata = loaded["metadata"]
-        if (metadata.get("semantic_validation_version") != V05_SEMANTIC_VERSION
+        if (metadata.get("semantic_validation_version") != semantic_version
                 or metadata.get("episode_quality_eligible") is not entry.get("episode_quality_eligible")
                 or metadata.get("semantic_consistency") != entry.get("semantic_consistency")):
             raise ValueError("dataset episode eligibility or protocol disagrees with manifest")
@@ -130,6 +131,7 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
     hashes[description_path.name] = file_hash(description_path)
     result = dict(schema_version=1, language_version=DESCRIPTION_VERSION,
         templates_version=TEMPLATES_VERSION, facts_version="observer_facts_v0",
+        semantic_validation_version=semantic_version,
         dataset_manifest_sha256=manifest_hash, dataset_directory=str(root),
         input_episodes=len(entries), eligible_agree_episodes=len(facts_by_episode),
         skipped_episodes=len(skipped), descriptions=len(all_descriptions),

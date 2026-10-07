@@ -1,0 +1,144 @@
+{
+  "execution_phases": {
+    "p00_approach": {
+      "agents": {
+        "uav_01": {
+          "partition_id": "R1_strip_02",
+          "role": "approach",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": -12.087627860888038,
+            "north_m": -36.65336960541612,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": -11.413689988206478,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        },
+        "uav_02": {
+          "partition_id": "R1_strip_03",
+          "role": "approach",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": -1.3373017366219884,
+            "north_m": -37.057159577107505,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 0.6274117433035022,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        },
+        "uav_03": {
+          "partition_id": "R1_strip_01",
+          "role": "approach",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": -22.837953985154087,
+            "north_m": -36.24957963372473,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": -23.45479171971646,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        }
+      },
+      "semantic_phase": "approach"
+    },
+    "p01_observe": {
+      "agents": {
+        "uav_01": {
+          "partition_id": "R1_strip_02",
+          "role": "observe",
+          "service_enabled": true,
+          "start_point": {
+            "east_m": -11.413689988206478,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": -2.382863689573993,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "uav_02": {
+          "partition_id": "R1_strip_03",
+          "role": "observe",
+          "service_enabled": true,
+          "start_point": {
+            "east_m": 0.6274117433035022,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 9.658238041935986,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "uav_03": {
+          "partition_id": "R1_strip_01",
+          "role": "observe",
+          "service_enabled": true,
+          "start_point": {
+            "east_m": -23.45479171971646,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": -14.423965421083974,
+            "north_m": -26.5508859766313,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      },
+      "semantic_phase": "observe"
+    }
+  },
+  "service_activation": "registered service phases and nonempty routes only; no-op disabled",
+  "version": "semantic_route_plan_v1",
+  "window_source": "execution_events + trajectory_arrival + compiled_semantic_plan",
+  "zero_length_epsilon_m": 0.05
+}

@@ -1,6 +1,6 @@
 # v0.5 最小双意图数据契约（`data_contract_v0`）
 
-本契约适用于 v0.5 修订版 r1、r1.1 及 [r1.2 验收分级补充](v0.5_r1.2_addendum.md)下生成的侦察、巡逻 `mission_v3` 数据集和独立的 `language_zh_v0` 描述层。r1.1 新增 `random_spawn_v2` 与 `dual_intent_v05b`；[v05c 续补](v0.5_r1.1_v05c_addendum.md)仅在该采样器中增加固定初始航向策略。原 `dual_intent_v05`、`dual_intent_v05b`、`dual_intent_v05c` profile、DR、诊断、VP1 原始运行/分析及其 r1 FAIL 判定作为独立档案保留，不覆盖或改写；r1.2 重分析与新判定另存。数据集的单位是完整 episode；描述层只引用已经导出的、经过哈希核对的 episode。本文规定算法侧能使用的输入、监督标签、划分和版本核对，不把验证器或规划器的内部证据混入模型输入。
+本契约适用于 v0.5 修订版 r1、r1.1 及 [r1.2/r1.2a/r1.2b 补充](v0.5_r1.2_addendum.md)下生成的侦察、巡逻 `mission_v3` 数据集和独立的 `language_zh_v0` 描述层。r1.1 新增 `random_spawn_v2` 与 `dual_intent_v05b`；[v05c 续补](v0.5_r1.1_v05c_addendum.md)仅在该采样器中增加固定初始航向策略。原 `dual_intent_v05`、`dual_intent_v05b`、`dual_intent_v05c` profile、DR、诊断、VP1 原始运行/分析及其 r1 FAIL 判定作为独立档案保留，不覆盖或改写；PP08 原运行、两版分析和原停止判定也保留，后续重分析与新判定另存。数据集的单位是完整 episode；描述层只引用已经导出的、经过哈希核对的 episode。本文规定算法侧能使用的输入、监督标签、划分和版本核对，不把验证器或规划器的内部证据混入模型输入。
 
 ## 1. 模型输入
 
@@ -14,7 +14,7 @@ v05c 的 `heading_policy="fixed_zero"` 使所有飞机的初始航向为 \(0^\ci
 
 ## 2. 标签与监督对象
 
-`labels.json` 给出 episode 级指定意图（`reconnaissance` / `patrol`）、任务结果、SIM/FCU 双通道语义指标与一致性，`label_provenance.validator_versions` 记录意图验证器版本。`observer_facts_v0` 将这些整理为 `labels.assigned_intent`、`labels.return_required` 和 `labels.mission_result`；后者保留 `success` 及各子条件，例如侦察的覆盖/返航，巡逻的经过次数、最大重访间隔/返航。**任务成功与否是单独的结果标签，不能由样本是否质量合格推断。**失败 episode 只要质量合格、双通道语义一致，仍可有描述。
+`labels.json` 给出 episode 级指定意图（`reconnaissance` / `patrol`）、任务结果、SIM/FCU 双通道语义指标与一致性，`label_provenance.validator_versions` 记录意图验证器版本。`observer_facts_v0` 将这些整理为 `labels.assigned_intent`、`labels.return_required` 和 `labels.mission_result`；后者保留 `success` 及各有效子条件，例如侦察的覆盖/返航，巡逻 `perimeter_revisit_v2` 的最大重访间隔/返航。v2 中每段经过次数照常计算输出，只作记录，不参与成功判定；每段经过次数不少于 \(K\times N\) 的条件以及据此生成的失败句型停用。旧 `perimeter_revisit_v1` 分析保留原子条件和原判定，不能静默按 v2 解释。**任务成功与否是单独的结果标签，不能由样本是否质量合格推断。**失败 episode 只要质量合格、双通道语义一致，仍可有描述。
 
 `phase_windows.json` 的逐机阶段窗口只作标签或离线分析，不是轨迹输入。描述层的 `segments` 是群体阶段段落，起止时间由各机 `start_s`、`arrival_s` 的中位数汇总，并带 `boundary_source`；`events` 可记录 `first_boundary_coverage`、`first_complete_lap` 等已验证时刻。阶段和事件均是监督/解释字段，不能作为模型输入。约 1 秒的阶段边界精度以及 `arrival_s` 的兜底来源需随证据一起解释，不能把边界写成精确模式切换时刻。
 
@@ -81,13 +81,15 @@ v05c 的 `heading_policy="fixed_zero"` 使所有飞机的初始航向为 \(0^\ci
 
 意图样本以 `episode_quality_eligible` 为质量门槛，不能用 `mission_success` 取代它；任务成功率在质量合格样本中按 `mission_success` 单独统计。描述层再要求 `semantic_consistency="agree"`。应分别公布全部 episode、质量合格 episode、质量合格且语义一致 episode、描述成功和跳过数，不能把缺失/不一致的事实或未知时钟解释成通过。失败任务不得自动被丢弃或被写成另一子条件失败。
 
-r1.2 将验收分为硬、软两类，适用于验证、试生产和批量。参数与固件、机载任务参数、受保护文件哈希、真值最小机间距低于 `min_separation_m`、零长度航段，以及完整证据证明巡逻圈数不等于计划 \(K\)，仍为硬门禁；验证运行任一通道任务失败或语义不一致也为硬门禁。AV-1、AV-2、AC4 的 \(D>\tau\) 或 \(D\) 不可计算、圈数为 `null` 仅标记并报告，均不停止且不影响 `episode_quality_eligible`。未知仍不可宣称通过。SITL 不模拟机体碰撞，机间安全通过真值间距直接判断；\(D\) 是规划时序假设的诊断指标。质量合格率、磁盘空间、基础设施故障的原停止条件保留；未分类异常若影响或无法判断是否影响轨迹、标签或描述正确性，立即停止，参数差异一律视为影响。
+r1.2 已完成验证及 PP01–PP08 所用的历史策略 `v05_acceptance_r1_2` 分为硬、软两类：参数与固件、机载任务参数、受保护文件哈希、真值最小机间距低于 `min_separation_m`、零长度航段，以及完整证据证明巡逻圈数不等于计划 \(K\)，为硬门禁；验证运行任一通道任务失败或语义不一致也为硬门禁；未分类异常影响或无法判断是否影响数据、标签、描述正确性时停止。该历史策略与原判定保持不变。AV-1、AV-2、AC4 的 \(D>\tau\) 或 \(D\) 不可计算、圈数为 `null` 仅标记并报告，不影响 `episode_quality_eligible`，未知不可宣称通过。SITL 不模拟机体碰撞，机间安全通过真值间距直接判断；\(D\) 是规划时序假设的诊断指标。
 
-软门禁标记位于分析/episode 质量附件 `quality.json.validation_policy.soft_flags`，与 `validation_policy.version="v05_acceptance_r1_2"`、`stage`、`hard_checks`、`hard_failures`、`individual_pass`、`episode_quality_eligible` 一起保存。各标记含 `code`、`status`、`channel`、`phase`、`agent_id`、`value`、`threshold`、`reason`，AC4 的 `source` 区分主值/事件交叉核对；只列触发或未知项，原数值与完整证据仍在相应 AC4、执行指标附件。`external_checks_required` 明列须由控制台账核对的受保护文件、冻结输入/固件身份、基础设施与磁盘，不能以分析层通过代替。此质量附件由 manifest 哈希绑定。`individual_pass` 是阶段验收结果，不能替代任务标签或质量资格。质量与诊断字段不属于模型输入。汇总应按意图/阶段给出分布、已知/未知数量与分母。
+从 PP09 起至批量结束采用 [r1.2b 当前有效规则](v0.5_当前有效规则.md)：单次仅参数与固件、机载任务参数、受保护哈希、真值机间距、基础设施故障或磁盘不足可停止；任务失败、标签不一致、圈数不符等语义结果、episode 质量不合格和新异常保留标记，不逐次停止。整体唯一停止条件是本阶段最近至多 20 次运行中，异常运行达到 5 次；异常定义为任务失败、标签不一致、episode 质量不合格三者的逻辑或，同一运行触发多项只计 1 次。未满 20 次用已有全部；试生产 PP09 起计、不纳入 PP01–PP08，批量重新计，两阶段互不累计。当前接续授权要求以新版本控制器和独立台账实施该规则，并执行至暂停 1；旧 `v05_acceptance_r1_2` 及其判定保持不变，不能静默解释为新策略。最终试生产/批量验收及质量资格计算照常执行，软标记不得直接改变质量资格。
+
+已携带 r1.2 策略的分析/episode，其软门禁标记位于质量附件 `quality.json.validation_policy.soft_flags`，与 `validation_policy.version="v05_acceptance_r1_2"`、`stage`、`hard_checks`、`hard_failures`、`individual_pass`、`episode_quality_eligible` 一起保存。各标记含 `code`、`status`、`channel`、`phase`、`agent_id`、`value`、`threshold`、`reason`，AC4 的 `source` 区分主值/事件交叉核对；只列触发或未知项，原数值与完整证据仍在相应 AC4、执行指标附件。`external_checks_required` 明列须由控制台账核对的受保护文件、冻结输入/固件身份、基础设施与磁盘，不能以分析层通过代替。此质量附件由 manifest 哈希绑定。`individual_pass` 是该版本策略的阶段验收结果，不能替代任务标签或质量资格。r1.2b 已完成的 7 次巡逻外部离线分析未传 `acceptance_policy`，因此不附带 `validation_policy`，只给出新语义判定；原软标记仍在各自旧分析中保留，不能把新附件缺少策略误读为“无软标记”或“新门禁通过”。质量与诊断字段不属于模型输入。汇总数字需附分母；暂停 1 软标记按意图汇总，已有阶段分布直接引用。
 
 ## 8. 消费方版本与完整性检查
 
-加载前须核对数据集 `schema_version=2`，episode manifest 的哈希、质量策略指纹 `quality_policy_sha256`，以及数据集与 episode 完全一致的语义协议六字段：`task_kind=mission_v3`、`ontology_version=multi_intent_mission_v1`、`label_schema_version=3`、`semantic_validation_version=multi_intent_validation_v2`、`eligibility_protocol_version=multi_intent_quality_v1`、`execution_constraints_version=multi_intent_execution_limits_v2`。不同协议或质量策略不能默默混合。`load_episode(..., verify_hashes=True)` 执行基础附件和协议校验，但消费方仍须检查其自身所需的事实与描述版本。
+加载前须核对数据集 `schema_version=2`，episode manifest 的哈希、质量策略指纹 `quality_policy_sha256`，以及数据集与 episode 完全一致的语义协议六字段：`task_kind=mission_v3`、`ontology_version=multi_intent_mission_v1`、`label_schema_version=3`、`semantic_validation_version`、`eligibility_protocol_version=multi_intent_quality_v1`、`execution_constraints_version=multi_intent_execution_limits_v2`。`semantic_validation_version` 在显式选择 `perimeter_revisit_v2` 的新分析中为 `multi_intent_validation_v3`，同批侦察也须显式选择相同协议；旧 `multi_intent_validation_v2` 及 `perimeter_revisit_v1` 继续支持并保存原语义。不同统一协议或质量策略不能默默混合导出。`load_episode(..., verify_hashes=True)` 执行基础附件和协议校验，但消费方仍须检查其自身所需的事实与描述版本。续接导出需要显式绑定新的外部分析路径，不能为方便导出而覆盖原分析或修改旧 latest 指针。
 
 v0.5 route 分析还须核对 `observation_processing_version=v3_observation_v1`、`duplicate_policy_version=exact_duplicate_drop_v1`、`timeline_policy_version=full_stream_strict_v1`、`clock_model_version=passive_system_time_piecewise_v1`、`ac4_timing_version=ac4_relative_progress_timing_v3`、`execution_artifacts_version=execution_artifacts_v2`，以及 `labels.json` 的 `label_provenance.validator_versions`。历史 `route_progress_version=ordered_route_progress_v1` 保留；r1.2 新分析明确使用 `ordered_route_progress_v2`，匹配前一节点时刻之后第一次有效经过内最近样本，进入/离开滞回半径为 \(3.0/3.5\,\mathrm{m}\)，不能静默混用 v1/v2 结果。描述消费方另核对 `observer_facts_v0`、`pattern_detector_v0`、`templates_zh_v0`、`language_zh_v0` 和 manifest SHA256；版本变更不能把旧指标或旧描述当作同一口径。
 

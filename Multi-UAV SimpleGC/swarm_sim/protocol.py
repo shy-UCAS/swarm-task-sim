@@ -9,6 +9,7 @@ SHARED_LABEL_SCHEMA_VERSION = 2
 V3_SEMANTIC_VERSION = "multi_intent_validation_v1"
 V3_CONSTRAINT_VERSION = "multi_intent_execution_limits_v1"
 V05_SEMANTIC_VERSION = "multi_intent_validation_v2"
+V05_R12B_SEMANTIC_VERSION = "multi_intent_validation_v3"
 V05_CONSTRAINT_VERSION = "multi_intent_execution_limits_v2"
 V05_ROUTE_PROGRESS_VERSION = "ordered_route_progress_v1"
 V05_AC4_TIMING_VERSION = "ac4_relative_progress_timing_v3"
@@ -31,12 +32,18 @@ def is_v05_task_spec(task):
             isinstance(timing, dict) and "max_s" in timing)
 
 
-def semantic_protocol(scene):
+def semantic_protocol(scene, *, patrol_validator_version="perimeter_revisit_v1"):
+    if patrol_validator_version not in ("perimeter_revisit_v1", "perimeter_revisit_v2"):
+        raise ValueError("unsupported perimeter revisit validator version")
     task = scene.get("task_spec", {})
+    if patrol_validator_version == "perimeter_revisit_v2" and not is_v05_task_spec(task):
+        raise ValueError("perimeter_revisit_v2 requires the v0.5 semantic contract")
     if task.get("schema_version") == 3:
         new_contract = is_v05_task_spec(task)
+        version = (V05_R12B_SEMANTIC_VERSION if patrol_validator_version == "perimeter_revisit_v2"
+                   else V05_SEMANTIC_VERSION if new_contract else V3_SEMANTIC_VERSION)
         return dict(task_kind="mission_v3", ontology_version="multi_intent_mission_v1", label_schema_version=3,
-                    semantic_validation_version=V05_SEMANTIC_VERSION if new_contract else V3_SEMANTIC_VERSION,
+                    semantic_validation_version=version,
                     eligibility_protocol_version="multi_intent_quality_v1",
                     execution_constraints_version=V05_CONSTRAINT_VERSION if new_contract else V3_CONSTRAINT_VERSION)
     if task.get("schema_version") == 2:
@@ -91,10 +98,13 @@ def validate_artifact_protocol(manifest, root):
 
 def supported_protocols():
     """Explicit historical and current contracts; TaskSpec chooses between them."""
-    return {tuple(semantic_protocol(scene)[key] for key in PROTOCOL_FIELDS)
+    historical = {tuple(semantic_protocol(scene)[key] for key in PROTOCOL_FIELDS)
             for scene in ({}, {"task_spec": {"schema_version": 2}},
                           {"task_spec": {"schema_version": 3}},
                           {"task_spec": {"schema_version": 3, "mission": {"intent": "patrol"}}})}
+    current = semantic_protocol({"task_spec": {"schema_version": 3, "mission": {"intent": "patrol"}}},
+                                patrol_validator_version="perimeter_revisit_v2")
+    return historical | {tuple(current[key] for key in PROTOCOL_FIELDS)}
 
 
 def _validate_v3_artifacts(manifest, root, protocol):
@@ -109,7 +119,9 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError(f"semantic protocol artifact is not hashed: {name}")
         files[name] = json.loads((root/name).read_text(encoding="utf-8"))
     labels, quality, task = files["labels.json"], files["quality.json"], files["task.json"]
-    if semantic_protocol({"task_spec": task}) != protocol:
+    patrol_version = ("perimeter_revisit_v2" if protocol["semantic_validation_version"] == V05_R12B_SEMANTIC_VERSION
+                      else "perimeter_revisit_v1")
+    if semantic_protocol({"task_spec": task}, patrol_validator_version=patrol_version) != protocol:
         raise ValueError("v3 TaskSpec semantic protocol mismatch")
     if is_v05_task_spec(task) and task.get("execution", {}).get("control_mode") == "semantic_phase_route_v1":
         required = ("execution_metrics.json", "ac4_timing_v3.json")
@@ -136,7 +148,7 @@ def _validate_v3_artifacts(manifest, root, protocol):
     acceptance_version = manifest.get("acceptance_policy_version")
     if acceptance_version is not None or "validation_policy" in quality:
         assessment = quality.get("validation_policy", {})
-        if (acceptance_version != "v05_acceptance_r1_2"
+        if (acceptance_version not in ("v05_acceptance_r1_2", "v05_acceptance_r1_2b")
                 or quality.get("acceptance_policy_version") != acceptance_version
                 or assessment.get("version") != acceptance_version
                 or manifest.get("route_progress_version") != "ordered_route_progress_v2"
@@ -148,6 +160,18 @@ def _validate_v3_artifacts(manifest, root, protocol):
                 or assessment.get("hard_failures") != [key for key, passed in assessment["hard_checks"].items() if passed is not True]
                 or assessment.get("individual_pass") is not (not assessment.get("hard_failures"))):
             raise ValueError("inconsistent r1.2 acceptance diagnostics")
+        if acceptance_version == "v05_acceptance_r1_2b":
+            reasons = assessment.get("aggregate_anomaly_reasons")
+            if (protocol["semantic_validation_version"] != V05_R12B_SEMANTIC_VERSION
+                    or assessment.get("stage") not in ("pilot", "batch")
+                    or set(assessment.get("hard_checks", {})) !=
+                        {"parameter_firmware", "onboard_mission_parameters", "truth_separation"}
+                    or not isinstance(assessment.get("semantic_flags"), list)
+                    or not isinstance(assessment.get("new_anomalies"), list)
+                    or not isinstance(reasons, list)
+                    or any(not isinstance(reason, str) for reason in reasons)
+                    or assessment.get("aggregate_anomaly") is not bool(reasons)):
+                raise ValueError("inconsistent r1.2b acceptance diagnostics")
     hold_semantics = task.get("execution", {}).get("hold_semantics")
     onboard_name = "onboard_mission_param_check.json"
     if hold_semantics == "integer_seconds_v1" or onboard_name in manifest.get("artifact_sha256", {}):
@@ -188,7 +212,8 @@ def _validate_v3_artifacts(manifest, root, protocol):
                 or any(not finite_number(v) or not 0 <= v <= 1 for v in fractions.values())):
             raise ValueError(f"inconsistent v3 per-agent quality evidence: {key}")
     intent = get_intent(task["mission"]["intent"])
-    validators = {intent.name: intent.validator_version}
+    validator_version = patrol_version if intent.name == "patrol" else intent.validator_version
+    validators = {intent.name: validator_version}
     from .families import scene_family_id
     if (task.get("schema_version") != 3 or task.get("family_scheme") != "scene_content_v1"
             or task.get("family_id") != scene_family_id(task["scenario"])
@@ -202,10 +227,19 @@ def _validate_v3_artifacts(manifest, root, protocol):
             or labels.get("label_provenance", {}).get("semantic_validation_version") != protocol["semantic_validation_version"]
             or labels.get("label_provenance", {}).get("validator_versions") != validators
             or not labels.get("observed_behaviors")
-            or any(b.get("rule_version") != intent.validator_version for b in labels["observed_behaviors"])
+            or any(b.get("rule_version") != validator_version for b in labels["observed_behaviors"])
             or files["semantic_validation.json"].get("semantic_validation_version") != protocol["semantic_validation_version"]
             or files["execution_constraints.json"].get("constraint_validation_version") != protocol["execution_constraints_version"]):
         raise ValueError("inconsistent v3 semantic protocol across analysis artifacts")
+    if intent.name == "patrol" and patrol_version == "perimeter_revisit_v2":
+        semantic = files["semantic_validation.json"]
+        for channel in ("truth", "observation"):
+            metric = labels.get("mission_metrics", {}).get(channel, {}).get("perimeter_revisit", {})
+            if (metric.get("version") != patrol_version or metric.get("visit_count_role") != "diagnostic_only"
+                    or metric.get("success_conditions") != ["max_gap"]
+                    or semantic.get(channel, {}).get("perimeter_revisit") != metric
+                    or set(semantic.get("condition_results", {}).get(channel, {})) != {"max_gap", "return_to_launch"}):
+                raise ValueError("inconsistent perimeter_revisit_v2 diagnostic-only visit counts")
     for artifact in (manifest, quality):
         if any(artifact.get(k) != v for k,v in processing_versions().items()):
             raise ValueError("inconsistent or unsupported v3 observation processing versions")

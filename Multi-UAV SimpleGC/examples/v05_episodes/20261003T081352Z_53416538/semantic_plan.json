@@ -1,0 +1,212 @@
+{
+  "execution_phases": {
+    "p00_approach": {
+      "agents": {
+        "uav_01": {
+          "partition_id": "entry_00",
+          "role": "approach",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": 40.09823609486998,
+            "north_m": 9.318433742467942,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 9.922854879058509,
+            "north_m": 20.761218136788578,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        },
+        "uav_02": {
+          "partition_id": "entry_01",
+          "role": "approach",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": 38.64811948448547,
+            "north_m": -8.586343111113973,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 22.969593282859186,
+            "north_m": -21.73555027524705,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        },
+        "uav_03": {
+          "partition_id": "entry_02",
+          "role": "approach",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": 39.373177789677726,
+            "north_m": 0.3660453156769856,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": -13.250766041314613,
+            "north_m": -11.608667758674615,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        }
+      },
+      "semantic_phase": "approach"
+    },
+    "p01_patrol": {
+      "agents": {
+        "uav_01": {
+          "partition_id": "entry_00",
+          "role": "patrol",
+          "service_enabled": true,
+          "start_point": {
+            "east_m": 9.922854879058509,
+            "north_m": 20.761218136788578,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 9.922854879058509,
+            "north_m": 20.761218136788578,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        "uav_02": {
+          "partition_id": "entry_01",
+          "role": "patrol",
+          "service_enabled": true,
+          "start_point": {
+            "east_m": 22.969593282859186,
+            "north_m": -21.73555027524705,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 22.969593282859186,
+            "north_m": -21.73555027524705,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        "uav_03": {
+          "partition_id": "entry_02",
+          "role": "patrol",
+          "service_enabled": true,
+          "start_point": {
+            "east_m": -13.250766041314613,
+            "north_m": -11.608667758674615,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": -13.250766041314613,
+            "north_m": -11.608667758674615,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        }
+      },
+      "semantic_phase": "patrol"
+    },
+    "p02_return": {
+      "agents": {
+        "uav_01": {
+          "partition_id": "entry_00",
+          "role": "return",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": 9.922854879058509,
+            "north_m": 20.761218136788578,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 40.09823609486998,
+            "north_m": 9.318433742467942,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        },
+        "uav_02": {
+          "partition_id": "entry_01",
+          "role": "return",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": 22.969593282859186,
+            "north_m": -21.73555027524705,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 38.64811948448547,
+            "north_m": -8.586343111113973,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        },
+        "uav_03": {
+          "partition_id": "entry_02",
+          "role": "return",
+          "service_enabled": false,
+          "start_point": {
+            "east_m": -13.250766041314613,
+            "north_m": -11.608667758674615,
+            "up_m": 8.0
+          },
+          "terminal_point": {
+            "east_m": 39.373177789677726,
+            "north_m": 0.3660453156769856,
+            "up_m": 8.0
+          },
+          "waypoint_planner_indices": [
+            0
+          ]
+        }
+      },
+      "semantic_phase": "return"
+    }
+  },
+  "service_activation": "registered service phases and nonempty routes only; no-op disabled",
+  "version": "semantic_route_plan_v1",
+  "window_source": "execution_events + trajectory_arrival + compiled_semantic_plan",
+  "zero_length_epsilon_m": 0.05
+}

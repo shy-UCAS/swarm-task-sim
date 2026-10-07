@@ -263,9 +263,11 @@ def plan_routes(spec):
     return PlanResult(horizontal_routes, assignments, diagnostics)
 
 
-def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version="ordered_route_progress_v1"):
+def evaluate_channel(scene, traces, windows, clocks, *, progress_mapping_version="ordered_route_progress_v1",
+                     validator_version=VALIDATOR_VERSION):
     from .patrol_validation import evaluate_channel as implementation
-    return implementation(scene, traces, windows, clocks, progress_mapping_version=progress_mapping_version)
+    return implementation(scene, traces, windows, clocks, progress_mapping_version=progress_mapping_version,
+                          validator_version=validator_version)
 
 
 def behavior_labels(scene, truth):
