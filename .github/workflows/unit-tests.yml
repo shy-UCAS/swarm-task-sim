@@ -38,7 +38,8 @@ jobs:
             'test_quality', 'test_observation_processing_v3',
             'test_public_scene', 'test_dataset_audit_v3', 'test_protocol_v3',
             'test_wp_l_templates', 'test_wp_l_facts', 'test_mission_data',
-            'test_mission_evaluation', 'test_execution_metrics', 'test_route_timing'
+            'test_mission_evaluation', 'test_execution_metrics', 'test_route_timing',
+            'test_run_provenance', 'test_publication_runtime'
           )
           python -m unittest -v @modules
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
