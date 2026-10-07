@@ -14,11 +14,11 @@
 | v0.3–v0.4 | 共享区域分工、TaskSpec、连续航线、family 划分、双通道验证、执行诊断及离线回放 | 作为现有框架基础；旧报告是对应阶段记录 |
 | v0.5 | 侦察与边界巡逻双意图；验证、20 次试生产、240 次批量运行；导出、审计、描述、加载验收 | 已完成，停在暂停 2，已冻结 |
 | Git 发布与迁移 | 精简代码发布，补齐运行基线，独立目录验证，PR 合并及建立新开发目录 | 已完成；[PR #1](https://github.com/shy-UCAS/swarm-task-sim/pull/1) |
-| v0.6 | 分片功能已通过暂停 1 复核；意图模块化已取消，保留截断诊断与完整 DR130 金标准 | 4 样本、7 个截断案例通过；PP20+B240 任务/规划核对一致；[检查报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_prechecks.md)、[快速通过纸面核对](Multi-UAV%20SimpleGC/docs/v0.6_rapid_passage_review.md)；未运行仿真 |
+| v0.6 | 分片功能已通过暂停 1 复核；意图模块化已取消；20 任务、2 路 pilot 已准备 | 截断诊断及 DR130 金标准复核通过；[检查报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_prechecks.md)、[快速通过纸面核对](Multi-UAV%20SimpleGC/docs/v0.6_rapid_passage_review.md)；本轮仅 prepare，尚未启动仿真；[手动运行命令](Multi-UAV%20SimpleGC/docs/v0.6_pilot_run_commands.md) |
 
 v0.6 暂停 1：新增测试 63/63、CI 离线清单 204/204 通过；全量 721/726 通过，5 项历史证据依赖错误在原始基线复现。文件行数、八类测试、未解决项及数据目录示例见 [暂停 1 报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pause1_report.md)。
 
-后续状态：分片暂停 1 已复核通过，补充测试后并行测试 65/65 通过，分支已备份。r1 摸底停止结论保留于[历史报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_stop_report.md)；r2 截断诊断与 DR130 金标准已在 `8369df9` 独立提交。用户随后取消意图模块化，未提交的运行代码改动已全部撤回；本轮仅保留检查结果、哈希夹具及快速通过纸面核对。40 任务、2 路并行、新主种子 pilot 尚未执行，后续安排等待用户指令。
+后续状态：分片暂停 1 已复核通过，补充测试后并行测试 65/65 通过。r1 摸底停止结论保留于[历史报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_stop_report.md)；r2 诊断与 DR130 金标准在 `8369df9` 独立提交并已复核通过，[诊断脚本及摘要](Multi-UAV%20SimpleGC/verification/v06_prechecks_20261007/README.md)在 `21f427a` 归档。意图模块化已取消，运行代码与 `fe7ac4d` 一致。用户将试跑改为 **10 family、20 任务、2 路、新种子 `2026100701`**；已在 `F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData` prepare 批次 `v06_pilot20_20261007_seed2026100701`，尝试数为 0。用户在自己的 PowerShell 终端启动并收尾，助手仅准备和事后分析，不监视运行。
 
 v0.5 的最终计数如下，**260 次只包含试生产与正式批量，不包含更早的开发/验证运行**：
 
@@ -190,7 +190,7 @@ conda run -n $EnvName --no-capture-output python main.py validate tests/.tmp/rea
 
 > 请先读仓库根目录 README.md，核对当前 Git 分支/提交，并恢复工程上下文。说明 v0.5 已完成哪些工作、当前框架能做什么、新开发仓库与旧冻结归档各包含哪些内容。按需要读取最终报告和有效规则，区分旧阶段指令与当前任务。先汇报恢复结果，不自动启动仿真、批量生成或改写旧证据。
 
-当前没有待执行的 v0.5 生产任务。v0.6 分片暂停 1 已通过复核；意图模块化已按用户调整取消。本轮完成截断诊断、260 任务金标准及快速通过纸面核对后停止。后续是否开展 40 任务、2 路并行、新主种子 pilot，等待用户指令；不自动进入试跑或正式生产。
+当前没有待执行的 v0.5 生产任务。v0.6 意图模块化已取消；本轮只准备 20 任务、2 路 pilot，准备检查见[机器摘要](Multi-UAV%20SimpleGC/docs/v0.6_pilot_preparation_check.json)。按[手动运行命令](Multi-UAV%20SimpleGC/docs/v0.6_pilot_run_commands.md)由用户启动 run 和 finalize；助手完成准备后停止，不启动仿真、不监视运行，收到用户后续指令再做事后分析。
 
 后续里程碑完成、规则改变或目录迁移时，同步更新本文件中的状态、计数、验证范围和证据入口。完整变更历史保留在 Git 和对应报告中，避免只有某个聊天窗口知道项目进展。
 
