@@ -89,7 +89,7 @@ class ParallelFinalizeTests(unittest.TestCase):
             recorded = batch.read(attempt_ledger)
             self.assertEqual([m["mission_id"] for m in recorded["missions"]], ["m0", "m1"])
             self.assertEqual(recorded["missions"][0]["attempts"][0]["run_status"], "failed")
-            return dict(issues=[])
+            return dict(issues=["nonblocking diagnostic"], family_split_leaks={})
 
         def describe(dataset, language):
             events.append("describe")
@@ -122,6 +122,27 @@ class ParallelFinalizeTests(unittest.TestCase):
         self.assertTrue(batch.read(self.root / "control.json")["finalized"])
         diagnostics.assert_called_once()
         self.assertEqual(report["patrol_timing"], {"groups": []})
+        self.assertEqual(report["audit_issues"], ["nonblocking diagnostic"])
+
+    def test_family_split_leakage_stops_finalization_before_descriptions_and_keeps_audit(self):
+        plan, state = self.mock_batch()
+        stack = self.finalizer_inputs(plan)
+        stack.enter_context(patch.object(batch, "_default_verifier", side_effect=lambda p, a, r: r))
+        manifest = dict(episodes=[dict(run_id=a["result"]["run_id"], directory=f"episodes/r{i}",
+            split=plan["tasks"][i]["split"]) for i, a in enumerate(state["attempts"])])
+        stack.enter_context(patch("swarm_sim.dataset.build_dataset", return_value=manifest))
+        audit = dict(issues=["family appears in train and test"], family_split_leaks={"shared_family": ["train", "test"]})
+        stack.enter_context(patch("swarm_sim.dataset_audit.audit_dataset", return_value=audit))
+        language = stack.enter_context(patch("swarm_sim.language_v0.describe_dataset"))
+        with self.assertRaisesRegex(ValueError, "family split leakage"):
+            batch.finalize(self.root)
+        language.assert_not_called()
+        self.assertEqual(batch.read(self.root / "dataset_audit.json"), audit)
+        stopped = batch.read(self.root / "control.json")
+        self.assertFalse(stopped["finalized"])
+        self.assertIn("P0 family split leakage", stopped["stopped_reason"])
+        self.assertIn("invalidating generalization results", batch.read(self.root / "stop_report.json")["research_impact"])
+        self.assertFalse((self.root / "final_report.json").exists())
 
     def test_missing_task_refuses_merge_before_any_export(self):
         plan, state = self.mock_batch()

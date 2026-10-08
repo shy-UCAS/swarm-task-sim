@@ -8,10 +8,13 @@ import json
 import os
 import re
 import shutil
+import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -193,6 +196,12 @@ def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_atte
     root.mkdir(parents=True, exist_ok=False)
     try:
         generate(profile, root / "bundle")
+        generated_listing = read(root / "bundle/mission_list.json")
+        rejected_missions = [entry for entry in generated_listing["missions"]
+                             if entry.get("status") != "planned"]
+        if rejected_missions:
+            raise ValueError(f"generation contains {len(rejected_missions)} rejected missions; "
+                             "review infeasible flight patterns before preparing a runnable batch")
         listing, manifest = verify_generation(root / "bundle/mission_list.json")
         if any(b.get("status") != "accepted" for b in manifest["bases"]):
             raise ValueError("generation contains rejected families; full task coverage is required")
@@ -273,10 +282,12 @@ def disk_status(plan, attempts_used):
 def new_state(plan):
     return dict(version=VERSION, plan_sha256=canonical_hash(plan), attempts=[], completion_order=[],
                 stopped_reason=None, stop_attempt_id=None, completed=False, finalized=False,
+                paused=False, status="ready",
                 rolling=assess_recent_runs([], stage="batch"))
 
 
 def _stop(state, reason, attempt_id=None):
+    state.update(paused=False, status="stopped")
     events = state.setdefault("stop_events", [])
     if not any(e["reason"] == reason and e["attempt_id"] == attempt_id for e in events):
         events.append(dict(reason=reason, attempt_id=attempt_id, utc=utc()))
@@ -295,6 +306,8 @@ def register_completion(state, attempt, result):
     attempt.update(status="finished", result=copy.deepcopy(result),
                    completion_seq=len(state["completion_order"])+1,
                    finished_utc=utc(), completed_after_stop=bool(state["stopped_reason"]))
+    if state.get("paused"):
+        attempt["completed_after_pause"] = True
     state["completion_order"].append(attempt["attempt_id"])
     ordered = sorted((a for a in state["attempts"] if a.get("completion_seq")),
                      key=lambda a: a["completion_seq"])
@@ -323,7 +336,9 @@ def _save_state(root, state):
             rolling=state["rolling"],
             draining_attempts=[a["attempt_id"] for a in state["attempts"] if a["status"] != "finished"],
             completed_after_stop=[a["attempt_id"] for a in state["attempts"] if a.get("completed_after_stop")],
-            research_impact="Unverified or interrupted evidence cannot support reproducible task outcomes; preserve all attempts for review."))
+            research_impact=("A family appears in multiple data splits, leaking shared scenes into held-out evaluation and invalidating generalization results."
+                if "family split leakage" in state["stopped_reason"] else
+                "Unverified or interrupted evidence cannot support reproducible task outcomes; preserve all attempts for review.")))
 
 
 def _next_task(plan, state, shard_id):
@@ -407,6 +422,37 @@ class Controller:
         self.launcher = launcher or self._launch
         self.verifier = verifier or _default_verifier
         self.processes = {}
+        self.pause_requested = False
+
+    @contextmanager
+    def _pause_signals(self):
+        """Ctrl+C requests a pause without interrupting reservation/Popen/commit.
+
+        Workers own independent process groups. Keep this handler installed
+        while they drain so repeated Ctrl+C cannot kill an in-flight task or
+        interrupt an atomic controller write.
+        """
+        active = threading.current_thread() is threading.main_thread()
+        previous = signal.getsignal(signal.SIGINT) if active else None
+
+        def request_pause(signum, frame):
+            self.pause_requested = True
+
+        if active:
+            signal.signal(signal.SIGINT, request_pause)
+        try:
+            yield
+        finally:
+            if active:
+                signal.signal(signal.SIGINT, previous)
+
+    def _apply_pause(self, state):
+        if self.pause_requested and not state["stopped_reason"] and not state.get("paused"):
+            stamp = utc()
+            state.update(paused=True, status="paused", paused_utc=stamp)
+            state.setdefault("pause_events", []).append(dict(utc=stamp,
+                reserved_attempt_count=len(state["attempts"]),
+                registered_completion_count=len(state["completion_order"])))
 
     def _persist(self, state):
         try:
@@ -477,17 +523,26 @@ class Controller:
         _save_state(self.root, state)
 
     def run(self, resume=False, poll_seconds=0.2):
-        with FileLock(self.root / "controller.lock"):
+        self.pause_requested = False
+        with FileLock(self.root / "controller.lock"), self._pause_signals():
             state = read(self.root / "control.json")
             _validate_state(self.plan, state)
+            if resume and state["stopped_reason"]:
+                raise ValueError("rule-stopped batch cannot resume; stop evidence is immutable")
             if state["attempts"] and not resume:
                 raise ValueError("existing attempts require explicit --resume; no automatic reflight")
+            if state.get("paused") and not resume:
+                raise ValueError("paused batch requires explicit --resume")
             if state["finalized"]:
                 raise ValueError("batch already finalized")
             try:
                 integrity(self.plan)
                 if resume:
                     self._recover(state)
+                    if not state["stopped_reason"] and state.get("paused"):
+                        state.update(paused=False, resumed_utc=utc())
+                if not state["stopped_reason"]:
+                    state["status"] = "running"
                 finished = sum(a["status"] == "finished" for a in state["attempts"])
                 state["disk_check"] = disk_status(self.plan, finished)
                 probe_ports(self.plan["ports"])
@@ -497,6 +552,7 @@ class Controller:
                 return state
             while True:
                 try:
+                    self._apply_pause(state)
                     # Consume finished workers before another dispatch; completion_seq is
                     # assigned here, never from a worker's UTC timestamp or exit code.
                     for attempt_id, process in list(self.processes.items()):
@@ -508,10 +564,14 @@ class Controller:
                                 _stop(state, f"completion registration failed: {type(exc).__name__}: {exc}", attempt_id)
                             finally:
                                 del self.processes[attempt_id]
-                    if not state["stopped_reason"]:
+                    self._apply_pause(state)
+                    if not state["stopped_reason"] and not state.get("paused"):
                         try:
                             integrity(self.plan)
                             for k in range(self.plan["shards"]):
+                                self._apply_pause(state)
+                                if state.get("paused"):
+                                    break
                                 if any(a["shard_id"] == k and a["attempt_id"] in self.processes for a in state["attempts"]):
                                     continue
                                 selection = _next_task(self.plan, state, k)
@@ -533,6 +593,7 @@ class Controller:
                                 state["attempts"].append(attempt)
                                 _save_state(self.root, state)  # Reserve global budget before Popen.
                                 self.processes[attempt_id] = self.launcher(self.plan, attempt)
+                                self._apply_pause(state)
                         except Exception as exc:
                             _stop(state, f"dispatch infrastructure: {type(exc).__name__}: {exc}")
                     if not self.processes:
@@ -542,12 +603,19 @@ class Controller:
                             _stop(state, f"final integrity: {type(exc).__name__}: {exc}")
                         state["completed"] = (not state["stopped_reason"] and
                             all(_next_task(self.plan, state, k) is None for k in range(self.plan["shards"])))
+                        if state["completed"]:
+                            state.update(paused=False, status="completed")
+                        else:
+                            self._apply_pause(state)
                         self._persist(state)
                         return state
                     self._persist(state)
                     time.sleep(poll_seconds)
                 except KeyboardInterrupt:
-                    _stop(state, "controller interrupted; dispatch stopped, active workers draining")
+                    # Also handle injected/embedded KeyboardInterrupt safely at
+                    # loop boundaries; native SIGINT uses the non-raising handler.
+                    self.pause_requested = True
+                    self._apply_pause(state)
                     self._persist(state)
 
 
@@ -634,6 +702,9 @@ def finalize(root):
             audit = audit_dataset(dataset, generation_manifest=Path(plan["bundle"]) / "generation_manifest.json",
                                   attempt_ledger=audit_ledger)
             save_atomic(root / "dataset_audit.json", audit)
+            if audit.get("family_split_leaks"):
+                _stop(state, "P0 family split leakage invalidates held-out evaluation; see dataset_audit.json")
+                raise ValueError("family split leakage: finalization refused")
             describe_dataset(dataset, language)
             descriptions = _description_gate(dataset, language)
             if not descriptions["consistency_pass"]:

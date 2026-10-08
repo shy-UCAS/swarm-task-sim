@@ -93,17 +93,22 @@ def execute_phases(scenario, clients, parallel, event, metadata, epoch, deadline
             if "flight_epoch_monotonic_s" not in metadata:
                 metadata["flight_epoch_monotonic_s"] = release
             timing["release_monotonic_s"] = release
+            start_delays = phase.get("start_delays_s", {})
+            if start_delays:
+                timing["agent_release_monotonic_s"] = {
+                    client.id: release + start_delays.get(client.id, 0.0) for client in clients}
             persist()
             event("phase_release_scheduled", phase=phase["name"], release_t=release - epoch)
 
             def execute(client, vehicle):
+                agent_release = release + start_delays.get(client.id, 0.0)
                 if client.id in plans:
                     client.execution_waypoint_indices = roles[client.id].get("waypoint_planner_indices")
-                    client.execute(release, len(plans[client.id]), max(.001, phase_deadline - time.perf_counter()), phase["name"])
+                    client.execute(agent_release, len(plans[client.id]), max(.001, phase_deadline - time.perf_counter()), phase["name"])
                 else:
-                    while time.perf_counter() < release:
+                    while time.perf_counter() < agent_release:
                         client.check()
-                        client.cancel.wait(min(.01, max(0, release - time.perf_counter())))
+                        client.cancel.wait(min(.01, max(0, agent_release - time.perf_counter())))
                     event("phase_no_op_started", client.id, phase=phase["name"], role="hold_no_op", service_enabled=False)
 
             operation("execute", execute)
@@ -137,6 +142,43 @@ def execute_phases(scenario, clients, parallel, event, metadata, epoch, deadline
                 timing["upload_release_confirmation_fraction"] = overhead / timing["total_duration_s"]
                 timing["execution_duration_s"] = max(0.0, timing["execute_including_release_wait_s"] - timing["release_wait_s"])
             persist()
+
+
+def execute_final_hold(scenario, clients, parallel, event, metadata, deadline, persist):
+    """Observe the final endpoint continuously before recording mission end.
+
+    This is independent of the normal 0.5 s arrival confirmation and NAV item
+    terminal_hold_s. It adds no mission item and therefore changes no onboard
+    parameter comparison. Legacy tasks omit final_hold_s and do nothing here.
+    """
+    hold = scenario["task_spec"]["execution"].get("final_hold_s", 0.0)
+    if not hold:
+        return
+    phase = scenario["phases"][-1]
+    roles = scenario["semantic_plan"]["execution_phases"][phase["name"]]["agents"]
+    timing = metadata["final_hold"] = dict(duration_s=hold, phase=phase["name"],
+        started_monotonic_s=time.perf_counter(), status="running")
+    event("final_hold_started", phase=phase["name"], duration_s=hold)
+    persist()
+
+    def hold_endpoint(client, vehicle):
+        requirement = target_confirmation(scenario, phase, client.id)
+        target = (roles[client.id]["terminal_point"] if scenario["schema_version"] == 2
+                  else phase["targets"][client.id])
+        client.confirm_target(target, scenario["origin"], requirement["tolerance_m"], hold,
+            phase["name"], timeout=min(hold + 20, max(.001, deadline - time.perf_counter())),
+            max_gap=scenario["max_gap_s"], quality_policy=metadata["quality_policy"])
+
+    try:
+        parallel(hold_endpoint, deadline_override=deadline, context="final endpoint hold")
+        timing["status"] = "completed"
+        event("final_hold_complete", phase=phase["name"], duration_s=hold)
+    except BaseException as exc:
+        timing.update(status="failed", error=f"{type(exc).__name__}: {exc}")
+        raise
+    finally:
+        timing["finished_monotonic_s"] = time.perf_counter()
+        persist()
 
 
 def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, quality_policy=None, generation_context=None):
@@ -230,7 +272,10 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
 
         def read_parameters(client, vehicle):
             try:
-                result = read_firmware_parameters(client, metadata["binary_firmware"], parameter_evidence[client.id])
+                execution = scenario["task_spec"]["execution"]
+                options = ({"version_timeout_s": execution["firmware_version_timeout_s"]}
+                           if "firmware_version_timeout_s" in execution else {})
+                result = read_firmware_parameters(client, metadata["binary_firmware"], parameter_evidence[client.id], **options)
             except BaseException:
                 # Also record the version and any available STAT_RESET evidence
                 # on cancellation/partial RX, without masking the original error.
@@ -253,6 +298,7 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
               parameter_comparison_version=PARAMETER_COMPARISON_VERSION)
         parallel(lambda client, vehicle: client.prepare_airborne(scenario["takeoff_alt_m"], scenario["ready_timeout_s"]))
         execute_phases(scenario, clients, parallel, event, metadata, epoch, deadline, persist)
+        execute_final_hold(scenario, clients, parallel, event, metadata, deadline, persist)
         metadata["mission_end_monotonic_s"] = time.perf_counter()
         parallel(lambda client, vehicle: client.land())
         cancel.wait(2)

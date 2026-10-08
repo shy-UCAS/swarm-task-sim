@@ -61,7 +61,8 @@ def main(argv=None):
         command = sub.add_parser(action)
         command.add_argument("--batch-id", required=True)
         if action == "run":
-            command.add_argument("--resume", action="store_true")
+            command.add_argument("--resume", action="store_true",
+                help="resume a manually paused batch with its existing budget/window; rule stops cannot resume")
         elif action == "_worker":
             command.add_argument("--attempt-id", required=True)
     args = parser.parse_args(argv)
@@ -77,13 +78,15 @@ def main(argv=None):
         elif args.action == "run":
             state = Controller(root).run(resume=args.resume)
             result = {k: state[k] for k in ("completed", "stopped_reason", "rolling")}
+            result.update(paused=state.get("paused", False), status=state.get("status"))
         elif args.action == "status":
             plan = load_plan(root)
             state = read(root / "control.json")
             _validate_state(plan, state)
             result = dict(tasks=len(plan["tasks"]), attempts=len(state["attempts"]),
                 registered=len(state["completion_order"]), completed=state["completed"],
-                finalized=state["finalized"], stopped_reason=state["stopped_reason"], rolling=state["rolling"])
+                finalized=state["finalized"], paused=state.get("paused", False), status=state.get("status"),
+                stopped_reason=state["stopped_reason"], rolling=state["rolling"])
         elif args.action == "finalize":
             result = finalize(root)
         else:

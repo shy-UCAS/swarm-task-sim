@@ -69,7 +69,8 @@ jobs:
             'test_mission_evaluation', 'test_execution_metrics', 'test_route_timing',
             'test_run_provenance', 'test_publication_runtime',
             'test_parallel_batch', 'test_parallel_worker', 'test_parallel_finalize',
-            'test_parallel_file_sizes'
+            'test_parallel_file_sizes', 'test_v06_execution',
+            'test_v06_data_contract', 'test_v06_planning', 'test_rapid_passage'
           )
           python -m unittest -v @modules
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

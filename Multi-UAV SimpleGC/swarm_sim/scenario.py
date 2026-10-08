@@ -196,7 +196,13 @@ def validate_route_scene(data):
     previous = {v["id"]: dict(east_m=v["east_m"], north_m=v["north_m"], up_m=data["takeoff_alt_m"]) for v in data["vehicles"]}
     names = set()
     for index, phase in enumerate(phases):
-        _object(phase, "route phase", ("name", "semantic_phase", "routes", "speed_m_s", "terminal_hold_s"))
+        _object(phase, "route phase", ("name", "semantic_phase", "routes", "speed_m_s", "terminal_hold_s", "start_delays_s"),
+                optional=("start_delays_s",))
+        if "start_delays_s" in phase:
+            if spec["execution"].get("protocol_version") != "v0.6" or set(phase["start_delays_s"]) != agents:
+                raise ValueError("phase start_delays_s requires v0.6 and every agent")
+            for delay in phase["start_delays_s"].values():
+                number(delay, "phase.start_delays_s", 0, 3600)
         expected_name = f"p{index:02d}_{expected_semantics[index]}"
         if phase["name"] != expected_name or phase["semantic_phase"] != expected_semantics[index]:
             raise ValueError("schema 2 phases must follow registered semantic phase order/names")

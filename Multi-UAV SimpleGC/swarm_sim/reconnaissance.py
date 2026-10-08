@@ -143,6 +143,6 @@ def topology_signature(spec, planning):
 
 intent_spec = IntentSpec(
     "reconnaissance", ("area_coverage",), ("approach", "observe", "return"), frozenset({"observe"}),
-    normalize_params, ("equal_strip_lawnmower_v1",), evaluate_channel, "shared_coverage_v2", behavior_labels,
+    normalize_params, ("equal_strip_lawnmower_v1", "interleaved_lanes_v1"), evaluate_channel, "shared_coverage_v2", behavior_labels,
     ("global_coverage_ratio", "repeated_coverage_cell_ratio", "leave_one_out_coverage_drop"), topology_signature)
 planner_spec = PlannerSpec("equal_strip_lawnmower_v1", "equal_strip_lawnmower_v1", normalize_planner, plan_routes)

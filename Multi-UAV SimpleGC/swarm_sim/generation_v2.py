@@ -21,6 +21,30 @@ SEED_SCHEME = "hierarchical_scene_mission_v1"
 TASK_SEMANTICS_SEED_SCHEME = "task_semantics_only_v1"
 
 
+def flight_pattern_choice(master_seed, base_index, intent, variant_index, mode="random"):
+    """A task-identity substream: never touches scene/shared or candidate RNGs."""
+    from .registry import FLIGHT_PATTERNS
+    if mode not in ("random", "first"):
+        raise ValueError("flight_pattern_mode must be random or first")
+    choices = FLIGHT_PATTERNS[intent]
+    seed = int(canonical_hash(["flight_pattern_v06", master_seed, base_index, intent, variant_index])[:16], 16)
+    return choices[0] if mode == "first" else random.Random(seed).choice(choices)
+
+
+def apply_flight_pattern(spec, pattern):
+    from .registry import component_versions
+    spec = copy.deepcopy(spec)
+    spec["flight_pattern"] = pattern
+    spec["component_versions"] = component_versions(spec["mission"]["intent"], pattern)
+    spec["planner"]["name"] = f"{pattern}_v1"
+    if spec["mission"]["intent"] == "patrol":
+        if pattern == "bidirectional_lanes":
+            spec["planner"]["params"]["lane_offset_m"] = 6.0
+        else:
+            spec["planner"]["params"].pop("lane_offset_m", None)
+    return spec
+
+
 def _object(value, allowed, name):
     if not isinstance(value, dict) or set(value) - set(allowed):
         raise ValueError(f"unknown or invalid {name} fields")
@@ -85,8 +109,10 @@ def normalize_profile(source):
         profile = copy.deepcopy(source)
     _object(profile, ("schema_version", "master_seed", "base_scene_count", "max_candidates_per_base",
                      "scene_sampler", "shared_mission_params", "missions", "require_all_missions_feasible",
-                     "seed_scheme"),
+                     "seed_scheme", "flight_pattern_mode"),
             "generation profile v2")
+    if "flight_pattern_mode" in profile and profile["flight_pattern_mode"] not in ("random", "first"):
+        raise ValueError("flight_pattern_mode must be random or first")
     if "seed_scheme" in profile and profile["seed_scheme"] != TASK_SEMANTICS_SEED_SCHEME:
         raise ValueError(f"seed_scheme must be {TASK_SEMANTICS_SEED_SCHEME} when supplied")
     for key, default, low, high in (("schema_version", 2, 2, 2), ("master_seed", 42, 0, 2**63-1),
@@ -115,11 +141,16 @@ def normalize_profile(source):
     names = set()
     for mission in missions:
         _object(mission, ("intent", "template", "template_spec", "template_id", "variant_speed_factors",
-                          "sample_laps"), "mission")
+                          "sample_laps", "sample_exit_margin_m"), "mission")
         intent = mission.get("intent")
         get_intent(intent)
         if "sample_laps" in mission and (intent != "patrol" or mission["sample_laps"] != [2, 3]):
             raise ValueError("sample_laps is supported only for patrol with [2, 3]")
+        if "sample_exit_margin_m" in mission:
+            bounds = mission["sample_exit_margin_m"]
+            if (intent != "rapid_passage" or not isinstance(bounds, list) or len(bounds) != 2
+                    or not all(_positive(v) for v in bounds) or not 4 <= bounds[0] <= bounds[1] <= 30):
+                raise ValueError("rapid passage exit margin requires [low, high] within [4, 30]")
         if intent in names:
             raise ValueError("profile v2 configures each intent exactly once")
         names.add(intent)
@@ -256,6 +287,20 @@ def generate_v2(profile, output):
                                             return_required=shared["return_required"])
                     spec["planner"]["params"].update(sampled.get("planner_hints", {}).get(intent, {}))
                     spec["execution"]["speed_m_s"] = shared["speed_m_s"] * factor
+                    selected_pattern = None
+                    if "flight_pattern_mode" in profile:
+                        from .registry import FLIGHT_PATTERNS
+                        selected_pattern = flight_pattern_choice(profile["master_seed"], base_index, intent,
+                            variant_index, profile["flight_pattern_mode"])
+                        # Select the common family solely using each intent's
+                        # first pattern. Sampled-pattern failure never changes
+                        # family/shared draws or silently substitutes a pattern.
+                        spec = apply_flight_pattern(spec, FLIGHT_PATTERNS[intent][0])
+                    if intent == "rapid_passage":
+                        spec["planner"]["params"]["entry_side"] = sampled["entry_side"]
+                        if "sample_exit_margin_m" in mission:
+                            margin_seed = int(canonical_hash(["rapid_exit_margin_v1", spec["seed"]])[:16], 16)
+                            spec["planner"]["params"]["exit_margin_m"] = random.Random(margin_seed).uniform(*mission["sample_exit_margin_m"])
                     lap_sampling = None
                     if "sample_laps" in mission:
                         region = next(region for region in spec["scenario"]["regions"]
@@ -272,6 +317,8 @@ def generate_v2(profile, output):
                         attempt.update(task_seed_scheme=seed_scheme, semantic_template_id=seed_identifier)
                     if lap_sampling is not None:
                         attempt["lap_sampling"] = lap_sampling
+                    if selected_pattern is not None:
+                        attempt["selected_flight_pattern"] = selected_pattern
                     try:
                         scene = compile_task(spec)
                         if scene["task_spec"]["family_id"] != family["family_id"]:
@@ -291,9 +338,19 @@ def generate_v2(profile, output):
                 continue
             base_record.update(status="accepted", selected_candidate=candidate_id, **family)
             for mission_id, spec, scene, attempt in staged:
+                selected_error = None
+                if "selected_flight_pattern" in attempt:
+                    spec = apply_flight_pattern(spec, attempt["selected_flight_pattern"])
+                    try:
+                        scene = compile_task(spec)
+                    except (ValueError, TypeError, KeyError, NotImplementedError) as exc:
+                        from .mission_v3 import normalize_v3
+                        selected_error = f"{type(exc).__name__}: {exc}"
+                        scene = dict(task_spec=normalize_v3(spec))
                 task_file, scene_file = f"missions/{mission_id}.json", f"scenes/{mission_id}.json"
                 save_json(output / task_file, scene["task_spec"])
-                save_json(output / scene_file, scene)
+                if selected_error is None:
+                    save_json(output / scene_file, scene)
                 entry = dict(mission_id=mission_id, base_scene_id=family["scene_content_sha256"][:20],
                     base_index=base_index, candidate_id=candidate_id, **family,
                     base_scene_sha256=family["scene_content_sha256"], variant_id=attempt["variant_id"],
@@ -301,9 +358,14 @@ def generate_v2(profile, output):
                     template_id=attempt["template_id"], planner_template_id=spec["planner"]["name"],
                     scene_seed=seed, task_seed=spec["seed"], control_mode=spec["execution"]["control_mode"],
                     shared_mission_params=shared, variant_speed_factor=mission_factor(profile, attempt),
-                    sampled_parameters=sampled, status="planned", task=task_file, scene=scene_file,
-                    task_sha256=file_hash(output / task_file), scene_sha256=file_hash(output / scene_file),
+                    sampled_parameters=sampled, status="planned" if selected_error is None else "planning_rejected",
+                    task=task_file, scene=scene_file if selected_error is None else None,
+                    task_sha256=file_hash(output / task_file), scene_sha256=file_hash(output / scene_file) if selected_error is None else None,
                     normalized_task_sha256=canonical_hash(scene["task_spec"]))
+                if "selected_flight_pattern" in attempt:
+                    entry.update(flight_pattern=spec["flight_pattern"], component_versions=spec["component_versions"])
+                    if selected_error is not None:
+                        entry["reason"] = selected_error
                 if seed_scheme == TASK_SEMANTICS_SEED_SCHEME:
                     entry.update(task_seed_scheme=seed_scheme,
                                  semantic_template_id=attempt["semantic_template_id"])
@@ -323,7 +385,7 @@ def generate_v2(profile, output):
         counts=dict(base_scenes=len(bases), accepted_bases=sum(b["status"] == "accepted" for b in bases),
             candidates=len(candidates), accepted_candidates=sum(c["status"] == "accepted" for c in candidates),
             rejected_candidates=sum(c["status"] != "accepted" for c in candidates),
-            planned_missions=len(entries), rejected_variants=len(rejections)),
+            planned_missions=sum(e["status"] == "planned" for e in entries), rejected_variants=len(rejections)),
         artifact_sha256={p.relative_to(output).as_posix(): file_hash(p) for p in sorted(output.rglob("*.json"))},
         limitation="planning only; no SITL execution; continuous-route execution deferred to WP-E")
     save_json(output / "generation_manifest.json", manifest)

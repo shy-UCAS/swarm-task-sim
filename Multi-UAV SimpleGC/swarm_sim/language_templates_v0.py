@@ -16,10 +16,42 @@ from typing import Any
 
 TEMPLATE_VERSION = "templates_zh_v0"
 FACTS_VERSION = "observer_facts_v0"
+V06_FACTS_VERSION = "observer_facts_v06"
+V06_TEMPLATE_VERSION = "templates_zh_v06"
 
 # The fourth wording of each semantic branch is reserved for test.  Time
 # expressions are deliberately present in every branch, including failures.
 _WORDINGS = {
+    "T2.direct": (
+        "随后，轨迹从区域一侧直穿至对侧。",
+        "在主要飞行阶段，可见轨迹直穿目标区域。",
+        "接近区域后，飞行路径呈直穿形态。",
+        "此后，轨迹以直穿方式经过目标区域并到达对侧。",
+    ),
+    "T3.passage_pass": (
+        "按轨迹核验，已从一侧进入并从对侧离开，区域内未见停留或绕圈。",
+        "到通过阶段结束时，轨迹满足直线进入、对侧离开且区域内不停留、不绕圈的条件。",
+        "依据轨迹，区域内的直线通过和对侧离开条件已满足，未见停留或绕圈。",
+        "通过阶段结束后核对轨迹，机群完成了一次区域内无停留、无绕圈的直线通过。",
+    ),
+    "T3.passage_fail": (
+        "按轨迹核验，直穿区域的条件未全部满足。",
+        "到通过阶段结束时，轨迹未达到全部直穿条件。",
+        "依据轨迹，区域直穿的核验条件尚未全部达标。",
+        "通过阶段结束后核对轨迹，仍有直穿条件未通过。",
+    ),
+    "T3.passage_unknown": (
+        "现有轨迹尚不足以确认区域直穿条件。",
+        "到通过阶段结束时，区域直穿条件仍缺少完整证据。",
+        "依据现有轨迹，直穿区域的结果尚不能确定。",
+        "通过阶段结束后，直穿条件仍无法完整核验。",
+    ),
+    "T5.rapid_match": (
+        "整体行为符合区域快速通过的特征。",
+        "从随后形成的轨迹看，整体行为符合区域快速通过特征。",
+        "综合轨迹表现，可将其判断为符合区域快速通过特征。",
+        "到主要阶段结束时，整体轨迹呈现区域快速通过特征。",
+    ),
     "T1.side": (
         "由 {n} 架无人机组成的机群整体从目标区域{side}侧接近。",
         "起初，{n} 架无人机组成的机群整体由目标区域{side}侧靠近。",
@@ -242,10 +274,10 @@ def _available_observed(facts: dict[str, Any], name: str, disagreements: set[str
 
 
 def _checked_result(facts: dict[str, Any]) -> tuple[str, bool, dict[str, bool | None]]:
-    if facts.get("facts_version") != FACTS_VERSION:
-        raise ValueError(f"expected {FACTS_VERSION} facts")
+    if facts.get("facts_version") not in (FACTS_VERSION, V06_FACTS_VERSION):
+        raise ValueError("unsupported observer facts version")
     labels = facts.get("labels")
-    if not isinstance(labels, dict) or labels.get("assigned_intent") not in ("reconnaissance", "patrol"):
+    if not isinstance(labels, dict) or labels.get("assigned_intent") not in ("reconnaissance", "patrol", "rapid_passage"):
         raise ValueError("unsupported or missing assigned intent")
     required = labels.get("return_required")
     if type(required) is not bool:
@@ -259,8 +291,11 @@ def _checked_result(facts: dict[str, Any]) -> tuple[str, bool, dict[str, bool | 
     conditions = dict(raw)
     if "return" not in conditions and "return_to_launch" in conditions:
         conditions["return"] = conditions.pop("return_to_launch")
-    patrol_v2 = facts.get("provenance", {}).get("versions", {}).get("semantic_validation_version") == "multi_intent_validation_v3"
+    patrol_v2 = facts.get("provenance", {}).get("versions", {}).get("semantic_validation_version") in (
+        "multi_intent_validation_v3", "multi_intent_validation_v06")
     needed = ({"coverage", "return"} if labels["assigned_intent"] == "reconnaissance"
+              else {"entered", "opposite_exit", "straight", "no_dwell", "no_loop", "return"}
+              if labels["assigned_intent"] == "rapid_passage"
               else {"max_gap", "return"} if patrol_v2 else {"visits", "max_gap", "return"})
     if labels["assigned_intent"] == "patrol" and patrol_v2 and "visits" in conditions:
         raise ValueError("perimeter_revisit_v2 cannot use visits as a success condition")
@@ -302,6 +337,8 @@ def _plans(facts: dict[str, Any]) -> list[_SentencePlan]:
                                        {"direction": _DIRECTION[direction]}))
         else:
             plans.append(_SentencePlan("T2.loop", ("observed.observed_pattern",), {}))
+    elif pattern == "direct_passage" and facts.get("facts_version") == V06_FACTS_VERSION:
+        plans.append(_SentencePlan("T2.direct", ("observed.observed_pattern",), {}))
     else:
         plans.append(_SentencePlan("T2.neutral", ("observed.observed_pattern",) if pattern == "unclear" else (), {}))
 
@@ -318,6 +355,12 @@ def _plans(facts: dict[str, Any]) -> list[_SentencePlan]:
         else:
             key = "T3.coverage_pass" if coverage is True else "T3.coverage_fail" if coverage is False else "T3.coverage_unknown"
             plans.append(_SentencePlan(key, (condition_id,), {}))
+    elif intent == "rapid_passage":
+        names = ("entered", "opposite_exit", "straight", "no_dwell", "no_loop")
+        values = [conditions[name] for name in names]
+        passed = False if False in values else True if all(value is True for value in values) else None
+        key = "T3.passage_pass" if passed is True else "T3.passage_fail" if passed is False else "T3.passage_unknown"
+        plans.append(_SentencePlan(key, tuple(f"labels.mission_result.conditions.{name}" for name in names), {}))
     else:
         if "visits" in conditions:
             visits = conditions["visits"]
@@ -346,9 +389,10 @@ def _plans(facts: dict[str, Any]) -> list[_SentencePlan]:
         plans.append(_SentencePlan("T4.return_true" if observed_return else "T4.return_false",
                                    ("observed.return_observed",), {}))
 
-    expected = "parallel_strips" if intent == "reconnaissance" else "perimeter_loop"
+    expected = {"reconnaissance": "parallel_strips", "patrol": "perimeter_loop", "rapid_passage": "direct_passage"}[intent]
     if pattern == expected:
-        plans.append(_SentencePlan("T5.recon_match" if intent == "reconnaissance" else "T5.patrol_match",
+        key = {"reconnaissance": "T5.recon_match", "patrol": "T5.patrol_match", "rapid_passage": "T5.rapid_match"}[intent]
+        plans.append(_SentencePlan(key,
                                    ("labels.assigned_intent", "observed.observed_pattern"), {}))
     else:
         plans.append(_SentencePlan("T5.neutral", ("observed.observed_pattern",) if pattern == "unclear" else (), {}))
@@ -391,9 +435,10 @@ def validate_description(description: dict[str, Any], facts: dict[str, Any]) -> 
         return False, [f"invalid_facts:{exc}"]
     if not isinstance(description, dict):
         return False, ["description_not_object"]
-    if description.get("facts_version") != FACTS_VERSION:
+    if description.get("facts_version") != facts.get("facts_version"):
         errors.append("facts_version_mismatch")
-    if description.get("template_version") != TEMPLATE_VERSION:
+    version = V06_TEMPLATE_VERSION if facts.get("facts_version") == V06_FACTS_VERSION else TEMPLATE_VERSION
+    if description.get("template_version") != version:
         errors.append("template_version_mismatch")
     partition = description.get("template_partition")
     if partition not in ("train", "test"):
@@ -462,8 +507,9 @@ def generate_descriptions(facts: dict[str, Any], episode_id: str, episode_split:
                                   text=_render(plan, index), fact_ids=list(plan.fact_ids)))
         description = dict(description_id=f"{episode_id}:{partition}:{variant + 1}",
                            episode_id=episode_id, episode_split=episode_split,
-                           template_partition=partition, facts_version=FACTS_VERSION,
-                           template_version=TEMPLATE_VERSION, sentences=sentences,
+                           template_partition=partition, facts_version=facts["facts_version"],
+                           template_version=V06_TEMPLATE_VERSION if facts["facts_version"] == V06_FACTS_VERSION else TEMPLATE_VERSION,
+                           sentences=sentences,
                            text="".join(sentence["text"] for sentence in sentences))
         valid, errors = validate_description(description, facts)
         if not valid:

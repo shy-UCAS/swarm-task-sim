@@ -38,7 +38,7 @@ class ProtocolV3Tests(unittest.TestCase):
                 self.assertNotIn(999,loaded["x"][0][0])
                 self.assertTrue(loaded["metadata"]["episode_quality_eligible"])
                 self.assertFalse(loaded["metadata"]["mission_success"])
-        self.assertEqual(registered_intents(),("patrol", "reconnaissance"))
+        self.assertEqual(registered_intents(),("patrol", "rapid_passage", "reconnaissance"))
 
     def test_g08_mixed_control_modes_explicit_and_tamper_checked(self):
         with tempfile.TemporaryDirectory() as tmp:

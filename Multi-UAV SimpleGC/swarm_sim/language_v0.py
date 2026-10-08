@@ -1,4 +1,4 @@
-"""Manifest-bound, separate Chinese description export for v0.5 datasets.
+"""Manifest-bound, separate Chinese description export for v0.5/v0.6 datasets.
 
 This module never modifies the source dataset.  Eligibility is a filter, not
 an outcome label: eligible failures receive descriptions when both semantic
@@ -13,7 +13,7 @@ from pathlib import Path
 
 from .episode_loader import load_episode
 from .generation import file_hash
-from .protocol import V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION
+from .protocol import V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION
 from .recording import write_json
 
 
@@ -59,8 +59,12 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
     manifest_hash = file_hash(manifest_path)
     manifest = _read_json(manifest_path)
     semantic_version = manifest.get("semantic_protocol", {}).get("semantic_validation_version")
-    if semantic_version not in (V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION):
-        raise ValueError("zh_v0 descriptions require the v0.5 multi-intent semantic protocol")
+    if semantic_version not in (V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION):
+        raise ValueError("zh_v0 descriptions require a supported multi-intent semantic protocol")
+    v06 = semantic_version == V06_SEMANTIC_VERSION
+    facts_version = "observer_facts_v06" if v06 else "observer_facts_v0"
+    templates_version = "templates_zh_v06" if v06 else TEMPLATES_VERSION
+    description_version = "language_zh_v06" if v06 else DESCRIPTION_VERSION
     entries = manifest.get("episodes")
     if not isinstance(entries, list) or not entries:
         raise ValueError("dataset has no episodes")
@@ -97,10 +101,10 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
             skipped.append(dict(episode_id=run_id, episode_split=entry.get("split"), reason=reason))
             continue
         facts = extract_observer_facts(episode, manifest_hash)
-        if facts.get("facts_version") != "observer_facts_v0":
+        if facts.get("facts_version") != facts_version:
             raise ValueError("unsupported observer facts version")
         facts_by_episode[run_id] = facts
-        seed = int(hashlib.sha256((manifest_hash + ":" + run_id + ":" + TEMPLATES_VERSION).encode("utf-8")).hexdigest()[:16], 16)
+        seed = int(hashlib.sha256((manifest_hash + ":" + run_id + ":" + templates_version).encode("utf-8")).hexdigest()[:16], 16)
         descriptions = generate_descriptions(facts, run_id, entry.get("split"), seed)
         if len(descriptions) != 4 or sum(d.get("template_partition") == "train" for d in descriptions) != 3 or sum(d.get("template_partition") == "test" for d in descriptions) != 1:
             raise ValueError("template generator did not produce 3 train and 1 test descriptions")
@@ -125,12 +129,12 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
         write_json(path, facts)
         hashes[path.relative_to(output).as_posix()] = file_hash(path)
     description_path = output / "descriptions.json"
-    write_json(description_path, dict(schema_version=1, language_version=DESCRIPTION_VERSION,
-        templates_version=TEMPLATES_VERSION, dataset_manifest_sha256=manifest_hash,
+    write_json(description_path, dict(schema_version=1, language_version=description_version,
+        templates_version=templates_version, dataset_manifest_sha256=manifest_hash,
         descriptions=all_descriptions, skipped=skipped))
     hashes[description_path.name] = file_hash(description_path)
-    result = dict(schema_version=1, language_version=DESCRIPTION_VERSION,
-        templates_version=TEMPLATES_VERSION, facts_version="observer_facts_v0",
+    result = dict(schema_version=1, language_version=description_version,
+        templates_version=templates_version, facts_version=facts_version,
         semantic_validation_version=semantic_version,
         dataset_manifest_sha256=manifest_hash, dataset_directory=str(root),
         input_episodes=len(entries), eligible_agree_episodes=len(facts_by_episode),

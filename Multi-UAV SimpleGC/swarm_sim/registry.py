@@ -37,15 +37,40 @@ class PlannerSpec:
 
 _intents, _planners = {}, {}
 
+# Public vocabularies: new labels/roles have a single canonical spelling.
+OBSERVED_MOTION_PATTERNS = {"parallel_strips": "平行往返", "perimeter_loop": "环绕",
+                            "direct_passage": "直穿", "unclear": "未明确"}
+SEMANTIC_ROLES = frozenset({"approach", "observe", "patrol", "transit", "return",
+                            "idle_padding", "hold_no_op"})
+FLIGHT_PATTERNS = {
+    "reconnaissance": ("equal_strip_lawnmower", "interleaved_lanes"),
+    "patrol": ("staggered_same_loop", "bidirectional_lanes"),
+    "rapid_passage": ("line_abreast", "column"),
+}
+
+
+def component_versions(intent, flight_pattern):
+    if flight_pattern not in FLIGHT_PATTERNS[intent]:
+        raise ValueError("flight pattern does not belong to intent")
+    return dict(planner=f"{flight_pattern}_v1", validator={
+        "reconnaissance": "shared_coverage_v2", "patrol": "perimeter_revisit_v2",
+        "rapid_passage": "rapid_passage_geometry_v1"}[intent],
+        facts="observer_facts_v06", templates="templates_zh_v06")
+
 
 def _initialize():
     if not _intents:
         from .reconnaissance import intent_spec, planner_spec
         from .patrol import intent_spec as patrol_intent, planner_spec as patrol_planner
+        from .rapid_passage import intent_spec as passage_intent, planner_specs as passage_planners
+        from .flight_patterns_v06 import interleaved_planner, bidirectional_planner
         _intents[intent_spec.name] = intent_spec
         _planners[planner_spec.name] = planner_spec
         _intents[patrol_intent.name] = patrol_intent
         _planners[patrol_planner.name] = patrol_planner
+        _intents[passage_intent.name] = passage_intent
+        for planner in (*passage_planners, interleaved_planner, bidirectional_planner):
+            _planners[planner.name] = planner
 
 
 def get_intent(name):

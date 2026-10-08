@@ -1,0 +1,473 @@
+{
+  "baseline_commit": "4d37ebd",
+  "episodes": [
+    {
+      "run_id": "20261003T065823Z_e1d05fa0",
+      "sha256": {
+        "x": "20be4caa7f2903a56efdac7ee6afaf1e78060cab0fb27324b81911f9eed776aa",
+        "mask": "2f2c96978a547e878462194f950e02556213c664fd940212bac162df8bf13005",
+        "t_s": "71e751eea366ed542b56d6733ba30e19bd37b9f39ca5cf2bc5b05533d02f6829",
+        "agent_ids": "a6baff823fb771516428d1e751915ec357767a00415924d13f2665d670edafc7",
+        "targets": "81958cda7e651ac6481fd36e33a52a15010a9fb8a1c3ddfc2ce0ec92c7e4e9c4"
+      },
+      "metadata": {
+        "run_id": "20261003T065823Z_e1d05fa0",
+        "family_id": "scene_6d1987b34d9556dee551",
+        "analysis_version": "0.5.0-dev",
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+        "benchmark_eligible": true,
+        "strict_benchmark_eligible": false,
+        "evaluation_context": {
+          "record_hz": 10.0,
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "mission": {
+            "intent": "reconnaissance",
+            "intent_params": {
+              "coverage_required": 0.9,
+              "objective": "area_coverage",
+              "observation_model": {
+                "activation": "observe_phase_only",
+                "grid_m": 1.0,
+                "height_tolerance_m": 1.0,
+                "radius_m": 4.0,
+                "type": "ideal_horizontal_disk"
+              }
+            },
+            "return_required": true,
+            "target_region_id": "R1"
+          },
+          "platform": {
+            "dynamics_validation": "execution_proxy_only",
+            "id": "basic_multirotor_nominal_v1",
+            "max_airborne_time_s": 900.0,
+            "max_climb_rate_m_s": 2.0,
+            "max_horizontal_accel_m_s2": 3.0,
+            "max_path_length_m": 1000.0,
+            "max_speed_m_s": 6.0,
+            "reserve_time_s": 60.0
+          },
+          "world": {
+            "east_bounds_m": [
+              -100.0,
+              100.0
+            ],
+            "flight_up_bounds_m": [
+              3.0,
+              40.0
+            ],
+            "north_bounds_m": [
+              -100.0,
+              100.0
+            ]
+          },
+          "execution": {
+            "arrival_tolerance_m": 1.0,
+            "async_timing_tolerance": {
+              "fraction_of_phase": 0.2,
+              "max_s": 5.0,
+              "min_s": 3.0
+            },
+            "backend": "AUTO",
+            "confirmation_dwell_s": 0.5,
+            "control_mode": "semantic_phase_route_v1",
+            "hold_semantics": "integer_seconds_v1",
+            "max_gap_s": 0.5,
+            "min_separation_m": 5.0,
+            "ready_timeout_s": 90.0,
+            "record_hz": 10.0,
+            "speed_m_s": 3.0,
+            "takeoff_alt_m": 8.0,
+            "terminal_hold_s": 0.0,
+            "timeout_s": 1200.0
+          }
+        },
+        "split": null,
+        "feature_columns": [
+          "east_m",
+          "north_m",
+          "up_m",
+          "ve_m_s",
+          "vn_m_s",
+          "vu_m_s"
+        ],
+        "normalized": false,
+        "missing_row_policy": "zero-filled with false mask",
+        "execution_constraints_version": "multi_intent_execution_limits_v2",
+        "family_scheme": "scene_content_v1",
+        "control_mode": "semantic_phase_route_v1",
+        "episode_quality_eligible": true,
+        "mission_success": true,
+        "semantic_consistency": "agree",
+        "observation_processing_version": "v3_observation_v1",
+        "duplicate_policy_version": "exact_duplicate_drop_v1",
+        "timeline_policy_version": "full_stream_strict_v1",
+        "clock_model_version": "passive_system_time_piecewise_v1",
+        "invalid_intervals": {
+          "uav_01": [],
+          "uav_02": [],
+          "uav_03": []
+        }
+      }
+    },
+    {
+      "run_id": "20261003T081352Z_53416538",
+      "sha256": {
+        "x": "de2a24e180464d73d2a04d154faa6a684deb531ecdb99a3104ef0f7da9b71ae3",
+        "mask": "e985e274f84af6a9f7a64c41287c674ff9ac34a60853da3087aacd0375558144",
+        "t_s": "02b74521874ddf25e48a1bc5292ff5ce03803e5f0860f0b0f6552c0ad3baf8e9",
+        "agent_ids": "a6baff823fb771516428d1e751915ec357767a00415924d13f2665d670edafc7",
+        "targets": "5897fde2a19b8c1dfebfaa7746a5695a24dcb0b73563f1f6c06dfeffe0d5b9ee"
+      },
+      "metadata": {
+        "run_id": "20261003T081352Z_53416538",
+        "family_id": "scene_6d1987b34d9556dee551",
+        "analysis_version": "0.5.0-dev",
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+        "benchmark_eligible": true,
+        "strict_benchmark_eligible": false,
+        "evaluation_context": {
+          "record_hz": 10.0,
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "mission": {
+            "intent": "patrol",
+            "intent_params": {
+              "laps": 2,
+              "max_revisit_gap_factor": 2.0,
+              "objective": "perimeter_patrol",
+              "segment_length_m": 5.0,
+              "standoff_m": 0.0,
+              "visit_radius_m": 3.0
+            },
+            "return_required": true,
+            "target_region_id": "R1"
+          },
+          "platform": {
+            "dynamics_validation": "execution_proxy_only",
+            "id": "basic_multirotor_nominal_v1",
+            "max_airborne_time_s": 900.0,
+            "max_climb_rate_m_s": 2.0,
+            "max_horizontal_accel_m_s2": 3.0,
+            "max_path_length_m": 1000.0,
+            "max_speed_m_s": 6.0,
+            "reserve_time_s": 60.0
+          },
+          "world": {
+            "east_bounds_m": [
+              -100.0,
+              100.0
+            ],
+            "flight_up_bounds_m": [
+              3.0,
+              40.0
+            ],
+            "north_bounds_m": [
+              -100.0,
+              100.0
+            ]
+          },
+          "execution": {
+            "arrival_tolerance_m": 1.0,
+            "async_timing_tolerance": {
+              "fraction_of_phase": 0.2,
+              "max_s": 5.0,
+              "min_s": 3.0
+            },
+            "backend": "AUTO",
+            "confirmation_dwell_s": 0.5,
+            "control_mode": "semantic_phase_route_v1",
+            "hold_semantics": "integer_seconds_v1",
+            "max_gap_s": 0.5,
+            "min_separation_m": 5.0,
+            "ready_timeout_s": 90.0,
+            "record_hz": 10.0,
+            "speed_m_s": 3.0,
+            "takeoff_alt_m": 8.0,
+            "terminal_hold_s": 0.0,
+            "timeout_s": 1200.0
+          }
+        },
+        "split": null,
+        "feature_columns": [
+          "east_m",
+          "north_m",
+          "up_m",
+          "ve_m_s",
+          "vn_m_s",
+          "vu_m_s"
+        ],
+        "normalized": false,
+        "missing_row_policy": "zero-filled with false mask",
+        "execution_constraints_version": "multi_intent_execution_limits_v2",
+        "family_scheme": "scene_content_v1",
+        "control_mode": "semantic_phase_route_v1",
+        "episode_quality_eligible": true,
+        "mission_success": true,
+        "semantic_consistency": "agree",
+        "observation_processing_version": "v3_observation_v1",
+        "duplicate_policy_version": "exact_duplicate_drop_v1",
+        "timeline_policy_version": "full_stream_strict_v1",
+        "clock_model_version": "passive_system_time_piecewise_v1",
+        "invalid_intervals": {
+          "uav_01": [],
+          "uav_02": [],
+          "uav_03": []
+        }
+      }
+    },
+    {
+      "run_id": "20261003T105214Z_fc0da71d",
+      "sha256": {
+        "x": "62642d877c3ed1b34153a13d48c244cd1b35056e4327323bf959182ec09402ec",
+        "mask": "04c3dfa534b3500a8f83a0f3d9ee9222125c9899ee286de3369ece88847ebdfa",
+        "t_s": "73f4ecc9189125f49980c8019d23b5e73ddd31727b512a6013f1778073d18af2",
+        "agent_ids": "a6baff823fb771516428d1e751915ec357767a00415924d13f2665d670edafc7",
+        "targets": "977effc9773d887f41b869d6e50bd50245a8da154fb83e58eb3e0ca6b35e9cea"
+      },
+      "metadata": {
+        "run_id": "20261003T105214Z_fc0da71d",
+        "family_id": "scene_d10123b767b04231baf2",
+        "analysis_version": "0.5.0-dev",
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+        "benchmark_eligible": false,
+        "strict_benchmark_eligible": false,
+        "evaluation_context": {
+          "record_hz": 10.0,
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "mission": {
+            "intent": "reconnaissance",
+            "intent_params": {
+              "coverage_required": 0.9,
+              "objective": "area_coverage",
+              "observation_model": {
+                "activation": "observe_phase_only",
+                "grid_m": 1.0,
+                "height_tolerance_m": 1.0,
+                "radius_m": 4.0,
+                "type": "ideal_horizontal_disk"
+              }
+            },
+            "return_required": false,
+            "target_region_id": "R1"
+          },
+          "platform": {
+            "dynamics_validation": "execution_proxy_only",
+            "id": "basic_multirotor_nominal_v1",
+            "max_airborne_time_s": 900.0,
+            "max_climb_rate_m_s": 2.0,
+            "max_horizontal_accel_m_s2": 3.0,
+            "max_path_length_m": 1000.0,
+            "max_speed_m_s": 6.0,
+            "reserve_time_s": 60.0
+          },
+          "world": {
+            "east_bounds_m": [
+              -100.0,
+              100.0
+            ],
+            "flight_up_bounds_m": [
+              3.0,
+              40.0
+            ],
+            "north_bounds_m": [
+              -100.0,
+              100.0
+            ]
+          },
+          "execution": {
+            "arrival_tolerance_m": 1.0,
+            "async_timing_tolerance": {
+              "fraction_of_phase": 0.2,
+              "max_s": 5.0,
+              "min_s": 3.0
+            },
+            "backend": "AUTO",
+            "confirmation_dwell_s": 0.5,
+            "control_mode": "semantic_phase_route_v1",
+            "hold_semantics": "integer_seconds_v1",
+            "max_gap_s": 0.5,
+            "min_separation_m": 5.0,
+            "ready_timeout_s": 90.0,
+            "record_hz": 10.0,
+            "speed_m_s": 2.0,
+            "takeoff_alt_m": 8.0,
+            "terminal_hold_s": 0.0,
+            "timeout_s": 1200.0
+          }
+        },
+        "split": null,
+        "feature_columns": [
+          "east_m",
+          "north_m",
+          "up_m",
+          "ve_m_s",
+          "vn_m_s",
+          "vu_m_s"
+        ],
+        "normalized": false,
+        "missing_row_policy": "zero-filled with false mask",
+        "execution_constraints_version": "multi_intent_execution_limits_v2",
+        "family_scheme": "scene_content_v1",
+        "control_mode": "semantic_phase_route_v1",
+        "episode_quality_eligible": false,
+        "mission_success": null,
+        "semantic_consistency": "unknown",
+        "observation_processing_version": "v3_observation_v1",
+        "duplicate_policy_version": "exact_duplicate_drop_v1",
+        "timeline_policy_version": "full_stream_strict_v1",
+        "clock_model_version": "passive_system_time_piecewise_v1",
+        "invalid_intervals": {
+          "uav_01": [
+            {
+              "start_s": 0.0,
+              "end_s": 94.2,
+              "reason": "invalid_observation"
+            }
+          ],
+          "uav_02": [
+            {
+              "start_s": 0.0,
+              "end_s": 94.2,
+              "reason": "invalid_observation"
+            }
+          ],
+          "uav_03": [
+            {
+              "start_s": 0.0,
+              "end_s": 94.2,
+              "reason": "invalid_observation"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "run_id": "20261003T192955Z_9a223f93",
+      "sha256": {
+        "x": "09d301a5a6313387fbeb5b5c23b81bc4080a3ff357e3df5f2cfe8d62e36ea5bb",
+        "mask": "7864bcc6e38e8280c9d7712b7edc7324a5ec1184b2a3f33da43ac9dcca7df5fc",
+        "t_s": "4613bcce037ab742ab62d8af8344728ee74e49aa3186ab024232f9ccb7d36b8a",
+        "agent_ids": "a6baff823fb771516428d1e751915ec357767a00415924d13f2665d670edafc7",
+        "targets": "b322f5b12703e3d639e540d9c289876350245658fbb97fbc7f37f6043e8886c7"
+      },
+      "metadata": {
+        "run_id": "20261003T192955Z_9a223f93",
+        "family_id": "scene_cf9f53873241cc7bd4e5",
+        "analysis_version": "0.5.0-dev",
+        "task_kind": "mission_v3",
+        "ontology_version": "multi_intent_mission_v1",
+        "label_schema_version": 3,
+        "semantic_validation_version": "multi_intent_validation_v3",
+        "eligibility_protocol_version": "multi_intent_quality_v1",
+        "quality_policy_sha256": "cbbfa81f91ea73bb538ef89aa4931808743a36c33b24465a9eef0e7c9f1bb91a",
+        "benchmark_eligible": false,
+        "strict_benchmark_eligible": false,
+        "evaluation_context": {
+          "record_hz": 10.0,
+          "max_gap_s": 0.5,
+          "min_separation_m": 5.0,
+          "mission": {
+            "intent": "patrol",
+            "intent_params": {
+              "laps": 2,
+              "max_revisit_gap_factor": 2.0,
+              "objective": "perimeter_patrol",
+              "segment_length_m": 5.0,
+              "standoff_m": 0.0,
+              "visit_radius_m": 3.0
+            },
+            "return_required": true,
+            "target_region_id": "R1"
+          },
+          "platform": {
+            "dynamics_validation": "execution_proxy_only",
+            "id": "basic_multirotor_nominal_v1",
+            "max_airborne_time_s": 900.0,
+            "max_climb_rate_m_s": 2.0,
+            "max_horizontal_accel_m_s2": 3.0,
+            "max_path_length_m": 1000.0,
+            "max_speed_m_s": 6.0,
+            "reserve_time_s": 60.0
+          },
+          "world": {
+            "east_bounds_m": [
+              -100.0,
+              100.0
+            ],
+            "flight_up_bounds_m": [
+              3.0,
+              40.0
+            ],
+            "north_bounds_m": [
+              -100.0,
+              100.0
+            ]
+          },
+          "execution": {
+            "arrival_tolerance_m": 1.0,
+            "async_timing_tolerance": {
+              "fraction_of_phase": 0.2,
+              "max_s": 5.0,
+              "min_s": 3.0
+            },
+            "backend": "AUTO",
+            "confirmation_dwell_s": 0.5,
+            "control_mode": "semantic_phase_route_v1",
+            "hold_semantics": "integer_seconds_v1",
+            "max_gap_s": 0.5,
+            "min_separation_m": 5.0,
+            "ready_timeout_s": 90.0,
+            "record_hz": 10.0,
+            "speed_m_s": 3.0,
+            "takeoff_alt_m": 8.0,
+            "terminal_hold_s": 0.0,
+            "timeout_s": 1200.0
+          }
+        },
+        "split": null,
+        "feature_columns": [
+          "east_m",
+          "north_m",
+          "up_m",
+          "ve_m_s",
+          "vn_m_s",
+          "vu_m_s"
+        ],
+        "normalized": false,
+        "missing_row_policy": "zero-filled with false mask",
+        "execution_constraints_version": "multi_intent_execution_limits_v2",
+        "family_scheme": "scene_content_v1",
+        "control_mode": "semantic_phase_route_v1",
+        "episode_quality_eligible": false,
+        "mission_success": true,
+        "semantic_consistency": "agree",
+        "observation_processing_version": "v3_observation_v1",
+        "duplicate_policy_version": "exact_duplicate_drop_v1",
+        "timeline_policy_version": "full_stream_strict_v1",
+        "clock_model_version": "passive_system_time_piecewise_v1",
+        "invalid_intervals": {
+          "uav_01": [],
+          "uav_02": [],
+          "uav_03": []
+        }
+      }
+    }
+  ]
+}

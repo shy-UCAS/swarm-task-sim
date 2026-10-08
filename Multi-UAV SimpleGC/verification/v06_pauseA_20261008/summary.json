@@ -1,0 +1,338 @@
+{
+  "baseline": "98126455e26493fd2d4de21338e47bd913fc47ca",
+  "plan_commit": "4d37ebde42a2adb4eb632163d0982d13fc645058",
+  "scope": "v0.6 formal plan sections 1-3; pause A; no simulation",
+  "external_evidence_root": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v06_pauseA_20261008",
+  "simulation_runs": 0,
+  "golden": {
+    "check": "v05_DR130_frozen_generation",
+    "expected": 260,
+    "checked": 260,
+    "passed": 260,
+    "differences": [],
+    "pass_all": true,
+    "metadata_exclusions": [],
+    "fixture": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\tests\\fixtures\\intent_registry_DR130_golden.json"
+  },
+  "cross_negative": {
+    "check": "v05_all_episodes_cross_negative",
+    "episodes": 260,
+    "channel_checks": 520,
+    "positives": [],
+    "pass_all": true,
+    "groups": [
+      {
+        "intent": "reconnaissance",
+        "channel": "truth",
+        "total": 130,
+        "positive": 0,
+        "negative": 126,
+        "unknown": 4
+      },
+      {
+        "intent": "reconnaissance",
+        "channel": "observation",
+        "total": 130,
+        "positive": 0,
+        "negative": 126,
+        "unknown": 4
+      },
+      {
+        "intent": "patrol",
+        "channel": "truth",
+        "total": 130,
+        "positive": 0,
+        "negative": 129,
+        "unknown": 1
+      },
+      {
+        "intent": "patrol",
+        "channel": "observation",
+        "total": 130,
+        "positive": 0,
+        "negative": 129,
+        "unknown": 1
+      }
+    ],
+    "thresholds": {
+      "boundary_margin_m": 2.0,
+      "max_cross_track_m": 3.0,
+      "low_speed_m_s": 0.5,
+      "max_low_speed_duration_s": 1.0,
+      "max_backtrack_m": 2.0,
+      "max_path_chord_ratio": 1.1
+    },
+    "threshold_basis": {
+      "boundary_margin_m": "2 m provisional exterior margin exceeds nominal 0.3 m sample displacement at 3 m/s, 10 Hz; arrival tolerance is design allowance, not sensor accuracy; pilot calibration required",
+      "max_cross_track_m": "3 m provisional straight-geometry allowance; no measured sensor-accuracy bound claimed; pilot calibration required",
+      "low_speed_m_s": "one quarter of 2 m/s minimum shared command speed; measured movement only",
+      "max_low_speed_duration_s": "10 samples at 10 Hz and twice the 0.5 s allowed observation gap",
+      "max_backtrack_m": "2 m provisional reversal allowance; design tolerance requires pilot calibration",
+      "max_path_chord_ratio": "10 percent provisional measured excess path allowance; pilot calibration required"
+    },
+    "adaptation": "original service bounds and actual trajectories; observe/patrol relabeled transit only"
+  },
+  "planning": {
+    "check": "v06_offline_planning",
+    "profile": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\generation_profiles\\tri_intent_v06_production.json",
+    "counts": {
+      "base_scenes": 300,
+      "accepted_bases": 300,
+      "candidates": 797,
+      "accepted_candidates": 300,
+      "rejected_candidates": 497,
+      "planned_missions": 600,
+      "rejected_variants": 753
+    },
+    "expected_families": 300,
+    "expected_tasks": 900,
+    "task_entries": 900,
+    "accepted_tasks": 600,
+    "groups": [
+      {
+        "intent": "patrol",
+        "flight_pattern": "bidirectional_lanes",
+        "tasks": 160,
+        "planned": 126,
+        "rejected": 34,
+        "clearance_m": {
+          "n": 126,
+          "minimum": 7.005959555327352,
+          "median": 8.680517885095995,
+          "maximum": 11.15397849161915
+        },
+        "below_10m": 105,
+        "world_bounds_pass": 126,
+        "nominal_duration_s": {
+          "n": 126,
+          "minimum": 261.3638951407574,
+          "median": 377.8434068628767,
+          "maximum": 517.5956949684779
+        }
+      },
+      {
+        "intent": "patrol",
+        "flight_pattern": "staggered_same_loop",
+        "tasks": 140,
+        "planned": 140,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 140,
+          "minimum": 7.105493699048588,
+          "median": 9.494427246743527,
+          "maximum": 11.959961214929727
+        },
+        "below_10m": 86,
+        "world_bounds_pass": 140,
+        "nominal_duration_s": {
+          "n": 140,
+          "minimum": 234.0182547828627,
+          "median": 342.9408723218762,
+          "maximum": 475.57153016023096
+        }
+      },
+      {
+        "intent": "rapid_passage",
+        "flight_pattern": "column",
+        "tasks": 150,
+        "planned": 40,
+        "rejected": 110,
+        "clearance_m": {
+          "n": 40,
+          "minimum": 7.007819532194443,
+          "median": 8.443243726396547,
+          "maximum": 9.781996006590287
+        },
+        "below_10m": 40,
+        "world_bounds_pass": 40,
+        "nominal_duration_s": {
+          "n": 40,
+          "minimum": 184.51690829252138,
+          "median": 213.34648700111097,
+          "maximum": 281.8065331383513
+        }
+      },
+      {
+        "intent": "rapid_passage",
+        "flight_pattern": "line_abreast",
+        "tasks": 150,
+        "planned": 150,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 150,
+          "minimum": 7.00256665734693,
+          "median": 8.512998858070931,
+          "maximum": 11.984764282951568
+        },
+        "below_10m": 116,
+        "world_bounds_pass": 150,
+        "nominal_duration_s": {
+          "n": 150,
+          "minimum": 173.06374820157637,
+          "median": 194.94772438581762,
+          "maximum": 248.88721343663866
+        }
+      },
+      {
+        "intent": "reconnaissance",
+        "flight_pattern": "equal_strip_lawnmower",
+        "tasks": 144,
+        "planned": 144,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 144,
+          "minimum": 7.059140654941772,
+          "median": 9.020802996663871,
+          "maximum": 11.315562375925456
+        },
+        "below_10m": 117,
+        "world_bounds_pass": 144,
+        "nominal_duration_s": {
+          "n": 144,
+          "minimum": 194.22005581474144,
+          "median": 246.7804523132347,
+          "maximum": 356.0051584912347
+        }
+      },
+      {
+        "intent": "reconnaissance",
+        "flight_pattern": "interleaved_lanes",
+        "tasks": 156,
+        "planned": 0,
+        "rejected": 156,
+        "clearance_m": {
+          "n": 0,
+          "minimum": null,
+          "median": null,
+          "maximum": null
+        },
+        "below_10m": 0,
+        "world_bounds_pass": 0,
+        "nominal_duration_s": {
+          "n": 0,
+          "minimum": null,
+          "median": null,
+          "maximum": null
+        }
+      }
+    ],
+    "simulation_runs": 0
+  },
+  "selected_pattern_rejections": {
+    "bidirectional_clearance": 34,
+    "interleaved_clearance": 156,
+    "column_transit_world_bounds": 9,
+    "column_approach_world_bounds": 23,
+    "column_clearance": 78
+  },
+  "archive": {
+    "check": "archive_file_inventory",
+    "files_before": 52993,
+    "files_after": 52993,
+    "changed": [],
+    "pass_all": true,
+    "method": "complete path/size/mtime_ns inventory including .git; not a full content rehash"
+  },
+  "local_tests": {
+    "skipped": 0,
+    "total": 248,
+    "errors": 0,
+    "failures": 0,
+    "passed": true,
+    "modules": [
+      "test_ordered_route_progress_v2",
+      "test_patrol_revisit_v2",
+      "test_quality",
+      "test_observation_processing_v3",
+      "test_public_scene",
+      "test_dataset_audit_v3",
+      "test_protocol_v3",
+      "test_wp_l_templates",
+      "test_wp_l_facts",
+      "test_mission_data",
+      "test_mission_evaluation",
+      "test_execution_metrics",
+      "test_route_timing",
+      "test_run_provenance",
+      "test_publication_runtime",
+      "test_parallel_batch",
+      "test_parallel_worker",
+      "test_parallel_finalize",
+      "test_parallel_file_sizes",
+      "test_v06_execution",
+      "test_v06_data_contract",
+      "test_v06_planning",
+      "test_rapid_passage"
+    ]
+  },
+  "v05_examples": {
+    "old_metadata_field_comparisons": 108,
+    "array_hash_comparisons": 20,
+    "new_metadata_defaults": {
+      "protocol_version": null,
+      "component_versions": {},
+      "flight_pattern": null
+    },
+    "episodes": 4
+  },
+  "coverage_limitations": [
+    "New-pattern actual-geometry and full return truncation pipeline checks deferred to pilot as permitted by section 3.1.6.",
+    "No SITL execution; controller/firmware/final hold are offline fake/mock evidence.",
+    "Local symlink checks use mocked resolution without Windows symlink privilege; junction checks use real links.",
+    "Generation evidence predates adding default metadata to three input templates; test_direct_v06_templates_have_metadata_without_changing_generated_task proves task and semantic seed identity; profile snapshot and enclosing hashes would differ on regeneration."
+  ],
+  "source_files_sha256": {
+    ".github/workflows/unit-tests.yml": "abed7c5b9a04ddc5eb0e5c0c7fb196314be272ee9bc883dcb46df9fe6f8b9280",
+    "Multi-UAV SimpleGC/docs/intent_addition_checklist.md": "a652a1b96772f473b9fcf4e396333fd510c6c58541cb7fe6f679d40066ef9aae",
+    "Multi-UAV SimpleGC/docs/v0.6_formal_run_commands.md": "1d1e06e8aa138f6eb31435ac9675f5d7d6fe44419efb913b461402e1eab21142",
+    "Multi-UAV SimpleGC/docs/v06_formal_plan.md": "d29369cca6d7380e1d205202f24f942898438b899997a34c64ec3b0d8551159d",
+    "Multi-UAV SimpleGC/generation_profiles/tri_intent_v06_pilot.json": "ebaea505e279ad120498a1ed4686664ea7db66db4a22f9ddffc21525f9abd204",
+    "Multi-UAV SimpleGC/generation_profiles/tri_intent_v06_production.json": "9ed6d6b83a2181c90599896686cce4af5d1fb7be943ccf37ee47dcaf9a029da8",
+    "Multi-UAV SimpleGC/missions/v3/patrol_route_v06.json": "3b9e6aa0f6a6ae0837fa88780b81a4b4a9a490360175a447e479880d723ff55f",
+    "Multi-UAV SimpleGC/missions/v3/rapid_passage_route_v06.json": "e955ff16113597d26c3fb929b9a51d865883251b08040bb03b573c4505dc3cba",
+    "Multi-UAV SimpleGC/missions/v3/recon_route_v06.json": "da911863bb3ee07eddfbb432f157ada11e8f642ce086302fd9e2370654e496b8",
+    "Multi-UAV SimpleGC/scripts/diagnostics/run_offline_tests.py": "20dc866040ee871d0853d204e57fb2c074ea7a5f5b22efaac843b7516b45b992",
+    "Multi-UAV SimpleGC/scripts/diagnostics/v06_offline_checks.py": "d0813a3b3c4fff955d7a7e8bd1f4c902aa586f3be6e52c4f17c4e91d0774c902",
+    "Multi-UAV SimpleGC/scripts/run_parallel_batch.py": "5490baaa3653343503198dd21e2db6ca7c4f50a546a5f055af29a8d710ab9e07",
+    "Multi-UAV SimpleGC/swarm_sim/analysis_v3.py": "4b9135879f63ccd70d2c2fb10875fb2d4409d2575c6cc85be5d907274d6c3f16",
+    "Multi-UAV SimpleGC/swarm_sim/dataset.py": "678f732d80d44a4dff9fc0a43b50e913ccd7953a42a8e33b6553f59404321700",
+    "Multi-UAV SimpleGC/swarm_sim/dataset_audit_v3.py": "abe1cc32912fd56450e13c637d78d591d5ba39af86816794bb89bccc1b543957",
+    "Multi-UAV SimpleGC/swarm_sim/episode_loader.py": "cd988b7d08c67b3833968a2483cdc354354329caaf380aa6d18fa84f35df961a",
+    "Multi-UAV SimpleGC/swarm_sim/flight_patterns_v06.py": "a2f718fa8991992ead1cf63f862d6eb207b56691e74214ac98098f1ccd5797c0",
+    "Multi-UAV SimpleGC/swarm_sim/generation_v2.py": "b22b557f684232189a4bf658eb7614ca9a9161ede8b1ec01d0668f67dfedc7d1",
+    "Multi-UAV SimpleGC/swarm_sim/language_templates_v0.py": "cacbd82250de83c7d24cbfae331516998ddf46fe19b12bb275f388cdcaf83e96",
+    "Multi-UAV SimpleGC/swarm_sim/language_v0.py": "53035eca46f1df78701e9c3c86c11a1249aa42fa9222dc4013c7ef3937b3edfa",
+    "Multi-UAV SimpleGC/swarm_sim/mission_evaluation_v3.py": "a7a255e3ae1687cc702d44bd2fd1ae4609f030ab0295aadfaa54c194dd0a0472",
+    "Multi-UAV SimpleGC/swarm_sim/mission_v3.py": "58789ba26030c0d19cfd21fc7eafa152ee180aa71743000bf0ae02783e435933",
+    "Multi-UAV SimpleGC/swarm_sim/observer_facts_v0.py": "1a0c4cf1d57ac0e6ee26b6193122998ac834a50f411c8fa73c31a023d4b6898c",
+    "Multi-UAV SimpleGC/swarm_sim/parallel_batch.py": "a26199c219ebc6af89c26bc30f4e5cc488548985010f89818f09b6ea33bbc5ff",
+    "Multi-UAV SimpleGC/swarm_sim/patrol.py": "8acc9e0bf3c88970668258c7133cb5e089300e8e1e532196fe09392ed3d7c72b",
+    "Multi-UAV SimpleGC/swarm_sim/protocol.py": "4a6f9451571b4acc2f21fe173d52963a905f8751c22b0a1cff5738e0bf2a5448",
+    "Multi-UAV SimpleGC/swarm_sim/rapid_passage.py": "b1a3f070626a4a122985f7c61fcbbd5b8d6d31d646ef102dc6da1b8da4d8b4c8",
+    "Multi-UAV SimpleGC/swarm_sim/reconnaissance.py": "90b82bac3c643eb9e9ec877fd70edcaa52776adf50e8830cd58fbf15e44f242a",
+    "Multi-UAV SimpleGC/swarm_sim/registry.py": "99e9759035f65cfbb08d3c019929f7137250777ac1477ad163710da93c949146",
+    "Multi-UAV SimpleGC/swarm_sim/route_planning.py": "54598aee3c01dfba0238eb35c236e29b2ae50f0865fd0098e524e4741d0e5707",
+    "Multi-UAV SimpleGC/swarm_sim/runner_v3.py": "2b9fce228ae85e854d236e9938aa77ba13f3ba16a9c012aaa52a992a7614d081",
+    "Multi-UAV SimpleGC/swarm_sim/scenario.py": "ec7d1ccd67bb379dfdb532706ed3688b44996b1ce0ed3da0d09f0c20641064b7",
+    "Multi-UAV SimpleGC/tests/fixtures/v05_example_loader_baseline.json": "989f734eb83a94a5a26015a7fc7239c52a365de90f0c003da353c83e77f25e68",
+    "Multi-UAV SimpleGC/tests/test_parallel_batch.py": "1bddb1a75c911425caea67771ab24fd069d258273051f2e7ab6e13307dcc3149",
+    "Multi-UAV SimpleGC/tests/test_parallel_finalize.py": "cc6b90c7dbb60537b77138fc8d537c77e990e54b0d1297340e218315336c0f0b",
+    "Multi-UAV SimpleGC/tests/test_protocol_v3.py": "5ce4aa655c8797f5c13280524a65fb28f86c9cdcdd409ed63d9c0862507273a7",
+    "Multi-UAV SimpleGC/tests/test_rapid_passage.py": "75c0d7ffae51b6ade032d24713c999de76ac9aefd9cfc4240e7fc35cd8f0ba97",
+    "Multi-UAV SimpleGC/tests/test_v06_data_contract.py": "adad1cfce97f6d6db19b2497e83bd6e75cf34d3dd84b8cb57b5e3c07da9f36b7",
+    "Multi-UAV SimpleGC/tests/test_v06_execution.py": "c89a692de296a0a53d6f3a57fcd93f9bdad00dcaecc07a96e88f05de167d92a1",
+    "Multi-UAV SimpleGC/tests/test_v06_planning.py": "132d7c40cc89012e92f833983ccddde5eff7d0590f288f483ac59e8319430afb",
+    "Multi-UAV SimpleGC/tests/test_wp_p_protocol.py": "9f39244e81dc44747b7d17bc9e7cba609fdafa12374e182594cf89abb8c842b7"
+  },
+  "external_files_sha256": {
+    "golden/golden_report.json": "3b56fd7b74b232ca1954286858725e00ffe0db7c5147673047dce9913a21fe07",
+    "cross_negative_final/cross_negative_report.json": "eda2c8afefc9a5d4d37803e3efdcc71132eca8e29fb765b1f59fa0310f9fa69e",
+    "planning_final/planning_report.json": "1136e49ca08d59641c2d5c1a35391956a46a7ea83401810e9b9e8666b4f6cdfa",
+    "planning_final/generated_v06/generation_profile.json": "d34dbb83d4e66c03fb4c58855489932d66ea0af7efec656549043c7f0eaefa5a",
+    "planning_final/generated_v06/mission_list.json": "c0dbb3bfce6d0155f6f1783bb3721efa53e824b0f39b70aefa73cb2fac0fda50",
+    "planning_final/generated_v06/generation_manifest.json": "fdce4aa4e10033196049ea0087f3314172bb2b9a84fbda88e15bc11bcea9e3e8",
+    "archive_final/archive_check.json": "45a749701f6218677e13f2fc6d744dc2a108cc8fea15418a44e0c793226552fa",
+    "ci_local_final.json": "9ea96e72b57e8c951a5c73a7bebd5c56f95ad5d043eadf2cb326594cb666b8c6",
+    "ci_local_final.log": "9f784162f82bf9cb59b45e65c90a1177c18fa87482d49e9b29d0d70ef0b9cb45"
+  }
+}

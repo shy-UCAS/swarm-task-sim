@@ -67,7 +67,7 @@ class V05ProtocolTests(unittest.TestCase):
                               ("semantic_validation_version", "execution_constraints_version")},
                              {k: old_protocol[k] for k in PROTOCOL_FIELDS if k not in
                               ("semantic_validation_version", "execution_constraints_version")})
-        self.assertEqual(len(supported_protocols()), 5)
+        self.assertEqual(len(supported_protocols()), 6)
 
     def test_real_v04_v06_episode_still_loads(self):
         archive = ROOT / "verification/v04_v06_20261002/dataset/episodes"

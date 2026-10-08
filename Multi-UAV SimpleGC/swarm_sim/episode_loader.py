@@ -88,6 +88,8 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
             v3_keys = ("control_mode", "family_scheme", "episode_quality_eligible", "intent", "mission_success",
                        "semantic_consistency", "run_status", "clock_quality", "agent_ids",
                        "benchmark_eligible", "strict_benchmark_eligible")
+            if manifest.get("protocol_version") == "v0.6":
+                v3_keys += ("protocol_version", "flight_pattern", "component_versions")
             if any(type(entry.get(k)) is not type(manifest.get(k)) or entry.get(k) != manifest.get(k) for k in v3_keys):
                 raise ValueError("dataset and v3 episode metadata disagree")
             modes = dataset.get("control_modes", [])
@@ -161,4 +163,7 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
         metadata.update({key: manifest.get(key) for key in ("family_scheme", "control_mode", "episode_quality_eligible",
                         "mission_success", "semantic_consistency", *processing_versions())})
         metadata["invalid_intervals"] = json.loads((root/"quality.json").read_text(encoding="utf-8")).get("invalid_intervals", {})
+        metadata.update(protocol_version=manifest.get("protocol_version"),
+                        flight_pattern=manifest.get("flight_pattern"),
+                        component_versions=dict(manifest.get("component_versions", {})))
     return dict(x=x, mask=mask, t_s=stamps, agent_ids=expected, targets=labels, metadata=metadata)

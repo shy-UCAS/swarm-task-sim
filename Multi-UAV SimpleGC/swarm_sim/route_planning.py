@@ -89,7 +89,7 @@ def patrol_spacing_prefilter(perimeter_m, agent_count, speed_m_s, tau_s, require
 
 
 def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, timing_tolerance,
-                             terminal_hold_s=0.0, confirmation_dwell_s=0.0):
+                             terminal_hold_s=0.0, confirmation_dwell_s=0.0, start_delays_s=None):
     """Check all sampled point pairs within tau, including stationary intervals.
 
     Endpoint/no-op occupancy extends until the slowest agent finishes motion,
@@ -106,9 +106,18 @@ def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, 
     if "max_s" in timing_tolerance:
         number(timing_tolerance["max_s"], "async_timing_tolerance.max_s", 0, 3600)
     sampled, arrivals, lengths = {}, {}, {}
+    delays = start_delays_s or {agent: 0.0 for agent in starts}
+    if set(delays) != set(starts):
+        raise ValueError("start_delays_s must identify every agent")
+    for value in delays.values():
+        number(value, "start delay", 0, 3600)
     for agent in starts:
         sampled[agent], arrivals[agent], lengths[agent] = sample_route(starts[agent], routes[agent], speed_m_s)
-    motion = {agent: lengths[agent] / speed_m_s for agent in starts}
+        if start_delays_s is not None:
+            sampled[agent] = [(t + delays[agent], point) for t, point in sampled[agent]]
+            # Waypoint reference times remain relative to each agent's actual
+            # AUTO start; the global nominal clearance timeline includes delay.
+    motion = {agent: lengths[agent] / speed_m_s + delays[agent] for agent in starts}
     completion = {agent: motion[agent] + (terminal_hold_s if routes[agent] else 0) + confirmation_dwell_s for agent in starts}
     motion_duration, duration = max(motion.values()), max(completion.values())
     if "max_s" in timing_tolerance:
@@ -146,7 +155,14 @@ def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, 
                     consider(stationary, moving, occupied_time, endpoint, stamp, position, "terminal_or_no_op_interval")
         # Both agents remain at their terminal point through the common barrier.
         consider(left, right, duration, sampled[left][-1][1], duration, sampled[right][-1][1], "both_stationary")
-    return dict(duration_s=duration, motion_duration_s=motion_duration,
+        if start_delays_s is not None:
+            for stationary, moving in ((left, right), (right, left)):
+                for stamp, position in sampled[moving]:
+                    if stamp <= delays[stationary] + tau + 1e-12:
+                        consider(stationary, moving, min(stamp, delays[stationary]), _xyz(starts[stationary]),
+                                 stamp, position, "delayed_start_interval")
+            consider(left, right, 0., _xyz(starts[left]), 0., _xyz(starts[right]), "both_waiting_to_start")
+    result = dict(duration_s=duration, motion_duration_s=motion_duration,
         per_agent_arrival_s=motion, per_agent_waypoint_arrival_s=arrivals,
         per_agent_completion_s=completion, per_agent_path_length_m=lengths,
         tau_s=tau, tau_basis=tau_basis,
@@ -156,6 +172,9 @@ def time_aware_phase_clearance(starts, routes, speed_m_s, required_clearance_m, 
         required_clearance_m=required_clearance_m, nominal_min_clearance_m=minimum,
         closest_pair=closest, checked_point_pairs=checked_pairs,
         endpoint_occupancy="[per_agent_arrival_s, duration_s]; no-op occupies start point throughout phase")
+    if start_delays_s is not None:
+        result["start_delays_s"] = dict(delays)
+    return result
 
 
 def compile_route_phases(spec, plan, intent):
@@ -181,6 +200,9 @@ def compile_route_phases(spec, plan, intent):
             previous[agent] = terminal
         phases.append(dict(name=name, semantic_phase=semantic, routes=routes, speed_m_s=execution["speed_m_s"],
                            terminal_hold_s=execution["terminal_hold_s"]))
+        delays = plan.diagnostics.get("phase_start_delays_s", {}).get(semantic)
+        if delays is not None:
+            phases[-1]["start_delays_s"] = dict(delays)
         mapping[name] = dict(semantic_phase=semantic, agents=roles)
         by_semantic[semantic] = [name]
     return phases, dict(version="semantic_route_plan_v1", execution_phases=mapping,
@@ -213,7 +235,8 @@ def nominal_route_capability(spec, phases, semantic):
     for phase in phases:
         starts = {agent: role["start_point"] for agent, role in semantic["execution_phases"][phase["name"]]["agents"].items()}
         report = time_aware_phase_clearance(starts, phase["routes"], phase["speed_m_s"], required,
-            execution["async_timing_tolerance"], phase["terminal_hold_s"], execution["confirmation_dwell_s"])
+            execution["async_timing_tolerance"], phase["terminal_hold_s"], execution["confirmation_dwell_s"],
+            phase.get("start_delays_s"))
         timing[phase["name"]] = report
         if report["nominal_min_clearance_m"] is not None:
             minimum = report["nominal_min_clearance_m"] if minimum is None else min(minimum, report["nominal_min_clearance_m"])
@@ -222,7 +245,7 @@ def nominal_route_capability(spec, phases, semantic):
             barrier[agent] += delay
         stage_estimates.append(dict(phase=phase["name"], estimated_s=report["duration_s"],
                                    per_agent_motion_m=report["per_agent_path_length_m"], barrier_wait_s=waits))
-    stage_time = sum(item["estimated_s"] for item in stage_estimates)
+    stage_time = sum(item["estimated_s"] for item in stage_estimates) + execution.get("final_hold_s", 0.0)
     climb = execution["takeoff_alt_m"] / platform["max_climb_rate_m_s"]
     airborne, total = stage_time + climb + 60, stage_time + climb + 60 + execution["ready_timeout_s"]
     if airborne + platform["reserve_time_s"] > platform["max_airborne_time_s"]:

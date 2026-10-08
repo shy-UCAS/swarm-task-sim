@@ -1,0 +1,106 @@
+{
+  "base_scene_count": 300,
+  "shared_mission_params": {
+    "speeds_m_s": [
+      2.0,
+      2.5,
+      3.0
+    ],
+    "return_required": [
+      true,
+      false
+    ]
+  },
+  "schema_version": 2,
+  "require_all_missions_feasible": true,
+  "master_seed": 2026100812,
+  "missions": [
+    {
+      "variant_speed_factors": [
+        1.0
+      ],
+      "template": "../missions/v3/recon_route_v06.json",
+      "intent": "reconnaissance",
+      "template_id": "recon_v06_route"
+    },
+    {
+      "variant_speed_factors": [
+        1.0
+      ],
+      "template": "../missions/v3/patrol_route_v06.json",
+      "intent": "patrol",
+      "sample_laps": [
+        2,
+        3
+      ],
+      "template_id": "patrol_v06_route"
+    },
+    {
+      "template_id": "rapid_passage_v06_route",
+      "intent": "rapid_passage",
+      "sample_exit_margin_m": [
+        6.0,
+        10.0
+      ],
+      "template": "../missions/v3/rapid_passage_route_v06.json",
+      "variant_speed_factors": [
+        1.0
+      ]
+    }
+  ],
+  "seed_scheme": "task_semantics_only_v1",
+  "scene_sampler": {
+    "name": "random_spawn_v2",
+    "params": {
+      "vehicle_counts": [
+        2,
+        3,
+        4
+      ],
+      "region_unit_width_m": [
+        11.0,
+        16.0
+      ],
+      "region_unit_height_m": [
+        11.0,
+        16.0
+      ],
+      "region_center_east_m": [
+        -10.0,
+        10.0
+      ],
+      "region_center_north_m": [
+        -10.0,
+        10.0
+      ],
+      "entry_sides": [
+        "north",
+        "east",
+        "south",
+        "west"
+      ],
+      "entry_distance_m": [
+        10.0,
+        20.0
+      ],
+      "entry_lateral_offset_fraction": [
+        -0.3,
+        0.3
+      ],
+      "formations": [
+        "line"
+      ],
+      "line_spacing_m": [
+        8.0,
+        12.0
+      ],
+      "line_rotation_deg": [
+        -20.0,
+        20.0
+      ],
+      "heading_policy": "fixed_zero"
+    }
+  },
+  "max_candidates_per_base": 20,
+  "flight_pattern_mode": "random"
+}

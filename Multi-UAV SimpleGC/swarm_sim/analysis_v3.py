@@ -14,7 +14,7 @@ from .execution_metrics import VERSION_V2 as EXECUTION_ARTIFACTS_V2, compute_exe
 from .mission_evaluation_v3 import evaluate_mission_v3
 from .observation_processing import prepare_v3_observations, processing_versions
 from .onboard_mission_params import diagnose_onboard_mission_params
-from .protocol import semantic_protocol, validate_artifact_protocol
+from .protocol import is_v06_task_spec, semantic_protocol, task_metadata, validate_artifact_protocol
 from .quality import invalid_intervals, policy_hash, resolve_policy, summarize_clocks, v3_eligibility
 from .recording import resample, write_json
 from .route_timing import nominal_arrival_evidence
@@ -47,7 +47,7 @@ def _uses_v05_route_evidence(spec):
     """Optional v0.5 semantics select new diagnostics; old v0.4 tasks stay frozen."""
     execution=spec["execution"]
     return (execution["control_mode"]=="semantic_phase_route_v1" and
-            (spec["mission"]["intent"]=="patrol" or "hold_semantics" in execution or
+            (is_v06_task_spec(spec) or spec["mission"]["intent"]=="patrol" or "hold_semantics" in execution or
              "max_s" in execution.get("async_timing_tolerance", {})))
 
 
@@ -81,6 +81,8 @@ def analyze_run_v3(directory, quality_policy=None, *,
     spec=scene["task_spec"]
     if spec["schema_version"] != 3:
         raise ValueError("v3 analysis requires TaskSpec schema_version 3")
+    if is_v06_task_spec(spec):
+        patrol_validator_version = "perimeter_revisit_v2"
     policy=resolve_policy(quality_policy)
     versions=processing_versions(); protocol=semantic_protocol(scene, patrol_validator_version=patrol_validator_version)
     lifecycle_epoch=metadata["run_epoch_monotonic_s"]
@@ -267,6 +269,7 @@ def analyze_run_v3(directory, quality_policy=None, *,
         artifact_sha256={p.name:digest(p) for p in output.iterdir() if p.is_file()})
     if acceptance_policy:
         manifest["acceptance_policy_version"]=acceptance_policy
+    manifest.update(task_metadata(spec))
     validate_artifact_protocol(manifest,output)
     write_json(output/"manifest.json",manifest)
     if update_latest:

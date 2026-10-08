@@ -4,7 +4,7 @@ import copy
 
 from .mission_evaluation import execution_windows, _return_result, tri_and
 from .observations import finite_number
-from .protocol import semantic_protocol
+from .protocol import is_v06_task_spec, semantic_protocol
 from .registry import get_intent
 
 
@@ -31,6 +31,8 @@ def evaluate_mission_v3(scene, traces, truth_traces, events, metadata, time_epoc
                         *, progress_mapping_version="ordered_route_progress_v1",
                         patrol_validator_version="perimeter_revisit_v1"):
     spec = scene["task_spec"]
+    if is_v06_task_spec(spec):
+        patrol_validator_version = "perimeter_revisit_v2"
     if spec.get("schema_version") != 3:
         raise ValueError("v3 mission evaluation requires TaskSpec schema_version 3")
     mode = spec["execution"]["control_mode"]

@@ -14,9 +14,33 @@ V05_CONSTRAINT_VERSION = "multi_intent_execution_limits_v2"
 V05_ROUTE_PROGRESS_VERSION = "ordered_route_progress_v1"
 V05_AC4_TIMING_VERSION = "ac4_relative_progress_timing_v3"
 V05_EXECUTION_ARTIFACTS_VERSION = "execution_artifacts_v2"
+V06_SEMANTIC_VERSION = "multi_intent_validation_v06"
+V06_CONSTRAINT_VERSION = "multi_intent_execution_limits_v06"
+V06_COMPONENT_KEYS = frozenset(("planner", "validator", "facts", "templates"))
 
 PROTOCOL_FIELDS = ("task_kind", "ontology_version", "label_schema_version", "semantic_validation_version",
                    "eligibility_protocol_version", "execution_constraints_version")
+
+
+def is_v06_task_spec(task):
+    return (isinstance(task, dict) and task.get("schema_version") == 3
+            and isinstance(task.get("execution", {}), dict)
+            and task.get("execution", {}).get("protocol_version") == "v0.6")
+
+
+def task_metadata(task):
+    """Additional v0.6 provenance; intentionally excluded from model features."""
+    if not is_v06_task_spec(task):
+        return {}
+    pattern, versions = task.get("flight_pattern"), task.get("component_versions")
+    if (not isinstance(pattern, str) or not pattern or not isinstance(versions, dict)
+            or set(versions) != V06_COMPONENT_KEYS
+            or any(not isinstance(value, str) or not value for value in versions.values())):
+        raise ValueError("v0.6 requires flight_pattern and four component versions")
+    from .registry import component_versions
+    if versions != component_versions(task["mission"]["intent"], pattern):
+        raise ValueError("v0.6 component versions differ from registered components")
+    return dict(protocol_version="v0.6", flight_pattern=pattern, component_versions=dict(versions))
 
 
 def is_v05_task_spec(task):
@@ -28,7 +52,7 @@ def is_v05_task_spec(task):
     if not isinstance(mission, dict) or not isinstance(execution, dict):
         return False
     timing = execution.get("async_timing_tolerance", {})
-    return (mission.get("intent") == "patrol" or "hold_semantics" in execution or
+    return (is_v06_task_spec(task) or mission.get("intent") == "patrol" or "hold_semantics" in execution or
             isinstance(timing, dict) and "max_s" in timing)
 
 
@@ -39,6 +63,11 @@ def semantic_protocol(scene, *, patrol_validator_version="perimeter_revisit_v1")
     if patrol_validator_version == "perimeter_revisit_v2" and not is_v05_task_spec(task):
         raise ValueError("perimeter_revisit_v2 requires the v0.5 semantic contract")
     if task.get("schema_version") == 3:
+        if is_v06_task_spec(task):
+            return dict(task_kind="mission_v3", ontology_version="multi_intent_mission_v1", label_schema_version=3,
+                        semantic_validation_version=V06_SEMANTIC_VERSION,
+                        eligibility_protocol_version="multi_intent_quality_v1",
+                        execution_constraints_version=V06_CONSTRAINT_VERSION)
         new_contract = is_v05_task_spec(task)
         version = (V05_R12B_SEMANTIC_VERSION if patrol_validator_version == "perimeter_revisit_v2"
                    else V05_SEMANTIC_VERSION if new_contract else V3_SEMANTIC_VERSION)
@@ -104,7 +133,8 @@ def supported_protocols():
                           {"task_spec": {"schema_version": 3, "mission": {"intent": "patrol"}}})}
     current = semantic_protocol({"task_spec": {"schema_version": 3, "mission": {"intent": "patrol"}}},
                                 patrol_validator_version="perimeter_revisit_v2")
-    return historical | {tuple(current[key] for key in PROTOCOL_FIELDS)}
+    v06 = semantic_protocol({"task_spec": {"schema_version": 3, "execution": {"protocol_version": "v0.6"}}})
+    return historical | {tuple(current[key] for key in PROTOCOL_FIELDS), tuple(v06[key] for key in PROTOCOL_FIELDS)}
 
 
 def _validate_v3_artifacts(manifest, root, protocol):
@@ -119,10 +149,14 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError(f"semantic protocol artifact is not hashed: {name}")
         files[name] = json.loads((root/name).read_text(encoding="utf-8"))
     labels, quality, task = files["labels.json"], files["quality.json"], files["task.json"]
-    patrol_version = ("perimeter_revisit_v2" if protocol["semantic_validation_version"] == V05_R12B_SEMANTIC_VERSION
+    patrol_version = ("perimeter_revisit_v2" if protocol["semantic_validation_version"] in (V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION)
                       else "perimeter_revisit_v1")
     if semantic_protocol({"task_spec": task}, patrol_validator_version=patrol_version) != protocol:
         raise ValueError("v3 TaskSpec semantic protocol mismatch")
+    if is_v06_task_spec(task):
+        expected_metadata = task_metadata(task)
+        if any(manifest.get(key) != value for key, value in expected_metadata.items()):
+            raise ValueError("inconsistent v0.6 task metadata")
     if is_v05_task_spec(task) and task.get("execution", {}).get("control_mode") == "semantic_phase_route_v1":
         required = ("execution_metrics.json", "ac4_timing_v3.json")
         if any(name not in manifest.get("artifact_sha256", {}) for name in required):
@@ -162,7 +196,7 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError("inconsistent r1.2 acceptance diagnostics")
         if acceptance_version == "v05_acceptance_r1_2b":
             reasons = assessment.get("aggregate_anomaly_reasons")
-            if (protocol["semantic_validation_version"] != V05_R12B_SEMANTIC_VERSION
+            if (protocol["semantic_validation_version"] not in (V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION)
                     or assessment.get("stage") not in ("pilot", "batch")
                     or set(assessment.get("hard_checks", {})) !=
                         {"parameter_firmware", "onboard_mission_parameters", "truth_separation"}

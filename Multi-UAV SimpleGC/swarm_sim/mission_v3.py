@@ -15,7 +15,8 @@ def normalize_v3(spec):
     """Normalize a new deep copy. Legacy normalizers never pass through here."""
     spec = copy.deepcopy(spec)
     _object(spec, "TaskSpec v3", ("schema_version", "task_id", "family_id", "family_scheme", "seed",
-                                 "scenario", "mission", "planner", "execution"), optional=("family_id", "family_scheme"))
+                                 "scenario", "mission", "planner", "execution", "flight_pattern", "component_versions"),
+            optional=("family_id", "family_scheme", "flight_pattern", "component_versions"))
     if type(spec["schema_version"]) is not int or spec["schema_version"] != 3:
         raise ValueError("TaskSpec schema_version must be integer 3")
     _identifier(spec["task_id"], "task_id")
@@ -111,6 +112,14 @@ def normalize_v3(spec):
     planner["params"] = plugin.normalize_params(planner["params"], spec)
     if not isinstance(planner["params"], dict):
         raise ValueError("planner normalizer must return an object")
+    if "flight_pattern" in spec or "component_versions" in spec:
+        from .registry import FLIGHT_PATTERNS, component_versions
+        pattern = spec.get("flight_pattern")
+        if pattern not in FLIGHT_PATTERNS.get(intent.name, ()):
+            raise ValueError("invalid flight_pattern for intent")
+        expected_versions = component_versions(intent.name, pattern)
+        if spec.get("component_versions") != expected_versions or plugin.version != expected_versions["planner"]:
+            raise ValueError("component_versions must match registered flight pattern components")
 
     execution = spec["execution"]
     if not isinstance(execution, dict):
@@ -123,8 +132,14 @@ def normalize_v3(spec):
     common = ("control_mode", "backend", "takeoff_alt_m", "speed_m_s", "arrival_tolerance_m",
               "confirmation_dwell_s", "record_hz", "max_gap_s", "min_separation_m", "timeout_s", "ready_timeout_s",
               "phase_timeout_override_s", "hold_semantics")
-    _object(execution, f"execution ({mode})", common + exclusive,
-            optional=("phase_timeout_override_s", "hold_semantics"))
+    v06_fields = ("protocol_version", "final_hold_s", "firmware_version_timeout_s")
+    _object(execution, f"execution ({mode})", common + exclusive + v06_fields,
+            optional=("phase_timeout_override_s", "hold_semantics") + v06_fields)
+    if any(key in execution for key in v06_fields):
+        if execution.get("protocol_version") != "v0.6" or any(key not in execution for key in v06_fields):
+            raise ValueError("v0.6 execution requires protocol_version, final_hold_s and firmware_version_timeout_s")
+        _numeric(execution, "final_hold_s", "execution", 0, 60)
+        _numeric(execution, "firmware_version_timeout_s", "execution", .1, 60)
     if "hold_semantics" in execution:
         _enum(execution, "hold_semantics", "execution", ("integer_seconds_v1",))
     if "phase_timeout_override_s" in execution:

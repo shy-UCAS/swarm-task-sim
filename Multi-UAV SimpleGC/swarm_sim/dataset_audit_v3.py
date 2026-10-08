@@ -219,6 +219,8 @@ def audit_dataset_v3(dataset_path, generation_manifest=None, attempt_ledger=None
             id_position_order=id_position_order(task["scenario"]["vehicles"]),
             topology_signature=signature, topology_signature_error=signature_error,
             topology_token=canonical_hash([intent_name, mode, signature]) if signature is not None else None)
+        if manifest.get("protocol_version") == "v0.6":
+            sample.update(flight_pattern=manifest["flight_pattern"], component_versions=manifest["component_versions"])
         samples.append(sample)
         groups[intent_name, mode].append(sample)
     group_reports = []
@@ -261,7 +263,7 @@ def audit_dataset_v3(dataset_path, generation_manifest=None, attempt_ledger=None
     planning = (_rate(counts["accepted_candidates"], counts["candidates"], "all sampled candidates")
                 if "accepted_candidates" in counts and "candidates" in counts else
                 dict(numerator=None, denominator=None, fraction=None, denominator_basis="unavailable without generation evidence"))
-    return dict(schema_version=2, audit_version=AUDIT_VERSION, dataset_directory=str(root),
+    result = dict(schema_version=2, audit_version=AUDIT_VERSION, dataset_directory=str(root),
         family_scheme=dataset.get("family_scheme"),
         counts=dict(episodes=total, families=len(family_splits), expected_families=len(families), intents=len(expected_intents),
             control_modes=len({s["control_mode"] for s in samples}), base_scenes=counts.get("base_scenes"),
@@ -284,3 +286,13 @@ def audit_dataset_v3(dataset_path, generation_manifest=None, attempt_ledger=None
         family_split_leaks=leaks, issues=issues, episodes=samples,
         topology_scope="signature overlap is reported separately per intent/control_mode; no cross-intent signature matching",
         limitation="descriptive audit only; no classifier, accuracy or intention identifiability claim; optional evidence is never recomputed")
+    if any("flight_pattern" in sample for sample in samples):
+        pattern_groups = defaultdict(list)
+        for sample in samples:
+            pattern_groups[sample["intent"], sample.get("flight_pattern")].append(sample)
+        result["flight_pattern_groups"] = [dict(intent=intent, flight_pattern=pattern, episode_count=len(members),
+            episode_quality_eligible=_rate(sum(m["episode_quality_eligible"] is True for m in members), len(members), "all intent/pattern episodes"),
+            mission_success=_rate(sum(m["mission_success"] is True for m in members), len(members), "all intent/pattern episodes"),
+            clock_grades=dict(Counter(m["clock_grade"] for m in members)))
+            for (intent, pattern), members in sorted(pattern_groups.items())]
+    return result

@@ -115,6 +115,9 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
         if protocol["task_kind"] == "mission_v3":
             entries[-1][1].update({key: manifest.get(key) for key in ("family_scheme", "control_mode", "episode_quality_eligible",
                                   "mission_success", "semantic_consistency", "intent")})
+            if manifest.get("protocol_version") == "v0.6":
+                entries[-1][1].update({key: manifest[key] for key in
+                                      ("protocol_version", "flight_pattern", "component_versions")})
         if explicit:
             entries[-1][1].update(source_analysis_path=str(analysis),
                                   analysis_selection_mode="explicit_manifest_binding")

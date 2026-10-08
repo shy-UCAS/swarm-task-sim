@@ -1,4 +1,4 @@
-"""Manifest-bound, channel-independent visible facts for the v0.5 language layer.
+"""Manifest-bound, channel-independent visible facts for v0.5 and v0.6.
 
 Task labels and simulated model metrics are deliberately kept apart from facts
 obtained from the two exported position streams.  A fact which the FCU stream
@@ -17,6 +17,7 @@ from .mission_evaluation import window_evidence
 
 
 FACTS_VERSION = "observer_facts_v0"
+V06_FACTS_VERSION = "observer_facts_v06"
 PATTERN_VERSION = "pattern_detector_v0"
 PATTERN_PARAMETERS = dict(perimeter_sample_fraction=0.80, full_lap_radians=2 * math.pi,
                           perimeter_visit_radius_m=3.0,
@@ -279,7 +280,8 @@ def _return_observed(traces, windows, agents, main_phase, max_gap, duration_s, r
 
 def _channel_facts(traces, windows, task, region, manifest, metrics, agents):
     mission, execution = task["mission"], task["execution"]
-    main_phase = "patrol" if mission["intent"] == "patrol" else "observe"
+    v06 = execution.get("protocol_version") == "v0.6"
+    main_phase = {"patrol": "patrol", "rapid_passage": "transit"}.get(mission["intent"], "observe")
     max_gap = execution["max_gap_s"]
     points = _main_points(traces, windows, agents, main_phase, max_gap)
     # The classifier has its own frozen geometric threshold.  Using the
@@ -287,18 +289,48 @@ def _channel_facts(traces, windows, task, region, manifest, metrics, agents):
     # "unclear" whenever its assigned intent happened to be reconnaissance.
     pattern = detect_pattern(points, region,
                              visit_radius_m=PATTERN_PARAMETERS["perimeter_visit_radius_m"])
+    passage = {}
+    if v06:
+        from .rapid_passage import measure_passage
+        from .registry import OBSERVED_MOTION_PATTERNS
+        passage = {agent: measure_passage(rows, region, max_gap_s=max_gap)
+                   for agent, rows in points.items()}
+        if passage and set(passage) == set(agents) and all(
+                item.get("success") is True for item in passage.values()):
+            pattern = dict(observed_pattern="direct_passage", scan_orientation=None, loop_direction=None)
+        # Opposite measured loop directions have no single fleet direction.
+        if pattern["observed_pattern"] == "perimeter_loop":
+            center = (region["min_east_m"] + region["width_m"] / 2,
+                      region["min_north_m"] + region["height_m"] / 2)
+            directions = [_angular_travel(rows, center) for rows in points.values()]
+            if any(value > 0 for value in directions) and any(value < 0 for value in directions):
+                pattern["loop_direction"] = None
+        if pattern["observed_pattern"] not in OBSERVED_MOTION_PATTERNS:
+            raise ValueError("unregistered observed motion pattern")
     patrol = metrics.get("perimeter_revisit", {})
     laps = patrol.get("per_agent_laps_observed")
     if isinstance(laps, dict) and set(laps) == set(agents) and all(type(laps[agent]) is int and laps[agent] >= 0 for agent in agents):
         laps = [laps[agent] for agent in agents]
     else:
         laps = None
-    return dict(num_uavs=sum(sum(point is not None for _, point in traces[agent]) >= 2 for agent in agents),
+    result = dict(num_uavs=sum(sum(point is not None for _, point in traces[agent]) >= 2 for agent in agents),
                 entry_side=_entry_side(traces, windows, region, agents, max_gap),
                 **pattern, per_agent_laps_observed=laps,
                 return_observed=_return_observed(traces, windows, agents, main_phase, max_gap,
                                                  manifest["duration_s"], execution["record_hz"]),
                 max_revisit_gap_s=patrol.get("max_revisit_gap_s"))
+    if v06:
+        def unanimous(field):
+            values = [passage[agent].get(field) for agent in agents] if set(passage) == set(agents) else []
+            return values[0] if values and all(value == values[0] for value in values) else None
+        result.update(exit_side=unanimous("exit_side"), crossed=unanimous("crossed"),
+                      inside_dwell_s=max((item["inside_dwell_s"] for item in passage.values()
+                                         if _finite(item.get("inside_dwell_s"))), default=None),
+                      turning_rad=max((item["turning_rad"] for item in passage.values()
+                                       if _finite(item.get("turning_rad"))), default=None))
+        if mission["intent"] == "rapid_passage":
+            result["entry_side"] = unanimous("entry_side")
+    return result
 
 
 def _same(left, right):
@@ -403,6 +435,10 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                                  "return": conditions.get("return_to_launch")}
         if metrics["truth"]["perimeter_revisit"].get("version") != "perimeter_revisit_v2":
             normalized_conditions["visits"] = conditions.get("visits")
+    elif task["mission"]["intent"] == "rapid_passage":
+        normalized_conditions = {name: conditions.get(name) for name in
+                                 ("entered", "opposite_exit", "straight", "no_dwell", "no_loop")}
+        normalized_conditions["return"] = conditions.get("return_to_launch")
     else:
         normalized_conditions = {"coverage": conditions.get("coverage"),
                                  "return": conditions.get("return_to_launch")}
@@ -416,8 +452,10 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
     versions = {key: manifest[key] for key in ("semantic_validation_version", "observation_processing_version",
                 "duplicate_policy_version", "timeline_policy_version", "clock_model_version",
                 "route_progress_version", "ac4_timing_version", "execution_artifacts_version") if key in manifest}
-    versions.update(facts_version=FACTS_VERSION, pattern_detector_version=PATTERN_VERSION)
-    return dict(facts_version=FACTS_VERSION,
+    facts_version = V06_FACTS_VERSION if task["execution"].get("protocol_version") == "v0.6" else FACTS_VERSION
+    versions.update(facts_version=facts_version,
+                    pattern_detector_version="pattern_detector_v06" if facts_version == V06_FACTS_VERSION else PATTERN_VERSION)
+    return dict(facts_version=facts_version,
                 labels=dict(assigned_intent=labels["assigned_intent"],
                             return_required=task["mission"]["return_required"],
                             mission_result=dict(success=labels["mission_success"],

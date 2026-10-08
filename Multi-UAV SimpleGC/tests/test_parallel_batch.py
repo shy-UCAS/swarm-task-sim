@@ -8,6 +8,7 @@ import copy
 import io
 import json
 import os
+import signal
 import socket
 import tempfile
 import unittest
@@ -531,17 +532,86 @@ class GlobalControllerTests(ControllerFixture):
         self.assertIn("result verification failed", state["stopped_reason"])
         self.assertTrue(all(not a["result"]["retryable_pre_takeoff"] for a in state["attempts"]))
 
-    def test_keyboard_interrupt_stops_dispatch_but_drains_launched_workers(self):
+    def test_keyboard_interrupt_pauses_dispatch_but_drains_launched_workers(self):
         self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a), polls=3)
-        with patch.object(batch.time, "sleep", side_effect=[KeyboardInterrupt(), None, None, None]):
+        with patch.object(batch.time, "sleep", side_effect=[KeyboardInterrupt(), KeyboardInterrupt(), None, None]):
             state = self.run_controller(batch.new_state(self.plan))
         self.assertEqual(len(self.launches), 2)
-        self.assertIn("interrupted", state["stopped_reason"])
+        self.assertIsNone(state["stopped_reason"])
+        self.assertTrue(state["paused"])
+        self.assertEqual(state["status"], "paused")
+        self.assertEqual(len(state["pause_events"]), 1)
+        self.assertNotIn("stop_events", state)
+        self.assertFalse((self.root / "stop_report.json").exists())
         self.assertTrue(all(a["status"] == "finished" for a in state["attempts"]))
-        self.assertTrue(all(a["completed_after_stop"] for a in state["attempts"]))
+        self.assertTrue(all(a["completed_after_pause"] for a in state["attempts"]))
+        self.assertTrue(all(not a["completed_after_stop"] for a in state["attempts"]))
         for worker in self.workers:
             worker.terminate.assert_not_called()
             worker.kill.assert_not_called()
+
+    def test_manual_pause_resume_never_duplicates_or_omits_tasks_and_keeps_budget(self):
+        self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a,
+            ["task_failure_truth"] if a["global_index"] == 0 else ()), polls=2)
+        with patch.object(batch.time, "sleep", side_effect=[KeyboardInterrupt(), None]):
+            paused = self.run_controller(batch.new_state(self.plan))
+        self.assertEqual(len(paused["attempts"]), 2)
+        self.assertEqual(paused["rolling"]["anomaly_count"], 1)
+        prefix = copy.deepcopy(paused["attempts"])
+        with self.assertRaisesRegex(ValueError, "resume"):
+            self.run_controller()
+        resumed = self.run_controller(resume=True)
+        self.assertTrue(resumed["completed"])
+        self.assertFalse(resumed["paused"])
+        self.assertEqual(resumed["status"], "completed")
+        self.assertEqual(resumed["attempts"][:2], prefix)
+        self.assertEqual([a["global_index"] for a in resumed["attempts"]], list(range(8)))
+        self.assertEqual(len(self.launches), 8)
+        self.assertEqual(resumed["rolling"]["window_count"], 8)
+        self.assertEqual(resumed["rolling"]["anomaly_count"], 1)
+        self.assertEqual(resumed["completion_order"][:2], paused["completion_order"])
+        self.assertEqual(batch.merge_records(self.plan, resumed, verifier=lambda p, a, r: r)[0]["global_index"], 0)
+
+    def test_pause_resume_rolling_anomalies_remain_continuous_and_rule_stop_is_sticky(self):
+        self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a, ["task_failure_truth"]), polls=2)
+        with patch.object(batch.time, "sleep", side_effect=[KeyboardInterrupt(), None]):
+            paused = self.run_controller(batch.new_state(self.plan))
+        self.assertEqual(paused["rolling"]["anomaly_count"], 2)
+        stopped = self.run_controller(resume=True)
+        self.assertFalse(stopped["paused"])
+        self.assertEqual(stopped["status"], "stopped")
+        self.assertIn("rolling", stopped["stopped_reason"])
+        self.assertEqual(len(stopped["attempts"]), 6)
+        self.assertEqual(stopped["rolling"]["window_count"], 6)
+        self.assertEqual(stopped["rolling"]["anomaly_count"], 6)
+        before = copy.deepcopy(stopped)
+        with self.assertRaisesRegex(ValueError, "rule-stopped batch cannot resume"):
+            self.run_controller(resume=True)
+        self.assertEqual(batch.read(self.root / "control.json"), before)
+        self.assertEqual(len(self.launches), 6)
+
+    def test_signal_during_reserved_launch_finishes_transaction_then_pauses_and_restores_handler(self):
+        original = signal.getsignal(signal.SIGINT)
+        launch = self.launch
+
+        def signal_during_launch(plan, attempt):
+            handler = signal.getsignal(signal.SIGINT)
+            handler(signal.SIGINT, None)
+            handler(signal.SIGINT, None)
+            return launch(plan, attempt)
+
+        self.launch = signal_during_launch
+        paused = self.run_controller(batch.new_state(self.plan))
+        self.assertIs(signal.getsignal(signal.SIGINT), original)
+        self.assertEqual(len(self.launches), 1)
+        self.assertEqual(paused["completion_order"], ["a000000"])
+        self.assertEqual(paused["attempts"][0]["status"], "finished")
+        self.assertTrue(paused["paused"])
+        self.assertIsNone(paused["stopped_reason"])
+        self.launch = launch
+        resumed = self.run_controller(resume=True)
+        self.assertTrue(resumed["completed"])
+        self.assertEqual(len(self.launches), 8)
 
     def test_disk_budget_counts_all_shards_and_export_reserve_before_launch(self):
         required = self.plan["max_attempts"] * self.plan["storage_bytes_per_attempt"] + 50
@@ -840,6 +910,31 @@ class MergeTests(unittest.TestCase):
 
 
 class FrozenPlanTests(unittest.TestCase):
+    def test_prepare_rejects_selected_infeasible_pattern_before_verifying_or_creating_plan(self):
+        with tempfile.TemporaryDirectory() as temp, ExitStack() as stack:
+            data = Path(temp).resolve() / "data"
+            stack.enter_context(patch.dict(os.environ, {"SIM_DATA_ROOT": str(data)}))
+            stack.enter_context(patch.object(batch, "verify_preflight_files", return_value={"actual": {}}))
+            stack.enter_context(patch.object(batch, "_protected_files", return_value={}))
+            def rejected_generation(profile, output):
+                output.mkdir()
+                save_json(output / "mission_list.json", dict(missions=[dict(
+                    mission_id="selected_column", status="planning_rejected", scene=None,
+                    reason="insufficient nominal separation", flight_pattern="column")]))
+            stack.enter_context(patch.object(batch, "generate", side_effect=rejected_generation))
+            verify = stack.enter_context(patch.object(batch, "verify_generation"))
+            probe = stack.enter_context(patch.object(batch, "probe_ports"))
+            with self.assertRaisesRegex(ValueError, "1 rejected missions"):
+                batch.prepare({}, "infeasible", max_attempts=2,
+                              storage_bytes_per_attempt=1, export_reserve_bytes=1)
+            root = data / "parallel_batch/infeasible"
+            self.assertTrue((root / "bundle/mission_list.json").is_file())
+            self.assertIn("rejected missions", batch.read(root / "prepare_error.json")["error"])
+            self.assertFalse((root / "plan.json").exists())
+            self.assertFalse((root / "control.json").exists())
+            verify.assert_not_called()
+            probe.assert_not_called()
+
     def test_prepare_generates_once_freezes_hashes_and_refuses_existing_batch(self):
         with tempfile.TemporaryDirectory() as temp, ExitStack() as stack:
             data = Path(temp) / "data"
