@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "milestone": "v0.6 pause 1 offline implementation",
+  "baseline_commit": "68938959936fc82f5eb8384db622e1df5a3b9226",
+  "instruction_commit": "fb85714",
+  "archive_commit": "8eaf583bc5a946e935d8ff0f410cb798fda6a6e8",
+  "conda_environment": "llm",
+  "simulation_started": false,
+  "new_tests": {
+    "total": 63,
+    "passed": 63,
+    "modules": {
+      "test_parallel_batch": 37,
+      "test_parallel_worker": 12,
+      "test_parallel_finalize": 7,
+      "test_parallel_file_sizes": 7
+    },
+    "passed_tests": [
+      "test_parallel_batch.CompletionAndRecoveryTests.test_active_worker_lock_prevents_recovery_duplicate_launch",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_attempts_above_global_budget_are_rejected_before_recovery",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_changed_registered_identity_stops_recovery_before_dispatch",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_cleared_historical_stop_is_detected_before_dispatch",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_completed_result_before_registration_recovers_once_without_reflight",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_corrupt_finished_state_sequence_budget_and_retry_chain_are_rejected",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_duplicate_controller_is_rejected",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_interrupted_attempt_never_automatically_reflies",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_registered_result_rewrite_stops_recovery_before_launch",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_registration_is_idempotent_and_rejects_changed_result",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_resume_disk_reserves_remaining_and_inflight_not_finished_attempts",
+      "test_parallel_batch.CompletionAndRecoveryTests.test_window_uses_last_twenty_registrations_and_stop_is_sticky",
+      "test_parallel_batch.DataRootAndIsolationTests.test_data_root_rejects_git_repository_relative_path_and_archive",
+      "test_parallel_batch.DataRootAndIsolationTests.test_duplicate_shard_writer_is_rejected_and_lock_is_reusable",
+      "test_parallel_batch.DataRootAndIsolationTests.test_missing_or_blank_data_root_has_no_default_and_creates_nothing",
+      "test_parallel_batch.DataRootAndIsolationTests.test_port_blocks_disjoint_and_reject_vehicle_overflow",
+      "test_parallel_batch.DataRootAndIsolationTests.test_port_probe_detects_both_tcp_and_udp_occupancy",
+      "test_parallel_batch.DataRootAndIsolationTests.test_work_directories_parameters_and_process_cleanup_are_isolated",
+      "test_parallel_batch.FrozenAssignmentTests.test_serial_and_sharded_seed_family_scene_and_split_are_identical",
+      "test_parallel_batch.FrozenAssignmentTests.test_shards_cover_all_tasks_disjoint_and_keep_families_round_robin",
+      "test_parallel_batch.FrozenPlanTests.test_prepare_generates_once_freezes_hashes_and_refuses_existing_batch",
+      "test_parallel_batch.GlobalControllerTests.test_analysis_error_or_missing_evidence_stops_dispatch_with_reason",
+      "test_parallel_batch.GlobalControllerTests.test_completion_persistence_failure_stops_dispatch_but_drains_existing_workers",
+      "test_parallel_batch.GlobalControllerTests.test_disk_budget_counts_all_shards_and_export_reserve_before_launch",
+      "test_parallel_batch.GlobalControllerTests.test_failed_run_with_complete_analysis_is_retained_and_dispatch_continues",
+      "test_parallel_batch.GlobalControllerTests.test_fifth_global_anomaly_stops_dispatch_and_drains_other_shard",
+      "test_parallel_batch.GlobalControllerTests.test_keyboard_interrupt_stops_dispatch_but_drains_launched_workers",
+      "test_parallel_batch.GlobalControllerTests.test_missing_result_file_is_integrity_failure_not_retry",
+      "test_parallel_batch.GlobalControllerTests.test_out_of_order_completions_use_persisted_sequence_and_rebuild_shard_ledgers",
+      "test_parallel_batch.GlobalControllerTests.test_protected_file_change_during_execution_stops_dispatch_and_keeps_other_worker",
+      "test_parallel_batch.GlobalControllerTests.test_redirected_attempt_parent_refuses_dispatch_and_worker_log_before_writes",
+      "test_parallel_batch.GlobalControllerTests.test_retry_budget_is_global_reserved_before_launch_and_at_most_once",
+      "test_parallel_batch.MergeTests.test_merge_rejects_changed_registered_result_file",
+      "test_parallel_batch.MergeTests.test_merge_rejects_duplicate_missing_protocol_and_quality_mismatch",
+      "test_parallel_batch.MergeTests.test_merge_rejects_duplicate_task_and_evidence_verifier_failure",
+      "test_parallel_batch.MergeTests.test_merge_retains_retry_evidence_and_selects_only_terminal_run",
+      "test_parallel_batch.MergeTests.test_merge_uses_global_order_not_completion_order",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_committed_blob_is_checked_even_if_worktree_is_smaller",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_deleted_legacy_large_binary_is_allowed",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_exactly_five_mib_is_allowed",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_modified_legacy_large_binary_is_rejected",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_new_file_over_five_mib_is_rejected",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_renamed_large_binary_is_rejected",
+      "test_parallel_file_sizes.ParallelFileSizeTests.test_unchanged_legacy_large_binary_is_allowed",
+      "test_parallel_finalize.ParallelFinalizeTests.test_cli_missing_sim_data_root_exits_without_creating_output",
+      "test_parallel_finalize.ParallelFinalizeTests.test_duplicate_worker_started_marker_prevents_reflight_after_lock_release",
+      "test_parallel_finalize.ParallelFinalizeTests.test_export_error_preserves_partial_evidence_and_stopped_state",
+      "test_parallel_finalize.ParallelFinalizeTests.test_global_order_split_bindings_and_unified_pipeline_keep_quality_failure",
+      "test_parallel_finalize.ParallelFinalizeTests.test_missing_task_refuses_merge_before_any_export",
+      "test_parallel_finalize.ParallelFinalizeTests.test_patrol_timing_uses_primary_phase_and_separates_unknown_denominators",
+      "test_parallel_finalize.ParallelFinalizeTests.test_real_synthetic_analysis_exports_audits_describes_and_loads_failed_run",
+      "test_parallel_worker.ParallelWorkerTests.test_analysis_error_or_missing_artifact_is_infrastructure_stop",
+      "test_parallel_worker.ParallelWorkerTests.test_confirmed_hard_failures_and_analysis_error_are_distinct_from_unknown",
+      "test_parallel_worker.ParallelWorkerTests.test_confirmed_preflight_parameter_mismatch_is_not_retried",
+      "test_parallel_worker.ParallelWorkerTests.test_failed_run_complete_analysis_is_retained_as_one_quality_anomaly",
+      "test_parallel_worker.ParallelWorkerTests.test_forged_outcome_and_cross_shard_path_are_rejected",
+      "test_parallel_worker.ParallelWorkerTests.test_frozen_firmware_and_task_changes_prevent_launch",
+      "test_parallel_worker.ParallelWorkerTests.test_interrupted_attempt_cannot_automatically_relaunch",
+      "test_parallel_worker.ParallelWorkerTests.test_only_proven_pre_takeoff_transient_failure_is_retryable",
+      "test_parallel_worker.ParallelWorkerTests.test_rehashed_generation_provenance_is_checked_against_full_bundle",
+      "test_parallel_worker.ParallelWorkerTests.test_selected_single_attempt_has_isolated_directory_and_formal_versions",
+      "test_parallel_worker.ParallelWorkerTests.test_source_mutation_and_omitted_evidence_hash_are_rejected",
+      "test_parallel_worker.ParallelWorkerTests.test_wrong_formal_protocol_is_rejected_even_after_rehash"
+    ]
+  },
+  "publication_tests": {
+    "total": 204,
+    "passed": 204,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "elapsed_seconds": 21.719
+  },
+  "full_tests": {
+    "total": 726,
+    "passed": 721,
+    "errors": 5,
+    "failures": 0,
+    "skipped": 0,
+    "elapsed_seconds": 70.188,
+    "error_cases": [
+      {
+        "test": "test_parameter_comparison_v2.ParameterComparisonV2Tests.test_real_wp_s_and_v01_readbacks_have_valid_reset_but_partial_v01_stays_rejected",
+        "exception_summary": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\shy\\\\.codex\\\\visualizations\\\\2026\\\\10\\\\07\\\\01a116da-bdd0-7400-a803-7c3858904e9f\\\\offline_validation\\\\source_01\\\\Multi-UAV SimpleGC\\\\verification\\\\v04_v1_20261001\\\\runs\\\\recon_shared_demo_3uav_20261001T182936Z_6bca981d\\\\metadata.json",
+        "reproduced_on_baseline": true
+      },
+      {
+        "test": "test_v05_batch_controller.BatchIOTests.test_prepare_then_successful_next_uses_real_analysis",
+        "exception_summary": "ValueError: frozen PP input/evidence changed: ['C:\\\\Users\\\\shy\\\\.codex\\\\visualizations\\\\2026\\\\10\\\\07\\\\01a116da-bdd0-7400-a803-7c3858904e9f\\\\offline_validation\\\\source_01\\\\Multi-UAV SimpleGC\\\\verification\\\\v05_r12b_pp_20261002\\\\dataset\\\\episodes\\\\20261002T195249Z_f877e8c3\\\\ac4_timing_v3.json', 'C:\\\\U",
+        "reproduced_on_baseline": true
+      },
+      {
+        "test": "test_v05_r12_controllers.R12ValidationTests.test_history_preserves_original_fail_and_charges_two",
+        "exception_summary": "ValueError: historical VP1 is not the non-retryable failed preflight",
+        "reproduced_on_baseline": true
+      },
+      {
+        "test": "test_v05c_validation_controller.V05cValidationControllerTests.test_history_is_one_real_nonretryable_attempt_and_hash_bound",
+        "exception_summary": "ValueError: historical VP1 is not the non-retryable failed preflight",
+        "reproduced_on_baseline": true
+      },
+      {
+        "test": "test_wp_p_protocol.V05ProtocolTests.test_real_v04_v06_episode_still_loads",
+        "exception_summary": "StopIteration",
+        "reproduced_on_baseline": true
+      }
+    ]
+  },
+  "baseline_reproduction": {
+    "total": 5,
+    "errors": 5,
+    "test_ids": [
+      "test_parameter_comparison_v2.ParameterComparisonV2Tests.test_real_wp_s_and_v01_readbacks_have_valid_reset_but_partial_v01_stays_rejected",
+      "test_v05_batch_controller.BatchIOTests.test_prepare_then_successful_next_uses_real_analysis",
+      "test_v05_r12_controllers.R12ValidationTests.test_history_preserves_original_fail_and_charges_two",
+      "test_v05c_validation_controller.V05cValidationControllerTests.test_history_is_one_real_nonretryable_attempt_and_hash_bound",
+      "test_wp_p_protocol.V05ProtocolTests.test_real_v04_v06_episode_still_loads"
+    ]
+  },
+  "validation_method": "Full suite and publication modules run in a disposable copy excluding ignored files; Python audit hook forbids source/archive writes and ArduCopter launch. Existing dev tests/.tmp files preserved.",
+  "source_sha256": {
+    ".github/scripts/check_file_sizes.py": "d68ac70e9b8f29335650748ed299c0acb185afbbfd5d7768afec2e54a152dee7",
+    ".github/workflows/unit-tests.yml": "c25ce29eeb235c37ee4defab2e63a8d827694c4c396fddc7336a63671e836d63",
+    "Multi-UAV SimpleGC/swarm_sim/parallel_batch.py": "f2bea97317a522ca8b2a51302504a0077eeb791444c7bcb38762830cb0a458b4",
+    "Multi-UAV SimpleGC/swarm_sim/parallel_worker.py": "4c1b298172c23b98e9d0e618d4a69e083adc1e9d7e598e124f6f4a5db72d576d",
+    "Multi-UAV SimpleGC/scripts/run_parallel_batch.py": "cb6c628131964f89d03afdf6fb12b7b4cc3a6a0bfa21e1e1c43600e896a130d9",
+    "Multi-UAV SimpleGC/tests/test_parallel_batch.py": "2683fe0a51cbdecdaf21bab924d32bf5f4ec55c2886ae3b937c0bf3d9166146a",
+    "Multi-UAV SimpleGC/tests/test_parallel_worker.py": "dc7e843f7184ad85420aca6c17e87bbba377407b859e282816adeadcdeea0131",
+    "Multi-UAV SimpleGC/tests/test_parallel_finalize.py": "090f7e99a33113c0abf33c70e463e9f959f503ebe50c602da997cc017404584a",
+    "Multi-UAV SimpleGC/tests/test_parallel_file_sizes.py": "ba51328454668676f2b7db2c60306cf81a7300140a42f4a57f5202f570e69d55"
+  },
+  "evidence_files": {
+    "full": "C:\\Users\\shy\\.codex\\visualizations\\2026\\10\\07\\01a116da-bdd0-7400-a803-7c3858904e9f\\offline_validation\\all_tests_final.json",
+    "full_log": "C:\\Users\\shy\\.codex\\visualizations\\2026\\10\\07\\01a116da-bdd0-7400-a803-7c3858904e9f\\offline_validation\\all_tests_final.log",
+    "publication": "C:\\Users\\shy\\.codex\\visualizations\\2026\\10\\07\\01a116da-bdd0-7400-a803-7c3858904e9f\\offline_validation\\publication_final.json",
+    "baseline": "C:\\Users\\shy\\.codex\\visualizations\\2026\\10\\07\\01a116da-bdd0-7400-a803-7c3858904e9f\\offline_validation\\baseline_failures.json",
+    "runner": "C:\\Users\\shy\\.codex\\visualizations\\2026\\10\\07\\01a116da-bdd0-7400-a803-7c3858904e9f\\offline_validation\\run_checks.py"
+  }
+}

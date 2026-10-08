@@ -1,0 +1,626 @@
+{
+  "baseline": "fe7ac4da8bb41498bcb1ba97ac20df76b71ab7c0",
+  "dataset_sha256": "2ac8c17583ec93a43ef31f64a7bbfa2fd16355f58c4929b2cf88f990ee9df707",
+  "method": "truncate both position streams in memory; keep scene, events, clocks, metadata unchanged; recompute windows, metrics, facts, text",
+  "samples": [
+    {
+      "number": "PP01",
+      "slot": "recon_return",
+      "run_id": "20261002T195249Z_f877e8c3",
+      "selected_analysis": {
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP01_inherited",
+        "manifest_sha256": "b0254cec546f4aea024d26126b34e62852f5a7f53aff6203eea129f6cd9c8c83"
+      },
+      "return_required": true,
+      "baseline_checks": {
+        "success": true,
+        "conditions": true,
+        "facts": true,
+        "descriptions": true
+      },
+      "original": {
+        "channels": {
+          "truth": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": null
+          },
+          "observation": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": null
+          }
+        },
+        "observed_laps": null,
+        "observed_return": "是",
+        "sentences": [
+          {
+            "template_id": "T3.coverage_pass_ratio.train.2",
+            "text": "到观察阶段结束时，依理想水平圆盘观察模型估算的区域覆盖率约为 100.0%。",
+            "fact_ids": [
+              "labels.mission_result.conditions.coverage",
+              "model_metrics.coverage_ratio",
+              "model_metrics.coverage_model"
+            ]
+          },
+          {
+            "template_id": "T3.return_pass.train.2",
+            "text": "到任务结束时，设定的返航条件得到满足。",
+            "fact_ids": [
+              "labels.return_required",
+              "labels.mission_result.conditions.return"
+            ]
+          },
+          {
+            "template_id": "T4.return_true.train.1",
+            "text": "最后，轨迹返回出发位置。",
+            "fact_ids": [
+              "observed.return_observed"
+            ]
+          }
+        ]
+      },
+      "cuts": [
+        {
+          "kind": "half_main",
+          "cutoff_s": 57.37115959999865,
+          "checks": {
+            "intent_not_true": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "未知",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": null
+              },
+              "observation": {
+                "intent_success": "未知",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": null
+              }
+            },
+            "observed_laps": null,
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.coverage_unknown.train.1",
+                "text": "按设定的仿真观察模型，区域覆盖结果尚不能确定。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.coverage"
+                ]
+              },
+              {
+                "template_id": "T3.return_unknown.train.1",
+                "text": "任务设定的返航条件尚不能确认。",
+                "fact_ids": [
+                  "labels.return_required",
+                  "labels.mission_result.conditions.return"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "kind": "before_return",
+          "cutoff_s": 90.86720850000017,
+          "checks": {
+            "return_not_true": true,
+            "no_return_claim": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "是",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": null
+              },
+              "observation": {
+                "intent_success": "是",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": null
+              }
+            },
+            "observed_laps": null,
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.coverage_pass_ratio.train.2",
+                "text": "到观察阶段结束时，依理想水平圆盘观察模型估算的区域覆盖率约为 100.0%。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.coverage",
+                  "model_metrics.coverage_ratio",
+                  "model_metrics.coverage_model"
+                ]
+              },
+              {
+                "template_id": "T3.return_unknown.train.1",
+                "text": "任务设定的返航条件尚不能确认。",
+                "fact_ids": [
+                  "labels.return_required",
+                  "labels.mission_result.conditions.return"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "number": "PP02",
+      "slot": "patrol_2",
+      "run_id": "20261002T195621Z_a7eb6541",
+      "selected_analysis": {
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP02_inherited",
+        "manifest_sha256": "4ae539cb81b3ecfff21f7b7bce3b74eb997a55e624d04854b29b99758b317c7b"
+      },
+      "return_required": true,
+      "baseline_checks": {
+        "success": true,
+        "conditions": true,
+        "facts": true,
+        "descriptions": true
+      },
+      "original": {
+        "channels": {
+          "truth": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": {
+              "uav_01": 2,
+              "uav_02": 2
+            }
+          },
+          "observation": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": {
+              "uav_01": 2,
+              "uav_02": 2
+            }
+          }
+        },
+        "observed_laps": [
+          2,
+          2
+        ],
+        "observed_return": "是",
+        "sentences": [
+          {
+            "template_id": "T3.gap_pass_number.train.2",
+            "text": "到巡逻阶段结束时，最长重访间隔约 33.3 秒，符合要求。",
+            "fact_ids": [
+              "labels.mission_result.conditions.max_gap",
+              "observed.max_revisit_gap_s"
+            ]
+          },
+          {
+            "template_id": "T3.return_pass.train.3",
+            "text": "经核验，任务的返航条件已达标。",
+            "fact_ids": [
+              "labels.return_required",
+              "labels.mission_result.conditions.return"
+            ]
+          },
+          {
+            "template_id": "T4.return_true.train.1",
+            "text": "最后，轨迹返回出发位置。",
+            "fact_ids": [
+              "observed.return_observed"
+            ]
+          },
+          {
+            "template_id": "T6.laps.train.2",
+            "text": "到主要阶段结束时，各机约完成 2 圈边界绕行。",
+            "fact_ids": [
+              "observed.per_agent_laps_observed"
+            ]
+          }
+        ]
+      },
+      "cuts": [
+        {
+          "kind": "half_main",
+          "cutoff_s": 85.16811879999878,
+          "checks": {
+            "intent_not_true": true,
+            "laps_smaller_or_unknown": true,
+            "no_original_lap_claim": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "未知",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": null,
+                  "uav_02": null
+                }
+              },
+              "observation": {
+                "intent_success": "未知",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": null,
+                  "uav_02": null
+                }
+              }
+            },
+            "observed_laps": null,
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.gap_unknown.train.2",
+                "text": "到巡逻阶段结束时，最长重访间隔仍无法完整核验。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.max_gap"
+                ]
+              },
+              {
+                "template_id": "T3.return_unknown.train.1",
+                "text": "任务设定的返航条件尚不能确认。",
+                "fact_ids": [
+                  "labels.return_required",
+                  "labels.mission_result.conditions.return"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "kind": "before_return",
+          "cutoff_s": 148.39904029999923,
+          "checks": {
+            "return_not_true": true,
+            "no_return_claim": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "是",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": 2,
+                  "uav_02": 2
+                }
+              },
+              "observation": {
+                "intent_success": "是",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": 2,
+                  "uav_02": 2
+                }
+              }
+            },
+            "observed_laps": [
+              2,
+              2
+            ],
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.gap_pass_number.train.2",
+                "text": "到巡逻阶段结束时，最长重访间隔约 33.3 秒，符合要求。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.max_gap",
+                  "observed.max_revisit_gap_s"
+                ]
+              },
+              {
+                "template_id": "T3.return_unknown.train.1",
+                "text": "任务设定的返航条件尚不能确认。",
+                "fact_ids": [
+                  "labels.return_required",
+                  "labels.mission_result.conditions.return"
+                ]
+              },
+              {
+                "template_id": "T6.laps.train.2",
+                "text": "到主要阶段结束时，各机约完成 2 圈边界绕行。",
+                "fact_ids": [
+                  "observed.per_agent_laps_observed"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "number": "PP05",
+      "slot": "recon_no_return",
+      "run_id": "20261002T200859Z_f177aa58",
+      "selected_analysis": {
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP05_inherited",
+        "manifest_sha256": "879692871ad1af899be7cee7c0bfa8e4208ff65dc4faf243b82b374880a76420"
+      },
+      "return_required": false,
+      "baseline_checks": {
+        "success": true,
+        "conditions": true,
+        "facts": true,
+        "descriptions": true
+      },
+      "original": {
+        "channels": {
+          "truth": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": null
+          },
+          "observation": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": null
+          }
+        },
+        "observed_laps": null,
+        "observed_return": "否",
+        "sentences": [
+          {
+            "template_id": "T3.coverage_pass_ratio.train.1",
+            "text": "按理想水平圆盘观察模型估算，区域覆盖率约为 100.0%。",
+            "fact_ids": [
+              "labels.mission_result.conditions.coverage",
+              "model_metrics.coverage_ratio",
+              "model_metrics.coverage_model"
+            ]
+          },
+          {
+            "template_id": "T4.return_false.train.3",
+            "text": "任务结束前，至少一条轨迹未进入对应起点附近。",
+            "fact_ids": [
+              "observed.return_observed"
+            ]
+          }
+        ]
+      },
+      "cuts": [
+        {
+          "kind": "half_main",
+          "cutoff_s": 94.83845570000048,
+          "checks": {
+            "intent_not_true": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "未知",
+                "return_success": "是",
+                "mission_success": "未知",
+                "laps": null
+              },
+              "observation": {
+                "intent_success": "未知",
+                "return_success": "是",
+                "mission_success": "未知",
+                "laps": null
+              }
+            },
+            "observed_laps": null,
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.coverage_unknown.train.3",
+                "text": "依据设定的仿真观察模型，覆盖条件目前未能判定。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.coverage"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "number": "PP14",
+      "slot": "patrol_3_return",
+      "run_id": "20261003T041658Z_00fdbac2",
+      "selected_analysis": {
+        "directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation\\Multi-UAV SimpleGC\\verification\\v05_r12b_pp_20261002\\analyses\\PP14_attempt_0",
+        "manifest_sha256": "1f893e15deb12c408712148a6dafe5cc373634c04c27a60e5ed7b9637ed34f71"
+      },
+      "return_required": true,
+      "baseline_checks": {
+        "success": true,
+        "conditions": true,
+        "facts": true,
+        "descriptions": true
+      },
+      "original": {
+        "channels": {
+          "truth": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": {
+              "uav_01": 3,
+              "uav_02": 3
+            }
+          },
+          "observation": {
+            "intent_success": "是",
+            "return_success": "是",
+            "mission_success": "是",
+            "laps": {
+              "uav_01": 3,
+              "uav_02": 3
+            }
+          }
+        },
+        "observed_laps": [
+          3,
+          3
+        ],
+        "observed_return": "是",
+        "sentences": [
+          {
+            "template_id": "T3.gap_pass_number.train.1",
+            "text": "按轨迹核验，最长重访间隔约 23.2 秒，满足设定条件。",
+            "fact_ids": [
+              "labels.mission_result.conditions.max_gap",
+              "observed.max_revisit_gap_s"
+            ]
+          },
+          {
+            "template_id": "T3.return_pass.train.3",
+            "text": "经核验，任务的返航条件已达标。",
+            "fact_ids": [
+              "labels.return_required",
+              "labels.mission_result.conditions.return"
+            ]
+          },
+          {
+            "template_id": "T4.return_true.train.1",
+            "text": "最后，轨迹返回出发位置。",
+            "fact_ids": [
+              "observed.return_observed"
+            ]
+          },
+          {
+            "template_id": "T6.laps.train.3",
+            "text": "依据轨迹进度，各机约绕行边界 3 圈。",
+            "fact_ids": [
+              "observed.per_agent_laps_observed"
+            ]
+          }
+        ]
+      },
+      "cuts": [
+        {
+          "kind": "half_main",
+          "cutoff_s": 86.7759260500001,
+          "checks": {
+            "intent_not_true": true,
+            "laps_smaller_or_unknown": true,
+            "no_original_lap_claim": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "未知",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": null,
+                  "uav_02": null
+                }
+              },
+              "observation": {
+                "intent_success": "未知",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": null,
+                  "uav_02": null
+                }
+              }
+            },
+            "observed_laps": null,
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.gap_unknown.train.2",
+                "text": "到巡逻阶段结束时，最长重访间隔仍无法完整核验。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.max_gap"
+                ]
+              },
+              {
+                "template_id": "T3.return_unknown.train.3",
+                "text": "经核验，任务的返航条件目前未确定。",
+                "fact_ids": [
+                  "labels.return_required",
+                  "labels.mission_result.conditions.return"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "kind": "before_return",
+          "cutoff_s": 153.84926140000005,
+          "checks": {
+            "return_not_true": true,
+            "no_return_claim": true
+          },
+          "passed": true,
+          "result": {
+            "channels": {
+              "truth": {
+                "intent_success": "是",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": 3,
+                  "uav_02": 3
+                }
+              },
+              "observation": {
+                "intent_success": "是",
+                "return_success": "未知",
+                "mission_success": "未知",
+                "laps": {
+                  "uav_01": 3,
+                  "uav_02": 3
+                }
+              }
+            },
+            "observed_laps": [
+              3,
+              3
+            ],
+            "observed_return": "未知",
+            "sentences": [
+              {
+                "template_id": "T3.gap_pass_number.train.1",
+                "text": "按轨迹核验，最长重访间隔约 23.2 秒，满足设定条件。",
+                "fact_ids": [
+                  "labels.mission_result.conditions.max_gap",
+                  "observed.max_revisit_gap_s"
+                ]
+              },
+              {
+                "template_id": "T3.return_unknown.train.3",
+                "text": "经核验，任务的返航条件目前未确定。",
+                "fact_ids": [
+                  "labels.return_required",
+                  "labels.mission_result.conditions.return"
+                ]
+              },
+              {
+                "template_id": "T6.laps.train.3",
+                "text": "依据轨迹进度，各机约绕行边界 3 圈。",
+                "fact_ids": [
+                  "observed.per_agent_laps_observed"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "all_pass": true
+}
