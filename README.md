@@ -14,11 +14,11 @@
 | v0.3–v0.4 | 共享区域分工、TaskSpec、连续航线、family 划分、双通道验证、执行诊断及离线回放 | 作为现有框架基础；旧报告是对应阶段记录 |
 | v0.5 | 侦察与边界巡逻双意图；验证、20 次试生产、240 次批量运行；导出、审计、描述、加载验收 | 已完成，停在暂停 2，已冻结 |
 | Git 发布与迁移 | 精简代码发布，补齐运行基线，独立目录验证，PR 合并及建立新开发目录 | 已完成；[PR #1](https://github.com/shy-UCAS/swarm-task-sim/pull/1) |
-| v0.6 | 分片功能已通过暂停 1 复核；意图模块化已取消；20 任务、2 路 pilot 已准备 | 截断诊断及 DR130 金标准复核通过；[检查报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_prechecks.md)、[快速通过纸面核对](Multi-UAV%20SimpleGC/docs/v0.6_rapid_passage_review.md)；本轮仅 prepare，尚未启动仿真；[手动运行命令](Multi-UAV%20SimpleGC/docs/v0.6_pilot_run_commands.md) |
+| v0.6 | 分片并行已完成并通过 20 任务 2 路试跑，2 路采用于正式生产；意图模块化已取消；数据目录移出仓库 | 试跑 20/20 完成、时钟不可用 0/20、质量合格 20/20、语义一致 19/20，P0 四条停止条件未触发；[试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)；截断诊断及 DR130 金标准复核通过：[检查报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_prechecks.md)、[快速通过纸面核对](Multi-UAV%20SimpleGC/docs/v0.6_rapid_passage_review.md) |
 
 v0.6 暂停 1：新增测试 63/63、CI 离线清单 204/204 通过；全量 721/726 通过，5 项历史证据依赖错误在原始基线复现。文件行数、八类测试、未解决项及数据目录示例见 [暂停 1 报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pause1_report.md)。
 
-后续状态：分片暂停 1 已复核通过，补充测试后并行测试 65/65 通过。r1 摸底停止结论保留于[历史报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_stop_report.md)；r2 诊断与 DR130 金标准在 `8369df9` 独立提交并已复核通过，[诊断脚本及摘要](Multi-UAV%20SimpleGC/verification/v06_prechecks_20261007/README.md)在 `21f427a` 归档。意图模块化已取消，运行代码与 `fe7ac4d` 一致。用户将试跑改为 **10 family、20 任务、2 路、新种子 `2026100701`**；已在 `F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData` prepare 批次 `v06_pilot20_20261007_seed2026100701`，尝试数为 0。用户在自己的 PowerShell 终端启动并收尾，助手仅准备和事后分析，不监视运行。
+后续状态：分片暂停 1 已复核通过，补充测试后并行测试 65/65 通过。r1 摸底停止结论保留于[历史报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_stop_report.md)；r2 诊断与 DR130 金标准在 `8369df9` 独立提交并已复核通过，[诊断脚本及摘要](Multi-UAV%20SimpleGC/verification/v06_prechecks_20261007/README.md)在 `21f427a` 归档。意图模块化已取消，运行代码与 `fe7ac4d` 一致。试跑按用户决定改为 **10 family、20 任务、2 路、新种子 `2026100701`**，批次 `v06_pilot20_20261007_seed2026100701` 已在数据根 `SwarmData`（仓库外）执行并收尾：20/20 完成、时钟不可用 0/20、质量合格 20/20、双通道语义一致 19/20，P0 四条停止条件未触发，用户据此决定**采用 2 路于 v0.6 正式生产**；计数、异常定位、吞吐对照与三项 P2 诊断见[试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)。该批次用途为 pilot，不并入任何训练数据集。执行方式与[运行命令文档](Multi-UAV%20SimpleGC/docs/v0.6_pilot_run_commands.md)的差异（改由助手在用户授权下代跑，未使用前台 Ctrl+C 优雅停止路径）记在该报告第 1 节。v0.6 正式批量生成的范围、种子与轮次尚未授权。
 
 v0.5 的最终计数如下，**260 次只包含试生产与正式批量，不包含更早的开发/验证运行**：
 
@@ -190,7 +190,7 @@ conda run -n $EnvName --no-capture-output python main.py validate tests/.tmp/rea
 
 > 请先读仓库根目录 README.md，核对当前 Git 分支/提交，并恢复工程上下文。说明 v0.5 已完成哪些工作、当前框架能做什么、新开发仓库与旧冻结归档各包含哪些内容。按需要读取最终报告和有效规则，区分旧阶段指令与当前任务。先汇报恢复结果，不自动启动仿真、批量生成或改写旧证据。
 
-当前没有待执行的 v0.5 生产任务。v0.6 意图模块化已取消；本轮只准备 20 任务、2 路 pilot，准备检查见[机器摘要](Multi-UAV%20SimpleGC/docs/v0.6_pilot_preparation_check.json)。按[手动运行命令](Multi-UAV%20SimpleGC/docs/v0.6_pilot_run_commands.md)由用户启动 run 和 finalize；助手完成准备后停止，不启动仿真、不监视运行，收到用户后续指令再做事后分析。
+当前没有待执行的 v0.5 生产任务。v0.6 意图模块化已取消；分片并行已完成 20 任务 2 路试跑并采用，试跑批次已收尾，见[试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)，历史准备检查见[机器摘要](Multi-UAV%20SimpleGC/docs/v0.6_pilot_preparation_check.json)。**v0.6 正式批量生成尚未授权**：范围、种子与轮次等待用户后续指令；不自动启动仿真、不监视运行、不重跑或改写旧证据，收到用户指令再执行。
 
 后续里程碑完成、规则改变或目录迁移时，同步更新本文件中的状态、计数、验证范围和证据入口。完整变更历史保留在 Git 和对应报告中，避免只有某个聊天窗口知道项目进展。
 
@@ -216,3 +216,14 @@ conda run -n $EnvName --no-capture-output python main.py validate tests/.tmp/rea
 - 2026-10-07 可追溯性核对：归档全量 **661/661** 测试通过；发布 CI 为原 139 项加新增 2 项，共 141 项，另外 522 项仍保留但未纳入 CI，不全是归档依赖测试。
 - 实际发布差异除忽略规则/基线外还包括 CI、新基线测试、发布文档和 4 个 episode 示例；核心生产代码与原配置/测试一致。完整差异及未纳入 CI 测试分类、九个提交、数据哈希核验见 [拆分可追溯性报告](Multi-UAV%20SimpleGC/docs/v0.5_repository_traceability_20261007.md)。
 - 归档外备份清单：`F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-backup-manifests/20261007-traceability/archive_sha256.csv`，覆盖 52,493 个文件、29.97 GiB；清单本身 10.87 MiB。排除 .git，包含未跟踪/忽略文件和 .git-publication 中的已有 bundle；完整范围及清单 SHA256 见报告。
+
+## 11. 数据版本登记表
+
+数据集清单一律指该版本 `dataset/dataset_manifest.json` 的 SHA256；描述层另列 `language/language_manifest.json`。用途是硬约束：标为 pilot 的批次不得并入训练数据集。
+
+| 数据版本 | 用途 | 位置 | 规模 | 数据集清单 SHA256 | 状态与边界 |
+|---|---|---|---|---|---|
+| v0.5 全量 260（PP01–PP20 + B001–B240） | 算法链路开发数据集（正式） | 归档 `Simulation/Multi-UAV SimpleGC/verification/v05_batch_20261002/dataset/` | 260 episode，质量合格 252、语义一致 253 | `2ac8c17583ec93a43ef31f64a7bbfa2fd16355f58c4929b2cf88f990ee9df707` | 已冻结；描述层 SHA256 `79da5becf717e988bea4027deebd0cad9b3850c88e731bada2ccd43569a7eb8c` |
+| v0.6 pilot 20（`v06_pilot20_20261007_seed2026100701`） | **pilot：仅用于并行方案验证，不用于训练** | `SwarmData/parallel_batch/v06_pilot20_20261007_seed2026100701/dataset/`（仓库外，与 `prepare_inputs/` 同根） | 20 episode，质量合格 20、双通道语义一致 19 | `510f788140f240863a8ace68776568739d2716456379df0ca6a804e42169c0c1` | 已收尾（`completed=true`、`finalized=true`、`stopped_reason=null`）；描述层 SHA256 `b2a128bd69aab29e0308570446f2f1024896f68ab38122168799cf382490e8b6`，76 条描述 / 19 episode、跳过 1 |
+
+pilot 批次的计数、唯一不一致运行定位、吞吐对照与 P2 诊断见[试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)；v0.6 正式批量生成的数据版本行在授权并收尾后再补登。
