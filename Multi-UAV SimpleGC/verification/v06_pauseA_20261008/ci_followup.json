@@ -1,0 +1,40 @@
+{
+  "implementation_commit": "03689e26dd6c9d58c762e6b163ce56772c5595fb",
+  "main_ci": {
+    "tests": 248,
+    "result": "success",
+    "url": "https://github.com/shy-UCAS/swarm-task-sim/actions/runs/37772642461"
+  },
+  "tag_ci_initial": {
+    "log_sha256": "41f2391e882106158f9b43a16864546718337786575a0d875065c4ce0ff1603c",
+    "observed_offsets": [
+      0.0,
+      3.5000000000000284,
+      7.000000000000028
+    ],
+    "log": "SwarmData/v06_pauseA_20261008/tag_ci_failure_job113296642155.log",
+    "url": "https://github.com/shy-UCAS/swarm-task-sim/actions/runs/37772919616",
+    "result": "failure",
+    "tests": 248,
+    "rerun_original": false,
+    "expected_offsets": [
+      0.0,
+      3.5,
+      7.0
+    ],
+    "failed_test": "test_v06_execution.FinalHoldTests.test_column_release_offsets_apply_per_agent_after_common_upload",
+    "failures": 1
+  },
+  "fix": {
+    "focused_tests": 8,
+    "runtime_changed": false,
+    "test_file_sha256": "fdc177cda1eb1ad1c39124f89ea07f5634a8ff439c8ffbf112a941c6f05580f9",
+    "scope": "test assertion only; deterministic clock reproduces float cancellation",
+    "focused_module": "test_v06_execution",
+    "absolute_tolerance_s": 1E-08,
+    "physical_thresholds_changed": false,
+    "focused_passed": 8
+  },
+  "prior_tag_object": "b9e7e5224fbd453a2d14537d1f4fceba8d9e26df",
+  "release_gate": "new main CI success before updating this newly-created tag; final main/tag CI URLs reported in delivery"
+}

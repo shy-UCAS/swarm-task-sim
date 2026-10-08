@@ -85,15 +85,23 @@ class FinalHoldTests(unittest.TestCase):
         scenario["phases"] = [phase]
         phase["start_delays_s"] = {v["id"]: 3.5 * i for i, v in enumerate(scenario["vehicles"])}
         clients, calls = [Mock(id=v["id"]) for v in scenario["vehicles"]], []
+        clock = [252.7]
         def parallel(function, **kwargs):
             calls.append(kwargs["context"])
             for client, vehicle in zip(clients, scenario["vehicles"]):
                 function(client, vehicle)
+            # The +0.3 s release becomes 253.1; delayed releases cross 2**8,
+            # reproducing cancellation roundoff on freshly booted CI hosts.
+            clock[0] = 252.79999999999998 if kwargs["context"].endswith(" upload") else clock[0] + .001
         metadata = {"quality_policy": resolve_policy()}
-        runner.execute_phases(scenario, clients, parallel, Mock(), metadata,
-                              time.perf_counter(), time.perf_counter()+100, lambda: None)
+        with patch.object(runner.time, "perf_counter", side_effect=lambda: clock[0]):
+            runner.execute_phases(scenario, clients, parallel, Mock(), metadata,
+                                  clock[0], clock[0]+100, lambda: None)
         releases = [client.execute.call_args.args[0] for client in clients]
-        self.assertEqual([value-releases[0] for value in releases], [0.0, 3.5, 7.0])
+        offsets = [value-releases[0] for value in releases]
+        self.assertNotEqual(offsets[1], 3.5)  # Ensure this fixture exercises the CI regression.
+        for actual, expected in zip(offsets, [0.0, 3.5, 7.0]):
+            self.assertAlmostEqual(actual, expected, delta=1e-8)
         self.assertEqual(calls, [f"phase {phase['name']} {name}" for name in ("upload", "execute", "confirm")])
         self.assertTrue(all(client.confirm_target.call_args.args[3] == .5 for client in clients))
 
