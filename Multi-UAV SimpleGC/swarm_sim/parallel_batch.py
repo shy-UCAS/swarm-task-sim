@@ -39,10 +39,8 @@ def utc():
 
 
 def save_atomic(path, value):
-    path = Path(path)
-    temporary = path.with_name(path.name + ".tmp")
-    if any(p.resolve() != p.absolute() for p in (path, temporary)):
-        raise ValueError("output path is redirected by a symlink or junction")
+    path = resolve_data_root(Path(path).absolute())
+    temporary = resolve_data_root(path.with_name(path.name + ".tmp"))
     with temporary.open("w", encoding="utf-8") as stream:
         json.dump(value, stream, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
         stream.write("\n")
@@ -84,8 +82,7 @@ class FileLock:
         self.path, self.stream = Path(path), None
 
     def __enter__(self):
-        if self.path.resolve() != self.path.absolute():
-            raise ValueError("lock path is redirected by a symlink or junction")
+        self.path = resolve_data_root(self.path.absolute())
         self.stream = self.path.open("a+b")
         try:
             if self.path.stat().st_size == 0:

@@ -22,7 +22,7 @@ class ParallelFinalizeTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        self.root = Path(self.temporary.name).resolve()
 
     def mock_batch(self):
         plan = dict(root=str(self.root), version=batch.VERSION, split_salt="explicit-salt",

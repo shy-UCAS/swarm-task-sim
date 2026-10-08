@@ -92,6 +92,121 @@ class FrozenAssignmentTests(unittest.TestCase):
 
 
 class DataRootAndIsolationTests(unittest.TestCase):
+    def test_short_name_expansion_is_accepted_for_atomic_output_and_lock(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp).resolve()
+            real = base / "runner administrator"
+            real.mkdir()
+            alias = base / "RUNNER~1"
+            resolve = Path.resolve
+
+            def expanded(path, *args, **kwargs):
+                path = path.absolute()
+                if path.is_relative_to(alias):
+                    path = real / path.relative_to(alias)
+                return resolve(path, *args, **kwargs)
+
+            # Model 8.3 expansion on platforms/volumes without short names.
+            # Only resolution is mocked; writes and OS locks remain real.
+            with patch.object(Path, "resolve", expanded):
+                self.assertNotEqual(alias.resolve(), alias.absolute())
+                batch.save_atomic(alias / "control.json", {"accepted": True})
+                with batch.FileLock(alias / "writer.lock"):
+                    with self.assertRaisesRegex(ValueError, "writer already active"):
+                        with batch.FileLock(real / "writer.lock"):
+                            self.fail("short and long paths acquired separate locks")
+            self.assertEqual(batch.read(real / "control.json"), {"accepted": True})
+            self.assertFalse((real / "control.json.tmp").exists())
+
+    @unittest.skipUnless(os.name == "nt", "Windows 8.3 paths")
+    def test_native_windows_short_name_is_accepted(self):
+        import ctypes
+        with tempfile.TemporaryDirectory(prefix="parallel short name ") as temp:
+            get_short = ctypes.WinDLL("kernel32", use_last_error=True).GetShortPathNameW
+            get_short.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint]
+            get_short.restype = ctypes.c_uint
+            size = get_short(temp, None, 0)
+            if not size:
+                self.skipTest("Windows could not obtain an 8.3 name; mocked coverage remains")
+            buffer = ctypes.create_unicode_buffer(size)
+            length = get_short(temp, buffer, size)
+            self.assertTrue(0 < length < size)
+            short = Path(buffer.value)
+            if short.absolute() == short.resolve():
+                self.skipTest("8.3 aliases unavailable on this volume; mocked coverage remains")
+            self.assertTrue(short.samefile(temp))
+            batch.save_atomic(short / "control.json", {"accepted": True})
+            with batch.FileLock(short / "writer.lock"):
+                pass
+            self.assertEqual(batch.read(Path(temp) / "control.json"), {"accepted": True})
+
+    def test_links_into_repositories_and_archive_are_rejected_before_writes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp).resolve()
+            repository, worktree, archive = (base / name for name in
+                                            ("repository", "worktree", "archive"))
+            for target in (repository, worktree, archive):
+                target.mkdir()
+            (repository / ".git").mkdir()
+            (worktree / ".git").write_text("gitdir: elsewhere", encoding="utf-8")
+            resolve = Path.resolve
+            for kind in ("symlink", "junction"):
+                for target in (repository, worktree, archive):
+                    link = base / f"{kind}_{target.name}"
+                    with self.subTest(kind=kind, target=target.name), ExitStack() as stack:
+                        try:
+                            if kind == "junction" and os.name == "nt":
+                                import _winapi
+                                _winapi.CreateJunction(str(target), str(link))
+                            elif kind == "symlink":
+                                link.symlink_to(target, target_is_directory=True)
+                            else:
+                                raise NotImplementedError("junctions require Windows")
+                        except (OSError, NotImplementedError) as exc:
+                            # CI may lack symlink privileges or junction support.
+                            # Model the resolved destination without mocking I/O.
+                            print(f"{kind} to {target.name}: mocked resolution ({exc})")
+                            def redirected(path, *args, **kwargs):
+                                path = path.absolute()
+                                if path.is_relative_to(link):
+                                    path = target / path.relative_to(link)
+                                return resolve(path, *args, **kwargs)
+                            stack.enter_context(patch.object(Path, "resolve", redirected))
+                        else:
+                            print(f"{kind} to {target.name}: real filesystem link")
+                        stack.enter_context(patch.object(batch, "ARCHIVE", archive))
+                        with self.assertRaisesRegex(ValueError, "repository|archive"):
+                            batch.save_atomic(link / "control.json", {"forbidden": True})
+                        with self.assertRaisesRegex(ValueError, "repository|archive"):
+                            with batch.FileLock(link / "writer.lock"):
+                                self.fail("protected destination acquired a lock")
+                        for name in ("control.json", "control.json.tmp", "writer.lock"):
+                            self.assertFalse((target / name).exists())
+
+    def test_redirected_output_or_temporary_file_is_rejected_before_writes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp).resolve()
+            protected = base / "repository"
+            protected.mkdir()
+            (protected / ".git").mkdir()
+            sentinel = protected / "sentinel.json"
+            sentinel.write_text("frozen evidence", encoding="utf-8")
+            resolve = Path.resolve
+            for suffix in ("", ".tmp"):
+                output = base / "control.json"
+                redirected_path = output.with_name(output.name + suffix)
+
+                def redirected(path, *args, **kwargs):
+                    actual = resolve(path, *args, **kwargs)
+                    return sentinel if actual == redirected_path else actual
+
+                with self.subTest(suffix=suffix), patch.object(Path, "resolve", redirected):
+                    with self.assertRaisesRegex(ValueError, "repository"):
+                        batch.save_atomic(output, {"forbidden": True})
+                self.assertEqual(sentinel.read_text(encoding="utf-8"), "frozen evidence")
+                self.assertFalse(output.exists())
+                self.assertFalse(output.with_name(output.name + ".tmp").exists())
+
     def test_missing_or_blank_data_root_has_no_default_and_creates_nothing(self):
         with patch.dict(os.environ, {}, clear=True):
             with self.assertRaisesRegex(ValueError, "SIM_DATA_ROOT"):
@@ -244,7 +359,7 @@ class ControllerFixture(unittest.TestCase):
         self.stack = ExitStack()
         self.addCleanup(self.stack.close)
         self.temp = self.stack.enter_context(tempfile.TemporaryDirectory())
-        self.root = Path(self.temp) / "batch"
+        self.root = Path(self.temp).resolve() / "batch"
         self.root.mkdir()
         self.plan = fake_plan(self.root)
         for k in range(self.plan["shards"]):
@@ -636,7 +751,7 @@ class MergeTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
-        self.root = Path(temporary.name)
+        self.root = Path(temporary.name).resolve()
 
     def fixture(self, root):
         plan = fake_plan(self.root, count=4)
@@ -740,7 +855,7 @@ class FrozenPlanTests(unittest.TestCase):
                                  storage_bytes_per_attempt=1, export_reserve_bytes=1)
             root = Path(plan["root"])
             self.assertEqual(generator.call_count, 1)
-            self.assertEqual(root, data / "parallel_batch/offline")
+            self.assertEqual(root, data.resolve() / "parallel_batch/offline")
             self.assertEqual(batch.load_plan(root), plan)
             self.assertEqual((root / "plan.sha256").read_text().strip(), file_hash(root / "plan.json"))
             self.assertIn(str(root / "bundle/mission_list.json"), plan["bundle_sha256"])

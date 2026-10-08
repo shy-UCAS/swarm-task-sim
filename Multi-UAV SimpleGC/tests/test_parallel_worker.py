@@ -103,7 +103,7 @@ class ParallelWorkerTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.plan, self.attempt, self.scene = fixture(Path(self.temporary.name))
+        self.plan, self.attempt, self.scene = fixture(Path(self.temporary.name).resolve())
 
     def execute(self, **kwargs):
         with patch("scripts.run_mission_list.run_mission_list",
