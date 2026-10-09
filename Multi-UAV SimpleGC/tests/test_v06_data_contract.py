@@ -38,7 +38,7 @@ def _v06_run(root):
     """Upgrade synthetic contract evidence; no telemetry or simulation is run."""
     run, analysis = make_run(root)
     task = json.loads((analysis / "task.json").read_text())
-    task["execution"].update(protocol_version="v0.6", final_hold_s=2.0, firmware_version_timeout_s=2.0)
+    task["execution"].update(protocol_version="v0.6", final_hold_s=2.0, firmware_version_timeout_s=10.0)
     task.update(flight_pattern="equal_strip_lawnmower", component_versions=VERSIONS)
     write_json(analysis / "task.json", task)
     protocol = semantic_protocol({"task_spec": task})
@@ -145,7 +145,7 @@ class V06DataContractTests(unittest.TestCase):
                 template = "patrol_route_v05.json" if intent == "patrol" else "recon_route_v05.json"
                 task = json.loads((ROOT / "missions/v3" / template).read_text(encoding="utf-8"))
                 task.update(task_id=intent, flight_pattern=pattern, component_versions=component_versions(intent, pattern))
-                task["execution"].update(protocol_version="v0.6", final_hold_s=2., firmware_version_timeout_s=2.)
+                task["execution"].update(protocol_version="v0.6", final_hold_s=2., firmware_version_timeout_s=10.)
                 if intent == "rapid_passage":
                     task["mission"].update(intent=intent, intent_params=dict(objective="single_straight_crossing"))
                     task["planner"] = dict(name="line_abreast_v1", params=dict(entry_side="south", exit_margin_m=5., tracking_margin_m=1.))

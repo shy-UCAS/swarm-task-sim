@@ -147,7 +147,7 @@ class FirmwareWaitTests(unittest.TestCase):
         for fail_hold in (False, True):
             with self.subTest(fail_hold=fail_hold), tempfile.TemporaryDirectory() as temp, ExitStack() as stack:
                 scenario = scene()
-                scenario["task_spec"]["execution"].update(final_hold_s=2.0, firmware_version_timeout_s=2.0)
+                scenario["task_spec"]["execution"].update(final_hold_s=2.0, firmware_version_timeout_s=10.0)
                 # The integration below isolates lifecycle ordering; task normalization
                 # and binding are separately tested against the v0.6 profile.
                 stack.enter_context(patch.object(runner, "validate", return_value=scenario))

@@ -132,6 +132,11 @@ def normalize_v3(spec):
     common = ("control_mode", "backend", "takeoff_alt_m", "speed_m_s", "arrival_tolerance_m",
               "confirmation_dwell_s", "record_hz", "max_gap_s", "min_separation_m", "timeout_s", "ready_timeout_s",
               "phase_timeout_override_s", "hold_semantics")
+    # firmware_version_timeout_s 位于 AUTOPILOT_VERSION 请求与 PARAM_REQUEST_LIST 之间，
+    # 因此这段等待同时承担"参数表就绪"的作用：缩短它会把参数表回读提前到 FCU 启动期广播
+    # 窗口内，那里的 PARAM_VALUE 带 param_index=65535，会被回读校验判为非法并触发
+    # parameter_firmware 硬门禁。缩短该值之前必须先实现显式的参数表就绪条件；
+    # 依据见 docs/v0.6_pilot_stop_01.md（v0.6 计划第 2.2 节已撤回，该值恢复为 10 秒）。
     v06_fields = ("protocol_version", "final_hold_s", "firmware_version_timeout_s")
     _object(execution, f"execution ({mode})", common + exclusive + v06_fields,
             optional=("phase_timeout_override_s", "hold_semantics") + v06_fields)
