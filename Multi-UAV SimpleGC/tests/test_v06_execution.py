@@ -178,7 +178,7 @@ class FirmwareWaitTests(unittest.TestCase):
                 stack.enter_context(patch("builtins.print"))
                 _, metadata, _ = runner.run_scene_v3(scenario, temp, "binary", "params")
                 self.assertEqual(read.call_count, len(clients))
-                self.assertTrue(all(call.kwargs == {"version_timeout_s": 2.0} for call in read.call_args_list))
+                self.assertTrue(all(call.kwargs == {"version_timeout_s": 10.0} for call in read.call_args_list))
                 if fail_hold:
                     self.assertEqual(metadata["status"], "failed")
                     self.assertNotIn("mission_end_monotonic_s", metadata)
