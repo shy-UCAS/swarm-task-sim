@@ -281,7 +281,7 @@ def topology_signature(spec, planning):
 
 
 intent_spec = IntentSpec("patrol", ("perimeter_patrol",), ("approach", "patrol", "return"),
-    frozenset({"patrol"}), normalize_params, (PLANNER_VERSION, "bidirectional_lanes_v1"), evaluate_channel,
+    frozenset({"patrol"}), normalize_params, (PLANNER_VERSION,), evaluate_channel,
     VALIDATOR_VERSION, behavior_labels,
     ("min_segment_visits", "max_revisit_gap_s", "loop_segment_coverage"), topology_signature)
 planner_spec = PlannerSpec(PLANNER_VERSION, PLANNER_VERSION, normalize_planner, plan_routes)

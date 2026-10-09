@@ -24,6 +24,10 @@ THRESHOLD_BASIS = {
     "max_path_chord_ratio": "10 percent provisional measured excess path allowance; pilot calibration required",
 }
 OPPOSITE = dict(north="south", south="north", east="west", west="east")
+ECHELON_OFFSET_M = 2.0
+ECHELON_OFFSET_BASIS = ("Fixed adjacent longitudinal displacement of 2 m, twice the 1 m design arrival tolerance; "
+    "lateral spacing remains the line-abreast spacing and all clearance/world checks are unchanged. "
+    "A maximum 6 m group span at four vehicles limits extra exterior footprint; not tuned to candidate outcomes.")
 
 
 def normalize_params(params):
@@ -44,7 +48,7 @@ def normalize_planner(params, spec):
     return result
 
 
-def _plan(spec, column=False):
+def _plan(spec, echelon=False):
     scenario, mission, execution = spec["scenario"], spec["mission"], spec["execution"]
     region = next(r for r in scenario["regions"] if r["id"] == mission["target_region_id"])
     params = spec["planner"]["params"]
@@ -58,29 +62,26 @@ def _plan(spec, column=False):
     exit_boundary = low if sign < 0 else low + along_size
     vehicles = sorted(scenario["vehicles"], key=lambda v: (v[f"{lateral}_m"], v["id"]))
     n = len(vehicles)
-    # The column's front aircraft has the furthest terminal slot. This keeps
-    # every endpoint occupied safely through the common phase barrier.
-    required = execution["min_separation_m"] + 2 * params["tracking_margin_m"]
-    tau = max(execution["async_timing_tolerance"]["min_s"],
-              execution["async_timing_tolerance"].get("max_s", 5.0))
-    spacing = max(12.0, required + execution["speed_m_s"] * tau + 2.0)
-    routes, assignments, delays = {}, {}, {}
+    routes, assignments = {}, {}
     for index, vehicle in enumerate(vehicles):
-        cross = cross_low + cross_size * ((index + .5) / n if not column else .5)
-        entry_distance = params["exit_margin_m"] + (index * spacing if column else 0)
-        exit_distance = params["exit_margin_m"] + ((n - 1 - index) * spacing if column else 0)
+        cross = cross_low + cross_size * (index + .5) / n
+        # Translate adjacent straight lanes by 2 m along the travel axis.
+        # Equal total lengths preserve that offset at constant speed. The
+        # leading entry and trailing exit retain the original exterior margin.
+        entry_distance = params["exit_margin_m"] + ((n - 1 - index) * ECHELON_OFFSET_M if echelon else 0)
+        exit_distance = params["exit_margin_m"] + (index * ECHELON_OFFSET_M if echelon else 0)
         entry = {f"{lateral}_m": cross, f"{longitudinal}_m": entry_boundary - sign * entry_distance}
         terminal = {f"{lateral}_m": cross, f"{longitudinal}_m": exit_boundary + sign * exit_distance}
         agent = vehicle["id"]
         routes[agent] = dict(approach=[entry], transit=[terminal],
             **{"return": [dict(east_m=vehicle["east_m"], north_m=vehicle["north_m"])]
                if mission["return_required"] else []})
-        assignments[agent] = f"transit_lane_{index:02d}" if not column else "transit_column"
-        delays[agent] = index * 1.0 if column else 0.0
+        assignments[agent] = f"transit_lane_{index:02d}"
     diagnostics = dict(entry_side=side, exit_side=OPPOSITE[side], exit_margin_m=params["exit_margin_m"],
                        transit_axis=longitudinal, endpoint_semantics="exit is final transit event")
-    if column:
-        diagnostics.update(column_spacing_m=spacing, phase_start_delays_s={"transit": delays})
+    if echelon:
+        diagnostics.update(echelon_offset_m=ECHELON_OFFSET_M, echelon_group_span_m=(n-1)*ECHELON_OFFSET_M,
+                           offset_basis=ECHELON_OFFSET_BASIS)
     return PlanResult(routes, assignments, diagnostics)
 
 
@@ -216,7 +217,13 @@ def behavior_labels(scene, truth):
 
 
 intent_spec = IntentSpec("rapid_passage", ("single_straight_crossing",), ("approach", "transit", "return"),
-    frozenset({"transit"}), normalize_params, ("line_abreast_v1", "column_v1"), evaluate_channel,
+    frozenset({"transit"}), normalize_params, ("line_abreast_v1",), evaluate_channel,
     VALIDATOR_VERSION, behavior_labels, ("rapid_passage",))
-planner_specs = (PlannerSpec("line_abreast_v1", "line_abreast_v1", normalize_planner, _plan),
-                 PlannerSpec("column_v1", "column_v1", normalize_planner, lambda spec: _plan(spec, column=True)))
+planner_specs = (PlannerSpec("line_abreast_v1", "line_abreast_v1", normalize_planner, _plan),)
+echelon_candidate_planner = PlannerSpec("echelon_v1", "echelon_v1", normalize_planner, lambda spec: _plan(spec, echelon=True))
+
+
+def echelon_candidate_registration():
+    """Scope an offline candidate compile; echelon is not a production choice."""
+    from .registry import temporary_candidate_planner
+    return temporary_candidate_planner("rapid_passage", "echelon", echelon_candidate_planner)

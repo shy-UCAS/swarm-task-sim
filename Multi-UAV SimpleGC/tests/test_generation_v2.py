@@ -146,7 +146,7 @@ class GeneratorV2Tests(unittest.TestCase):
             self.assertEqual(len({family_split(e["family_id"]) for e in entries}), 1)
             self.assertEqual(entries[0]["shared_mission_params"], entries[1]["shared_mission_params"])
             self.assertEqual(result["counts"]["accepted_bases"], 1)
-        self.assertEqual(registered_intents(), ("patrol", "reconnaissance"))
+        self.assertEqual(registered_intents(), ("patrol", "rapid_passage", "reconnaissance"))
         self.assertEqual(registered_samplers(), ("random_spawn_v1", "random_spawn_v2", "strip_aligned_v1"))
 
     def test_v05b_twenty_candidate_budget_does_not_expand_legacy_samplers(self):

@@ -1,0 +1,580 @@
+{
+  "milestone": "v0.6-pauseA2",
+  "baseline": "80928024a1536181971c041beaaa134bd91b4b4a",
+  "branch": "main",
+  "simulation_runs": 0,
+  "pilot_prepared": false,
+  "implementation_files": 17,
+  "implementation_lines_added": 906,
+  "implementation_lines_deleted": 211,
+  "implementation_counts_exclude": "report and verification evidence",
+  "source_sha256": {
+    ".github/workflows/unit-tests.yml": "1b35699a3c4fbe97ad6c4b1dd1f3f5f7dd517fc41db436762c4fe9451e3560f5",
+    "Multi-UAV SimpleGC/docs/intent_addition_checklist.md": "f103ff88294ef616e41bb0ad791d107fd4cf51c7440cd4051d629e9f28599494",
+    "Multi-UAV SimpleGC/docs/v0.6_formal_run_commands.md": "9e71526fb56bdfbe696d7203c4a3961f1aa7349fb4a9fc31bd62dae1c7b9b3d8",
+    "Multi-UAV SimpleGC/docs/v0.6_pauseA2_adjustments.md": "cab5762fd74c05457549801d18e4cfa94ff064277a2c768abd47b3abf81ee26f",
+    "Multi-UAV SimpleGC/scripts/diagnostics/v06_a2_offline_checks.py": "bdf95b6d600eca9e10f1e617f436aec0b489487e543db4755e1e60beb23722b3",
+    "Multi-UAV SimpleGC/swarm_sim/flight_patterns_v06.py": "1029bc489d50feb8681e5c294655ee2cc3697111c266f05535daf2b2e561cf70",
+    "Multi-UAV SimpleGC/swarm_sim/generation_v2.py": "508a634c503eb4f2ed6f7333e9e91e9176cd9be0e9c72a973387a8cf55df5bf9",
+    "Multi-UAV SimpleGC/swarm_sim/observer_facts_v0.py": "716025c3cc0922c0f46875eb4dbec8d9437dc134e9e36105ef54aca7b28d22b0",
+    "Multi-UAV SimpleGC/swarm_sim/patrol.py": "48d91ede3b4dda98f21a813f240e802bc9e082378f61fd34a617c3707761e7a1",
+    "Multi-UAV SimpleGC/swarm_sim/rapid_passage.py": "7b4b50cee90390face821c96885a9af7a6beecde80b2e67a2decdec13de9697d",
+    "Multi-UAV SimpleGC/swarm_sim/reconnaissance.py": "f99d4e8e82d9dd0364e90aed0e0259bb832f9caf763c0b7fa36bc43f9982f021",
+    "Multi-UAV SimpleGC/swarm_sim/registry.py": "0c570619b1e46d82cfbcc8a9850c11ed9927f3fd2d72c1041b0baf950c23042c",
+    "Multi-UAV SimpleGC/tests/test_generation_v2.py": "5ebfb88793bd2ece8a2ca3c5cd96f6c31b482e7a12bb270c1921bdc11a771418",
+    "Multi-UAV SimpleGC/tests/test_v06_a2_generation.py": "e8afcdae3ce30a2c45dc9bcdf4032ed9a4f6b07506864a33c9d043cd17ac70f3",
+    "Multi-UAV SimpleGC/tests/test_v06_a2_patterns.py": "d824d2e961ded07e9ef9ddfa6f0cf4b3dd9cbe21f1e96ec20fa2c3dc3e360895",
+    "Multi-UAV SimpleGC/tests/test_v06_planning.py": "85ae4706300865e812696b6ae3379c32009972b00e7ee8d7329ff9bf0bc2e34b",
+    "Multi-UAV SimpleGC/tests/test_wp_l_facts.py": "c21a364be65cc8823d37c87160462ed16e82eb7410980668b46a5a1947f0e4e1"
+  },
+  "evidence_root": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v06_pauseA2_20261008",
+  "evidence_sha256": {
+    "planning/a2_planning_report.json": "3a5888fe3b38f75c713dd890f60f6b13995ddea63545d0bf1b9d4256f675a347",
+    "planning/planning_report.json": "d2336c729eeb3d3458e7ae33f262b593cfddcf59ef7ad9d9405f4740491dde12",
+    "planning/accepted_shared_parameters.json": "8d01b920d74e58c0388bdfedc33f3879f6ede52fd6f6a9cee442fd61020133a1",
+    "planning/generated_v06/generation_manifest.json": "5f29734d6de59818e164d568044be06af62cb25517b8581ca9b941c0ceba842d",
+    "planning/generated_v06/mission_list.json": "9e7c820ce2a6e3d416b2149403b50acb93150af39c931b86931cfda77e4cf8f8",
+    "echelon_gate/echelon_gate.json": "98946ab905ea73390b7fe6e2d7300da58b5ccbae091e38435a2a597e0d86cf40",
+    "golden/golden_report.json": "3b56fd7b74b232ca1954286858725e00ffe0db7c5147673047dce9913a21fe07",
+    "cross_negative/cross_negative_report.json": "eda2c8afefc9a5d4d37803e3efdcc71132eca8e29fb765b1f59fa0310f9fa69e",
+    "archive_baseline/archive_inventory_before.json": "e681ef76b8c6ed0dacf2b23389f754584e08e7919eb902e19e2a36bf0169be1b",
+    "archive_final/archive_check.json": "45a749701f6218677e13f2fc6d744dc2a108cc8fea15418a44e0c793226552fa",
+    "local_tests_final.json": "147405a079f5f65e0544786a932597366550de025282c5a060f20d1b42f115b7",
+    "local_tests_final.log": "6a1ff51f0ffec7b2a41bea247c9cf19e61617ff0ccb86ccf99de60df12e902ed"
+  },
+  "planning": {
+    "check": "v06_a2_offline_planning",
+    "profile": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\generation_profiles\\tri_intent_v06_production.json",
+    "counts": {
+      "base_scenes": 300,
+      "accepted_bases": 300,
+      "candidates": 782,
+      "accepted_candidates": 300,
+      "rejected_candidates": 482,
+      "planned_missions": 900,
+      "rejected_variants": 716
+    },
+    "expected_families": 300,
+    "expected_tasks": 900,
+    "task_entries": 900,
+    "accepted_tasks": 900,
+    "groups": [
+      {
+        "intent": "patrol",
+        "flight_pattern": "staggered_same_loop",
+        "tasks": 300,
+        "planned": 300,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 300,
+          "minimum": 7.024481917169407,
+          "median": 9.392607048782654,
+          "maximum": 11.984764282951568
+        },
+        "below_10m": 193,
+        "world_bounds_pass": 300,
+        "nominal_duration_s": {
+          "n": 300,
+          "minimum": 232.71131349367968,
+          "median": 337.3716616049903,
+          "maximum": 475.57153016023096
+        }
+      },
+      {
+        "intent": "rapid_passage",
+        "flight_pattern": "line_abreast",
+        "tasks": 300,
+        "planned": 300,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 300,
+          "minimum": 7.002149029384285,
+          "median": 8.824727999836533,
+          "maximum": 11.984764282951568
+        },
+        "below_10m": 227,
+        "world_bounds_pass": 300,
+        "nominal_duration_s": {
+          "n": 300,
+          "minimum": 171.8200297549888,
+          "median": 194.72258693046177,
+          "maximum": 245.6709915013074
+        }
+      },
+      {
+        "intent": "reconnaissance",
+        "flight_pattern": "equal_strip_lawnmower",
+        "tasks": 146,
+        "planned": 146,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 146,
+          "minimum": 7.025339733087038,
+          "median": 9.077622121937162,
+          "maximum": 11.315562375925456
+        },
+        "below_10m": 120,
+        "world_bounds_pass": 146,
+        "nominal_duration_s": {
+          "n": 146,
+          "minimum": 196.08251699317339,
+          "median": 246.50801016638894,
+          "maximum": 354.5863059342161
+        }
+      },
+      {
+        "intent": "reconnaissance",
+        "flight_pattern": "equal_strip_rectangular_spiral",
+        "tasks": 154,
+        "planned": 154,
+        "rejected": 0,
+        "clearance_m": {
+          "n": 154,
+          "minimum": 6.999999999999998,
+          "median": 7.0,
+          "maximum": 7.0
+        },
+        "below_10m": 154,
+        "world_bounds_pass": 154,
+        "nominal_duration_s": {
+          "n": 154,
+          "minimum": 179.49868499173394,
+          "median": 218.00498396411527,
+          "maximum": 338.9031644630153
+        }
+      }
+    ],
+    "simulation_runs": 0,
+    "candidate_groups": [
+      {
+        "intent": "patrol",
+        "flight_pattern": "staggered_same_loop",
+        "candidates": 782,
+        "planned": 522,
+        "planning_rejected": 260,
+        "rejection_rate": 0.33248081841432225,
+        "family_rejected": 482,
+        "published": 300
+      },
+      {
+        "intent": "rapid_passage",
+        "flight_pattern": "line_abreast",
+        "candidates": 782,
+        "planned": 401,
+        "planning_rejected": 381,
+        "rejection_rate": 0.48721227621483376,
+        "family_rejected": 482,
+        "published": 300
+      },
+      {
+        "intent": "reconnaissance",
+        "flight_pattern": "equal_strip_lawnmower",
+        "candidates": 386,
+        "planned": 340,
+        "planning_rejected": 46,
+        "rejection_rate": 0.11917098445595854,
+        "family_rejected": 240,
+        "published": 146
+      },
+      {
+        "intent": "reconnaissance",
+        "flight_pattern": "equal_strip_rectangular_spiral",
+        "candidates": 396,
+        "planned": 367,
+        "planning_rejected": 29,
+        "rejection_rate": 0.07323232323232323,
+        "family_rejected": 242,
+        "published": 154
+      }
+    ],
+    "family_acceptance": {
+      "accepted": 300,
+      "attempted": 782,
+      "rejected": 482,
+      "exhausted_bases": 0
+    },
+    "accepted_shared_distributions": {
+      "patrol": {
+        "tasks": 300,
+        "categorical": {
+          "vehicle_count": {
+            "2": 100,
+            "3": 100,
+            "4": 100
+          },
+          "speed_m_s": {
+            "2.0": 106,
+            "2.5": 102,
+            "3.0": 92
+          },
+          "return_required": {
+            "False": 158,
+            "True": 142
+          },
+          "entry_side": {
+            "east": 83,
+            "north": 76,
+            "south": 79,
+            "west": 62
+          }
+        },
+        "numeric": {
+          "region_width_m": {
+            "n": 300,
+            "minimum": 22.078402037775337,
+            "median": 40.92625149446293,
+            "maximum": 63.15906115628327
+          },
+          "region_height_m": {
+            "n": 300,
+            "minimum": 22.081947866424905,
+            "median": 40.71753141192639,
+            "maximum": 63.95675454241062
+          },
+          "region_center_east_m": {
+            "n": 300,
+            "minimum": -9.968371248906585,
+            "median": 0.37100848806920617,
+            "maximum": 9.869541767062895
+          },
+          "region_center_north_m": {
+            "n": 300,
+            "minimum": -9.898683251812164,
+            "median": -0.00034919351449858027,
+            "maximum": 9.985205184169374
+          },
+          "entry_distance_m": {
+            "n": 300,
+            "minimum": 10.179783794922441,
+            "median": 16.188655096917017,
+            "maximum": 19.969810826571337
+          },
+          "entry_lateral_offset_fraction": {
+            "n": 300,
+            "minimum": -0.29638588398495325,
+            "median": -0.004907985453579011,
+            "maximum": 0.29526938819848897
+          },
+          "line_spacing_m": {
+            "n": 300,
+            "minimum": 8.044197552065132,
+            "median": 10.296605156898314,
+            "maximum": 11.996699518651257
+          },
+          "line_rotation_deg": {
+            "n": 300,
+            "minimum": -19.988399436982938,
+            "median": -1.4005407807670949,
+            "maximum": 19.151895249594126
+          }
+        }
+      },
+      "rapid_passage": {
+        "tasks": 300,
+        "categorical": {
+          "vehicle_count": {
+            "2": 100,
+            "3": 100,
+            "4": 100
+          },
+          "speed_m_s": {
+            "2.0": 106,
+            "2.5": 102,
+            "3.0": 92
+          },
+          "return_required": {
+            "False": 158,
+            "True": 142
+          },
+          "entry_side": {
+            "east": 83,
+            "north": 76,
+            "south": 79,
+            "west": 62
+          }
+        },
+        "numeric": {
+          "region_width_m": {
+            "n": 300,
+            "minimum": 22.078402037775337,
+            "median": 40.92625149446293,
+            "maximum": 63.15906115628327
+          },
+          "region_height_m": {
+            "n": 300,
+            "minimum": 22.081947866424905,
+            "median": 40.71753141192639,
+            "maximum": 63.95675454241062
+          },
+          "region_center_east_m": {
+            "n": 300,
+            "minimum": -9.968371248906585,
+            "median": 0.37100848806920617,
+            "maximum": 9.869541767062895
+          },
+          "region_center_north_m": {
+            "n": 300,
+            "minimum": -9.898683251812164,
+            "median": -0.00034919351449858027,
+            "maximum": 9.985205184169374
+          },
+          "entry_distance_m": {
+            "n": 300,
+            "minimum": 10.179783794922441,
+            "median": 16.188655096917017,
+            "maximum": 19.969810826571337
+          },
+          "entry_lateral_offset_fraction": {
+            "n": 300,
+            "minimum": -0.29638588398495325,
+            "median": -0.004907985453579011,
+            "maximum": 0.29526938819848897
+          },
+          "line_spacing_m": {
+            "n": 300,
+            "minimum": 8.044197552065132,
+            "median": 10.296605156898314,
+            "maximum": 11.996699518651257
+          },
+          "line_rotation_deg": {
+            "n": 300,
+            "minimum": -19.988399436982938,
+            "median": -1.4005407807670949,
+            "maximum": 19.151895249594126
+          }
+        }
+      },
+      "reconnaissance": {
+        "tasks": 300,
+        "categorical": {
+          "vehicle_count": {
+            "2": 100,
+            "3": 100,
+            "4": 100
+          },
+          "speed_m_s": {
+            "2.0": 106,
+            "2.5": 102,
+            "3.0": 92
+          },
+          "return_required": {
+            "False": 158,
+            "True": 142
+          },
+          "entry_side": {
+            "east": 83,
+            "north": 76,
+            "south": 79,
+            "west": 62
+          }
+        },
+        "numeric": {
+          "region_width_m": {
+            "n": 300,
+            "minimum": 22.078402037775337,
+            "median": 40.92625149446293,
+            "maximum": 63.15906115628327
+          },
+          "region_height_m": {
+            "n": 300,
+            "minimum": 22.081947866424905,
+            "median": 40.71753141192639,
+            "maximum": 63.95675454241062
+          },
+          "region_center_east_m": {
+            "n": 300,
+            "minimum": -9.968371248906585,
+            "median": 0.37100848806920617,
+            "maximum": 9.869541767062895
+          },
+          "region_center_north_m": {
+            "n": 300,
+            "minimum": -9.898683251812164,
+            "median": -0.00034919351449858027,
+            "maximum": 9.985205184169374
+          },
+          "entry_distance_m": {
+            "n": 300,
+            "minimum": 10.179783794922441,
+            "median": 16.188655096917017,
+            "maximum": 19.969810826571337
+          },
+          "entry_lateral_offset_fraction": {
+            "n": 300,
+            "minimum": -0.29638588398495325,
+            "median": -0.004907985453579011,
+            "maximum": 0.29526938819848897
+          },
+          "line_spacing_m": {
+            "n": 300,
+            "minimum": 8.044197552065132,
+            "median": 10.296605156898314,
+            "maximum": 11.996699518651257
+          },
+          "line_rotation_deg": {
+            "n": 300,
+            "minimum": -19.988399436982938,
+            "median": -1.4005407807670949,
+            "maximum": 19.151895249594126
+          }
+        }
+      }
+    },
+    "accepted_shared_joint_sha256": {
+      "patrol": "87ce5d574ac07b755d4653eacdf450b17624983ee92c983966acef48b7085fb2",
+      "rapid_passage": "87ce5d574ac07b755d4653eacdf450b17624983ee92c983966acef48b7085fb2",
+      "reconnaissance": "87ce5d574ac07b755d4653eacdf450b17624983ee92c983966acef48b7085fb2"
+    },
+    "invariants": {
+      "all_selected_patterns_pass_before_family_accept": true,
+      "no_rejected_task_published": true,
+      "only_accepted_candidates_published": true,
+      "all_families_have_exact_three_intents": true,
+      "shared_joint_distributions_identical": true,
+      "full_size": true
+    },
+    "pass_all": true
+  },
+  "echelon_gate": {
+    "check": "echelon_registration_gate",
+    "reference": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v06_pauseA_20261008\\planning_final\\generated_v06\\generation_manifest.json",
+    "reference_sha256": "fdce4aa4e10033196049ea0087f3314172bb2b9a84fbda88e15bc11bcea9e3e8",
+    "denominator": "first 300 raw candidates in frozen pause-A manifest, including rejected families",
+    "candidates": 300,
+    "planned": 102,
+    "rejected": 198,
+    "planning_rate": 0.34,
+    "required_rate": 0.9,
+    "required_passes": 270,
+    "enable": false,
+    "longitudinal_step_m": 2.0,
+    "parameter_retuning": false,
+    "original_status_counts": {
+      "accepted": 104,
+      "planning_rejected": 196
+    },
+    "clearance_m": {
+      "n": 102,
+      "minimum": 7.008340852909701,
+      "median": 9.195715553501277,
+      "maximum": 11.984764282951568
+    },
+    "below_10m": 68,
+    "simulation_runs": 0
+  },
+  "golden": {
+    "check": "v05_DR130_frozen_generation",
+    "expected": 260,
+    "checked": 260,
+    "passed": 260,
+    "differences": [],
+    "pass_all": true,
+    "metadata_exclusions": [],
+    "fixture": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\tests\\fixtures\\intent_registry_DR130_golden.json"
+  },
+  "cross_negative": {
+    "check": "v05_all_episodes_cross_negative",
+    "episodes": 260,
+    "channel_checks": 520,
+    "positives": [],
+    "pass_all": true,
+    "groups": [
+      {
+        "intent": "reconnaissance",
+        "channel": "truth",
+        "total": 130,
+        "positive": 0,
+        "negative": 126,
+        "unknown": 4
+      },
+      {
+        "intent": "reconnaissance",
+        "channel": "observation",
+        "total": 130,
+        "positive": 0,
+        "negative": 126,
+        "unknown": 4
+      },
+      {
+        "intent": "patrol",
+        "channel": "truth",
+        "total": 130,
+        "positive": 0,
+        "negative": 129,
+        "unknown": 1
+      },
+      {
+        "intent": "patrol",
+        "channel": "observation",
+        "total": 130,
+        "positive": 0,
+        "negative": 129,
+        "unknown": 1
+      }
+    ],
+    "thresholds": {
+      "boundary_margin_m": 2.0,
+      "max_cross_track_m": 3.0,
+      "low_speed_m_s": 0.5,
+      "max_low_speed_duration_s": 1.0,
+      "max_backtrack_m": 2.0,
+      "max_path_chord_ratio": 1.1
+    },
+    "threshold_basis": {
+      "boundary_margin_m": "2 m provisional exterior margin exceeds nominal 0.3 m sample displacement at 3 m/s, 10 Hz; arrival tolerance is design allowance, not sensor accuracy; pilot calibration required",
+      "max_cross_track_m": "3 m provisional straight-geometry allowance; no measured sensor-accuracy bound claimed; pilot calibration required",
+      "low_speed_m_s": "one quarter of 2 m/s minimum shared command speed; measured movement only",
+      "max_low_speed_duration_s": "10 samples at 10 Hz and twice the 0.5 s allowed observation gap",
+      "max_backtrack_m": "2 m provisional reversal allowance; design tolerance requires pilot calibration",
+      "max_path_chord_ratio": "10 percent provisional measured excess path allowance; pilot calibration required"
+    },
+    "adaptation": "original service bounds and actual trajectories; observe/patrol relabeled transit only"
+  },
+  "archive": {
+    "check": "archive_file_inventory",
+    "files_before": 52993,
+    "files_after": 52993,
+    "changed": [],
+    "pass_all": true,
+    "method": "complete path/size/mtime_ns inventory including .git; not a full content rehash"
+  },
+  "local_tests": {
+    "modules": [
+      "test_ordered_route_progress_v2",
+      "test_patrol_revisit_v2",
+      "test_quality",
+      "test_observation_processing_v3",
+      "test_public_scene",
+      "test_dataset_audit_v3",
+      "test_protocol_v3",
+      "test_wp_l_templates",
+      "test_wp_l_facts",
+      "test_mission_data",
+      "test_mission_evaluation",
+      "test_execution_metrics",
+      "test_route_timing",
+      "test_run_provenance",
+      "test_publication_runtime",
+      "test_parallel_batch",
+      "test_parallel_worker",
+      "test_parallel_finalize",
+      "test_parallel_file_sizes",
+      "test_v06_execution",
+      "test_v06_data_contract",
+      "test_v06_planning",
+      "test_rapid_passage",
+      "test_v06_a2_generation",
+      "test_v06_a2_patterns",
+      "test_generation_v2"
+    ],
+    "total": 279,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": true,
+    "failure_details": [],
+    "error_details": [],
+    "simulator_launch_forbidden": true
+  },
+  "remote_ci": "Final delivery message supplies the pushed commit and remote main/tag CI links; local tests alone do not authorize the tag."
+}

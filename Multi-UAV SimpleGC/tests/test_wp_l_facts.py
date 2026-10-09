@@ -17,6 +17,8 @@ from swarm_sim.recording import write_json
 from swarm_sim.protocol import semantic_protocol
 from swarm_sim.onboard_mission_params import VERSION as ONBOARD_VERSION
 from swarm_sim.observation_processing import processing_versions
+from swarm_sim.language_templates_v0 import generate_descriptions
+from test_wp_l_templates import _facts
 from v3_artifact_fixture import make_run, rehash
 
 
@@ -45,6 +47,91 @@ def _strip_points():
         for x in xs:
             coordinates.append((float(x), float(row)))
     return [(index * .1, [x, y, 8.0]) for index, (x, y) in enumerate(coordinates)]
+
+
+def _densify_vertices(vertices):
+    """Synthetic positions at at most 0.3 m / 0.1 s spacing; no planner input."""
+    rows = [(0., [*vertices[0], 8.])]
+    for first, second in zip(vertices, vertices[1:]):
+        length = math.dist(first, second)
+        count = max(1, math.ceil(length / .3))
+        start = rows[-1][0]
+        rows.extend((start + length / 3 * index / count,
+                     [a + (b-a) * index / count for a, b in zip(first, second)] + [8.])
+                    for index in range(1, count+1))
+    return rows
+
+
+def _measured_facts(rows, region, task):
+    end = rows[-1][0]
+    windows = [dict(agent_id="a", semantic_phase="approach", start_s=0., arrival_s=0.,
+                    complete_execution_window=True),
+               dict(agent_id="a", semantic_phase="observe", start_s=0., arrival_s=end,
+                    complete_execution_window=True)]
+    return _channel_facts({"a": rows}, windows, task, region, dict(duration_s=end), {}, ["a"])
+
+
+class V06MeasuredScanTests(unittest.TestCase):
+    def setUp(self):
+        self.region = dict(min_east_m=0., min_north_m=0., width_m=54., height_m=30.)
+        self.task = dict(mission=dict(intent="reconnaissance", intent_params={}),
+                         execution=dict(protocol_version="v0.6", max_gap_s=.5, record_hz=10.))
+        self.rectangle = [(3.5, 2.), (3.5, 28.), (14.5, 28.), (14.5, 2.), (3.5, 2.)]
+        self.spiral = self.rectangle[:-1] + [(7.5, 2.), (7.5, 6.), (7.5, 24.),
+                                           (10.5, 24.), (10.5, 6.), (7.5, 6.)]
+
+    def test_v06_rectangular_scan_uses_unclear_and_never_parallel_description(self):
+        for vertices in (self.rectangle, self.spiral):
+            with self.subTest(vertices=vertices):
+                rows = _densify_vertices(vertices)
+                measured = _measured_facts(rows, self.region, self.task)
+                self.assertEqual(measured["observed_pattern"], "unclear")
+                self.assertIsNone(measured["scan_orientation"])
+                self.assertIsNone(measured["loop_direction"])
+                facts = _facts(pattern="unclear")
+                facts["facts_version"] = "observer_facts_v06"
+                facts["observed"].update(measured)
+                for description in generate_descriptions(facts, "measured_spiral", "test", 7):
+                    self.assertNotIn("平行往返", description["text"])
+                    self.assertTrue(any(s["template_id"].startswith("T2.neutral")
+                                        for s in description["sentences"]))
+
+    def test_v06_regular_scan_with_small_jitter_keeps_parallel_in_both_directions(self):
+        for reverse in (False, True):
+            for jitter in (0., .3):
+                with self.subTest(reverse=reverse, jitter=jitter):
+                    points = [point for _, point in _strip_points()]
+                    if reverse:
+                        points.reverse()
+                    rows = [(index * .1, [p[0], p[1] + jitter * math.sin(index / 10), p[2]])
+                            for index, p in enumerate(points)]
+                    measured = _measured_facts(rows, REGION, self.task)
+                    self.assertEqual(measured["observed_pattern"], "parallel_strips")
+                    self.assertEqual(measured["scan_orientation"], "east_west")
+
+    def test_v06_pattern_metadata_cannot_override_measured_scan_geometry(self):
+        for rows, region in ((_densify_vertices(self.spiral), self.region), (_strip_points(), REGION)):
+            expected = _measured_facts(rows, region, self.task)
+            for pattern in ("equal_strip_rectangular_spiral", "equal_strip_lawnmower", "untrusted_label"):
+                changed = copy.deepcopy(self.task)
+                changed["flight_pattern"] = pattern
+                self.assertEqual(_measured_facts(rows, region, changed), expected)
+                del changed["flight_pattern"]
+                self.assertEqual(_measured_facts(rows, region, changed), expected)
+
+    def test_v05_frozen_scan_results_and_legacy_classifier_are_unchanged(self):
+        task = copy.deepcopy(self.task)
+        del task["execution"]["protocol_version"]
+        self.assertEqual(_measured_facts(_strip_points(), REGION, task), dict(
+            num_uavs=1, entry_side="west", observed_pattern="parallel_strips", scan_orientation="east_west",
+            loop_direction=None, per_agent_laps_observed=None, return_observed=False, max_revisit_gap_s=None))
+        for vertices in (self.rectangle, self.spiral):
+            rows = _densify_vertices(vertices)
+            legacy = detect_pattern({"a": rows}, self.region)
+            self.assertEqual(legacy, dict(observed_pattern="parallel_strips", scan_orientation="north_south",
+                                          loop_direction=None))
+            measured = _measured_facts(rows, self.region, task)
+            self.assertEqual({key: measured[key] for key in legacy}, legacy)
 
 
 class PatternDetectorTests(unittest.TestCase):

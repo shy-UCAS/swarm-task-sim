@@ -244,6 +244,34 @@ def detect_pattern(points_by_agent, region, visit_radius_m=3.0, standoff_m=0.0):
     return result
 
 
+def _cross_track_reverses(points_by_agent):
+    """Measured strip progression must not double back on the transverse axis.
+
+    Rectangular loops/spirals can have the same dominant heading and opposite
+    straight runs as a lawnmower. Reuse the existing meaningful-run distance
+    to withhold that claim when one agent moves both ways across the strips;
+    smaller sample jitter alone is not enough. Narrow traces remain ambiguous.
+    """
+    heading, _, _ = _straight_evidence(points_by_agent)
+    if heading is None:
+        return False
+    minimum = PATTERN_PARAMETERS["minimum_straight_run_m"]
+    for rows in points_by_agent.values():
+        lateral = [-point[0] * math.sin(heading) + point[1] * math.cos(heading)
+                   for _, point in rows]
+        if not lateral:
+            continue
+        low = high = lateral[0]
+        forward = backward = False
+        for value in lateral[1:]:
+            forward = forward or value - low >= minimum - EPS
+            backward = backward or high - value >= minimum - EPS
+            if forward and backward:
+                return True
+            low, high = min(low, value), max(high, value)
+    return False
+
+
 def _return_observed(traces, windows, agents, main_phase, max_gap, duration_s, record_hz):
     main = _window_by_agent(windows, main_phase, agents)
     approach = _window_by_agent(windows, "approach", agents)
@@ -293,6 +321,8 @@ def _channel_facts(traces, windows, task, region, manifest, metrics, agents):
     if v06:
         from .rapid_passage import measure_passage
         from .registry import OBSERVED_MOTION_PATTERNS
+        if pattern["observed_pattern"] == "parallel_strips" and _cross_track_reverses(points):
+            pattern = dict(observed_pattern="unclear", scan_orientation=None, loop_direction=None)
         passage = {agent: measure_passage(rows, region, max_gap_s=max_gap)
                    for agent, rows in points.items()}
         if passage and set(passage) == set(agents) and all(

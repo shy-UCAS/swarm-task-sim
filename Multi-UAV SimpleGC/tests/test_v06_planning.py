@@ -37,7 +37,7 @@ class V06PlanningTests(unittest.TestCase):
             for pattern in FLIGHT_PATTERNS[intent]:
                 self.assertEqual(apply_flight_pattern(source, pattern), apply_flight_pattern(previous, pattern))
 
-    def test_all_six_patterns_register_versions_and_roles(self):
+    def test_all_production_patterns_register_versions_and_roles(self):
         files = dict(reconnaissance="recon_route_v06.json", patrol="patrol_route_v06.json",
                      rapid_passage="rapid_passage_route_v06.json")
         for intent, patterns in FLIGHT_PATTERNS.items():
@@ -66,49 +66,43 @@ class V06PlanningTests(unittest.TestCase):
         for intent, patterns in FLIGHT_PATTERNS.items():
             draws = [flight_pattern_choice(2026100812, i, intent, 0) for i in range(1000)]
             self.assertEqual(set(draws), set(patterns))
-            self.assertTrue(400 < draws.count(patterns[0]) < 600)
+            if len(patterns) == 2:
+                self.assertTrue(400 < draws.count(patterns[0]) < 600)
+            else:
+                self.assertEqual(draws, [patterns[0]] * 1000)
             self.assertEqual(draws, [flight_pattern_choice(2026100812, i, intent, 0) for i in range(1000)])
             self.assertEqual(flight_pattern_choice(2026100812, 1, intent, 0, "first"), patterns[0])
 
-    def test_fixed_vs_random_keeps_family_shared_seed_and_split_identity(self):
+    def test_fixed_vs_random_preserves_same_candidate_draws_not_accepted_sets(self):
         from swarm_sim.dataset import family_split
         profile = normalize_profile(ROOT / "generation_profiles/tri_intent_v06_pilot.json")
         profile["base_scene_count"] = 2
+        profile["max_candidates_per_base"] = 1
         with tempfile.TemporaryDirectory() as tmp:
-            listings = []
+            candidates = []
             for mode in ("first", "random"):
                 current = copy.deepcopy(profile)
                 current["flight_pattern_mode"] = mode
                 result = generate_v2(current, Path(tmp)/mode)
-                listing = json.loads(Path(result["mission_list"]).read_text(encoding="utf-8"))["missions"]
-                listings.append([{key: entry[key] for key in ("mission_id", "family_id", "base_index",
-                    "candidate_id", "scene_seed", "task_seed", "shared_mission_params", "sampled_parameters")}
-                    for entry in listing])
-            self.assertEqual(listings[0], listings[1])
-            self.assertEqual(len(listings[0]), 6)
-            # The dataset split function receives this unchanged family ID.
-            self.assertEqual([family_split(row["family_id"]) for row in listings[0]],
-                             [family_split(row["family_id"]) for row in listings[1]])
+                current_candidates = []
+                for item in result["candidates"]:
+                    selected = {key: item.get(key) for key in ("candidate_id", "base_index", "candidate_index",
+                        "family_id", "scene_seed", "shared_mission_params", "sampled_parameters")}
+                    selected["task_seeds"] = [(a["intent"], a["variant_index"], a["task_seed"]) for a in item["attempts"]]
+                    current_candidates.append(selected)
+                candidates.append(current_candidates)
+            self.assertEqual(candidates[0], candidates[1])
+            self.assertEqual(len(candidates[0]), 2)
+            # Selection may differ; any identical candidate keeps its split.
+            self.assertEqual([family_split(row["family_id"]) for row in candidates[0]],
+                             [family_split(row["family_id"]) for row in candidates[1]])
 
-    def test_interleaved_allocation_i_plus_n_and_no_fallback(self):
-        spec = normalize_v3(apply_flight_pattern(template("recon_route_v06.json"), "interleaved_lanes"))
-        plan = get_planner(spec["planner"]["name"]).plan_routes(spec)
-        n = len(spec["scenario"]["vehicles"])
-        for assignment in plan.assignments.values():
-            indices = list(map(int, assignment.removeprefix("interleaved_").split("_")))
-            self.assertGreaterEqual(len(indices), 2)
-            self.assertTrue(all(b-a == n for a, b in zip(indices, indices[1:])))
-        with self.assertRaisesRegex(ValueError, "too close"):
-            compile_task(spec)
-
-    def test_column_delays_and_endpoints_are_explicit(self):
-        spec = normalize_v3(apply_flight_pattern(template("rapid_passage_route_v06.json"), "column"))
-        plan = get_planner("column_v1").plan_routes(spec)
-        delays = plan.diagnostics["phase_start_delays_s"]["transit"]
-        self.assertEqual(sorted(delays.values()), [0., 1., 2.])
-        endpoints = [route["transit"][-1] for route in plan.routes.values()]
-        self.assertEqual(len({p["east_m"] for p in endpoints}), 1)
-        self.assertEqual(len({p["north_m"] for p in endpoints}), 3)
+    def test_retired_patterns_cannot_be_selected_or_compiled(self):
+        for intent, pattern in (("reconnaissance", "interleaved_lanes"),
+                                ("patrol", "bidirectional_lanes"), ("rapid_passage", "column")):
+            self.assertNotIn(pattern, FLIGHT_PATTERNS[intent])
+            with self.assertRaisesRegex(ValueError, "unregistered planner"):
+                get_planner(pattern + "_v1")
 
     def test_start_delays_account_for_waiting_occupancy(self):
         starts = {"a": dict(east_m=0., north_m=0., up_m=8.), "b": dict(east_m=20., north_m=0., up_m=8.)}

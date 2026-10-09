@@ -1,7 +1,7 @@
 """Versioned intent and planner contracts with explicit production registration."""
 
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable
 
 
@@ -43,9 +43,9 @@ OBSERVED_MOTION_PATTERNS = {"parallel_strips": "平行往返", "perimeter_loop":
 SEMANTIC_ROLES = frozenset({"approach", "observe", "patrol", "transit", "return",
                             "idle_padding", "hold_no_op"})
 FLIGHT_PATTERNS = {
-    "reconnaissance": ("equal_strip_lawnmower", "interleaved_lanes"),
-    "patrol": ("staggered_same_loop", "bidirectional_lanes"),
-    "rapid_passage": ("line_abreast", "column"),
+    "reconnaissance": ("equal_strip_lawnmower", "equal_strip_rectangular_spiral"),
+    "patrol": ("staggered_same_loop",),
+    "rapid_passage": ("line_abreast",),
 }
 
 
@@ -63,14 +63,35 @@ def _initialize():
         from .reconnaissance import intent_spec, planner_spec
         from .patrol import intent_spec as patrol_intent, planner_spec as patrol_planner
         from .rapid_passage import intent_spec as passage_intent, planner_specs as passage_planners
-        from .flight_patterns_v06 import interleaved_planner, bidirectional_planner
+        from .flight_patterns_v06 import rectangular_spiral_planner
         _intents[intent_spec.name] = intent_spec
         _planners[planner_spec.name] = planner_spec
         _intents[patrol_intent.name] = patrol_intent
         _planners[patrol_planner.name] = patrol_planner
         _intents[passage_intent.name] = passage_intent
-        for planner in (*passage_planners, interleaved_planner, bidirectional_planner):
+        for planner in (*passage_planners, rectangular_spiral_planner):
             _planners[planner.name] = planner
+
+
+@contextmanager
+def temporary_candidate_planner(intent_name, pattern, planner):
+    """Explicit offline candidate scope, restored even after a rejection."""
+    _initialize()
+    intent = get_intent(intent_name)
+    if (not isinstance(planner, PlannerSpec) or planner.name != f"{pattern}_v1"
+            or planner.version != planner.name or planner.name in _planners
+            or pattern in FLIGHT_PATTERNS[intent_name]):
+        raise ValueError("candidate planner must be new and have matching pattern/version")
+    patterns = FLIGHT_PATTERNS[intent_name]
+    try:
+        FLIGHT_PATTERNS[intent_name] = (*patterns, pattern)
+        _intents[intent_name] = replace(intent, allowed_planners=(*intent.allowed_planners, planner.name))
+        _planners[planner.name] = planner
+        yield planner
+    finally:
+        _planners.pop(planner.name, None)
+        _intents[intent_name] = intent
+        FLIGHT_PATTERNS[intent_name] = patterns
 
 
 def get_intent(name):
