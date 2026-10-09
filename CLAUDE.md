@@ -16,7 +16,7 @@ Python 前先读 `Multi-UAV SimpleGC/.conda-env`（当前 `llm`），遵循项�
 & 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python main.py --help
 ```
 
-Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git diff --check`；Python 通常在 `Multi-UAV SimpleGC` 中执行。原 `Simulation` 仅作冻结归档，不从其旧 main 开发或推送。发布 PR #1 已合并，目录迁移完成；提交/推送按当前用户授权执行。141 项发布检查见 `.github/workflows/unit-tests.yml`，完整历史集成测试需要另行取得归档。当前没有自动接续的仿真任务。
+Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git diff --check`；Python 通常在 `Multi-UAV SimpleGC` 中执行。原 `Simulation` 仅作冻结归档，不从其旧 main 开发或推送。发布 PR #1 与并行开发 PR #2 已合并；本次核对时 main 已推进到 v0.6 的 `v0.6-pilot` 标签（30 任务 pilot 与阈值冻结），当前基线以 `git log -1`、`git describe --tags` 为准，不要沿用旧基线号 `9812645`；提交/推送按当前用户授权执行。当前离线 CI 清单见 `.github/workflows/unit-tests.yml`，包含发布逻辑检查、并行测试与 v0.6 三意图测试；141 项是迁移时的历史计数，完整历史集成测试需要另行取得归档。当前没有自动接续的仿真任务。
 
 ## 铁律与报告
 
@@ -35,4 +35,4 @@ Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git dif
 
 1. 先读根目录 `README.md` 并核对 Git 状态；本机 `.claude/progress/` 的最新快照可辅助恢复，但新克隆不保证存在。
 2. 再读 `Multi-UAV SimpleGC/docs/v0.5_final_report.md`，以及本次任务涉及的有效规则、源码和证据；历史规则文件的“剩余步骤”不代表当前进度。
-3. v0.5 已完成 260 次运行和收尾；Git 发布、迁移均完成。后续工作依据新的用户指令，不自动启动仿真、批量生成或改写旧证据。
+3. v0.5 已完成 260 次运行并冻结；Git 发布、迁移及 v0.6 并行开发合并均完成。v0.6 已完成 20 任务（20/20、合格 20/20、语义一致 19/20）与 30 任务（30/30、合格 29/30、语义一致 29/30）两次两路试跑，含一次真实人工暂停续跑，均已收尾，数据在仓库外 SwarmData，pilot 不用于训练；快速通过六项阈值已冻结，事实层 `null` 槽位问题已修复并通过离线验收。`Multi-UAV SimpleGC/docs/v06_formal_plan.md` 的 pilot 阶段已执行完毕，正式生产（300 family／900 任务）已完成批次准备但**未启动仿真**；新会话先恢复已完成进展，后续按新的用户指令执行，不自动启动仿真、批量生成或改写旧证据。
