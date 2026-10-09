@@ -26,7 +26,7 @@ from v3_artifact_fixture import make_run, rehash
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSIONS = dict(planner="equal_strip_lawnmower_v1", validator="shared_coverage_v2",
-                facts="observer_facts_v06", templates="templates_zh_v06")
+                facts="observer_facts_v06b", templates="templates_zh_v06")
 
 
 def _sha(value):
@@ -69,7 +69,7 @@ def _v06_facts(intent):
         result = _facts(intent, conditions=dict(max_gap=True, **{"return": True}))
     else:
         result = _facts(intent)
-    result["facts_version"] = "observer_facts_v06"
+    result["facts_version"] = "observer_facts_v06b"
     result["provenance"] = {"versions": {"semantic_validation_version": V06_SEMANTIC_VERSION}}
     return result
 
@@ -169,7 +169,7 @@ class V06DataContractTests(unittest.TestCase):
             language = describe_dataset(root / "dataset", root / "language")
             self.assertEqual(language["skipped_episodes"], 3)
             self.assertEqual(language["descriptions"], 0)
-            self.assertEqual(language["facts_version"], "observer_facts_v06")
+            self.assertEqual(language["facts_version"], "observer_facts_v06b")
             self.assertEqual(language["templates_version"], "templates_zh_v06")
 
     def test_all_registered_intents_have_three_train_one_test_disjoint_wordings(self):

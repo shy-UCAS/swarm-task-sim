@@ -17,13 +17,16 @@ from .mission_evaluation import window_evidence
 
 
 FACTS_VERSION = "observer_facts_v0"
-V06_FACTS_VERSION = "observer_facts_v06"
+V06_FACTS_VERSION = "observer_facts_v06b"
 PATTERN_VERSION = "pattern_detector_v0"
+V06_PATTERN_VERSION = "pattern_detector_v06b"
 PATTERN_PARAMETERS = dict(perimeter_sample_fraction=0.80, full_lap_radians=2 * math.pi,
                           perimeter_visit_radius_m=3.0,
                           region_buffer_m=1.0, parallel_sample_fraction=0.80,
                           straight_path_fraction=0.60, direction_tolerance_deg=15.0,
-                          minimum_straight_run_m=2.0)
+                          minimum_straight_run_m=2.0,
+                          downgrade_cumulative_turn_deg=230.0,
+                          downgrade_resample_segment_m=2.0)
 EPS = 1e-8
 
 
@@ -244,32 +247,33 @@ def detect_pattern(points_by_agent, region, visit_radius_m=3.0, standoff_m=0.0):
     return result
 
 
-def _cross_track_reverses(points_by_agent):
-    """Measured strip progression must not double back on the transverse axis.
+def _cumulative_turn_radians(points_by_agent, min_segment_m=None):
+    """Signed cumulative turn of the resampled main-phase path, worst agent.
 
-    Rectangular loops/spirals can have the same dominant heading and opposite
-    straight runs as a lawnmower. Reuse the existing meaningful-run distance
-    to withhold that claim when one agent moves both ways across the strips;
-    smaller sample jitter alone is not enough. Narrow traces remain ambiguous.
+    A straight sweep reverses direction at the end of every strip, so its signed
+    total returns toward zero (or one half turn); a closed rectangular loop or
+    spiral keeps turning one way and accumulates at least a full turn per lap.
+    Only geometry is read: no planned route, flight pattern or intent.
     """
-    heading, _, _ = _straight_evidence(points_by_agent)
-    if heading is None:
-        return False
-    minimum = PATTERN_PARAMETERS["minimum_straight_run_m"]
+    if min_segment_m is None:
+        min_segment_m = PATTERN_PARAMETERS["downgrade_resample_segment_m"]
+    worst = 0.0
     for rows in points_by_agent.values():
-        lateral = [-point[0] * math.sin(heading) + point[1] * math.cos(heading)
-                   for _, point in rows]
-        if not lateral:
+        path = [point for _, point in rows]
+        if len(path) < 2:
             continue
-        low = high = lateral[0]
-        forward = backward = False
-        for value in lateral[1:]:
-            forward = forward or value - low >= minimum - EPS
-            backward = backward or high - value >= minimum - EPS
-            if forward and backward:
-                return True
-            low, high = min(low, value), max(high, value)
-    return False
+        kept = [path[0]]
+        for point in path[1:]:
+            if math.dist(point[:2], kept[-1][:2]) + EPS >= min_segment_m:
+                kept.append(point)
+        total = 0.0
+        for index in range(1, len(kept) - 1):
+            back = (kept[index][0] - kept[index - 1][0], kept[index][1] - kept[index - 1][1])
+            forward = (kept[index + 1][0] - kept[index][0], kept[index + 1][1] - kept[index][1])
+            total += math.atan2(back[0] * forward[1] - back[1] * forward[0],
+                                back[0] * forward[0] + back[1] * forward[1])
+        worst = max(worst, abs(total))
+    return worst
 
 
 def _return_observed(traces, windows, agents, main_phase, max_gap, duration_s, record_hz):
@@ -321,7 +325,8 @@ def _channel_facts(traces, windows, task, region, manifest, metrics, agents):
     if v06:
         from .rapid_passage import measure_passage
         from .registry import OBSERVED_MOTION_PATTERNS
-        if pattern["observed_pattern"] == "parallel_strips" and _cross_track_reverses(points):
+        if pattern["observed_pattern"] == "parallel_strips" and _cumulative_turn_radians(points) >= math.radians(
+                PATTERN_PARAMETERS["downgrade_cumulative_turn_deg"]):
             pattern = dict(observed_pattern="unclear", scan_orientation=None, loop_direction=None)
         passage = {agent: measure_passage(rows, region, max_gap_s=max_gap)
                    for agent, rows in points.items()}
@@ -484,7 +489,7 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                 "route_progress_version", "ac4_timing_version", "execution_artifacts_version") if key in manifest}
     facts_version = V06_FACTS_VERSION if task["execution"].get("protocol_version") == "v0.6" else FACTS_VERSION
     versions.update(facts_version=facts_version,
-                    pattern_detector_version="pattern_detector_v06" if facts_version == V06_FACTS_VERSION else PATTERN_VERSION)
+                    pattern_detector_version=V06_PATTERN_VERSION if facts_version == V06_FACTS_VERSION else PATTERN_VERSION)
     return dict(facts_version=facts_version,
                 labels=dict(assigned_intent=labels["assigned_intent"],
                             return_required=task["mission"]["return_required"],

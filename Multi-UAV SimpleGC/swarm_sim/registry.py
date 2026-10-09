@@ -55,7 +55,7 @@ def component_versions(intent, flight_pattern):
     return dict(planner=f"{flight_pattern}_v1", validator={
         "reconnaissance": "shared_coverage_v2", "patrol": "perimeter_revisit_v2",
         "rapid_passage": "rapid_passage_geometry_v1"}[intent],
-        facts="observer_facts_v06", templates="templates_zh_v06")
+        facts="observer_facts_v06b", templates="templates_zh_v06")
 
 
 def _initialize():

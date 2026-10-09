@@ -11,7 +11,8 @@ from pathlib import Path
 
 from swarm_sim.dataset import build_dataset
 from swarm_sim.language_v0 import describe_dataset
-from swarm_sim.observer_facts_v0 import (_channel_facts, _compare, _return_observed, detect_pattern,
+from swarm_sim.observer_facts_v0 import (PATTERN_PARAMETERS, _channel_facts, _compare,
+                                         _cumulative_turn_radians, _return_observed, detect_pattern,
                                          extract_observer_facts)
 from swarm_sim.recording import write_json
 from swarm_sim.protocol import semantic_protocol
@@ -89,7 +90,7 @@ class V06MeasuredScanTests(unittest.TestCase):
                 self.assertIsNone(measured["scan_orientation"])
                 self.assertIsNone(measured["loop_direction"])
                 facts = _facts(pattern="unclear")
-                facts["facts_version"] = "observer_facts_v06"
+                facts["facts_version"] = "observer_facts_v06b"
                 facts["observed"].update(measured)
                 for description in generate_descriptions(facts, "measured_spiral", "test", 7):
                     self.assertNotIn("平行往返", description["text"])
@@ -108,6 +109,56 @@ class V06MeasuredScanTests(unittest.TestCase):
                     measured = _measured_facts(rows, REGION, self.task)
                     self.assertEqual(measured["observed_pattern"], "parallel_strips")
                     self.assertEqual(measured["scan_orientation"], "east_west")
+
+    def test_v06_noisy_sweep_with_turnaround_overshoot_keeps_parallel_strips(self):
+        """A real sweep overshoots at every turnaround without becoming a loop.
+
+        The v0.6 downgrade uses the signed cumulative turn, so sample noise and a
+        turnaround overshoot must not push an ordinary sweep over the threshold.
+        """
+        limit = math.radians(PATTERN_PARAMETERS["downgrade_cumulative_turn_deg"])
+        rows = ((2.0, False), (4.0, True), (6.0, False))
+        vertices = []
+        for index, (y, reverse) in enumerate(rows):
+            strip = [(float(x), y) for x in (range(21) if not reverse else range(20, -1, -1))]
+            vertices.extend(strip)
+            if index < len(rows) - 1:
+                end = strip[-1]
+                hook = (end[0] + (1.0 if not reverse else -1.0), end[1])
+                vertices.extend([hook, (hook[0], (end[1] + rows[index + 1][0]) / 2)])
+        base = _densify_vertices(vertices)
+        for jitter in (.2, .5):
+            with self.subTest(jitter=jitter):
+                noisy = [(stamp, [p[0], p[1] + jitter * math.sin(index / 7.0), p[2]])
+                         for index, (stamp, p) in enumerate(base)]
+                measured = _measured_facts(noisy, REGION, self.task)
+                self.assertEqual(measured["observed_pattern"], "parallel_strips")
+                self.assertEqual(measured["scan_orientation"], "east_west")
+                self.assertLess(_cumulative_turn_radians({"a": noisy}), limit)
+
+    def test_v06_single_loop_narrow_scan_downgrades_to_unclear(self):
+        """One narrow loop already accumulates a full turn; two loops do too."""
+        limit = math.radians(PATTERN_PARAMETERS["downgrade_cumulative_turn_deg"])
+        narrow_loop = [(8.0, 4.0), (8.0, 6.0), (12.0, 6.0), (12.0, 4.0), (8.0, 4.0)]
+        narrow_spiral = [(8.0, 4.0), (8.0, 6.0), (12.0, 6.0), (12.0, 4.0), (9.5, 4.0),
+                         (9.5, 4.8), (9.5, 5.2), (10.5, 5.2), (10.5, 4.8), (9.5, 4.8)]
+        wide_loop = [(17.0, 13.0), (17.0, 17.0), (37.0, 17.0), (37.0, 13.0), (17.0, 13.0)]
+        for region, vertices in ((REGION, narrow_loop), (REGION, narrow_spiral),
+                                 (self.region, wide_loop), (self.region, self.rectangle),
+                                 (self.region, self.spiral)):
+            with self.subTest(vertices=vertices):
+                rows = _densify_vertices(vertices)
+                # The measured geometry on its own still looks like a scan: the
+                # downgrade, not the raw detector, is what withholds the claim.
+                self.assertEqual(detect_pattern({"a": rows}, region)["observed_pattern"],
+                                 "parallel_strips")
+                measured = _measured_facts(rows, region, self.task)
+                self.assertEqual(measured["observed_pattern"], "unclear")
+                self.assertIsNone(measured["scan_orientation"])
+                self.assertGreaterEqual(_cumulative_turn_radians({"a": rows}), limit)
+        sweep = _densify_vertices([(float(x), y) for y, reverse in rows
+                                   for x in (range(21) if not reverse else range(20, -1, -1))])
+        self.assertLess(_cumulative_turn_radians({"a": sweep}), limit)
 
     def test_v06_pattern_metadata_cannot_override_measured_scan_geometry(self):
         for rows, region in ((_densify_vertices(self.spiral), self.region), (_strip_points(), REGION)):

@@ -62,7 +62,7 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
     if semantic_version not in (V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION):
         raise ValueError("zh_v0 descriptions require a supported multi-intent semantic protocol")
     v06 = semantic_version == V06_SEMANTIC_VERSION
-    facts_version = "observer_facts_v06" if v06 else "observer_facts_v0"
+    facts_version = "observer_facts_v06b" if v06 else "observer_facts_v0"
     templates_version = "templates_zh_v06" if v06 else TEMPLATES_VERSION
     description_version = "language_zh_v06" if v06 else DESCRIPTION_VERSION
     entries = manifest.get("episodes")

@@ -16,7 +16,7 @@ from typing import Any
 
 TEMPLATE_VERSION = "templates_zh_v0"
 FACTS_VERSION = "observer_facts_v0"
-V06_FACTS_VERSION = "observer_facts_v06"
+V06_FACTS_VERSION = "observer_facts_v06b"
 V06_TEMPLATE_VERSION = "templates_zh_v06"
 
 # The fourth wording of each semantic branch is reserved for test.  Time
