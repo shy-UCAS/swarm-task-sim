@@ -1,6 +1,6 @@
 # 多无人机数据生成系统框架概览
 
-> 本文依据编写时 `Simulation-dev` 的实际代码、v0.6 暂停 A2 报告及最新 pilot 报告整理。Git 分支为 `main`，已提交基线为 `b363583`。工作区还有未提交改动，本文会明确区分这些改动与已验证版本。本次仅阅读代码并编写说明，没有启动仿真、生成批次、执行正式计划、提交或推送。
+> 本文状态更新于 2026-10-10，依据当前代码、A2 报告、pilot 暂停 B 复核及生产停止报告整理。本次文档核对基线为 `main=037ed7e`；生产运行基线为 `762a303`／`v0.6-pilot`，pilot30 运行基线为 `0dffcd8`／`v0.6-pauseA3`。事实层 v06b 已提交并离线验收。正式生产 r1 在 296/900 个任务后规则停止，未导出，保留为证据；台账持久化修复后另建 r2 批次 `v06_production900r2_seed2026100812`（标签 `v0.6-production-r2`），r2 准备中，见 §16.3。
 
 ## 1. 这个系统解决什么问题
 
@@ -354,13 +354,13 @@ MAVLink 速度字段是 North/East/Down 方向的厘米每秒，进入 ENU 特�
 
 当前观测模式词表是 `parallel_strips`、`perimeter_loop`、`direct_passage` 和 `unclear`。`unclear` 表示已有证据但运动模式未明确；`null` 表示相应事实缺失或不可判，两者不能合并解释。
 
-### 编写时的未提交事实提取改动
+### 已提交并通过离线验收的事实层 v06b 修复
 
 已提交 pilot 使用 `observer_facts_v06`，其中矩形螺旋为 `unclear` 5/5；往返扫描为 `parallel_strips` 3/5、`null` 2/5。
 
-当前工作区已改为 `observer_facts_v06b` / `pattern_detector_v06b`，并同步修改注册表、任务模板和语言模块的事实版本。新的几何降级检查对主阶段轨迹按至少 2 m 的间隔保留点，计算有符号累计转角；原本被判为平行条带的轨迹若累计转角绝对值达到 230°，改为 `unclear`。
+当前代码已改为 `observer_facts_v06b` / `pattern_detector_v06b`，修复在 `a345f27` 提交，注册表、任务模板和语言模块的事实版本也已同步。新的几何降级检查对主阶段轨迹按至少 2 m 的间隔保留点，计算有符号累计转角；原本被判为平行条带的轨迹若累计转角绝对值达到 230°，改为 `unclear`。
 
-这个检查不读取计划飞法或意图来强行命名运动模式。它的设计目的，是减少同向持续转弯的环路/螺旋被误称为平行往返。本文没有运行该改动的测试或重生成描述，因此旧 pilot 的事实识别比例只代表旧版本，不能作为 `v06b` 的验证结果。
+这个检查不读取计划飞法或意图来强行命名运动模式。它用于减少持续同向转弯的环路/螺旋被误称为平行往返，同时避免旧横向折返判据造成通道分歧和槽位置空。暂停 B 的生产函数路径离线验收为 12/12：v0.5 原有 125/125 合格侦察槽位不变，pilot30 往返扫描修复为 5/5 `parallel_strips`，矩形螺旋保持 5/5 `unclear`，巡逻 9/9、快速通过 10/10 原有槽位不变。结果另存 `SwarmData/v06_pattern_acceptance_20261008/acceptance.json`，旧 pilot 事实与描述文件未覆盖，详见 pilot 报告的“复核结论”。本文更新时未重新执行验收。
 
 语言结果保存在独立目录，由 `language_manifest.json` 绑定数据集清单、事实与描述文件的哈希。数据集变化后不能无检查地沿用旧语言产物。
 
@@ -432,7 +432,7 @@ A2 正式配置尝试 782 个候选 family，接受 300 个，拒绝 482 个。�
 
 ### 16.2 已提交的真实 pilot 证据
 
-最新成功收尾批次为 `v06_pilot30b_seed2026100811`，运行代码为 `v0.6-pauseA3` 对应 `0dffcd876722b30150c2cd5e246781df65b3e9dc`。当前 HEAD `b363583` 是后续 pilot 报告提交，不能把 HEAD 与实际运行 SHA 混为一谈。
+最新成功收尾的 pilot 为 `v06_pilot30b_seed2026100811`，运行代码为 `v0.6-pauseA3` 对应 `0dffcd876722b30150c2cd5e246781df65b3e9dc`。后续事实修复提交为 `a345f27`，生产运行标签为 `v0.6-pilot=762a303`，本次文档核对 HEAD 为生产停止报告提交 `037ed7e`；不能把当前 HEAD 与各批次运行 SHA 混为一谈。
 
 | 意图/飞法 | 运行数 | 质量合格 | 双通道语义一致 |
 |---|---:|---:|---:|
@@ -450,11 +450,29 @@ A2 正式配置尝试 782 个候选 family，接受 300 个，拒绝 482 个。�
 
 快速通过真实双通道判定为 20/20 通过；侦察/巡逻交叉否定中没有被误判为快速通过的正例。矩形螺旋覆盖任务通过与其观测模式仍为 unclear 是两个不同结论。
 
-### 16.3 尚不能声称完成的部分
+### 16.3 正式生产已运行但规则停止
 
-现有证据支持三意图生成、四种生产飞法、900 任务离线规划，以及 30 任务两路并行 pilot 的完整执行与收尾。它不支持直接宣称正式 900 任务生产运行已经完成，也不能把 `docs/v06_formal_plan.md` 中所有后续内容都当成实现结果。
+正式生产为 `v06_production900_seed2026100812`，主种子 `2026100812`，计划 300 family／900 任务，K=2，尝试预算 990；运行使用 `762a303a0482725fc794eef093f023549e3f2712`／`v0.6-pilot`。两段执行期间完成一次人工暂停续跑，最终 296 个不同任务有终态记录，重试 0，604 个计划任务未运行。
 
-当前工作区的 `observer_facts_v06b` 改动尚未提交，本文未对它运行任何验证。旧 pilot 的质量、事实和描述结果继续绑定其原运行和分析版本。
+| 项目 | 截至规则停止的结果 |
+|---|---|
+| run 状态 | completed 288、failed 8，总计 296 |
+| 质量资格 | 合格 287/296，不合格 9/296 |
+| 双通道语义 | 一致 289/296、未知 7/296、不一致 0/296 |
+| 时钟不可用 | 1/296 |
+| family 三意图均已运行 | 98/300；三意图全部质量合格 89/300 |
+| 控制器状态 | `completed=false`、`finalized=false`、`paused=false`，有规则停止原因 |
+| 正式数据产品 | 无数据/语言清单，无 `final_report.json` |
+
+停止发生于 2026-10-10 05:22:08（America/Los_Angeles）：`control.json.tmp` 替换 `control.json` 收到 `PermissionError: WinError 5`，控制器记为台账持久化规则停止。报告指出现有替换无重试，读者共享方式存在瞬态占用风险；具体占用进程未被直接捕获，不能把候选进程当成确定责任者。r2 修复已实现：`save_atomic` 对 WinError 5/32 做指数退避重试（首次 0.05 s、上限 1 s、累计约 8 s），重试用尽仍按原格式规则停止；worker 改读控制器在预留落盘后写入的 `attempts/<id>/assignment.json`，不再打开 `control.json`，原有身份、端口、目录和重复执行核对保留；控制器每次保存台账后另写只读展示用 `progress.json`，其写入失败只记日志、不影响批次。离线测试见 `tests/test_parallel_persistence.py`；尚未经过实跑。
+
+296 次运行的逐尝试证据保留在仓库外批次中，报告完成相应诊断；这些记录不是 296 个已经导出的正式 episode，更不代表 900 任务数据集。规则停止不可直接 `--resume`，不得清除原因、补飞、覆盖准备或强行 finalize。用户复核后已决定以同 profile、同主种子另建 r2 批次从头运行 900 个任务，r1 保持原状。
+
+### 16.4 尚不能声称完成的部分
+
+现有证据支持三意图生成、四种生产飞法、900 任务离线规划、pilot 的执行和收尾，以及生产的 296 次运行与停止诊断。它不支持宣称正式 900 任务完成、生产数据集可用于训练或已打 `v0.6-production` 标签，也不能把正式计划全部内容当作实现结果。
+
+事实层 v06b 已验证并用于生产运行代码；旧 pilot 质量、事实与描述仍绑定原版本。持久化容错已在 r2 修复中实现但未实跑；正式计划 P3 扩展仍是待办。
 
 ## 17. 开发代码、冻结归档和大型数据分别在哪里
 
@@ -466,7 +484,7 @@ A2 正式配置尝试 782 个候选 family，接受 300 个，拒绝 482 个。�
 
 v0.5 冻结数据的既有统计为 260 个 episode、252 个质量合格、1008 条描述；开发仓库保留 4 个示例 B001/B002/B037/B098，不等于把全部冻结数据迁入开发仓库。
 
-当前新 pilot 目录为：
+已完成的 pilot30 目录为：
 
 ```text
 F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/
@@ -483,18 +501,21 @@ F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/
         └── 其他冻结输入与 shard/attempt 执行证据
 ```
 
-旧 pilot 和规则停止批次也可能仍在 SwarmData 中；目录名和用途标记决定其身份，不能将多个批次中的运行直接混成训练集。上述新 pilot 明确标记 `purpose=pilot`、`training_data=false`。
+正式生产停止证据位于 `SwarmData/parallel_batch/v06_production900_seed2026100812/`：保留 `control.json`、`stop_report.json`、冻结计划及 296 次 shard/attempt 证据，没有正式导出的 dataset 或 language 清单。暂停/停止副本和诊断位于 `SwarmData/agent_work/v06_production/`，精确定位见生产停止报告 §16。
+
+旧 pilot 和停止批次均保留；目录名与用途标记决定身份，不能混成训练集。pilot30 明确标记 `purpose=pilot`、`training_data=false`。
 
 ## 18. 已知边界与文档差异
 
 | 项目 | 当前应采用的解释 | 依据 |
 |---|---|---|
-| 根 README/CLAUDE 的旧进度快照 | 其中 `main=9812645`、正式计划尚未执行等旧状态不能作为当前进度 | 当前 Git HEAD、A2 与 pilot 报告 |
+| 旧进度快照与计划基线 | `9812645` 是计划起始基线；本次核对 HEAD 为 `037ed7e`，生产运行标签为 `762a303`；根 README/CLAUDE 已同步停止状态 | Git、台账与生产停止报告 |
 | 部分旧接口文档只描述双意图或只登记侦察 | 当前生产登记为三意图、四种飞法，旧文档应按历史接口理解 | `registry.py`、三意图 profile |
 | 旧说明称连续航线待后续实现 | 当前 runner 与 compiler 已支持 `semantic_phase_route_v1`，并经 pilot 使用 | `mission_v3.py`、`route_planning.py`、`runner_v3.py`、pilot 报告 |
 | 正式计划或 A2 提及固件等待 2 秒 | 当前模板和 pilot 为 10 秒，优化已经撤回 | 当前 v06 模板、`run_provenance.py`、pilot 报告 |
 | 计划飞法等于观测运动模式 | 两者独立；矩形螺旋目前没有专门的可靠观测模式标签 | 注册表词表、事实提取器、pilot 报告 |
-| 旧 pilot 的事实版本与当前工作区 | 旧为 v06，工作区为未提交的 v06b；比例不能直接继承 | Git diff、`observer_facts_v0.py`、`language_v0.py` |
+| 旧 pilot 的事实版本与当前代码 | 旧 pilot 保持 v06；当前 v06b 已提交并通过另存的离线验收，不静默改写旧结果 | `a345f27`、事实提取器、pilot 暂停 B 复核 |
+| 正式生产原准备状态与实际运行 | 已由准备推进到 296/900 规则停止；无正式导出集，停在暂停 C | `control.json`、生产停止报告 |
 | 规划安全等于实际安全 | nominal 检查、实际真值检查和观测检查是不同证据层 | 规划诊断、`quality.py`、执行/验收策略 |
 | 数据生成已包含复杂现实感知环境 | 当前输入是合作式 FCU 遥测，场景仍主要围绕矩形区域和既有平台/参数 | 观测契约、模板和当前 profile |
 
@@ -519,6 +540,7 @@ F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/
 | 事实和描述 | [observer_facts_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/observer_facts_v0.py>)、[language_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/language_v0.py:47>)、[language_templates_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/language_templates_v0.py:486>) |
 | A2 离线验证和生产规划统计 | [v0.6_pauseA2_report.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_pauseA2_report.md>) |
 | 最新真实 pilot 结果与限制 | [v0.6_pilot_report.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_pilot_report.md>) |
+| 正式生产 296 次运行与规则停止 | [v0.6_production_stop_01.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_production_stop_01.md>) |
 | 运行流程与标志文件 | [v0.6_formal_run_commands.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_formal_run_commands.md>) |
 | 原始正式计划，需结合调整及报告阅读 | [v06_formal_plan.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v06_formal_plan.md>) |
 

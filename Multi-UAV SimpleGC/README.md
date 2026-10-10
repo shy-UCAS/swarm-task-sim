@@ -1,10 +1,18 @@
 # Multi-UAV SimpleGC
 
-> 新会话先读[仓库根 README](../README.md)：当前 v0.5 已完成并冻结，Git 发布和迁移已完成。本文保留早期阶段的接口与使用说明；历史阶段的测试数量和待办不代表当前进度。
+> 新会话先读[仓库根 README](../README.md)。2026-10-10 状态：v0.5 已冻结；v0.6 三意图、四种生产飞法、两路 pilot 和暂停 B 复核已完成；正式生产在 296/900 个任务后因台账持久化失败而规则停止，未导出，停在暂停 C。本文下方 v0.4 及更早章节保留历史接口与使用说明，历史“当前状态”、测试数量及命令不代表最新进度，也不授权启动或续跑已停止批次。
 
-基于本机 ArduCopter SITL 的多无人机实验框架。当前代码版本为 **0.5.0-dev**，当前成果见 [v0.5 最终报告](docs/v0.5_final_report.md)。既有 v1/v2 支持 1～6 架飞机独立启动、共享矩形区域任务、分阶段并行执行、驻留确认、自动降落，以及 SIM 真值、时间诊断和按任务族组织的数据集。v3 已接通按语义阶段连续执行、逐运行参数与固件核验、双通道轨迹窗口及分析。
+基于本机 ArduCopter SITL 的多无人机实验框架。包内历史版本字符串为 **0.5.0-dev**，当前实现已支持 TaskSpec v3 与 v0.6 协议；版本字符串不能代替任务协议、Git 提交及批次状态。既有 v1/v2 支持 1～6 架飞机，当前三意图 profile 使用 2/3/4 机。v3 已接通连续语义航线、参数/固件核验、双通道分析、family 整族生成、并行暂停续跑及数据导出/描述/加载。
 
-## v0.4 里程碑
+## 当前 v0.6 状态（2026-10-10）
+
+- **代码与飞法**：本次文档核对 HEAD 为 `main=037ed7e`；侦察 `equal_strip_lawnmower`／`equal_strip_rectangular_spiral`，巡逻 `staggered_same_loop`，快速通过 `line_abreast`；`echelon` 未生产登记。事实层 v06b 修复已提交并离线验收，最终悬停 2 秒、固件等待 10 秒。
+- **pilot30**：运行提交 `0dffcd8`／`v0.6-pauseA3`；30 个 episode，质量与语义一致均为 29/30，116 条描述，已收尾，标记 pilot、不用于训练。暂停 B 冻结阈值与事实层修复见 [pilot 报告](docs/v0.6_pilot_report.md)。
+- **正式生产**：运行提交 `762a303`／`v0.6-pilot`；批次 `v06_production900_seed2026100812`，296 次记录（completed 288、failed 8），质量合格 287/296、语义一致 289/296；台账持久化 `WinError 5` 规则停止，未完成、未 finalize，无正式导出数据集或描述层。见 [生产停止报告](docs/v0.6_production_stop_01.md)。
+- **当前边界**：停在暂停 C 等复核，不直接 resume、不清除停止原因、不补飞、不覆盖重建。代码与少量示例在 `Simulation-dev`，v0.5 全量在 `Simulation`，新增数据在仓库外 `SwarmData`。
+- **阅读入口**：[系统框架概览](docs/system_architecture_overview.md)、[运行命令及停止状态](docs/v0.6_formal_run_commands.md)、[原正式计划及执行状态](docs/v06_formal_plan.md)、[v0.5 冻结报告](docs/v0.5_final_report.md)。以下章节均按对应历史版本理解。
+
+## v0.4 里程碑（历史记录）
 
 WP-S 已由用户确认 GO，独立记录见 [GO 确认记录](docs/v04_spike_go_confirmation.json)，原 UNKNOWN 报告保持原样。WP-G G1–G4 已获用户确认，历史结果见 [WP-G 报告](docs/v04_wp_g_milestone.md)。WP-E 实现和原离线验收见 [WP-E 报告](docs/v04_wp_e_milestone.md)。V1 获确认后，已按授权完成 V06 的 10 场景试生产。
 
@@ -79,7 +87,7 @@ conda run -n llm --no-capture-output python main.py plan tasks/patrol_3uav.json 
 
 项目 `.conda-env` 指定 `llm`。当前验证环境为 Windows、Python 3.12.3、pymavlink 2.4.50。SITL EXE 和 DLL 已随工程提供；本次改造没有安装依赖。`requirements.txt` 声明 pymavlink，`requirements-dev.txt` 额外提供可选的 pytest；标准库 `unittest` 可直接运行全部测试。当前项目验证过的路径不要求直接安装 NumPy。
 
-仓库已配置 Windows / Python 3.12 的 GitHub Actions 逻辑测试，尚未验证远端执行结果；它不启动真实 SITL。
+本历史阶段曾记录“尚未验证远端执行结果”；后续发布与 v0.6 已有远端 CI 验收记录，入口见根 README 和对应阶段报告。当前 workflow 为 `.github/workflows/unit-tests.yml`，不启动真实 SITL；具体通过数与提交绑定，不能用历史数字证明当前 HEAD 已验收。
 
 ## 快速开始
 

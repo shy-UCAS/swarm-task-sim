@@ -41,6 +41,12 @@ def utc():
     return datetime.now(timezone.utc).isoformat()
 
 
+# Windows sharing violations (access denied / file in use) from a concurrent
+# reader or scanner are transient; any other error fails immediately.
+REPLACE_RETRY_WINERRORS = (5, 32)
+REPLACE_RETRY_FIRST, REPLACE_RETRY_CAP, REPLACE_RETRY_BUDGET = 0.05, 1.0, 8.0
+
+
 def save_atomic(path, value):
     path = resolve_data_root(Path(path).absolute())
     temporary = resolve_data_root(path.with_name(path.name + ".tmp"))
@@ -49,7 +55,25 @@ def save_atomic(path, value):
         stream.write("\n")
         stream.flush()
         os.fsync(stream.fileno())
-    temporary.replace(path)
+    delay, waited, retries = REPLACE_RETRY_FIRST, 0.0, 0
+    while True:
+        try:
+            temporary.replace(path)
+            return
+        except PermissionError as exc:
+            if (getattr(exc, "winerror", None) not in REPLACE_RETRY_WINERRORS
+                    or waited + delay > REPLACE_RETRY_BUDGET):
+                # Keep the temporary file: it holds the newest unsaved value as
+                # evidence, and the next save overwrites it with mode "w".
+                print(f"{utc()} save_atomic gave up after {retries} retries ({waited:.2f}s): "
+                      f"{path}; unsaved value kept at {temporary}", file=sys.stderr, flush=True)
+                raise
+            retries += 1
+            print(f"{utc()} save_atomic retry {retries} in {delay:.2f}s: {path}: {exc}",
+                  file=sys.stderr, flush=True)
+            time.sleep(delay)
+            waited += delay
+            delay = min(2*delay, REPLACE_RETRY_CAP)
 
 
 def resolve_data_root(value=None, *, project_root=PROJECT):
@@ -339,6 +363,64 @@ def _save_state(root, state):
             research_impact=("A family appears in multiple data splits, leaking shared scenes into held-out evaluation and invalidating generalization results."
                 if "family split leakage" in state["stopped_reason"] else
                 "Unverified or interrupted evidence cannot support reproducible task outcomes; preserve all attempts for review.")))
+    _save_progress(root, state)
+
+
+def _save_progress(root, state):
+    """Display-only snapshot for external monitors; never read by the controller.
+
+    A failed snapshot must not stop the batch, so it bypasses _persist.
+    """
+    try:
+        finished = [a for a in state["attempts"] if a["status"] == "finished"]
+        save_atomic(root / "progress.json", dict(version=VERSION, updated_utc=utc(),
+            distinct_tasks_finished=len({a["global_index"] for a in finished}),
+            attempts=len(state["attempts"]), registered=len(state["completion_order"]),
+            in_flight=len(state["attempts"]) - len(finished),
+            rolling_anomaly_count=state["rolling"]["anomaly_count"],
+            rolling_window_count=state["rolling"]["window_count"],
+            paused=state.get("paused", False), completed=state["completed"],
+            status=state.get("status"), stopped_reason=state["stopped_reason"]))
+    except Exception as exc:
+        print(f"{utc()} progress snapshot skipped: {type(exc).__name__}: {exc}", file=sys.stderr, flush=True)
+
+
+ASSIGNMENT_FIELDS = ("attempt_id", "global_index", "mission_id", "family_id", "shard_id",
+                     "attempt_index", "attempt_directory", "base_port", "status")
+
+
+def write_assignment(plan, attempt):
+    """Per-attempt copy of the reserved ledger row; workers never open control.json."""
+    save_atomic(Path(attempt["attempt_directory"]) / "assignment.json",
+        dict({key: attempt[key] for key in ASSIGNMENT_FIELDS}, version=VERSION,
+             batch_id=plan["batch_id"], plan_sha256=canonical_hash(plan)))
+
+
+def read_assignment(plan, attempt_id):
+    """Worker-side checks of one reservation against the frozen plan."""
+    if not re.fullmatch(r"a[0-9]{6}", attempt_id):
+        raise ValueError("worker requires one controller-reserved attempt")
+    matches = [Path(plan["root"]) / "shards" / f"shard_{k:02d}" / "attempts" / attempt_id
+               for k in range(plan["shards"])]
+    matches = [d for d in matches if (d / "assignment.json").is_file()]
+    if len(matches) != 1:
+        raise ValueError("worker requires one controller-reserved attempt")
+    attempt = read(matches[0] / "assignment.json")
+    if (attempt.get("version") != VERSION or attempt.get("batch_id") != plan["batch_id"]
+            or attempt.get("plan_sha256") != canonical_hash(plan)):
+        raise ValueError("controller state/plan binding changed")
+    index = attempt.get("global_index")
+    if type(index) is not int or not 0 <= index < len(plan["tasks"]):
+        raise ValueError("attempt references unknown task")
+    task = plan["tasks"][index]
+    expected_dir = Path(plan["root"]) / "shards" / f"shard_{task['shard_id']:02d}" / "attempts" / attempt_id
+    if (attempt["attempt_id"] != attempt_id or attempt.get("attempt_index") not in (0, 1)
+            or attempt["shard_id"] != task["shard_id"] or attempt["mission_id"] != task["mission_id"]
+            or attempt["family_id"] != task["family_id"] or matches[0].resolve() != expected_dir
+            or Path(attempt["attempt_directory"]).resolve() != expected_dir
+            or attempt["base_port"] != 19100+100*task["shard_id"]):
+        raise ValueError("duplicate or inconsistent attempt assignment")
+    return {key: attempt[key] for key in ASSIGNMENT_FIELDS}
 
 
 def _next_task(plan, state, shard_id):
@@ -592,6 +674,7 @@ class Controller:
                                     status="running", started_utc=utc())
                                 state["attempts"].append(attempt)
                                 _save_state(self.root, state)  # Reserve global budget before Popen.
+                                write_assignment(self.plan, attempt)  # Worker input; never control.json.
                                 self.processes[attempt_id] = self.launcher(self.plan, attempt)
                                 self._apply_pause(state)
                         except Exception as exc:

@@ -9,19 +9,16 @@ if str(PROJECT) not in sys.path:
     sys.path.insert(0, str(PROJECT))
 
 from swarm_sim.parallel_batch import (Controller, FileLock, _validate_state, batch_directory,
-    finalize, integrity, load_plan, prepare, read, resolve_data_root, save_atomic)
+    finalize, integrity, load_plan, prepare, read, read_assignment, resolve_data_root, save_atomic)
 
 
 def worker(root, attempt_id):
     from swarm_sim.parallel_worker import execute_attempt
 
     plan = load_plan(root)
-    state = read(root / "control.json")
-    _validate_state(plan, state)
-    matches = [a for a in state["attempts"] if a["attempt_id"] == attempt_id]
-    if len(matches) != 1:
-        raise ValueError("worker requires one controller-reserved attempt")
-    attempt = matches[0]
+    # The controller is the only reader/writer of control.json during a run;
+    # the per-attempt assignment is written after the reservation is durable.
+    attempt = read_assignment(plan, attempt_id)
     shard = root / "shards" / f"shard_{attempt['shard_id']:02d}"
     with FileLock(shard / "writer.lock"):
         path = Path(attempt["attempt_directory"]) / "result.json"

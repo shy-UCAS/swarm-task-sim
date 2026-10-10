@@ -1,5 +1,7 @@
 # v0.5 最小双意图数据契约（`data_contract_v0`）
 
+> **版本范围说明（2026-10-10）：** 本文仍是 v0.5 冻结数据契约，正文的双意图、事实/描述版本与样本数量按 v0.5 理解，不改写旧协议。当前代码另支持 v0.6 三意图及四种生产飞法；`load_episode()` 六维 ENU 和 mask 含义保持兼容，新元数据在 v0.5 上缺省处理。当前 facts 为 `observer_facts_v06b`，旧 pilot30 的 v06 语言产物保留，新判据验收另存。最新接口见 [TaskSpec v3](task_spec_v3.md)、[系统概览](system_architecture_overview.md) 和 [pilot 复核](v0.6_pilot_report.md)。正式生产已运行 296/900 后规则停止，未导出数据集或描述层，不能将逐尝试证据称为已完成训练集；见 [生产停止报告](v0.6_production_stop_01.md)。
+
 本契约适用于 v0.5 修订版 r1、r1.1 及 [r1.2/r1.2a/r1.2b 补充](v0.5_r1.2_addendum.md)下生成的侦察、巡逻 `mission_v3` 数据集和独立的 `language_zh_v0` 描述层。r1.1 新增 `random_spawn_v2` 与 `dual_intent_v05b`；[v05c 续补](v0.5_r1.1_v05c_addendum.md)仅在该采样器中增加固定初始航向策略。原 `dual_intent_v05`、`dual_intent_v05b`、`dual_intent_v05c` profile、DR、诊断、VP1 原始运行/分析及其 r1 FAIL 判定作为独立档案保留，不覆盖或改写；PP08 原运行、两版分析和原停止判定也保留，后续重分析与新判定另存。数据集的单位是完整 episode；描述层只引用已经导出的、经过哈希核对的 episode。本文规定算法侧能使用的输入、监督标签、划分和版本核对，不把验证器或规划器的内部证据混入模型输入。
 
 ## 1. 模型输入

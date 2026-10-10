@@ -1,6 +1,8 @@
 # TaskSpec v3 通用接口
 
-状态：`IMPLEMENTED_AND_TESTED`。WP-E 已实现连续模式 schema 2 编译、运行与双通道轨迹窗口。离线验收见 [WP-E 报告](v04_wp_e_milestone.md)，运行效果以 V1 实测为准。
+状态：`IMPLEMENTED_AND_TESTED`。WP-E 已实现连续模式 schema 2 编译、运行与双通道轨迹窗口，历史验收见 [WP-E 报告](v04_wp_e_milestone.md)。2026-10-10 当前扩展已包含三意图和 v0.6 元数据；实际运行证据见 [pilot 报告及暂停 B 复核](v0.6_pilot_report.md) 与 [生产停止报告](v0.6_production_stop_01.md)。生产在 296/900 个任务后规则停止，未形成正式导出集。
+
+本文保留 v0.4 基础接口说明，侦察专用参数段落只描述对应意图/历史阶段；当前完整字段和拒绝规则以 `mission_v3.normalize_v3()`、各意图参数规范化函数及 `missions/v3/*_v06.json` 为准。当前 Git 核对 HEAD 为 `037ed7e`，不能把历史 WP-E 验收当作当前提交的重新测试。
 
 ## 数据结构与兼容边界
 
@@ -10,13 +12,15 @@
 - `mission`：`intent`、`target_region_id`、布尔 `return_required`、`intent_params`。侦察参数为 `objective`、`coverage_required` 和 `observation_model`。
 - `planner`：`name` 和 `params`。侦察参数沿用 v2，再增加默认 `0.0` 的 `lane_end_overshoot_m`。本里程碑拒绝非零值，等待后续有覆盖不足实测证据时按 WP-E 实现。
 - `execution`：显式 `control_mode`；`waypoint_barrier_v1` 仅允许 `waypoint_hold_s`；`semantic_phase_route_v1` 仅允许 `terminal_hold_s` 和 `async_timing_tolerance`，其余公共字段沿用 v2。v3 可选 `phase_timeout_override_s` 只用于显式缩短阶段预算，范围 0.001–3600 s，省略时保持默认公式；该字段参与场景绑定。
+- v0.6 执行扩展：`protocol_version`、`final_hold_s`、`firmware_version_timeout_s` 中任一出现时，三者必须齐备且协议为 `v0.6`。当前模板为最终悬停 2 秒、固件等待 10 秒；原 2 秒固件等待优化已撤回。未声明该组字段的旧任务不会自动升级。
+- `flight_pattern` / `component_versions`：声明时需匹配意图允许的生产飞法、规划器版本及注册组件版本；当前 facts 为 `observer_facts_v06b`。这些是任务/来源元数据，不能作为公开轨迹特征。
 - `family_id`、`family_scheme` 可以省略由规范化计算；显式填写时必须与 `scene_content_v1` 计算结果一致。它们由物理内容决定，与 mission/planner/execution、种子和名称无关。
 
 未知字段、数值 bool、NaN/Inf、缺字段、未注册意图/规划器、意图与规划器不匹配、控制模式专属字段错配、手填 family 不符均在规范化时拒绝。矩形区域可有多个，但每个任务只指定一个目标区域；禁区仍只接受空列表。
 
 ## 注册与回调
 
-`swarm_sim.registry` 提供不可变 `IntentSpec`、`PlannerSpec`、`PlanResult`。生产注册项只有 `reconnaissance` 和 `equal_strip_lawnmower_v1`。不从外部文件、环境变量或插件目录自动发现其他意图。
+`swarm_sim.registry` 提供不可变 `IntentSpec`、`PlannerSpec`、`PlanResult`。当前生产意图为 `reconnaissance`、`patrol`、`rapid_passage`，飞法为侦察 `equal_strip_lawnmower`／`equal_strip_rectangular_spiral`、巡逻 `staggered_same_loop`、快速通过 `line_abreast`。意图与对应规划器显式初始化，不从外部文件、环境变量或插件目录自动发现。`echelon` 只允许显式离线候选作用域，不生产登记。
 
 | 接口 | 合同 |
 |---|---|

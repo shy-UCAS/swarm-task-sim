@@ -1,6 +1,6 @@
 # 项目交接
 
-本仓库用 ArduCopter SITL 生成多无人机轨迹、双通道标签及描述；v0.5 已完成并冻结，用于算法链路开发。新会话先读根目录 `README.md`，其中保存当前进度和新旧仓库边界。
+本仓库用 ArduCopter SITL 生成多无人机轨迹、双通道标签及描述；v0.5 已完成并冻结，v0.6 三意图与 pilot 已完成，正式生产 r1 在 296/900 个任务后规则停止、未收尾，保留为证据；用户已决定修复台账持久化后另建 r2 批次 `v06_production900r2_seed2026100812`（标签 `v0.6-production-r2`）从头运行，r2 准备中。新会话先读根目录 `README.md`，其中保存当前进度和新旧仓库边界。本文件状态核对日期为 2026-10-10。
 
 - `Multi-UAV SimpleGC/`：当前多机工程；`swarm_sim/` 源码，`tests/` 测试，`scripts/` 执行与复核，`docs/` 规则/报告，`verification/` 实跑台账，`tmp_v05/` 离线证据，`generation_profiles/` 配置。
 - `SimpleGC/`：原始单机工程；`.claude/progress/`：仓库级进度快照。
@@ -16,7 +16,7 @@ Python 前先读 `Multi-UAV SimpleGC/.conda-env`（当前 `llm`），遵循项�
 & 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python main.py --help
 ```
 
-Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git diff --check`；Python 通常在 `Multi-UAV SimpleGC` 中执行。原 `Simulation` 仅作冻结归档，不从其旧 main 开发或推送。发布 PR #1 与并行开发 PR #2 已合并；本次核对时 main 已推进到 v0.6 的 `v0.6-pilot` 标签（30 任务 pilot 与阈值冻结），当前基线以 `git log -1`、`git describe --tags` 为准，不要沿用旧基线号 `9812645`；提交/推送按当前用户授权执行。当前离线 CI 清单见 `.github/workflows/unit-tests.yml`，包含发布逻辑检查、并行测试与 v0.6 三意图测试；141 项是迁移时的历史计数，完整历史集成测试需要另行取得归档。当前没有自动接续的仿真任务。
+Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git diff --check`；Python 通常在 `Multi-UAV SimpleGC` 中执行。原 `Simulation` 仅作冻结归档，不从其旧 main 开发或推送。发布 PR #1 与并行开发 PR #2 已合并；本次文档核对 HEAD 为 `main=037ed7e`（生产停止报告），生产运行提交为 `762a303`／`v0.6-pilot`，pilot30 运行提交为 `0dffcd8`／`v0.6-pauseA3`，不能混同。尚未打 `v0.6-production` 标签。后续以 `git log -1`、标签指向与工作区状态为准；提交/推送按当前用户授权执行。当前离线 CI 清单见 `.github/workflows/unit-tests.yml`，历史通过数不等于当前 HEAD 已重新验收。当前没有自动接续的仿真任务。
 
 ## 铁律与报告
 
@@ -34,5 +34,7 @@ Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git dif
 ## 新会话恢复顺序
 
 1. 先读根目录 `README.md` 并核对 Git 状态；本机 `.claude/progress/` 的最新快照可辅助恢复，但新克隆不保证存在。
-2. 再读 `Multi-UAV SimpleGC/docs/v0.5_final_report.md`，以及本次任务涉及的有效规则、源码和证据；历史规则文件的“剩余步骤”不代表当前进度。
-3. v0.5 已完成 260 次运行并冻结；Git 发布、迁移及 v0.6 并行开发合并均完成。v0.6 已完成 20 任务（20/20、合格 20/20、语义一致 19/20）与 30 任务（30/30、合格 29/30、语义一致 29/30）两次两路试跑，含一次真实人工暂停续跑，均已收尾，数据在仓库外 SwarmData，pilot 不用于训练；快速通过六项阈值已冻结，事实层 `null` 槽位问题已修复并通过离线验收。`Multi-UAV SimpleGC/docs/v06_formal_plan.md` 的 pilot 阶段已执行完毕，正式生产（300 family／900 任务）已完成批次准备但**未启动仿真**；新会话先恢复已完成进展，后续按新的用户指令执行，不自动启动仿真、批量生成或改写旧证据。
+2. 再读 [生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md) 和 [pilot 报告的暂停 B 复核结论](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md)，以及本次任务涉及的规则、源码和证据；涉及 v0.5 时读其冻结最终报告。历史规则文件的“剩余步骤”不代表当前进度。
+3. v0.5 已完成 260 次运行并冻结。v0.6 pilot20（质量 20/20、语义一致 19/20）与 pilot30（质量 29/30、语义一致 29/30）均已收尾，不用于训练。快速通过六项阈值冻结；事实层 `observer_facts_v06b`／`pattern_detector_v06b` 修复已在 `a345f27` 提交，12/12 离线验收通过；最后终点悬停 2 秒，固件版本等待恢复 10 秒。
+4. 正式生产 `v06_production900_seed2026100812` 已执行两段并发生一次人工暂停续跑；目前 296/900 个不同任务有终态记录（completed 288、failed 8），质量合格 287/296、语义一致 289/296。2026-10-10 05:22:08（America/Los_Angeles）台账替换 `control.json.tmp -> control.json` 的 `WinError 5` 导致规则停止；`completed=false`、`finalized=false`，无正式导出数据集或描述层。逐尝试证据位于仓库外 `SwarmData/parallel_batch/v06_production900_seed2026100812/`。
+5. r1 批次不得清除 `stopped_reason`、直接 `--resume`、补飞、覆盖 prepare 或强行 finalize。用户已决定：修复持久化（`save_atomic` 共享冲突退避重试、worker 改读 `assignment.json`、只读 `progress.json`）后，以同 profile、同主种子 `2026100812` prepare r2，任务清单须与 r1 逐条一致；prepare 后停下，由用户启动。任务记录见 [r2 起始指令](Multi-UAV%20SimpleGC/docs/v06_r2_kickoff.md)。运行期间查看进度只读 `progress.json`，不打开 `control.json`；生产运行期间不在本仓库开发，新功能在 worktree `Simulation-dev-wip`（`wip/episode-player`）中进行。旧计划、旧命令和历史启动授权不自动转化为新的运行授权。

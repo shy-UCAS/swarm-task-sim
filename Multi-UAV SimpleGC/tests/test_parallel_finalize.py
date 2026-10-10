@@ -362,6 +362,9 @@ class ParallelFinalizeTests(unittest.TestCase):
         marker = Path(attempt["attempt_directory"]) / "started.json"
         save_json(marker, dict(attempt_id=attempt["attempt_id"]))
         batch._save_state(self.root, state)
+        # Workers read their per-attempt assignment, never control.json.
+        plan.update(shards=2, batch_id="offline")
+        batch.write_assignment(plan, attempt)
         with patch.object(cli, "load_plan", return_value=plan), \
                 patch("swarm_sim.parallel_worker.execute_attempt") as execute:
             with self.assertRaises(FileExistsError):
