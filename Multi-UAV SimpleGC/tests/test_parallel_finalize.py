@@ -61,8 +61,15 @@ class ParallelFinalizeTests(unittest.TestCase):
         stack.enter_context(patch.object(batch, "integrity"))
         return stack
 
-    def test_global_order_split_bindings_and_unified_pipeline_keep_quality_failure(self):
+    def test_global_order_split_bindings_and_unified_pipeline_keep_quality_failure(self, pilot=False):
         plan, state = self.mock_batch()
+        if pilot:
+            plan.update(subset={}, purpose="pilot", training_data=False)
+            state["plan_sha256"] = canonical_hash(plan)
+            batch._save_state(self.root, state)
+            (self.root / "bundle").mkdir()
+            save_json(self.root / "bundle/generation_manifest.json", dict(bases=[
+                dict(family_id=f"f{i}", status="accepted") for i in range(3)]))
         stack = self.finalizer_inputs(plan)
         stack.enter_context(patch.object(batch, "_default_verifier", side_effect=lambda p, a, r: r))
         events = []
@@ -85,7 +92,13 @@ class ParallelFinalizeTests(unittest.TestCase):
         def audit(path, *, generation_manifest, attempt_ledger):
             events.append("audit")
             self.assertEqual(path, self.root / "dataset")
-            self.assertEqual(generation_manifest, self.root / "bundle/generation_manifest.json")
+            self.assertEqual(generation_manifest, self.root / (
+                "subset_audit_manifest.json" if pilot else "bundle/generation_manifest.json"))
+            if pilot:
+                self.assertEqual([b["family_id"] for b in batch.read(generation_manifest)["bases"]], ["f0", "f1"])
+                exported = batch.read(path / "dataset_manifest.json")
+                self.assertEqual(exported["purpose"], "pilot")
+                self.assertIs(exported["training_data"], False)
             recorded = batch.read(attempt_ledger)
             self.assertEqual([m["mission_id"] for m in recorded["missions"]], ["m0", "m1"])
             self.assertEqual(recorded["missions"][0]["attempts"][0]["run_status"], "failed")
@@ -123,6 +136,9 @@ class ParallelFinalizeTests(unittest.TestCase):
         diagnostics.assert_called_once()
         self.assertEqual(report["patrol_timing"], {"groups": []})
         self.assertEqual(report["audit_issues"], ["nonblocking diagnostic"])
+
+    def test_subset_finalize_marks_export_non_training_and_audits_only_selected_families(self):
+        self.test_global_order_split_bindings_and_unified_pipeline_keep_quality_failure(pilot=True)
 
     def test_family_split_leakage_stops_finalization_before_descriptions_and_keeps_audit(self):
         plan, state = self.mock_batch()

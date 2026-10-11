@@ -289,6 +289,9 @@ def integrity(plan):
             if file_hash(path) != digest:
                 raise ValueError(f"protected file hash changed: {path}")
     listing, _ = verify_generation(Path(plan["bundle"]) / "mission_list.json")
+    if "subset" in plan:
+        from .parallel_subset import verify_subset
+        listing = verify_subset(plan, listing)
     if assign_tasks(listing, plan["bundle"], plan["shards"], plan["split_salt"]) != plan["tasks"]:
         raise ValueError("frozen task assignment changed")
 
@@ -824,10 +827,14 @@ def finalize(root):
             dataset, language = root / "dataset", root / "language"
             manifest = build_dataset([r["run_directory"] for r in rows], dataset,
                                      salt=plan["split_salt"], analysis_selections=selections)
+            if "subset" in plan:
+                manifest.update(purpose="pilot", training_data=False)
+                save_atomic(dataset / "dataset_manifest.json", manifest)
             if ([e["run_id"] for e in manifest["episodes"]] != [r["run_id"] for r in rows]
                     or [e["split"] for e in manifest["episodes"]] != [t["split"] for t in plan["tasks"]]):
                 raise ValueError("export order or frozen family split changed")
-            audit = audit_dataset(dataset, generation_manifest=Path(plan["bundle"]) / "generation_manifest.json",
+            from .parallel_subset import audit_manifest
+            audit = audit_dataset(dataset, generation_manifest=audit_manifest(plan),
                                   attempt_ledger=audit_ledger)
             save_atomic(root / "dataset_audit.json", audit)
             if audit.get("family_split_leaks"):
