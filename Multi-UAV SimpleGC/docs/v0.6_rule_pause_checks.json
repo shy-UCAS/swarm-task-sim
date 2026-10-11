@@ -1,0 +1,65 @@
+{
+  "baseline_commit": "8fbe1d745a4f6447c175132099749026eaefc271",
+  "date": "2026-10-11",
+  "environment": "conda llm / Python 3.12.3 / PowerShell 7.6.5",
+  "evidence_directory": "C:\\Users\\shy\\AppData\\Local\\Temp\\v06_rule_pause_63a336c1d5964dc2b97f8e7f191ecbbb",
+  "ci_list": {
+    "total": 304,
+    "passed": 304
+  },
+  "parallel": {
+    "total": 97,
+    "passed": 97
+  },
+  "rule_pause_tests": [
+    "test_parallel_rule_pause.RulePauseTests.test_all_confirmed_violations_and_infrastructure_remain_irrecoverable",
+    "test_parallel_rule_pause.RulePauseTests.test_first_trigger_equivalence_for_normal_and_anomalous_registrations",
+    "test_parallel_rule_pause.RulePauseTests.test_hard_violation_during_rule_drain_overrides_pause_and_resume_is_rejected",
+    "test_parallel_rule_pause.RulePauseTests.test_legacy_rolling_stop_remains_irrecoverable_even_if_reason_cleared",
+    "test_parallel_rule_pause.RulePauseTests.test_manual_pause_can_be_superseded_by_rule_while_draining",
+    "test_parallel_rule_pause.RulePauseTests.test_new_anomaly_below_threshold_after_old_anomalies_expire_does_not_pause",
+    "test_parallel_rule_pause.RulePauseTests.test_progress_and_status_distinguish_manual_rule_and_stop",
+    "test_parallel_rule_pause.RulePauseTests.test_recovery_discovered_rule_pause_is_not_consumed_by_same_resume",
+    "test_parallel_rule_pause.RulePauseTests.test_resume_normal_then_anomaly_repauses_and_counts_two_without_losing_budget",
+    "test_parallel_rule_pause.RulePauseTests.test_rule_pause_count_has_no_fixed_limit",
+    "test_parallel_rule_pause.RulePauseTests.test_rule_pause_on_last_task_still_requires_review_before_completion",
+    "test_parallel_rule_pause.RulePauseTests.test_rule_pause_records_trigger_window_and_drain_without_stopping"
+  ],
+  "dr130": {
+    "total": 260,
+    "passed": 260
+  },
+  "v05_examples": {
+    "total": 4,
+    "passed": 4
+  },
+  "powershell_blocks": {
+    "total": 4,
+    "passed": 4
+  },
+  "resource_samples": {
+    "total": 2,
+    "passed": 2
+  },
+  "baseline_full": {
+    "errors": 5,
+    "failures": 1,
+    "passed": 791,
+    "total": 797
+  },
+  "candidate_full": {
+    "errors": 5,
+    "failures": 1,
+    "passed": 803,
+    "total": 809
+  },
+  "unchanged_failures": [
+    "test_real_wp_s_and_v01_readbacks_have_valid_reset_but_partial_v01_stays_rejected (test_parameter_comparison_v2.ParameterComparisonV2Tests.test_real_wp_s_and_v01_readbacks_have_valid_reset_but_partial_v01_stays_rejected)",
+    "test_prepare_then_successful_next_uses_real_analysis (test_v05_batch_controller.BatchIOTests.test_prepare_then_successful_next_uses_real_analysis)",
+    "test_history_preserves_original_fail_and_charges_two (test_v05_r12_controllers.R12ValidationTests.test_history_preserves_original_fail_and_charges_two)",
+    "test_history_is_one_real_nonretryable_attempt_and_hash_bound (test_v05c_validation_controller.V05cValidationControllerTests.test_history_is_one_real_nonretryable_attempt_and_hash_bound)",
+    "test_real_v04_v06_episode_still_loads (test_wp_p_protocol.V05ProtocolTests.test_real_v04_v06_episode_still_loads)",
+    "test_G06_production_registry_and_exception_cleanup (test_task_v3.TaskV3Tests.test_G06_production_registry_and_exception_cleanup)"
+  ],
+  "new_regressions": 0
+}

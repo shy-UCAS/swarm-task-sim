@@ -1,8 +1,8 @@
 # SwarmTaskSim：工程进度与新会话交接
 
-**请新会话先读本文件。v0.5 已完成并冻结；v0.6 三意图实现、两路 pilot 与暂停 B 复核已完成，正式生产 r1 在 296/900 个任务后因台账持久化失败而规则停止，未收尾，保留为证据；用户已决定修复持久化后以同一 profile、同一种子另建 r2 批次从头运行，r2 准备中。后续开发在 `Simulation-dev`，v0.5 完整归档在原 `Simulation`，新增大型数据在仓库外 `SwarmData`。没有等待自动执行或自动续跑的仿真任务。**
+**请新会话先读本文件。v0.5 已完成并冻结；v0.6 三意图、两路 pilot 与暂停 B 复核已完成。正式生产 r1 在 296/900 后因台账持久化失败停止，r2 在 465/900 后因外部负载触发滚动异常停止；两批均未收尾、不可续跑，仅保留为证据。停止规则现已修订：滚动异常改为可人工续跑的规则暂停，确认违规和基础设施类停止仍不可恢复。下一步先做并行扩展与仿真倍率对照测试，再确定配置、准备 r3 从头运行 900 个任务；本轮没有准备或启动新批次。开发在 `Simulation-dev`，冻结归档在原 `Simulation`，大型数据在仓库外 `SwarmData`。**
 
-本文件最后核对日期为 **2026-10-10**，核对基线为 `main=037ed7e`，并只读核对了 pilot30 与正式生产台账及现存清单。它记录项目当前状态、能力和资料入口，不代替源码、规则或原始证据。文中本机绝对路径仅适用于原开发电脑；其他电脑需要安装环境，并另行取得完整数据归档。
+本文件最后更新日期为 **2026-10-11**，规则修订起始基线为 `main=8fbe1d7`。r1/r2 数字引用既有停止报告；本轮验证使用仓库外离线副本，不改旧批次。它记录项目当前状态、能力和资料入口，不代替源码、规则或原始证据。文中本机绝对路径仅适用于原开发电脑；其他电脑需要安装环境，并另行取得完整数据归档。
 
 ## 1. 工程已经做到哪一步
 
@@ -15,15 +15,15 @@
 | v0.5 | 侦察与边界巡逻双意图；验证、20 次试生产、240 次批量运行；导出、审计、描述、加载验收 | 已完成，停在暂停 2，已冻结 |
 | Git 发布与迁移 | 精简代码发布，补齐运行基线，独立目录验证，PR 合并及建立新开发目录 | 已完成；[PR #1](https://github.com/shy-UCAS/swarm-task-sim/pull/1) |
 | v0.6 实现与 pilot | 三意图协议、四种生产飞法、整族接受、两路并行；20 任务与 30 任务 pilot 已收尾并复核；快速通过阈值冻结，事实层 v06b 修复已提交并通过离线验收 | pilot30 登记 30/30、质量合格 29/30、语义一致 29/30，含一次真实人工暂停续跑；[pilot 报告及暂停 B 复核](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md)；[pilot20 报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md) |
-| v0.6 正式生产 | `v06_production900_seed2026100812` 已准备并执行两段，期间完成一次人工暂停续跑 | 296/900 个不同任务已有终态记录（completed 288、failed 8）；台账持久化 `WinError 5` 触发规则停止；未完成、未 finalize、未导出，停在暂停 C；[生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md) |
+| v0.6 正式生产 | r1：296/900 后持久化停止；r2：465/900 后外部负载触发滚动异常停止 | 两批均未完成、未 finalize、未导出；旧停止不可续跑。[r1 报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)、[r2 报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md)。滚动异常规则已改为可续跑暂停，下一步为对照测试后准备 r3 |
 
 v0.6 暂停 1 当时的验收记录：新增测试 63/63、CI 离线清单 204/204 通过；全量 721/726 通过，5 项历史证据依赖错误在原始基线复现。文件行数、八类测试、未解决项及数据目录示例见 [暂停 1 报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pause1_report.md)。
 
 历史沿革：分片暂停 1 已复核通过，当时补充测试后并行测试 65/65 通过；随后路径守卫修复又扩充测试，上述数字是各阶段历史验收记录，不是当前代码的测试总数。r1 摸底停止结论见[历史报告](Multi-UAV%20SimpleGC/docs/v0.6_intent_registry_stop_report.md)；r2 诊断与 DR130 金标准在 `8369df9` 提交，[摘要](Multi-UAV%20SimpleGC/verification/v06_prechecks_20261007/README.md)在 `21f427a` 归档。取消的是当时提出的意图模块化重构，不是撤销当前已有注册表或三意图能力。pilot20 使用 10 family／20 任务／2 路、种子 `2026100701`，已收尾：完成 20/20、质量合格 20/20、语义一致 19/20；用户据此采用两路。其执行方式差异见[报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)，该批次不用于训练。
 
-后续已执行进展：A2 按独立飞法子流及整族接受规则完成 300 family／900 任务离线规划（清单规划拒绝 0/900），见[A2 报告](Multi-UAV%20SimpleGC/docs/v0.6_pauseA2_report.md)。pilot30 使用种子 `2026100811`、`v0.6-pauseA3`／`0dffcd8`，登记 30/30，质量与语义一致均为 29/30；最终保留 30 个 episode，29 个有描述，共 116 条。暂停 B 冻结快速通过六项阈值，事实层累计转向修复在 `a345f27` 提交，12/12 离线验收通过；旧 pilot 文件与判定未改写。正式生产使用种子 `2026100812`、`v0.6-pilot`／`762a303`，296 次尝试、无重试；质量合格 287/296、语义一致 289/296、时钟不可用 1/296。因 `control.json.tmp` 替换 `control.json` 被拒绝而规则停止，604 个计划任务未运行。已有逐尝试证据保留，但不存在完成的正式生产数据集或描述层；不得直接 resume、清除停止原因或补飞。用户复核后已决定：修复持久化缺陷后另建 r2 批次重跑，见第 8 节。
+后续已执行进展：A2 按独立飞法子流及整族接受规则完成 300 family／900 任务离线规划（清单规划拒绝 0/900），见[A2 报告](Multi-UAV%20SimpleGC/docs/v0.6_pauseA2_report.md)。pilot30 使用种子 `2026100811`、`v0.6-pauseA3`／`0dffcd8`，登记 30/30，质量与语义一致均为 29/30；最终保留 30 个 episode，29 个有描述，共 116 条。暂停 B 冻结快速通过六项阈值，事实层累计转向修复在 `a345f27` 提交，12/12 离线验收通过；旧 pilot 文件与判定未改写。正式生产使用种子 `2026100812`、`v0.6-pilot`／`762a303`，296 次尝试、无重试；质量合格 287/296、语义一致 289/296、时钟不可用 1/296。因 `control.json.tmp` 替换 `control.json` 被拒绝而规则停止，604 个计划任务未运行。已有逐尝试证据保留，但不存在完成的正式生产数据集或描述层；不得直接 resume、清除停止原因或补飞。随后已修复持久化并运行 r2，r2 又在 465/900 后因外部负载触发旧滚动异常停止。当前规则修订和下一步见第 8 节。
 
-本次文档核对的开发 HEAD 为 **`main=037ed7e`**（正式生产停止报告提交）；生产运行基线为 **`v0.6-pilot=762a303a0482725fc794eef093f023549e3f2712`**，pilot30 实际运行基线为 `v0.6-pauseA3=0dffcd8`。这三个身份不能混同；尚未打 `v0.6-production` 标签。并行开发 [PR #2](https://github.com/shy-UCAS/swarm-task-sim/pull/2) 已合并。后续以 `git log -1`、标签指向和工作区状态为准，不把历史测试或 CI 记录当作当前 HEAD 的重新验收。
+规则修订基于 **`main=8fbe1d7`**（r2 停止报告）；r2 运行基线为 **`v0.6-production-r2=8d366b4`**，r1 为 `v0.6-pilot=762a303`，pilot30 为 `v0.6-pauseA3=0dffcd8`。这些身份不能混同；`v0.6-rule-pause` 是规则修订标签，不代表生产完成，尚未打 `v0.6-production` 标签。并行开发 [PR #2](https://github.com/shy-UCAS/swarm-task-sim/pull/2) 已合并。后续以 Git 状态与本次[验收报告](Multi-UAV%20SimpleGC/docs/v0.6_rule_pause_report.md)为准。
 
 v0.5 的最终计数如下，**260 次只包含试生产与正式批量，不包含更早的开发/验证运行**：
 
@@ -51,13 +51,13 @@ v0.5 的最终计数如下，**260 次只包含试生产与正式批量，不包
 | 任务与场景生成 | 支持 TaskSpec v3 编译、按 profile/种子采样；先独立抽定各意图飞法，三者都规划通过才整族发布；A2 清单为 300 family／900 个有效规划 |
 | 双通道判定 | 分别依据 SIM 真值和 FCU 观测核验任务语义，记录成功、失败、未知及两通道一致性 |
 | 质量与执行诊断 | 检查时钟、有效观测、真值间距、机载任务参数；输出有序路线进度、圈数、时序偏差、过点速度等 |
-| 分片并行 | 按 family 分片，独立目录与端口、全局停止与预算、人工暂停排空及续跑、统一收尾；pilot20、pilot30 已收尾，正式生产两路运行 296 个任务后规则停止；K=2 指两个多机任务并行 |
+| 分片并行 | 按 family 分片，独立目录与端口、全局停止与预算、人工/规则暂停排空及续跑、统一收尾；窗口连续、规则暂停次数不限，确认违规仍不可恢复；K=2 指两个多机任务并行 |
 | 数据导出与审计 | 按 family 划分 train/validation/test；绑定 manifest 和 SHA256；检查划分泄漏、完整性与分布 |
 | 中文描述 | 质量合格且语义一致的 episode 才生成事实及四份模板描述；当前代码使用 `observer_facts_v06b`／`pattern_detector_v06b`，旧 pilot 语言层保持原版本；不是自由文本模型生成 |
 | 数据加载 | `load_episode()` 返回时间、六维 ENU 位置/速度、掩码、标签和元数据；v0.5 示例兼容，新字段缺省处理；不自动归一化或训练分类器。已知限制（审查 P2-02，本次不处理）：当前代码拒绝加载事实层版本不同的旧 v0.6 数据（如 pilot30 的 30 个 episode），需用对应运行提交 `0dffcd8` 加载 |
 | 离线回放 | `replay.py` 可查看已有运行的轨迹、事件和保存结果；不启动仿真、不重算原判定。完整轨迹回放需要原始运行目录 |
 
-能力限制：覆盖采用理想几何观察模型，不是真实相机/雷达；SITL 不模拟碰撞，安全依据实际间距证据判断。当前侦察两种飞法、巡逻和快速通过各一种，形态仍可能成为意图强线索；规划飞法不等于可靠识别出的观测运动模式。矩形螺旋通常输出 `unclear`，生产中也有退化为往返的 P2 个案，见停止报告 §9。被动时钟拟合不能证明绝对同步精度；本工程未提供模型训练或意图识别准确率，四路未验证。正式生产 r1 暴露了台账原子替换的瞬态占用风险；r2 修复已加入共享冲突退避重试、worker 改读分配文件和只读进度快照，尚未经过实跑。296 次运行不能替代完整 900 任务数据集。详见[架构概览](Multi-UAV%20SimpleGC/docs/system_architecture_overview.md)与[生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)。
+能力限制：覆盖采用理想几何观察模型，不是真实相机/雷达；SITL 不模拟碰撞，安全依据实际间距证据判断。当前侦察两种飞法、巡逻和快速通过各一种，形态仍可能成为意图强线索；规划飞法不等于可靠识别出的观测运动模式。矩形螺旋通常输出 `unclear`，生产中也有退化为往返的 P2 个案，见停止报告 §9。被动时钟拟合不能证明绝对同步精度；本工程未提供模型训练或意图识别准确率，四路未验证。正式生产 r1 暴露了台账原子替换的瞬态占用风险；r2 修复已加入共享冲突退避重试、worker 改读分配文件和只读进度快照，修复已用于 r2 的 465/900 次运行，未再发生持久化冲突；重试本身未被实跑触发。规则暂停只经离线验证，r1/r2 均不能替代完整 900 任务数据集。详见[架构概览](Multi-UAV%20SimpleGC/docs/system_architecture_overview.md)与[生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)。
 
 ## 3. 新开发仓库和旧冻结仓库分别是什么
 
@@ -175,7 +175,7 @@ conda run -n $EnvName --no-capture-output python main.py plan missions/v3/recon_
 conda run -n $EnvName --no-capture-output python main.py validate tests/.tmp/readme_recon_plan.json
 ```
 
-规划输出必须是新文件；若已存在，换一个名字。当前离线 CI 模块清单见 [CI 配置](.github/workflows/unit-tests.yml)，已包含原发布检查以及 `test_parallel_batch`、`test_parallel_worker`、`test_parallel_finalize`、`test_parallel_file_sizes`。141/141 是迁移时的历史结果，204/204 是分片暂停 1 时的历史结果；当前测试数量与通过情况应引用对应提交的检查记录，不把历史数字当成当前总数。本次仅核对交接文档，未重新执行测试。全量 `unittest discover` 中有依赖完整历史归档的集成测试，不能把精简目录缺数据导致的失败直接当成算法退化。
+规划输出必须是新文件；若已存在，换一个名字。当前离线 CI 模块清单见 [CI 配置](.github/workflows/unit-tests.yml)，已包含原发布检查以及 `test_parallel_batch`、`test_parallel_worker`、`test_parallel_finalize`、`test_parallel_file_sizes`。141/141 是迁移时的历史结果，204/204 是分片暂停 1 时的历史结果；当前测试数量与通过情况应引用对应提交的检查记录，不把历史数字当成当前总数。本次规则修订的离线测试及既有失败对照见 [验收报告](Multi-UAV%20SimpleGC/docs/v0.6_rule_pause_report.md)。全量 `unittest discover` 中有依赖完整历史归档的集成测试，不能把精简目录缺数据导致的失败直接当成算法退化。
 
 真正的 `run`、`batch`、批量控制器 `next` 会启动仿真，必须依据当前用户任务执行；不要从旧交接文件推断新的运行授权。旧台账含绝对路径和证据哈希，不能直接复制为新批量的控制状态。
 
@@ -192,15 +192,17 @@ conda run -n $EnvName --no-capture-output python main.py validate tests/.tmp/rea
 
 ## 8. 新对话如何恢复，以及下一步是什么
 
-恢复顺序：本 README → Git 状态和 `CLAUDE.md` → [生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md) → [pilot 报告及暂停 B 复核](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md) → [r2 起始指令](Multi-UAV%20SimpleGC/docs/v06_r2_kickoff.md) → 独立审查报告 `SwarmData/reviews/v06_deepseek_audit_20261009/audit_report.md`（仓库外）→ 本次任务涉及的规则、接口、源码和证据；涉及 v0.5 时读[冻结最终报告](Multi-UAV%20SimpleGC/docs/v0.5_final_report.md)。完整轨迹复核先确认归档或 SwarmData 可用，不把报告摘要当成重新核验过原始数据。
+恢复顺序：本 README → Git 状态和 `CLAUDE.md` → [r2 停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md) → [规则修订记录](Multi-UAV%20SimpleGC/docs/v06_rule_pause_kickoff.md) → [生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md) → [pilot 报告及暂停 B 复核](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md) → [r2 起始指令](Multi-UAV%20SimpleGC/docs/v06_r2_kickoff.md) → 独立审查报告 `SwarmData/reviews/v06_deepseek_audit_20261009/audit_report.md`（仓库外）→ 本次任务涉及的规则、接口、源码和证据；涉及 v0.5 时读[冻结最终报告](Multi-UAV%20SimpleGC/docs/v0.5_final_report.md)。完整轨迹复核先确认归档或 SwarmData 可用，不把报告摘要当成重新核验过原始数据。
 
 可以把下面这段作为新对话的第一条消息：
 
-> 请先读根 README、CLAUDE.md 并核对 Git，恢复 v0.5 冻结归档、v0.6 三意图与事实层 v06b、两次两路 pilot，以及正式生产 296/900 后规则停止的状态。区分当前开发 HEAD、pilot 运行 SHA 和生产运行标签。先读生产停止报告与 pilot 复核结论，说明证据位置及当前暂停 C；不自动 run/resume/prepare/finalize，不清除停止原因，不改写旧证据。
+> 请先读根 README、CLAUDE.md 并核对 Git，恢复 v0.5 冻结归档、v0.6 三意图与事实层 v06b、两次两路 pilot，以及 r1 296/900、r2 465/900 后规则停止和新代码规则暂停的状态。区分当前开发 HEAD、pilot 运行 SHA 和生产运行标签。先读生产停止报告与 pilot 复核结论，说明证据位置及当前暂停 C；不自动 run/resume/prepare/finalize，不清除停止原因，不改写旧证据。
 
 r1 批次 `v06_production900_seed2026100812` 以 296/900 个任务终态记录结束，`completed=false`、`finalized=false`、`paused=false` 且有 `stopped_reason`；**规则停止不是人工暂停，不能直接 `--resume`**，该批次保持原状作为证据，不补飞、不 finalize、不修改台账。快速通过六项阈值冻结，最终悬停为 2 秒，固件版本等待已恢复 10 秒。
 
-**下一步（用户已决定）：** 修复台账持久化缺陷后，用同一 profile `generation_profiles/tri_intent_v06_production.json`、同一主种子 `2026100812` 重新准备 r2 批次 `v06_production900r2_seed2026100812`，从头运行 900 个任务；修复提交经远端 CI 通过后打标签 `v0.6-production-r2`。r2 任务清单须与 r1 逐条一致。prepare 后停下，由用户启动运行。v0.5 无待执行生产任务；所有 pilot 不并入训练数据。
+**下一步（用户已决定）：** 先按 `v06_accel_test_plan.md` 做并行扩展与仿真倍率对照测试，根据结果确定配置后，准备 r3 从头运行 900 个任务。本轮仅实施停止规则、诊断与文档，不 prepare/run/resume/finalize，不开展对照测试。该后续计划尚未在仓库中提供，需下一轮补齐。r1、r2 均保持不可续跑的旧停止证据；生产期间机器独占使用。v0.5 无待执行生产任务；所有 pilot 不并入训练数据。
+
+新规则在每次完成登记后判定：最近 20 次中异常达到 5 次且本次为异常时，停止派发并排空，写入 `kind="rule"` 的暂停事件；Ctrl+C 为 `kind="manual"`。显式 `run --resume` 保留预算和完整完成顺序，下一次正常运行不会因旧窗口再次暂停。`pause_reason` 保存触发窗口内所有异常运行及原因，`rule_pause_count` 累计次数，`resume_events` 保留续跑记录。确认违规、持久化重试用尽、派发基础设施、合并遗漏/重复与 family 泄漏仍为不可恢复停止。见[任务记录](Multi-UAV%20SimpleGC/docs/v06_rule_pause_kickoff.md)及[处理流程](Multi-UAV%20SimpleGC/docs/v0.6_formal_run_commands.md)。
 
 独立审查（`SwarmData/reviews/v06_deepseek_audit_20261009/audit_report.md`）P2 项处理状态：本次处理 P2-03、P2-04（pilot 报告末尾追加勘误）、P2-05（prepare 块 Int64）、P2-06（状态文档更新）；仍未处理 P2-01（交叉否定逐项反例）、P2-02（加载器历史版本兼容）、P2-07（仓库历史大文件）。另记 P2：续跑时台账重放约 20 分钟、回字形窄条带退化。
 
@@ -225,6 +227,8 @@ r1 批次 `v06_production900_seed2026100812` 以 296/900 个任务终态记录�
 - [v0.6 运行命令](Multi-UAV%20SimpleGC/docs/v0.6_formal_run_commands.md)：历史启动流程与当前停止状态；禁止对已停止生产批次直接 run/resume/finalize。
 - [数据生成系统框架概览](Multi-UAV%20SimpleGC/docs/system_architecture_overview.md)：架构、模块职责、完整数据流与当前能力边界。
 - [r2 起始指令](Multi-UAV%20SimpleGC/docs/v06_r2_kickoff.md)：生产 r2 的修复范围、测试要求、提交与 prepare 步骤（任务记录）。
+- [r2 停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md)：465/900 后外部负载、滚动异常及不可恢复的旧停止证据。
+- [规则暂停任务记录](Multi-UAV%20SimpleGC/docs/v06_rule_pause_kickoff.md)、[验收报告](Multi-UAV%20SimpleGC/docs/v0.6_rule_pause_report.md)：本轮实现、离线验证与未处理项。
 - 独立审查报告：`SwarmData/reviews/v06_deepseek_audit_20261009/audit_report.md`（仓库外）；P2-01～P2-07 的处理状态见第 8 节。
 
 ## 10. v0.5 冻结版本位置
@@ -250,5 +254,6 @@ r1 批次 `v06_production900_seed2026100812` 以 296/900 个任务终态记录�
 | v0.6 pilot 20（`v06_pilot20_20261007_seed2026100701`） | **pilot：仅用于并行方案验证，不用于训练** | `SwarmData/parallel_batch/v06_pilot20_20261007_seed2026100701/dataset/`（仓库外，与 `prepare_inputs/` 同根） | 20 episode，质量合格 20、双通道语义一致 19 | `510f788140f240863a8ace68776568739d2716456379df0ca6a804e42169c0c1` | 已收尾（`completed=true`、`finalized=true`、`stopped_reason=null`）；描述层 SHA256 `b2a128bd69aab29e0308570446f2f1024896f68ab38122168799cf382490e8b6`，76 条描述 / 19 episode、跳过 1；该批次绑定提交 `c07840f`，本次 CI 路径守卫修复后，用新代码对它做完整性复检会出现 `protected_sha256` 受保护哈希失配，属于预期，不重跑、不改写冻结计划 |
 | v0.6 pilot 30（`v06_pilot30b_seed2026100811`） | **pilot：三意图及暂停续跑验证，不用于训练** | `SwarmData/parallel_batch/v06_pilot30b_seed2026100811/dataset/` | 30 episode，质量合格 29、语义一致 29，失败运行 1 | `38af46be0bb0ffbc4e26b0ee94c37abdfd6dbee207cd9e360747d50c77998af1` | 已收尾；描述层 SHA256 `04edebd0c6e682354d3d04ed57783bb2761fa487ec46ea4b907947bfd4f5a43e`，116 条/29 episode、跳过 1；运行 `0dffcd8`，旧事实版本 v06 保留，v06b 离线验收另存 |
 | v0.6 正式生产停止批次（`v06_production900_seed2026100812`） | 正式生产尝试；**当前仅保留运行证据，不是已完成训练数据集** | `SwarmData/parallel_batch/v06_production900_seed2026100812/`，逐尝试证据在 `shards/` | 计划 900 任务；已运行 296，质量合格 287、语义一致 289；无重试 | **不存在：未 finalize、未导出** | 运行 `762a303`／`v0.6-pilot`；`completed=false`、`finalized=false`、台账保存失败规则停止；无正式描述层，不直接 resume、不覆盖重建 |
+| v0.6 正式生产 r2 停止批次（`v06_production900r2_seed2026100812`） | 正式生产尝试；**仅保留证据，不是已完成训练数据集** | `SwarmData/parallel_batch/v06_production900r2_seed2026100812/` | 465/900 次任务，质量合格 446/465、语义一致 453/465 | **不存在：未 finalize、未导出** | `8d366b4`／`v0.6-production-r2`；外部负载触发旧滚动异常停止，不可续跑 |
 
-pilot20 细节见[两路试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)，pilot30 及 v06b 验收见[pilot 报告](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md)，生产停止证据见[停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)。本次复算 pilot30 两份清单 SHA256 与上表一致；生产台账 296 条及未导出状态与报告一致。停止批次行是证据登记，不代表已有正式数据集版本。
+pilot20 细节见[两路试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)，pilot30 及 v06b 验收见[pilot 报告](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md)，r1/r2 分别见[停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)、[r2 报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md)。上表历史哈希与计数沿用既有核对；本轮不重写旧批次。停止批次行是证据登记，不代表已有正式数据集版本。

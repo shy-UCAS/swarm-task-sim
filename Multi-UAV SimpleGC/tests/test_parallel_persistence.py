@@ -91,6 +91,10 @@ class ReplaceRetryTests(ControllerFixture):
         self.assertIn("active workers will still drain", errors.getvalue())
         self.assertEqual((self.root / "control.json").read_bytes(), before)
         self.assertEqual(batch.read(self.root / "control.json.tmp"), unsaved)  # unsaved value kept
+        # Once persistence recovers, the recorded stop still forbids resume.
+        controller._persist(state)
+        with self.assertRaisesRegex(ValueError, "rule-stopped batch cannot resume"):
+            self.run_controller(resume=True)
 
     def test_other_errors_are_not_retried(self):
         for error in (PermissionError(13, "plain"), sharing_violation(2), OSError("disk")):

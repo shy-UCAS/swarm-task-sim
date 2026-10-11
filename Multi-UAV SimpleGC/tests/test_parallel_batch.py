@@ -474,20 +474,22 @@ class GlobalControllerTests(ControllerFixture):
             ledger = batch.read(self.root / "shards" / f"shard_{shard:02d}" / "ledger.json")
             self.assertEqual(ledger["attempts"], [a for a in state["attempts"] if a["shard_id"] == shard])
 
-    def test_fifth_global_anomaly_stops_dispatch_and_drains_other_shard(self):
+    def test_fifth_global_anomaly_pauses_dispatch_and_drains_other_shard(self):
         reasons = ["task_failure_truth", "label_disagreement", "episode_quality_ineligible"]
         self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a,
             reasons if a["global_index"] < 5 else ()), polls=4 if a["global_index"] == 5 else 1)
         state = self.run_controller(batch.new_state(self.plan))
         self.assertEqual(len(self.launches), 6)
         self.assertFalse(state["completed"])
-        self.assertIn("rolling", state["stopped_reason"])
+        self.assertIsNone(state["stopped_reason"])
+        self.assertTrue(state["paused"])
+        self.assertEqual(state["pause_kind"], "rule")
         self.assertEqual(state["rolling"]["anomaly_count"], 5)
         self.assertEqual(state["rolling"]["window_count"], 6)
         self.assertEqual({a["shard_id"] for a in state["attempts"][:5]}, {0, 1})
         self.assertTrue(all(a["status"] == "finished" for a in state["attempts"]))
-        self.assertEqual(state["stop_attempt_id"], state["attempts"][4]["attempt_id"])
-        self.assertTrue(state["attempts"][5]["completed_after_stop"])
+        self.assertEqual(state["pause_events"][0]["trigger_attempt_id"], state["attempts"][4]["attempt_id"])
+        self.assertTrue(state["attempts"][5]["completed_after_pause"])
         for worker in self.workers:
             worker.terminate.assert_not_called()
             worker.kill.assert_not_called()
@@ -541,6 +543,7 @@ class GlobalControllerTests(ControllerFixture):
         self.assertTrue(state["paused"])
         self.assertEqual(state["status"], "paused")
         self.assertEqual(len(state["pause_events"]), 1)
+        self.assertEqual(state["pause_events"][0]["kind"], "manual")
         self.assertNotIn("stop_events", state)
         self.assertFalse((self.root / "stop_report.json").exists())
         self.assertTrue(all(a["status"] == "finished" for a in state["attempts"]))
@@ -572,23 +575,22 @@ class GlobalControllerTests(ControllerFixture):
         self.assertEqual(resumed["completion_order"][:2], paused["completion_order"])
         self.assertEqual(batch.merge_records(self.plan, resumed, verifier=lambda p, a, r: r)[0]["global_index"], 0)
 
-    def test_pause_resume_rolling_anomalies_remain_continuous_and_rule_stop_is_sticky(self):
+    def test_manual_resume_rolling_anomalies_remain_continuous_and_rule_pause_can_resume(self):
         self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a, ["task_failure_truth"]), polls=2)
         with patch.object(batch.time, "sleep", side_effect=[KeyboardInterrupt(), None]):
             paused = self.run_controller(batch.new_state(self.plan))
         self.assertEqual(paused["rolling"]["anomaly_count"], 2)
-        stopped = self.run_controller(resume=True)
-        self.assertFalse(stopped["paused"])
-        self.assertEqual(stopped["status"], "stopped")
-        self.assertIn("rolling", stopped["stopped_reason"])
-        self.assertEqual(len(stopped["attempts"]), 6)
-        self.assertEqual(stopped["rolling"]["window_count"], 6)
-        self.assertEqual(stopped["rolling"]["anomaly_count"], 6)
-        before = copy.deepcopy(stopped)
-        with self.assertRaisesRegex(ValueError, "rule-stopped batch cannot resume"):
-            self.run_controller(resume=True)
-        self.assertEqual(batch.read(self.root / "control.json"), before)
-        self.assertEqual(len(self.launches), 6)
+        paused = self.run_controller(resume=True)
+        self.assertTrue(paused["paused"])
+        self.assertEqual(paused["pause_kind"], "rule")
+        self.assertIsNone(paused["stopped_reason"])
+        self.assertEqual(len(paused["attempts"]), 6)
+        self.assertEqual(paused["rolling"]["window_count"], 6)
+        self.assertEqual(paused["rolling"]["anomaly_count"], 6)
+        self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a))
+        resumed = self.run_controller(resume=True)
+        self.assertTrue(resumed["completed"])
+        self.assertEqual(len(self.launches), 8)
 
     def test_signal_during_reserved_launch_finishes_transaction_then_pauses_and_restores_handler(self):
         original = signal.getsignal(signal.SIGINT)
@@ -668,7 +670,7 @@ class CompletionAndRecoveryTests(ControllerFixture):
         batch.register_completion(state, attempt, result)
         return state
 
-    def test_window_uses_last_twenty_registrations_and_stop_is_sticky(self):
+    def test_window_uses_last_twenty_registrations_and_pause_is_sticky(self):
         self.plan = fake_plan(self.root, count=30)
         state = batch.new_state(self.plan)
         for i in range(26):
@@ -678,12 +680,13 @@ class CompletionAndRecoveryTests(ControllerFixture):
             batch.register_completion(state, attempt, fake_result(self.plan, attempt, reasons))
             if i == 19:
                 self.assertEqual(state["rolling"]["anomaly_count"], 5)
-                trigger = state["stop_attempt_id"]
+                trigger = state["pause_events"][0]["trigger_attempt_id"]
         self.assertEqual(state["rolling"]["window_count"], 20)
         self.assertEqual(state["rolling"]["anomaly_count"], 3)
-        self.assertEqual(state["stop_attempt_id"], trigger)
-        self.assertIsNotNone(state["stopped_reason"])
-        self.assertTrue(state["attempts"][-1]["completed_after_stop"])
+        self.assertEqual(state["pause_events"][0]["trigger_attempt_id"], trigger)
+        self.assertIsNone(state["stopped_reason"])
+        self.assertTrue(state["paused"])
+        self.assertTrue(state["attempts"][-1]["completed_after_pause"])
 
     def test_registration_is_idempotent_and_rejects_changed_result(self):
         state = batch.new_state(self.plan)

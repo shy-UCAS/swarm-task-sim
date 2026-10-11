@@ -306,17 +306,42 @@ def disk_status(plan, attempts_used):
 def new_state(plan):
     return dict(version=VERSION, plan_sha256=canonical_hash(plan), attempts=[], completion_order=[],
                 stopped_reason=None, stop_attempt_id=None, completed=False, finalized=False,
-                paused=False, status="ready",
+                paused=False, status="ready", pause_kind=None, pause_reason=None, rule_pause_count=0,
                 rolling=assess_recent_runs([], stage="batch"))
 
 
 def _stop(state, reason, attempt_id=None):
-    state.update(paused=False, status="stopped")
+    state.update(paused=False, status="stopped", pause_kind=None, pause_reason=None)
     events = state.setdefault("stop_events", [])
     if not any(e["reason"] == reason and e["attempt_id"] == attempt_id for e in events):
         events.append(dict(reason=reason, attempt_id=attempt_id, utc=utc()))
     if not state["stopped_reason"]:
         state.update(stopped_reason=reason, stop_attempt_id=attempt_id, stopped_utc=utc())
+
+
+def _pause(state, kind, reason, attempt_id=None):
+    # A rule may supersede a manual pause while workers drain, but one rule
+    # pause has only one trigger even if more anomalous workers finish.
+    if state["stopped_reason"] or (state.get("paused") and
+            (kind == "manual" or state.get("pause_kind") == "rule")):
+        return
+    stamp = utc()
+    state.update(paused=True, status="paused", paused_utc=stamp,
+                 pause_kind=kind, pause_reason=copy.deepcopy(reason))
+    state["rule_pause_count"] = state.get("rule_pause_count", 0) + int(kind == "rule")
+    state.setdefault("pause_events", []).append(dict(utc=stamp, kind=kind,
+        pause_reason=copy.deepcopy(reason), trigger_attempt_id=attempt_id,
+        reserved_attempt_count=len(state["attempts"]),
+        registered_completion_count=len(state["completion_order"]),
+        completed_after_pause=[]))
+
+
+def pause_summary(state):
+    """Small display fields, including compatibility with old manual pauses."""
+    reason = state.get("pause_reason") or {}
+    return dict(pause_kind=(state.get("pause_kind") or "manual") if state.get("paused") else None,
+                pause_reason=reason.get("summary") if state.get("paused") else None,
+                rule_pause_count=state.get("rule_pause_count", 0))
 
 
 def register_completion(state, attempt, result):
@@ -332,6 +357,8 @@ def register_completion(state, attempt, result):
                    finished_utc=utc(), completed_after_stop=bool(state["stopped_reason"]))
     if state.get("paused"):
         attempt["completed_after_pause"] = True
+        if state.get("pause_events"):
+            state["pause_events"][-1].setdefault("completed_after_pause", []).append(attempt["attempt_id"])
     state["completion_order"].append(attempt["attempt_id"])
     ordered = sorted((a for a in state["attempts"] if a.get("completion_seq")),
                      key=lambda a: a["completion_seq"])
@@ -342,8 +369,11 @@ def register_completion(state, attempt, result):
         _stop(state, "infrastructure: " + result["infrastructure_error"], attempt["attempt_id"])
     elif result.get("hard_failures"):
         _stop(state, "confirmed violation: " + ", ".join(result["hard_failures"]), attempt["attempt_id"])
-    elif state["rolling"]["stop"]:
-        _stop(state, "global rolling anomalies reached 5 in the latest 20 runs", attempt["attempt_id"])
+    elif result.get("assessment", {}).get("aggregate_anomaly") and state["rolling"]["stop"]:
+        _pause(state, "rule", dict(
+            summary="global rolling anomalies reached 5 in the latest 20 runs",
+            anomalous_runs=[row for row in state["rolling"]["runs"] if row["reasons"]]),
+            attempt["attempt_id"])
 
 
 def _save_state(root, state):
@@ -380,7 +410,7 @@ def _save_progress(root, state):
             rolling_anomaly_count=state["rolling"]["anomaly_count"],
             rolling_window_count=state["rolling"]["window_count"],
             paused=state.get("paused", False), completed=state["completed"],
-            status=state.get("status"), stopped_reason=state["stopped_reason"]))
+            status=state.get("status"), stopped_reason=state["stopped_reason"], **pause_summary(state)))
     except Exception as exc:
         print(f"{utc()} progress snapshot skipped: {type(exc).__name__}: {exc}", file=sys.stderr, flush=True)
 
@@ -477,6 +507,9 @@ def _validate_state(plan, state):
     if replayed != state["rolling"]:
         raise ValueError("persisted rolling window differs from completion sequence replay")
     historical_stop = bool(state.get("stop_events"))
+    rule_events = [event for event in state.get("pause_events", []) if event.get("kind") == "rule"]
+    if state.get("rule_pause_count", 0) != len(rule_events):
+        raise ValueError("rule pause count differs from pause history")
     anomaly_window, run_ids = [], set()
     for attempt in finished:
         result = attempt["result"]
@@ -487,7 +520,10 @@ def _validate_state(plan, state):
             run_ids.add(result["run_id"])
         if result.get("assessment"):
             anomaly_window = [*anomaly_window, result["assessment"]["aggregate_anomaly"]][-20:]
-            historical_stop |= sum(anomaly_window) >= 5
+            # Old rolling stops remain immutable. New rule pauses explicitly
+            # account for the threshold crossing without clearing the window.
+            historical_stop |= sum(anomaly_window) >= 5 and not any(
+                event["registered_completion_count"] <= attempt["completion_seq"] for event in rule_events)
     if historical_stop and not state["stopped_reason"]:
         raise ValueError("persisted stop was cleared despite a historical stop condition")
 
@@ -529,12 +565,8 @@ class Controller:
                 signal.signal(signal.SIGINT, previous)
 
     def _apply_pause(self, state):
-        if self.pause_requested and not state["stopped_reason"] and not state.get("paused"):
-            stamp = utc()
-            state.update(paused=True, status="paused", paused_utc=stamp)
-            state.setdefault("pause_events", []).append(dict(utc=stamp,
-                reserved_attempt_count=len(state["attempts"]),
-                registered_completion_count=len(state["completion_order"])))
+        if self.pause_requested:
+            _pause(state, "manual", dict(summary="manual pause requested (Ctrl+C)"))
 
     def _persist(self, state):
         try:
@@ -620,10 +652,20 @@ class Controller:
             try:
                 integrity(self.plan)
                 if resume:
+                    paused_before_recovery = state.get("paused")
+                    pause_count = len(state.get("pause_events", []))
                     self._recover(state)
-                    if not state["stopped_reason"] and state.get("paused"):
-                        state.update(paused=False, resumed_utc=utc())
-                if not state["stopped_reason"]:
+                    # A fresh rule pause found during recovery needs its own
+                    # human review; this invocation cannot consume it silently.
+                    if (not state["stopped_reason"] and paused_before_recovery
+                            and len(state.get("pause_events", [])) == pause_count):
+                        stamp = utc()
+                        state.setdefault("resume_events", []).append(dict(utc=stamp,
+                            kind=state.get("pause_kind") or "manual", pause_event_index=pause_count-1,
+                            reserved_attempt_count=len(state["attempts"]),
+                            registered_completion_count=len(state["completion_order"])))
+                        state.update(paused=False, resumed_utc=stamp, pause_kind=None, pause_reason=None)
+                if not state["stopped_reason"] and not state.get("paused"):
                     state["status"] = "running"
                 finished = sum(a["status"] == "finished" for a in state["attempts"])
                 state["disk_check"] = disk_status(self.plan, finished)
@@ -684,10 +726,13 @@ class Controller:
                             integrity(self.plan)
                         except Exception as exc:
                             _stop(state, f"final integrity: {type(exc).__name__}: {exc}")
+                        if state.get("paused") and state.get("pause_events"):
+                            state["pause_events"][-1]["drained_utc"] = utc()
                         state["completed"] = (not state["stopped_reason"] and
+                            not (state.get("paused") and state.get("pause_kind") == "rule") and
                             all(_next_task(self.plan, state, k) is None for k in range(self.plan["shards"])))
                         if state["completed"]:
-                            state.update(paused=False, status="completed")
+                            state.update(paused=False, status="completed", pause_kind=None, pause_reason=None)
                         else:
                             self._apply_pause(state)
                         self._persist(state)

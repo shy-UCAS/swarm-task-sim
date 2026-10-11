@@ -9,7 +9,7 @@ if str(PROJECT) not in sys.path:
     sys.path.insert(0, str(PROJECT))
 
 from swarm_sim.parallel_batch import (Controller, FileLock, _validate_state, batch_directory,
-    finalize, integrity, load_plan, prepare, read, read_assignment, resolve_data_root, save_atomic)
+    finalize, integrity, load_plan, pause_summary, prepare, read, read_assignment, resolve_data_root, save_atomic)
 
 
 def worker(root, attempt_id):
@@ -59,7 +59,7 @@ def main(argv=None):
         command.add_argument("--batch-id", required=True)
         if action == "run":
             command.add_argument("--resume", action="store_true",
-                help="resume a manually paused batch with its existing budget/window; rule stops cannot resume")
+                help="resume a manual/rule pause with its existing budget/window; rule stops cannot resume")
         elif action == "_worker":
             command.add_argument("--attempt-id", required=True)
     args = parser.parse_args(argv)
@@ -76,6 +76,7 @@ def main(argv=None):
             state = Controller(root).run(resume=args.resume)
             result = {k: state[k] for k in ("completed", "stopped_reason", "rolling")}
             result.update(paused=state.get("paused", False), status=state.get("status"))
+            result.update(pause_summary(state))
         elif args.action == "status":
             plan = load_plan(root)
             state = read(root / "control.json")
@@ -83,7 +84,7 @@ def main(argv=None):
             result = dict(tasks=len(plan["tasks"]), attempts=len(state["attempts"]),
                 registered=len(state["completion_order"]), completed=state["completed"],
                 finalized=state["finalized"], paused=state.get("paused", False), status=state.get("status"),
-                stopped_reason=state["stopped_reason"], rolling=state["rolling"])
+                stopped_reason=state["stopped_reason"], rolling=state["rolling"], **pause_summary(state))
         elif args.action == "finalize":
             result = finalize(root)
         else:
