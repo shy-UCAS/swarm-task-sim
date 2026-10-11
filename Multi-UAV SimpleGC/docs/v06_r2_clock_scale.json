@@ -1,0 +1,60 @@
+{
+  "source_batch": "v06_production900r2_seed2026100812",
+  "source_directory": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\parallel_batch\\v06_production900r2_seed2026100812",
+  "control_sha256": "c63b5c06ebfeafb6ef40918dcdbfc88d9e9fa6b625a97518d36d81b5c819229e",
+  "attempts": 465,
+  "quality_eligible_runs": 446,
+  "models": 1332,
+  "missing_models": [],
+  "denominator": "one vote per eligible run/agent clock model; no mission-success filtering",
+  "quantiles": "linear interpolation at (n-1)*q, identical to swarm_sim.truth.percentile",
+  "slope_host_per_source": {
+    "count": 1332,
+    "median": 1.0252958568205557,
+    "p5": 1.0227983499295237,
+    "p95": 1.0329054188657711,
+    "min": 1.0215333751178612,
+    "max": 1.0536003125789108
+  },
+  "run_median_slope_host_per_source": {
+    "count": 446,
+    "median": 1.0251243543279913,
+    "p5": 1.022783892989981,
+    "p95": 1.0321809129670667,
+    "min": 1.0218586021089768,
+    "max": 1.0504133439916519
+  },
+  "host_duration_excess_pct": {
+    "count": 1332,
+    "median": 2.5295856820555573,
+    "p5": 2.279834992952363,
+    "p95": 3.2905418865771137,
+    "min": 2.153337511786124,
+    "max": 5.360031257891085
+  },
+  "source_duration_relative_to_host_pct": {
+    "count": 1332,
+    "median": -2.4671763424818915,
+    "p5": -3.1857143833676362,
+    "p95": -2.2290170773397553,
+    "min": -5.087347824310406,
+    "max": -2.107946313097875
+  },
+  "mapped_window_host_excess_pct": {
+    "count": 1332,
+    "median": 2.3954243988676738,
+    "p5": 2.0581298801769163,
+    "p95": 3.1883237348457665,
+    "min": 1.6928523560598707,
+    "max": 5.416434850657081
+  },
+  "formulas": {
+    "host_duration_excess_pct": "100*(a-1)",
+    "source_duration_relative_to_host_pct": "100*(1/a-1)",
+    "position_derivative_over_fcu_velocity": "approximately 1/a; clock scale only",
+    "mapped_window": "D_host / (inverse_clock(D_host)-inverse_clock(0)) - 1; no extrapolation"
+  },
+  "input_files": 1339,
+  "input_hashes_canonical_sha256": "9eae50adeb3beb088e16c87d9ce21559345754ec6a869052a93da2e53f7156e9",
+  "input_files_unchanged": true
+}

@@ -130,6 +130,16 @@ class ParallelWorkerTests(unittest.TestCase):
         self.assertEqual(result["acceptance_policy_version"], worker.POLICY_VERSION)
         self.assertEqual(worker.verify_result(self.plan, self.attempt, result), result)
 
+    def test_custom_port_reaches_runner_and_old_port_is_rejected(self):
+        self.plan["base_port"] = 20100
+        with self.assertRaisesRegex(ValueError, "port binding"):
+            worker._inputs(self.plan, self.attempt)
+        self.attempt["base_port"] = 20200
+        result, runner = self.execute()
+        self.assertIsNone(result["infrastructure_error"])
+        self.assertEqual(runner.call_args.kwargs["base_port"], 20200)
+        self.assertEqual(worker.verify_result(self.plan, self.attempt, result), result)
+
     def test_failed_run_complete_analysis_is_retained_as_one_quality_anomaly(self):
         result, _ = self.execute()
         self.assertEqual(result["run_status"], "failed")

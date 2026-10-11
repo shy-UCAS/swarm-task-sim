@@ -47,6 +47,7 @@ def main(argv=None):
     prep.add_argument("--batch-id", required=True)
     prep.add_argument("--profile", required=True, type=Path)
     prep.add_argument("--shards", type=int, default=2)
+    prep.add_argument("--base-port", type=int, default=19100)
     prep.add_argument("--max-attempts", type=int, required=True)
     prep.add_argument("--storage-bytes-per-attempt", type=int, required=True)
     prep.add_argument("--export-reserve-bytes", type=int, required=True)
@@ -70,7 +71,7 @@ def main(argv=None):
             plan = prepare(args.profile, args.batch_id, shards=args.shards,
                 max_attempts=args.max_attempts, storage_bytes_per_attempt=args.storage_bytes_per_attempt,
                 export_reserve_bytes=args.export_reserve_bytes, split_salt=args.split_salt,
-                binary=args.binary, parameters=args.parameters, quality_policy=policy)
+                binary=args.binary, parameters=args.parameters, quality_policy=policy, base_port=args.base_port)
             result = dict(batch_directory=str(root), tasks=len(plan["tasks"]), shards=plan["shards"])
         elif args.action == "run":
             state = Controller(root).run(resume=args.resume)

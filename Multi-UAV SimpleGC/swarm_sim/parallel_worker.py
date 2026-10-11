@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 from .generation import canonical_hash, checked_path, file_hash, verify_generation
+from .parallel_batch import shard_base_port
 from .protocol import manifest_protocol, semantic_protocol, validate_artifact_protocol
 from .quality import policy_hash
 from .validation_policy import finite
@@ -43,7 +44,7 @@ def _inputs(plan, attempt):
         raise ValueError("attempt does not select exactly one frozen task")
     task = tasks[0]
     if (task["shard_id"] != attempt["shard_id"]
-            or attempt["base_port"] != 19100 + 100 * attempt["shard_id"]
+            or attempt["base_port"] != shard_base_port(plan, attempt["shard_id"])
             or any(attempt.get(key, task[key]) != task[key] for key in ("mission_id", "family_id"))):
         raise ValueError("attempt mission, family, shard or port binding differs")
     bundle = Path(plan["bundle"]).resolve()

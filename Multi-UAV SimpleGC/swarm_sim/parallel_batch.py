@@ -141,13 +141,20 @@ class FileLock:
             self.stream = None
 
 
-def port_blocks(shards, max_vehicles):
+def port_blocks(shards, max_vehicles, base_port=19100):
     if type(shards) is not int or not 1 <= shards <= 459:
         raise ValueError("shards must be an integer in [1, 459]")
     if type(max_vehicles) is not int or not 1 <= max_vehicles <= 10:
         raise ValueError("each 100-port block supports at most 10 vehicles")
-    return [dict(shard_id=k, base_port=19100 + 100*k, end_port=19199 + 100*k)
+    if type(base_port) is not int or base_port < 1024 or base_port + 100*shards - 1 > 65000:
+        raise ValueError("base_port must be an integer with all blocks inside [1024, 65000]")
+    return [dict(shard_id=k, base_port=base_port + 100*k, end_port=base_port + 100*k + 99)
             for k in range(shards)]
+
+
+def shard_base_port(plan, shard_id):
+    # Plans frozen before configurable ports have no base_port field.
+    return plan.get("base_port", 19100) + 100*shard_id
 
 
 def probe_ports(blocks):
@@ -201,7 +208,7 @@ def _protected_files(project, binary, parameters):
 
 def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_attempt,
             export_reserve_bytes, split_salt="simplegc-v02", binary=None,
-            parameters=None, quality_policy=None):
+            parameters=None, quality_policy=None, base_port=19100):
     data_root = resolve_data_root()
     root = batch_directory(data_root, batch_id)
     for name, value in (("max_attempts", max_attempts),
@@ -209,7 +216,7 @@ def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_atte
                         ("export_reserve_bytes", export_reserve_bytes)):
         if type(value) is not int or value <= 0:
             raise ValueError(f"{name} must be an explicit positive integer")
-    port_blocks(shards, 1)
+    port_blocks(shards, 1, base_port)
     binary = Path(binary or PROJECT / "ArducopterSITL/arducopter.exe").resolve()
     parameters = Path(parameters or PROJECT / "ArducopterSITL/copter.parm").resolve()
     provenance = verify_preflight_files(binary, parameters)
@@ -236,7 +243,7 @@ def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_atte
         protocols = [semantic_protocol(s, patrol_validator_version=PATROL_VERSION) for s in scenes]
         if any(p != protocols[0] for p in protocols):
             raise ValueError("one consistent v0.5 protocol required")
-        ports = port_blocks(shards, max(len(s["vehicles"]) for s in scenes))
+        ports = port_blocks(shards, max(len(s["vehicles"]) for s in scenes), base_port)
         probe_ports(ports)
         plan = dict(version=VERSION, batch_id=batch_id, root=str(root), data_root=str(data_root),
                     project_root=str(PROJECT), bundle=str(root / "bundle"), created_utc=utc(),
@@ -249,6 +256,8 @@ def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_atte
                     progress_mapping_version=PROGRESS_VERSION, patrol_validator_version=PATROL_VERSION,
                     protected_sha256=protected,
                     bundle_sha256={str(p.resolve()): file_hash(p) for p in sorted((root / "bundle").rglob("*.json"))})
+        if base_port != 19100:
+            plan["base_port"] = base_port
         disk_status(plan, 0)
         save_atomic(root / "plan.json", plan)
         (root / "plan.sha256").write_text(file_hash(root / "plan.json") + "\n", encoding="ascii")
@@ -271,6 +280,8 @@ def load_plan(root):
             or batch_directory(resolve_data_root(), plan["batch_id"]) != root
             or Path(plan["root"]) != root or Path(plan["data_root"]) != resolve_data_root()):
         raise ValueError("batch path, environment or version binding changed")
+    if plan["ports"] != port_blocks(plan["shards"], 1, plan.get("base_port", 19100)):
+        raise ValueError("frozen port blocks differ from base_port/shards")
     return plan
 
 
@@ -451,7 +462,7 @@ def read_assignment(plan, attempt_id):
             or attempt["shard_id"] != task["shard_id"] or attempt["mission_id"] != task["mission_id"]
             or attempt["family_id"] != task["family_id"] or matches[0].resolve() != expected_dir
             or Path(attempt["attempt_directory"]).resolve() != expected_dir
-            or attempt["base_port"] != 19100+100*task["shard_id"]):
+            or attempt["base_port"] != shard_base_port(plan, task["shard_id"])):
         raise ValueError("duplicate or inconsistent attempt assignment")
     return {key: attempt[key] for key in ASSIGNMENT_FIELDS}
 
@@ -486,7 +497,7 @@ def _validate_state(plan, state):
                 or (index, a["attempt_index"]) in task_attempts or a["attempt_index"] not in (0, 1)
                 or a["shard_id"] != task["shard_id"] or a["mission_id"] != task["mission_id"]
                 or a["family_id"] != task["family_id"] or Path(a["attempt_directory"]).resolve() != expected_dir
-                or a["base_port"] != 19100+100*task["shard_id"]):
+                or a["base_port"] != shard_base_port(plan, task["shard_id"])):
             raise ValueError("duplicate or inconsistent attempt assignment")
         previous = previous_by_task.get(index)
         if a["attempt_index"] == 1 and (not previous or previous["status"] != "finished"
@@ -715,7 +726,7 @@ class Controller:
                                 directory.mkdir(exist_ok=False)
                                 attempt = dict(attempt_id=attempt_id, global_index=task["global_index"],
                                     mission_id=task["mission_id"], family_id=task["family_id"], shard_id=k,
-                                    attempt_index=retry_index, attempt_directory=str(directory), base_port=19100+100*k,
+                                    attempt_index=retry_index, attempt_directory=str(directory), base_port=shard_base_port(self.plan, k),
                                     status="running", started_utc=utc())
                                 state["attempts"].append(attempt)
                                 _save_state(self.root, state)  # Reserve global budget before Popen.

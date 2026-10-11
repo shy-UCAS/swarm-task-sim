@@ -395,6 +395,30 @@ class ControllerFixture(unittest.TestCase):
 
 
 class GlobalControllerTests(ControllerFixture):
+    def test_custom_ports_survive_dispatch_pause_resume_and_assignment_checks(self):
+        self.plan.update(base_port=20100, ports=batch.port_blocks(2, 2, 20100))
+        self.make_worker = lambda p, a: FakeWorker(a, fake_result(p, a), polls=2)
+        with patch.object(batch.time, "sleep", side_effect=[KeyboardInterrupt(), None]):
+            state = self.run_controller(batch.new_state(self.plan))
+        self.assertTrue(state["paused"])
+        resumed = self.run_controller(resume=True)
+        self.assertTrue(resumed["completed"])
+        batch._validate_state(self.plan, resumed)
+        for attempt in self.launches:
+            expected = 20100 + 100*attempt["shard_id"]
+            self.assertEqual(attempt["base_port"], expected)
+            self.assertEqual(batch.read_assignment(self.plan, attempt["attempt_id"])["base_port"], expected)
+        forged = copy.deepcopy(resumed)
+        forged["attempts"][0]["base_port"] = 19100
+        with self.assertRaisesRegex(ValueError, "inconsistent attempt"):
+            batch._validate_state(self.plan, forged)
+        assignment_path = Path(self.launches[0]["attempt_directory"]) / "assignment.json"
+        assignment = batch.read(assignment_path)
+        assignment["base_port"] = 19100
+        batch.save_atomic(assignment_path, assignment)
+        with self.assertRaisesRegex(ValueError, "inconsistent attempt"):
+            batch.read_assignment(self.plan, self.launches[0]["attempt_id"])
+
     def test_redirected_attempt_parent_refuses_dispatch_and_worker_log_before_writes(self):
         attempts = self.root / "shards/shard_00/attempts"
         external = Path(self.temp) / "outside_reserved_batch"

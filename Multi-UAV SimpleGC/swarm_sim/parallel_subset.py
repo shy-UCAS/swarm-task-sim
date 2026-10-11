@@ -65,7 +65,8 @@ def audit_manifest(plan):
 
 def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attempts,
                    storage_bytes_per_attempt, export_reserve_bytes,
-                   split_salt="simplegc-v02", binary=None, parameters=None, quality_policy=None):
+                   split_salt="simplegc-v02", binary=None, parameters=None, quality_policy=None,
+                   base_port=19100):
     data_root = batch.resolve_data_root()
     root = batch.batch_directory(data_root, batch_id)
     source = Path(source_bundle).resolve()
@@ -78,7 +79,7 @@ def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attemp
                         ("export_reserve_bytes", export_reserve_bytes)):
         if type(value) is not int or value <= 0:
             raise ValueError(f"{name} must be an explicit positive integer")
-    batch.port_blocks(shards, 1)
+    batch.port_blocks(shards, 1, base_port)
     source_hashes = tree_hashes(source)
     listing, manifest = verify_generation(source / "mission_list.json")
     selected = select_listing(listing, mission_ids)
@@ -97,7 +98,7 @@ def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attemp
     protocols = [semantic_protocol(s, patrol_validator_version=batch.PATROL_VERSION) for s in scenes]
     if any(p != protocols[0] for p in protocols):
         raise ValueError("one consistent v0.5 protocol required")
-    ports = batch.port_blocks(shards, max(len(s["vehicles"]) for s in scenes))
+    ports = batch.port_blocks(shards, max(len(s["vehicles"]) for s in scenes), base_port)
     batch.probe_ports(ports)
     root.mkdir(parents=True, exist_ok=False)
     try:
@@ -122,6 +123,8 @@ def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attemp
                                 mission_ids=[t["mission_id"] for t in tasks],
                                 source_global_indices=[i for i, e in enumerate(listing["missions"])
                                                        if e["mission_id"] in set(mission_ids)]))
+        if base_port != 19100:
+            plan["base_port"] = base_port
         batch.disk_status(plan, 0)
         batch.save_atomic(root / "plan.json", plan)
         (root / "plan.sha256").write_text(file_hash(root / "plan.json") + "\n", encoding="ascii")

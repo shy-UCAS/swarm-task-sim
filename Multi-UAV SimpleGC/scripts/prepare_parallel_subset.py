@@ -18,13 +18,14 @@ def main(argv=None):
     parser.add_argument("--mission-ids", type=Path, required=True, help="JSON array; complete families only")
     parser.add_argument("--batch-id", required=True)
     parser.add_argument("--shards", type=int, default=4)
+    parser.add_argument("--base-port", type=int, default=19100)
     parser.add_argument("--max-attempts", type=int, required=True)
     parser.add_argument("--storage-bytes-per-attempt", type=int, required=True)
     parser.add_argument("--export-reserve-bytes", type=int, required=True)
     args = parser.parse_args(argv)
     try:
         plan = prepare_subset(args.source_bundle, read(args.mission_ids), args.batch_id,
-            shards=args.shards, max_attempts=args.max_attempts,
+            shards=args.shards, max_attempts=args.max_attempts, base_port=args.base_port,
             storage_bytes_per_attempt=args.storage_bytes_per_attempt,
             export_reserve_bytes=args.export_reserve_bytes)
     except (ValueError, OSError, KeyError, TypeError) as exc:
