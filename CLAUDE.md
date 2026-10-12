@@ -4,8 +4,8 @@
 
 ## 当前方向和边界
 
-- 现有代码已实现 SITL 的 v0.6.1 时间契约；快速引擎 M0/M1 已本地落地，包含适配备忘/独立契约、确定性内核、双机快速通过完整数据链与回归。M0/M1 最终本地验收已通过，先读 [M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)核对结果和未完成项。**M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01 未开始，M2 飞行功能尚未实现，不能宣称三意图四飞法、校准或生产验收已完成。** 进度见 [M2-00 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_report.md)与[审阅回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md)。
-- 用户当前要求仅本地开发、测试、记录，暂不推送、建 PR、打标签或以远端 CI 作为推进条件；本地提交仅限用户明确启动 M2 阶段时按指南做的检查点提交（M2-00 已用此例外，后续阶段启动时方可提交上一轮获准差异）。保留已有未提交文档和新计划，不 reset/clean。
+- 现有代码已实现 SITL 的 v0.6.1 时间契约；快速引擎 M0/M1 已本地落地，包含适配备忘/独立契约、确定性内核、双机快速通过完整数据链与回归。M0/M1 最终本地验收已通过，先读 [M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)核对结果和未完成项。**M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01（M1 证据迁移与外部输出约束）已执行、已获 Codex 最终 `PASS`、尚未提交，M2 飞行功能尚未实现，不能宣称三意图四飞法、校准或生产验收已完成。** 进度见 [M2-00 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_report.md)、[M2-01 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_report.md)与[审阅回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md)。
+- 用户当前要求仅本地开发、测试、记录，暂不推送、建 PR、打标签或以远端 CI 作为推进条件；本地提交仅限用户明确启动 M2 阶段时按指南做的检查点提交（M2-00 与 M2-00 记录修正已用此例外：`0f7c42d`、`57cca91`，后续阶段启动时方可提交上一轮获准差异）。保留已有未提交文档和新计划，不 reset/clean。**M2-01 起，快速引擎的样本、dataset、原始日志、基准与失败证据只能写仓库外的全新 attempt（缺省根为仓库同级 `SwarmData/fast_dynamics`），入口会拒绝仓库内路径、已存在 attempt 与联接越界；M1 证据树已迁移到 `SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`。**
 - 开发位置为 `Simulation-dev/Multi-UAV SimpleGC`。原 `Simulation` 是冻结归档；`Simulation-dev-wip` 属另一会话；两者不作为本阶段写入范围。大型历史证据在仓库外 `SwarmData`。
 - 不启动 SITL，不续跑旧批次，不准备 r3。新引擎本地合成验证按实现里程碑执行，使用独立输出及新后端来源身份。
 
@@ -40,3 +40,6 @@ Git 状态在 `Simulation-dev` 根检查，Python 通常在 `Multi-UAV SimpleGC`
 ## 每个本地里程碑完成后
 
 更新 `docs/fast_dynamics_engine_kickoff.md` 的实施登记、根 README 当前范围及必要契约，记录改动、实际测试、失败/未完成项与下一个工作包。完整设计在实现计划中维护，历史 SITL 报告保留原判。本地工作可连续推进，不需要先发布 GitHub。
+
+
+2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；当前为 PASS、未提交。下一阶段 M2-02 尚未执行，仅在用户转发指令后启动。见 [最终回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md)。

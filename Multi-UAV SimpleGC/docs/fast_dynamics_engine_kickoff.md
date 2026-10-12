@@ -1,6 +1,6 @@
 # 快速动力学引擎：本地开发交接
 
-更新：2026-10-12，对应**融合修订版 r2**。本文件是新窗口的工作入口；完整设计见 [实现计划](fast_dynamics_engine_implementation_plan.md)，实际交付与最终测试见 [M0/M1 报告](fast_dynamics_engine_m01_report.md)。**M0/M1 已本地实现，最小双机完整数据链已接通，M0/M1 最终本地验收已通过。M2 已启动分阶段执行：M2-00（保存 M0/M1 本地检查点）已执行并建立提交 `0f7c42d`，最终审阅结论 `PASS`；M2-01 未开始，M2 飞行功能（三意图四飞法、2/3/4 机、完整多机时序）尚未实现，校准与生产验收也未完成。** r2 是计划修订号，与 SITL 生产 r2 无关。
+更新：2026-10-12，对应**融合修订版 r2**。本文件是新窗口的工作入口；完整设计见 [实现计划](fast_dynamics_engine_implementation_plan.md)，实际交付与最终测试见 [M0/M1 报告](fast_dynamics_engine_m01_report.md)。**M0/M1 已本地实现，最小双机完整数据链已接通，M0/M1 最终本地验收已通过。M2 已启动分阶段执行：M2-00（保存 M0/M1 本地检查点）已建立提交 `0f7c42d` 并通过 Codex 最终审阅（`PASS`）；M2-01（M1 证据迁移与外部输出约束）已执行完毕、已获 Codex 最终 `PASS`、尚未提交；M2-02 及后续阶段未开始，M2 飞行功能（三意图四飞法、2/3/4 机、完整多机时序）尚未实现，校准与生产验收也未完成。** r2 是计划修订号，与 SITL 生产 r2 无关。
 
 ## 1. 这次要做什么
 
@@ -23,7 +23,7 @@
 | T2：K=2、2 倍 | 11/42 后规则暂停，5/11 合格；声明 2 倍实际约 1.21 倍，未通过 | 保留失败；不续跑；T3/T3+ 已取消 |
 | T4：K=4、1 倍 | 42/42 已执行，41/42 合格，全部组门槛通过并 finalize | 最高已通过的 SITL 配置 |
 | T5：K=6、1 倍 | 15/42 后规则暂停、自然排空，9/15 合格、6/15 时钟不可用；未 finalize | 失败收尾；T6 未准备、未运行；自动检查已暂停 |
-| 快速动力学引擎 | M0 适配/来源索引与 M1 内核、双机快速通过完整数据链已本地落地；M0/M1 最终本地验收已通过；M2-00 已把 M0/M1 实现作为本地检查点提交 `0f7c42d` | **先核对 M0/M1 报告；M2-00 已通过最终审阅（`PASS`），M2-01 未开始，M2 飞行功能尚未实现；未校准、非训练** |
+| 快速动力学引擎 | M0 适配/来源索引与 M1 内核、双机快速通过完整数据链已本地落地；M0/M1 最终本地验收已通过；M2-00 已把 M0/M1 实现作为本地检查点提交 `0f7c42d` | **先核对 M0/M1 报告；M2-00 已通过最终审阅（`PASS`），M2-01 已获 Codex 最终 PASS、尚未提交，M2-02 未开始，M2 飞行功能尚未实现；未校准、非训练** |
 
 这里 \(K\) 是同时执行的多机任务数，不是单个任务的飞机数。上述运行采用非独占条件；后台 ChatGPT/Chrome/Edge 可以常驻，不能沿用旧说明的机器独占门槛。T1 在调大页面文件前运行，不能把各组资源统计当成完全相同环境下的因果实验。
 
@@ -85,15 +85,15 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 
 当前 `.conda-env` 为 `llm`，本地验证使用 Python 3.12.3 / NumPy 2.5.3。`requirements.txt` 现声明 `pymavlink==2.4.50` 和 `numpy==2.5.3`；本机复用该环境已可用的 NumPy，不切到 base 或改用另一工程环境。
 
-首包完整链入口（将输出变量换成尚不存在的新目录；不启动 SITL）：
+首包完整链入口（**M2-01 起输出只能落在仓库外**；不启动 SITL）：
 
 ```powershell
 $engineEnv = (Get-Content -LiteralPath '.conda-env' -Raw).Trim()
-$fastAttemptOutput = 'verification/fast_dynamics_m01/new_local_attempt'
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/run_fast_dynamics.py tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json --output $fastAttemptOutput
+$fastAttemptOutput = 'F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m1_smoke'
+& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/run_fast_dynamics.py tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json --output-root $fastAttemptOutput
 ```
 
-入口拒绝已存在的输出目录，保留失败 attempt，不覆盖旧证据。可用 `--config <JSON>` 提供严格配置，七组为 `engine`、`vehicle_profile`、`controller`、`observation`、`environment`、`execution`、`quality`；未知字段报错。M1 只接受双机单段 `line_abreast` 快速通过任务，观察与环境分别限定 `ideal` / `zero_disturbance`。`scripts/benchmark_fast_dynamics.py` 是独立性能检查入口；100 倍等目标不能从单个样本耗时宣称达成。
+入口拒绝仓库内输出、已存在的 attempt 与经联接越界的路径，并在创建任何产物前报错；失败 attempt 保留，不覆盖旧证据。输出根缺省为仓库同级的 `SwarmData/fast_dynamics`，可用 `--output-root` 或环境变量 `FAST_DYNAMICS_OUTPUT_ROOT` 覆盖；省略 `--output` 时自动取带 UTC 时间戳的新目录（`run_fast_dynamics.py`、`verify_fast_dynamics_m01.py`、`benchmark_fast_dynamics.py` 一致）。可用 `--config <JSON>` 提供严格配置，七组为 `engine`、`vehicle_profile`、`controller`、`observation`、`environment`、`execution`、`quality`；未知字段报错。M1 只接受双机单段 `line_abreast` 快速通过任务，观察与环境分别限定 `ideal` / `zero_disturbance`。`scripts/benchmark_fast_dynamics.py` 是独立性能检查入口；100 倍等目标不能从单个样本耗时宣称达成。
 
 已有离线冒烟入口（不启动 SITL）：
 
@@ -109,7 +109,7 @@ $env:PYTHONPATH = 'tests'
 - v0.5 归档：`F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation/`，只读。
 - v0.6/v0.6.1 批次：`F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/parallel_batch/`，T1/T4 的已导出数据和 T2/T5 的失败尝试均保留原状。各组 ID 为 `v061_T1_k2_s1_seed2026100812`、`v061_T2_k2_s2_seed2026100812`、`v061_T4_k4_s1_seed2026100812`、`v061_T5_k6_s1_seed2026100812`。
 - 只读复核入口：`SwarmData/agent_work/v061_validation/`。T5 收尾回执在其 `v061_T5_k6_s1_seed2026100812/T5_FINAL_RECEIPT.json`；监测终态在 `followup_scale_20261012_v1/monitoring_mode.json`，为 `CLOSED_T5_FAIL_T6_NOT_RUN`、自动检查 `PAUSED`。旧续接脚本不再作为开发入口。
-- 新引擎轻量测试写入全新的临时目录；以后较大 pilot 使用新的独立根，例如 `SwarmData/fast_dynamics/`（拟议，实施时创建并记录）。不得覆盖现有 batch、分析、导出或语言目录。
+- 新引擎轻量测试写入全新的临时目录。**M2-01 已把 M1 证据树迁移到仓库外**：`SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`（356 文件、30,216,091 字节逐字节核验；仓库只保留 18 项阶段级汇总/工具加小型 [`migration_index.json`](../verification/fast_dynamics_m01/migration_index.json)）。逐文件映射与哈希见该归档根下的 `relocation_index.json`；新增样本、dataset、原始日志、基准与失败证据一律写外部输出根的全新 attempt，仓库内输出会被入口拒绝。不得覆盖现有 batch、分析、导出或语言目录。
 - `Simulation-dev-wip` 保存另一会话工作，不作为本次修改范围。新窗口若发现真实 SITL 批次又在运行，应先核对其保护范围；本交接不授权边跑旧批次边改受保护源码。
 - P2：FCU 速度与位置差分约 −1.8% 至 −2.1% 残差、时间修正尚余约 0.3–0.4 个百分点未解释，见数据契约。不要将这些量硬编码为新引擎机体阻力或速度缩放。
 - P3：检查 SIM 通道是否同样存在尺度差；评估 Linux/WSL2 上的 SITL 稳定加速。两项仍是待办，不与本地 M0/M1 捆绑实施。
@@ -120,12 +120,16 @@ $env:PYTHONPATH = 'tests'
 | 阶段 | 当前状态 | 后续需登记 |
 | --- | --- | --- |
 | 评估与融合修订 r2 | 已完成；原计划已随 M0/M1 检查点提交，当前进度补注尚未提交 | Claude 方案借鉴及纠错已写入主计划，入口已同步 |
-| M0 / M1 | 已本地实现；M0/M1 最终本地验收已通过 | [适配备忘](fast_dynamics_engine_adapter_memo.md)、`verification/fast_dynamics_m01/` 来源与基线证据、[最终实施报告](fast_dynamics_engine_m01_report.md)中的数值/完整链/回归结果 |
-| M2 分阶段执行 | M2-00 已建立本地检查点 `codex/fast-dynamics` / `0f7c42d`；最终审阅 `PASS`；M2-01 未开始 | [M2-00 阶段报告](fast_dynamics_m2/M2-00_report.md)、[审阅回执](fast_dynamics_m2/M2-00_review_03.md)、[M2 分阶段指南](fast_dynamics_engine_m2_staged_guide.md) |
+| M0 / M1 | 已本地实现；M0/M1 最终本地验收已通过 | [适配备忘](fast_dynamics_engine_adapter_memo.md)、[最终实施报告](fast_dynamics_engine_m01_report.md)中的数值/完整链/回归结果；证据树已迁移到 `SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`，仓库内只留 18 项汇总/工具与[迁移索引](../verification/fast_dynamics_m01/migration_index.json) |
+| M2-00 | 已建立本地检查点 `0f7c42d`；记录经 `attempt_03_record_fix` 修正后 Codex 最终 `PASS` | [M2-00 阶段报告](fast_dynamics_m2/M2-00_report.md)、[最终审阅回执](fast_dynamics_m2/M2-00_review_03.md) |
+| M2-01 | 已执行：M1 证据迁移、外部输出根约束与路径保护；**Codex 最终 PASS**，尚未提交 | [M2-01 阶段报告](fast_dynamics_m2/M2-01_report.md)、[摘要](../verification/fast_dynamics_m2/M2-01_summary.json) |
 | M3 / M4 / M5 | 未开始 | 依次为确定性校准、扰动与生产试验、独立验收 |
 
-M2 采用“DeepSeek 分阶段执行、Codex 逐轮审阅”的流程，使用 [M2 分阶段实施与审阅指南](fast_dynamics_engine_m2_staged_guide.md)。**当前进度：M2-00 已执行并建立本地检查点 `0f7c42d`（M0/M1 基线入版本库），阶段说明经 `attempt_03_record_fix` 修正并通过 Codex 最终审阅（`PASS`）；M2-01 及后续阶段未开始，M2 飞行功能尚未实现。** 由用户逐次启动，完成一个小阶段后停止审阅。指南中的本地检查点提交、外部证据迁移和留出登记，仅在对应阶段被用户明确启动后执行。
+M2 采用“DeepSeek 分阶段执行、Codex 逐轮审阅”的流程，使用 [M2 分阶段实施与审阅指南](fast_dynamics_engine_m2_staged_guide.md)。**当前进度：M2-00 已建立本地检查点 `0f7c42d` 并通过最终审阅（`PASS`）；M2-01 已执行完证据迁移与外部输出约束，已获 Codex 最终 `PASS`；M2-02 及后续阶段未开始，M2 飞行功能尚未实现。** 由用户逐次启动，完成一个小阶段后停止审阅。指南中的本地检查点提交、外部证据迁移和留出登记，仅在对应阶段被用户明确启动后执行。M2-01 之后的输出一律落在仓库外：入口拒绝仓库内路径、已存在 attempt 与联接越界。
 
 以下是原有连续开发提示词的历史记录；采用上述分阶段流程时，以指南及用户指定的当前阶段为准，不使用本段自动推进 M2：
 
 > 在 `F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev` 开发。先读根 README、CLAUDE、项目 AGENTS、`Multi-UAV SimpleGC/docs/fast_dynamics_engine_kickoff.md`、`docs/fast_dynamics_engine_m01_report.md` 和完整实现计划融合修订版 r2。保留未提交实现、测试、文档与证据，先核对 M0/M1 最终验收和未完成项，再推进下一包 M2 的三意图四飞法、2/3/4 机和完整多机时序，沿用首包完整数据链。只做本地实现和验证，不提交、推送或打标签；不启动 SITL、不续跑 T2/T5、不运行 T6、不准备 r3、不改历史数据。新后端显式版本化，按 family 合并来源防泄漏；校准、训练资格和性能目标不当已验收结果。
+
+
+2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；当前为 PASS、未提交。下一阶段 M2-02 尚未执行，仅在用户转发指令后启动。见 [最终回执](fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](fast_dynamics_m2/M2-02_instruction.md)。

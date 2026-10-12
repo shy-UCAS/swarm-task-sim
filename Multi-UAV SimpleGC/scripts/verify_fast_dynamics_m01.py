@@ -19,6 +19,10 @@ sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / "tests"))
 
 from swarm_sim.fast_dynamics.mission_executor import run_mission
+from swarm_sim.fast_dynamics.output_policy import (
+    OutputPolicyError, assert_created_within, assert_new_attempt_path,
+    new_attempt_path, resolve_output_root,
+)
 from swarm_sim.fast_dynamics.provenance import source_snapshot
 from scripts.run_fast_dynamics import main as run_pipeline
 
@@ -29,9 +33,25 @@ def save(path, value):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--output", type=Path,
+                        help="new verification directory outside the repository; "
+                             "default: <output-root>/<UTC timestamp>_verify_m01")
+    parser.add_argument("--output-root", type=Path,
+                        help="external root for verification evidence; default: FAST_DYNAMICS_OUTPUT_ROOT, "
+                             "else the sibling SwarmData/fast_dynamics directory")
     args = parser.parse_args()
+    try:
+        root = resolve_output_root(args.output_root)
+        requested = args.output if args.output is not None else new_attempt_path(root["root"], "verify_m01")
+        args.output = assert_new_attempt_path(requested, root["root"], kind="verification attempt")
+    except OutputPolicyError as exc:
+        parser.error(str(exc))
     args.output.mkdir(parents=True, exist_ok=False)
+    try:
+        assert_created_within(args.output, root["root"])
+    except OutputPolicyError:
+        args.output.rmdir()  # nothing has been written yet
+        raise
     before = source_snapshot()
     workflow = (PROJECT.parent / ".github/workflows/unit-tests.yml").read_text(encoding="utf-8")
     old_modules = list(dict.fromkeys(re.findall(r"'(test_[a-zA-Z0-9_]+)'", workflow)))
@@ -71,7 +91,8 @@ def main():
         destination = args.output / f"success_{index + 1:02d}"
         started = time.perf_counter()
         with contextlib.redirect_stdout(io.StringIO()):
-            run_pipeline([str(fixture), "--output", str(destination)])
+            run_pipeline([str(fixture), "--output", str(destination),
+                          "--output-root", str(root["root"])])
         elapsed = time.perf_counter() - started
         wall_times.append(elapsed)
         report = json.loads((destination / "report.json").read_text(encoding="utf-8"))
@@ -86,7 +107,8 @@ def main():
         save(config_path, overrides)
         destination = args.output / name
         with contextlib.redirect_stdout(io.StringIO()):
-            run_pipeline([str(fixture), "--output", str(destination), "--config", str(config_path)])
+            run_pipeline([str(fixture), "--output", str(destination), "--config", str(config_path),
+                          "--output-root", str(root["root"])])
         report = json.loads((destination / "report.json").read_text(encoding="utf-8"))
         outcomes.append(dict(case=name, execution_status=report["execution_status"],
             mission_success=report["analysis"]["mission_success"],
@@ -105,6 +127,7 @@ def main():
     report = dict(tests=tests, convergence=convergence, outcomes=outcomes, benchmark=benchmark,
         python=platform.python_version(), numpy=np.__version__, platform=platform.platform(),
         input_sha256=hashlib.sha256(fixture.read_bytes()).hexdigest(), source_sha256=before,
+        output=dict(path=str(args.output), root=str(root["root"]), root_source=root["source"]),
         purpose="local_development_uncalibrated_M1", training_eligible=False)
     save(args.output / "verification.json", report)
     save(args.output / "completion.json", dict(status="complete", verification_sha256=hashlib.sha256(

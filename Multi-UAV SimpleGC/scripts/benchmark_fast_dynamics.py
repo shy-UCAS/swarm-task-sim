@@ -30,6 +30,9 @@ import numpy as np
 
 from swarm_sim.fast_dynamics import FastDynamicsConfig, PlantState, SynchronousEngine, model_versions
 from swarm_sim.fast_dynamics.engine import seconds_to_us
+from swarm_sim.fast_dynamics.output_policy import (
+    OutputPolicyError, assert_new_attempt_path, new_attempt_path, resolve_output_root,
+)
 
 
 def _json_bytes(value):
@@ -176,7 +179,11 @@ def main(argv=None):
     parser.add_argument("--duration", type=float, default=300., help="simulation seconds per episode (default 300)")
     parser.add_argument("--repeats", type=int, default=5, help="one first/cold episode plus warm repeats (default 5)")
     parser.add_argument("--agents", type=int, nargs="+", default=[2, 4, 8, 16])
-    parser.add_argument("--output", type=Path, help="write JSON after all timed runs; stdout when omitted")
+    parser.add_argument("--output", type=Path, help="write JSON to this new file outside the repository; stdout when omitted")
+    parser.add_argument("--output-root", type=Path,
+                        help="external root for benchmark evidence; with no --output the report is written to "
+                             "a fresh <root>/<UTC timestamp>_kernel_benchmark.json; default: "
+                             "FAST_DYNAMICS_OUTPUT_ROOT, else the sibling SwarmData/fast_dynamics directory")
     parser.add_argument("--_worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if not np.isfinite(args.duration) or args.duration <= 0:
@@ -186,6 +193,21 @@ def main(argv=None):
         parser.error("--repeats must be at least 2 to report warm statistics")
     if not args.agents or any(count < 1 for count in args.agents) or len(set(args.agents)) != len(args.agents):
         parser.error("--agents must contain unique positive counts")
+
+    # Output policy before any measurement work starts. With neither --output nor
+    # --output-root the historical stdout branch is kept and no file is written.
+    try:
+        output_root = resolve_output_root(args.output_root)
+        if args.output is None and args.output_root is not None:
+            args.output = new_attempt_path(output_root["root"], "kernel_benchmark.json")
+        if args.output is not None:
+            args.output = assert_new_attempt_path(args.output, output_root["root"], kind="benchmark output")
+    except OutputPolicyError as exc:
+        parser.error(str(exc))
+    if args.output is not None:
+        # Create only the external parent before measuring so a later failure leaves no partial result.
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+
     if args._worker:
         if len(args.agents) != 1:
             parser.error("internal worker requires one agent count")
@@ -208,6 +230,10 @@ def main(argv=None):
     report = {"schema": "fast_dynamics_kernel_benchmark_v1", "started_utc": started_utc,
               "completed_utc": datetime.now(timezone.utc).isoformat(),
               "hardware": hardware,
+              "output_policy": {"root": str(output_root["root"]), "root_source": output_root["source"],
+                                "path": str(args.output) if args.output is not None else None,
+                                "requirement": "benchmark evidence must be written outside the repository; "
+                                               "stdout is used when no output path or root is given"},
               "runtime": {"python": sys.version, "python_executable": sys.executable, "numpy": np.__version__},
               "model_versions": model_versions(), "config": config,
               "config_sha256": hashlib.sha256(_json_bytes(config)).hexdigest(), "source_identity": identity,
@@ -226,9 +252,13 @@ def main(argv=None):
               "results": results}
     rendered = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if args.output is not None:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            assert_new_attempt_path(args.output, output_root["root"], kind="benchmark output")
+        except OutputPolicyError as exc:
+            parser.error(str(exc))
         args.output.write_text(rendered, encoding="utf-8")
-        print(json.dumps({"output": str(args.output.resolve()),
+        print(json.dumps({"output": str(args.output), "output_root": str(output_root["root"]),
+                          "output_root_source": output_root["source"],
                           "warm_median_episode_rtf": {str(row["agent_count"]): row["warm_summary"]["episode_real_time_factor_median"]
                                                       for row in results}}, ensure_ascii=False))
     else:

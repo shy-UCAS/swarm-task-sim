@@ -1,6 +1,6 @@
 # 快速动力学 M0：适配备忘与开发来源登记
 
-日期：2026-10-12。依据[融合计划 r2](fast_dynamics_engine_implementation_plan.md)实施 M0/M1。旧代码基线为 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`；本次实现未提交，执行身份另由产物中的实际源码内容哈希绑定。本文登记接入选择和校准安排，M1 实际测试与样本以[交接登记](fast_dynamics_engine_kickoff.md)及 `verification/fast_dynamics_m01/` 为准。没有启动 SITL、重分析历史数据或重新划分旧数据集。
+日期：2026-10-12。依据[融合计划 r2](fast_dynamics_engine_implementation_plan.md)实施 M0/M1。旧代码基线为 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`；本次实现未提交，执行身份另由产物中的实际源码内容哈希绑定。本文登记接入选择和校准安排，M1 实际测试与样本以[交接登记](fast_dynamics_engine_kickoff.md)为准；证据树已于 M2-01 迁移到仓库外 `SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`，映射与哈希见[迁移索引](../verification/fast_dynamics_m01/migration_index.json)及 [M2-01 报告](fast_dynamics_m2/M2-01_report.md)。没有启动 SITL、重分析历史数据或重新划分旧数据集。
 
 ## 1. 首包能力与版本
 
@@ -94,7 +94,7 @@ M3 冻结 `calibration_metrics.json`、`evaluation_split.json`、`acceptance_con
 
 环境：PowerShell 7.6.5；项目 `.conda-env=llm`，Python 3.12.3、NumPy 2.5.3。沙箱内 conda 首次因 Windows DLL 重定位无法启动，使用同一 conda/environment 的经批准沙箱外执行后可运行，没有切换 Python 环境或安装依赖。
 
-当前首次基线：现有 `unit-tests.yml` 的 35 个模块 **367/367 通过**，耗时 105.504 s；完整日志 [baseline_ci.log](../verification/fast_dynamics_m01/baseline_ci.log)。Windows 真实 symlink 因权限走既有 mock 分支，junction 用真实文件系统验证通过。此清单不是全量历史集成测试。DR130 **260/260 通过**、无元数据排除；v0.5 示例 **4/4 加载通过**，每个示例全部附件的前后哈希与冻结清单一致。结果记录于 [baseline_checks.json](../verification/fast_dynamics_m01/baseline_checks.json)、[DR130](../verification/fast_dynamics_m01/baseline_dr130.json)与[加载指纹](../verification/fast_dynamics_m01/baseline_v05_loader.json)，DR130 生成输出在全新临时目录。此次源库文件检查前后没有变化；它是集成前基线，不替代最终新代码回归。
+当前首次基线：现有 `unit-tests.yml` 的 35 个模块 **367/367 通过**，耗时 105.504 s；完整日志 [baseline_ci.log](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/baseline_ci.log>)（M2-01 已迁移）。Windows 真实 symlink 因权限走既有 mock 分支，junction 用真实文件系统验证通过。此清单不是全量历史集成测试。DR130 **260/260 通过**、无元数据排除；v0.5 示例 **4/4 加载通过**，每个示例全部附件的前后哈希与冻结清单一致。结果记录于 [baseline_checks.json](../verification/fast_dynamics_m01/baseline_checks.json)、[DR130](../verification/fast_dynamics_m01/baseline_dr130.json)与[加载指纹](../verification/fast_dynamics_m01/baseline_v05_loader.json)，DR130 生成输出在全新临时目录。此次源库文件检查前后没有变化；它是集成前基线，不替代最终新代码回归。
 
 复现命令（当前工作目录为项目根；复跑使用新的 `--output`，已有结果文件会被拒绝覆盖）：
 

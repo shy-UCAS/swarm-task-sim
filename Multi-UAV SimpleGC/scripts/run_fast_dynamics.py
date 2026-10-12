@@ -11,27 +11,52 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from swarm_sim.fast_dynamics.contracts import FastDynamicsConfig
 from swarm_sim.fast_dynamics.mission_executor import run_mission
+from swarm_sim.fast_dynamics.output_policy import (
+    OutputPolicyError, assert_created_within, assert_new_attempt_path,
+    new_attempt_path, resolve_output_root, validate_run_id,
+)
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("task", type=Path, help="frozen TaskSpec v3 JSON (M1: 2-agent rapid passage)")
-    parser.add_argument("--output", required=True, type=Path, help="new local attempt root; existing paths are rejected")
+    parser.add_argument("--output", type=Path,
+                        help="new attempt directory outside the repository; "
+                             "default: <output-root>/<UTC timestamp>_<run-id>")
+    parser.add_argument("--output-root", type=Path,
+                        help="external root for attempts; default: FAST_DYNAMICS_OUTPUT_ROOT, "
+                             "else the sibling SwarmData/fast_dynamics directory")
     parser.add_argument("--config", type=Path, help="strict seven-group fast_dynamics JSON overrides")
     parser.add_argument("--run-id", default="fast_m1_rapid_passage")
     args = parser.parse_args(argv)
+
+    # Output policy first: a rejected root or target must fail before any artefact exists.
+    try:
+        args.run_id = validate_run_id(args.run_id)
+        root = resolve_output_root(args.output_root)
+        requested = args.output if args.output is not None else new_attempt_path(root["root"], args.run_id)
+        args.output = assert_new_attempt_path(requested, root["root"], kind="attempt")
+    except OutputPolicyError as exc:
+        parser.error(str(exc))
+    args.output_root_info = root
+
     pipeline_started = time.perf_counter()
     task_bytes = args.task.read_bytes()
     task = json.loads(task_bytes.decode("utf-8-sig"))
     config = FastDynamicsConfig.from_dict(json.loads(args.config.read_text(encoding="utf-8-sig")) if args.config else {})
-    if args.output.exists():
-        parser.error("output already exists; select a new attempt directory")
     args.output.mkdir(parents=True, exist_ok=False)
+    try:
+        assert_created_within(args.output, root["root"])
+    except OutputPolicyError:
+        args.output.rmdir()  # nothing has been written yet
+        raise
     (args.output / "input_task.json").write_bytes(task_bytes)
     (args.output / "config.json").write_text(json.dumps(config.to_dict(), indent=2) + "\n", encoding="utf-8")
     attempt = dict(status="running", task_path=str(args.task.resolve()),
                    input_sha256=hashlib.sha256(task_bytes).hexdigest(), run_id=args.run_id,
-                   training_eligible=False, purpose="M1 local development integration")
+                   training_eligible=False, purpose="M1 local development integration",
+                   output_root=str(root["root"]), output_root_source=root["source"],
+                   output_path=str(args.output))
     (args.output / "attempt.json").write_text(json.dumps(attempt, indent=2), encoding="utf-8")
     try:
         report = _run_pipeline(args, task, task_bytes, config, pipeline_started)
@@ -73,6 +98,8 @@ def _run_pipeline(args, task, task_bytes, config, pipeline_started):
         episode_realtime_factor=result.end_us / 1e6 / simulate_s,
         timing_scope="task/config loading through public loader; final report/completion write excluded; outer benchmark includes them",
         scope="M1 local integration; uncalibrated, development only, not a production throughput benchmark",
+        output=dict(path=str(args.output), root=str(args.output_root_info["root"]),
+                    root_source=args.output_root_info["source"]),
         analysis=analysis, dataset=exported, audit=audit, language=language,
         loaded_agents=loaded["agent_ids"])
     (args.output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

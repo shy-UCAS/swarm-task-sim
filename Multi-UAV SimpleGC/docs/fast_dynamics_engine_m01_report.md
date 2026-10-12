@@ -2,6 +2,15 @@
 
 日期：2026-10-12。**M0/M1 首包本地验收通过；下一包 M2 尚未实施。**（M2 进度补注见 §6：M2-00 仅建立本地检查点，M2 功能仍未实现。）开发目录为 `Simulation-dev/Multi-UAV SimpleGC`，Git 基线 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`；本次实现未提交。依据[融合计划 r2](fast_dynamics_engine_implementation_plan.md)完成首包代码。本次没有启动 SITL、续跑历史批次、修改历史数据或执行提交、推送、PR、标签。
 
+> **2026-10-12 证据位置迁移（M2-01，不改写历史验收结论）：** 本报告引用的 M1 证据树已按 M2-01 复制到仓库外并清理仓库内批量产物，`migration_id = m01_20261012_v1`。
+>
+> - 归档根：`F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`
+> - 逐文件映射与哈希（356 项）：[relocation_index.json](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/relocation_index.json>)，SHA256 `e023a4e3194f12790279710c3f2a785208a7165b1be736c5d55bdea0c5ccb55e`
+> - 仓库侧小型索引：[verification/fast_dynamics_m01/migration_index.json](../verification/fast_dynamics_m01/migration_index.json)，SHA256 `96a3678d710e1a8093d008410ca2b55ecbde19ee55cb76ea3a3b9048fb6f7ad3`
+> - 映射规则：`Multi-UAV SimpleGC/verification/fast_dynamics_m01/<相对路径>` ↔ `<归档根>/Multi-UAV SimpleGC/verification/fast_dynamics_m01/<相对路径>`
+> - 迁移结果：356/356 文件逐字节复制并核验（30,216,091 字节）；清理 338 项显式候选（182 项跟踪文件 + 156 项被忽略载荷，29,521,505 字节）；仓库保留 18 项阶段级汇总/工具加上述索引。
+> - **原验收日期、判定、数字和源身份全部不变。** 下表及 §3、§4 中指向被清理文件的链接已改为指向迁移后位置；被保留文件（`verification.json`、`mission_convergence.json`、`tests.json`、`numerical_core_evidence.json`、`step_halving_semantics.json`、`kernel_benchmark.json`、来源索引、划分安排、最终只读复核与采集脚本）的相对链接不变。
+
 ## 1. 实际交付范围
 
 首包实现独立 `fast_dynamics_v1` 后端及一个既有双机快速通过任务的完整数据链。物理状态为 ENU 的 \((\mathbf p,\mathbf v,\mathbf a)\)，使用受限加速度、欧氏 jerk 约束和常 jerk 多项式积分；不直接裁剪实际位置或速度。七组配置严格验证字段，未实现的控制类型、观测模式或任务组合明确拒绝。
@@ -18,17 +27,17 @@ M1 任务执行仅支持双机 `rapid_passage` / `line_abreast`、每阶段至�
 
 | 最终检查 | 结果 | 证据 |
 | --- | --- | --- |
-| 旧接口离线清单 | 367/367 通过 | [legacy_tests.log](../verification/fast_dynamics_m01/final_verification_01/legacy_tests.log) |
-| 新内核、执行和公共数据链 | 39/39 通过 | [fast_dynamics_tests.log](../verification/fast_dynamics_m01/final_verification_01/fast_dynamics_tests.log) |
-| 固定双机任务重复完整链 | 5/5 成功、各 294 帧、各 4 条中文描述、公共加载/审计通过 | [首个完整样本报告](../verification/fast_dynamics_m01/final_verification_01/success_01/report.json) |
-| 真实语义失败 | 1/1 正确保留：1637 帧、完成执行、语义 false、质量 true、4 描述 | [semantic_failure/report.json](../verification/fast_dynamics_m01/final_verification_01/semantic_failure/report.json) |
-| 超时未知 | 1/1 正确保留：1 帧、0.03 s、语义 null、质量 false、0 描述 | [unknown_timeout/report.json](../verification/fast_dynamics_m01/final_verification_01/unknown_timeout/report.json) |
+| 旧接口离线清单 | 367/367 通过 | [legacy_tests.log](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/legacy_tests.log>)（已迁移） |
+| 新内核、执行和公共数据链 | 39/39 通过 | [fast_dynamics_tests.log](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/fast_dynamics_tests.log>)（已迁移） |
+| 固定双机任务重复完整链 | 5/5 成功、各 294 帧、各 4 条中文描述、公共加载/审计通过 | [首个完整样本报告](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/success_01/report.json>)（已迁移） |
+| 真实语义失败 | 1/1 正确保留：1637 帧、完成执行、语义 false、质量 true、4 描述 | [semantic_failure/report.json](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/semantic_failure/report.json>)（已迁移） |
+| 超时未知 | 1/1 正确保留：1 帧、0.03 s、语义 null、质量 false、0 描述 | [unknown_timeout/report.json](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/unknown_timeout/report.json>)（已迁移） |
 
 已有独立基线与最终只读历史复核：
 
 | 检查 | 结果 | 证据 |
 | --- | --- | --- |
-| 原离线 CI 清单基线 | 367/367 通过 | [baseline_ci.log](../verification/fast_dynamics_m01/baseline_ci.log) |
+| 原离线 CI 清单基线 | 367/367 通过 | [baseline_ci.log](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/baseline_ci.log>)（已迁移） |
 | 最终 DR130 金标准 | 260/260 通过 | [baseline_dr130.json](../verification/fast_dynamics_m01/final_historical_regression/baseline_dr130.json) |
 | 最终 v0.5 示例公共加载 | 4/4，冻结附件前后哈希不变 | [baseline_v05_loader.json](../verification/fast_dynamics_m01/final_historical_regression/baseline_v05_loader.json) |
 | 来源索引 | T1/T4 共 84 次运行、42 任务、14 family | [m0_source_index.json](../verification/fast_dynamics_m01/m0_source_index.json) |
@@ -39,7 +48,7 @@ M1 任务执行仅支持双机 `rapid_passage` / `line_abreast`、每阶段至�
 
 固定输入为 T1 的 `rapid_passage_0000_v00`，原字节副本在 [测试 fixture](../tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json)，SHA256 为 `dd5beb91f5388991487aab15c07493f74075e5ea17d99225db7313b2412ee318`。两机从东侧进入，参考速度 \(2.5\,\mathrm{m/s}\)，飞行高度 8 m，不要求返航，最终保持 2 s。源任务仍是原 `v0.6`，执行产物使用新的后端协议，不改写输入冒充 SITL。
 
-合格样本实际结束时刻为 **29.320364 s**，模型输入 \(x\) 形状为 \(294\times2\times6\)。可直接加载 [episode 目录](../verification/fast_dynamics_m01/final_verification_01/success_01/dataset/episodes/fast_m1_rapid_passage/)；中文描述见 [descriptions.json](../verification/fast_dynamics_m01/final_verification_01/success_01/language/descriptions.json)。
+合格样本实际结束时刻为 **29.320364 s**，模型输入 \(x\) 形状为 \(294\times2\times6\)。可直接加载[episode 目录](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/success_01/dataset/episodes/fast_m1_rapid_passage/>)（已迁移）；中文描述见[descriptions.json](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/Multi-UAV SimpleGC/verification/fast_dynamics_m01/final_verification_01/success_01/language/descriptions.json>)（已迁移）。
 
 负例通过执行配置改变实际状态：水平速度能力设为 \(0.3\,\mathrm{m/s}\) 后完成缓慢穿越，触发既有区域低速驻留规则，任务语义失败而数据质量仍可合格；执行时长限制为 0.03 s 则保留真实超时和语义未知，不生成描述。另覆盖零时长、无完整阶段窗口、数值错误、错误网格、伪造来源/能力、任务/config 错配、重哈希后的标签/速度篡改和 timeout 改 completed。
 
@@ -59,13 +68,14 @@ M1 任务执行仅支持双机 `rapid_passage` / `line_abreast`、每阶段至�
 
 ## 5. 复现入口
 
-在项目根目录使用 PowerShell 7 和 `.conda-env` 中的 `llm` 环境。以下输出必须为全新目录：
+在项目根目录使用 PowerShell 7 和 `.conda-env` 中的 `llm` 环境。**M2-01 起输出受外部输出根约束**：`--output` / `--output-root` 指向仓库内的路径会被拒绝，缺省根为仓库同级的 `SwarmData/fast_dynamics`（可用环境变量 `FAST_DYNAMICS_OUTPUT_ROOT` 覆盖）。以下输出必须为全新目录：
 
 ```powershell
 $engineEnv = (Get-Content -LiteralPath '.conda-env' -Raw).Trim()
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/run_fast_dynamics.py tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json --output verification/fast_dynamics_m01/my_new_attempt
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/verify_fast_dynamics_m01.py --output verification/fast_dynamics_m01/my_new_verification
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/benchmark_fast_dynamics.py --duration 300 --repeats 5 --agents 2 4 8 16 --output verification/fast_dynamics_m01/my_new_kernel_benchmark.json
+# 缺省：在外部输出根下新建 attempt，目录名带 UTC 时间戳
+& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/run_fast_dynamics.py tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json
+& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/verify_fast_dynamics_m01.py
+& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n $engineEnv --no-capture-output python -B scripts/benchmark_fast_dynamics.py --duration 300 --repeats 5 --agents 2 4 8 16 --output-root 'F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/benchmarks'
 ```
 
 `run_fast_dynamics.py --config <json>` 接受 `engine`、`vehicle_profile`、`controller`、`observation`、`environment`、`execution`、`quality` 七组覆盖配置，完整默认值和最终配置进入产物。新增测试也登记进常规离线 workflow；本次只在本地执行，没有触发远端 CI。
@@ -78,4 +88,4 @@ M2 尚未开始：扩展连续航线跟踪、三意图四飞法、2/3/4 机、�
 
 T1/T4 的 14 个 family 全部预留为开发对照，跨后端、重复运行和参数变体保持同组；当前没有盲测 family。新样本一律 `training_eligible=false`，质量合格不等于已经获得正式训练资格。模型未校准，不声称验证了真实控制器、传感器或跨域泛化。内部支持轨迹的几何分析沿用已有分段线性判据，不能解释为完整刚体接触/碰撞模拟。
 
-`integration_attempt_01` 是开发中间产物，保留其当时源码哈希供排查；最终交付以 `final_verification_01` 下的样本与完成标记为准，不用中间尝试替代最终契约验收。
+`integration_attempt_01` 是开发中间产物，保留其当时源码哈希供排查；最终交付以 `final_verification_01` 下的样本与完成标记为准，不用中间尝试替代最终契约验收。该中间样本在迁移后的读取实验中从新旧两个位置都按同一原因被拒绝（`inconsistent or unsupported source capabilities, units, seed or code identity`），这是其绑定的中间源码身份所致，不是迁移缺陷，见 [M2-01 阶段报告](fast_dynamics_m2/M2-01_report.md)。

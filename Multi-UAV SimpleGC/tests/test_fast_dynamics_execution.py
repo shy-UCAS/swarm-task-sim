@@ -46,16 +46,17 @@ class DenseEventsTests(unittest.TestCase):
     def test_cli_retains_engine_failure_and_rejects_attempt_reuse(self):
         from scripts.run_fast_dynamics import main
         with tempfile.TemporaryDirectory() as temp:
+            # The CLI now requires the target under an explicitly selected external root.
             output = Path(temp) / "attempt"
             with patch("scripts.run_fast_dynamics.run_mission", side_effect=ArithmeticError("numerical failure")):
                 with self.assertRaises(ArithmeticError):
-                    main([str(FIXTURE), "--output", str(output)])
+                    main([str(FIXTURE), "--output", str(output), "--output-root", temp])
             self.assertEqual((output / "input_task.json").read_bytes(), FIXTURE.read_bytes())
             self.assertEqual(json.loads((output / "failure.json").read_text())["error_type"], "ArithmeticError")
             self.assertTrue((output / "config.json").is_file())
             self.assertFalse((output / "completion.json").exists())
             with self.assertRaises(SystemExit):
-                main([str(FIXTURE), "--output", str(output)])
+                main([str(FIXTURE), "--output", str(output), "--output-root", temp])
 
 
 class MissionExecutionTests(unittest.TestCase):
