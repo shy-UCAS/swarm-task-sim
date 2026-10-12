@@ -11,3 +11,23 @@ If the file is missing, empty, or names an environment unavailable on this machi
 list local environments and ask the user to choose before environment-dependent work.
 Do not silently switch to base or install into another interpreter.
 <!-- activate-conda-env:end -->
+
+## Current local development handoff (2026-10-12)
+
+Read `../README.md`, `../CLAUDE.md`, `docs/fast_dynamics_engine_kickoff.md`, then
+`docs/fast_dynamics_engine_implementation_plan.md` before new engine work.
+SITL v0.6.1 remains available. The local fast dynamics M0/M1 implementation now
+includes the adapter memo/contract, deterministic numerical core, and a minimal
+two-vehicle rapid-passage task through analysis/export/audit/descriptions/loading.
+Final local M0/M1 verification passed (367 legacy plus 39 new tests); read `docs/fast_dynamics_engine_m01_report.md`
+for actual results and remaining items. The next package is M2 full mission coverage;
+M2-M5, calibration, production qualification, and full-production throughput validation are not complete.
+The new entry point is `scripts/run_fast_dynamics.py`; always choose a new output
+directory. `requirements.txt` declares `numpy==2.5.3` in addition to pymavlink.
+Preserve existing local documentation changes and record actual progress in the handoff.
+T1/T4 share 42 tasks from 14 families; merge source identities before splitting data.
+
+The user currently wants local development only: no commit, push, PR or tag.
+Do not start SITL, resume historical batches, run T6, prepare r3, or rewrite old data.
+Use PowerShell 7 and the project Conda environment. `Simulation` is a frozen archive;
+the active project is `Simulation-dev/Multi-UAV SimpleGC`.

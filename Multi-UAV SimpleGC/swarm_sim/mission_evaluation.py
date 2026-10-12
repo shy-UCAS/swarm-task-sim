@@ -23,6 +23,10 @@ def position_valid(value):
 
 def source_time(host, model):
     """Invert an audited passive model; do not extrapolate at either boundary."""
+    # The offline backend already supplies common simulation seconds. This is
+    # an explicit source-clock contract, never a fabricated passive FCU fit.
+    if model and model.get("kind") == "simulation_clock":
+        return host if finite_number(host) and model["start_s"] <= host <= model["end_s"] else None
     if not model or not model.get("available"):
         return None
     knots = model.get("knots", [])

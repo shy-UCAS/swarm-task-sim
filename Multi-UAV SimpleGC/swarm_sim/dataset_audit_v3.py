@@ -224,6 +224,12 @@ def audit_dataset_v3(dataset_path, generation_manifest=None, attempt_ledger=None
         if manifest.get("protocol_version") == "v0.6.1":
             sample.update(time_base="sim_source", sim_speedup=manifest["sim_speedup"],
                           common_time_axis=manifest["common_time_axis"])
+        if manifest.get("protocol_version") == "fast_dynamics_v1":
+            sample.update(time_base="sim_clock", simulation_backend="fast_dynamics",
+                          lifecycle_scope="airborne_mission", end_us=manifest["end_us"],
+                          training_eligible=manifest["training_eligible"],
+                          source=evidence("source.json"), flight_pattern=manifest["flight_pattern"],
+                          component_versions=manifest["component_versions"])
         samples.append(sample)
         groups[intent_name, mode].append(sample)
     group_reports = []

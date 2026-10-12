@@ -1,0 +1,90 @@
+{
+  "task_kind": "mission_v3",
+  "ontology_version": "multi_intent_mission_v1",
+  "label_schema_version": 3,
+  "semantic_validation_version": "multi_intent_validation_fast_dynamics_v1",
+  "eligibility_protocol_version": "fast_dynamics_quality_v1",
+  "execution_constraints_version": "airborne_mission_limits_fast_dynamics_v1",
+  "quality_policy": {
+    "version": "fast_dynamics_quality_v1",
+    "min_observation_valid_fraction": 1.0,
+    "min_truth_valid_fraction": 1.0,
+    "numerical_tolerance": 1e-07,
+    "zero_duration_eligible": false,
+    "lifecycle_scope": "airborne_mission"
+  },
+  "quality_policy_sha256": "c02cd52015e1b8cf0821019e1643005a82d96dd5ca37901329ba666114381902",
+  "time_base": "sim_clock",
+  "lifecycle_scope": "airborne_mission",
+  "clock_quality": {
+    "overall": "exact_sim_clock",
+    "time_base": "sim_clock",
+    "evidence": "single integer simulation scheduler",
+    "alignment_fit": "not_applicable"
+  },
+  "run_completed": true,
+  "nonempty": true,
+  "numerical_valid": true,
+  "data_quality_pass": true,
+  "truth_available_pass": true,
+  "time_grid_pass": true,
+  "execution_constraints_pass": true,
+  "vehicle_capability_pass": true,
+  "separation_status": "clear_observed",
+  "truth_separation": {
+    "passed": true,
+    "minimum_m": 11.697902782470548,
+    "min_separation_m": 5.0,
+    "per_pair": [
+      {
+        "agents": [
+          "uav_01",
+          "uav_02"
+        ],
+        "minimum_m": 11.697902782470548,
+        "passed": true,
+        "status": "clear_observed",
+        "evidence_complete": true,
+        "assessed_pair_intervals": 9436,
+        "risk_pair_intervals": 0,
+        "assessed_simultaneous_points": 9437,
+        "risk_simultaneous_points": 0
+      }
+    ],
+    "status": "clear_observed",
+    "fleet_window_s": [
+      0.0,
+      163.640724
+    ],
+    "sampled_edge_allowance_s": 0.0,
+    "method": "simultaneous piecewise-linear relative motion, plus valid isolated positions; no invalid/gap bridging",
+    "scope": "airborne_mission [0, actual_end_s]; takeoff/landing unsupported"
+  },
+  "observation_valid_fraction": {
+    "uav_01": 1.0,
+    "uav_02": 1.0
+  },
+  "truth_valid_fraction": {
+    "uav_01": 1.0,
+    "uav_02": 1.0
+  },
+  "parameter_firmware_check": {
+    "status": "not_applicable",
+    "reason": "no FCU or firmware backend"
+  },
+  "numerical": {
+    "passed": true,
+    "acceleration_pass": true,
+    "jerk_pass": true,
+    "integration_max_abs_residual": 7.105427357601002e-15,
+    "speed_capability_pass": true,
+    "speed_capability_is_numerical_error": false
+  },
+  "invalid_intervals": {
+    "uav_01": [],
+    "uav_02": []
+  },
+  "episode_quality_eligible": true,
+  "benchmark_eligible": false,
+  "strict_benchmark_eligible": false
+}

@@ -19,6 +19,7 @@ from .mission_evaluation import window_evidence
 FACTS_VERSION = "observer_facts_v0"
 V06_FACTS_VERSION = "observer_facts_v06b"
 V061_FACTS_VERSION = "observer_facts_v061"
+FAST_DYNAMICS_FACTS_VERSION = "observer_facts_fast_dynamics_v1"
 PATTERN_VERSION = "pattern_detector_v0"
 V06_PATTERN_VERSION = "pattern_detector_v06b"
 PATTERN_PARAMETERS = dict(perimeter_sample_fraction=0.80, full_lap_radians=2 * math.pi,
@@ -452,8 +453,9 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
     if set(phase_windows.get("channels", {})) != {"truth", "observation"}:
         raise ValueError("observer facts require dual-channel phase windows")
     channels = phase_windows["channels"]
-    traces = {"truth": _traces(root / "truth.csv", agents),
-              "observation": _traces(root / "observations.csv", agents)}
+    fast = manifest.get("protocol_version") == "fast_dynamics_v1"
+    traces = {"truth": _traces(root / ("support_truth.csv" if fast else "truth.csv"), agents),
+              "observation": _traces(root / ("support_observations.csv" if fast else "observations.csv"), agents)}
     region = _region(task)
     metrics = labels["mission_metrics"]
     if set(metrics) != {"truth", "observation"}:
@@ -489,13 +491,17 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                 "duplicate_policy_version", "timeline_policy_version", "clock_model_version",
                 "route_progress_version", "ac4_timing_version", "execution_artifacts_version") if key in manifest}
     protocol_version = task["execution"].get("protocol_version")
-    facts_version = (V061_FACTS_VERSION if protocol_version == "v0.6.1" else
+    facts_version = (FAST_DYNAMICS_FACTS_VERSION if fast else V061_FACTS_VERSION if protocol_version == "v0.6.1" else
                      V06_FACTS_VERSION if protocol_version == "v0.6" else FACTS_VERSION)
-    if protocol_version == "v0.6.1":
+    if fast:
+        versions.update(time_base="sim_clock", simulation_backend="fast_dynamics",
+                        evidence_sampling="internal-step support including actual endpoint",
+                        observation_dependency="ideal observer derived from plant; no independent sensor")
+    elif protocol_version == "v0.6.1":
         versions.update(time_base="sim_source", sim_speedup=manifest["sim_speedup"],
                         common_time_axis=manifest["common_time_axis"])
     versions.update(facts_version=facts_version,
-                    pattern_detector_version=V06_PATTERN_VERSION if facts_version in (V06_FACTS_VERSION, V061_FACTS_VERSION) else PATTERN_VERSION)
+                    pattern_detector_version=V06_PATTERN_VERSION if facts_version in (V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION) else PATTERN_VERSION)
     return dict(facts_version=facts_version,
                 labels=dict(assigned_intent=labels["assigned_intent"],
                             return_required=task["mission"]["return_required"],
@@ -508,6 +514,7 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                 events=_events(metrics, checked, disagreements),
                 channel_check=dict(fields_checked=checked, disagreements=disagreements,
                                    enum_policy="exact", continuous_policy="max(2_percent, 0.5_seconds)",
-                                   primary_channel="sim", crosscheck_channel="fcu"),
-                provenance=dict(primary_channel="sim", dataset_manifest_sha256=actual_hash,
+                                   primary_channel="fast_dynamics_truth" if fast else "sim",
+                                   crosscheck_channel="ideal_kinematics_observation" if fast else "fcu"),
+                provenance=dict(primary_channel="fast_dynamics_truth" if fast else "sim", dataset_manifest_sha256=actual_hash,
                                 versions=versions, pattern_parameters=PATTERN_PARAMETERS))

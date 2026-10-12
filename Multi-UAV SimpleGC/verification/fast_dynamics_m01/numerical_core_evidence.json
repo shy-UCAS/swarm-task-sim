@@ -1,0 +1,197 @@
+{
+  "schema": "fast_dynamics_numerical_core_evidence_v1",
+  "measured_utc": "2026-10-12T11:34:31.143861+00:00",
+  "scenario": {
+    "implementation": "tests/test_fast_dynamics_core.py:ResponseAndConvergenceTests.simulate",
+    "duration_s": 24,
+    "agent_count": 1,
+    "initial_enu_m": [
+      0,
+      0,
+      15
+    ],
+    "velocity_reference": [
+      {
+        "interval_s": [
+          0,
+          8
+        ],
+        "enu_m_s": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "interval_s": [
+          8,
+          16
+        ],
+        "enu_m_s": [
+          0,
+          5,
+          0
+        ]
+      },
+      {
+        "interval_s": [
+          16,
+          24
+        ],
+        "enu_m_s": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "output_grid": "[0,24) at 10 Hz",
+    "wind_and_added_noise": "disabled"
+  },
+  "metric_definition": "Euclidean ENU position/velocity difference at identical output times; p99 NumPy linear percentile over all frames/agents",
+  "config": {
+    "engine": {
+      "step_us": 20000,
+      "output_period_us": 100000
+    },
+    "vehicle_profile": {
+      "max_speed_xy_m_s": 12.0,
+      "max_speed_up_m_s": 4.0,
+      "max_speed_down_m_s": 3.0,
+      "max_accel_xy_m_s2": 3.0,
+      "max_accel_up_m_s2": 2.0,
+      "max_accel_down_m_s2": 2.0,
+      "max_jerk_m_s3": 8.0,
+      "response_time_s": 0.25
+    },
+    "controller": {
+      "velocity_response_time_s": 0.8,
+      "state_source": "truth",
+      "control_type": "AccelerationENU"
+    },
+    "observation": {
+      "mode": "ideal"
+    },
+    "environment": {
+      "mode": "zero_disturbance"
+    },
+    "execution": {
+      "lifecycle_scope": "airborne_mission",
+      "max_duration_s": 600.0,
+      "arrival_radius_m": 1.0,
+      "arrival_speed_m_s": 0.15,
+      "terminal_hold_s": 0.0
+    },
+    "quality": {
+      "max_speed_tolerance_m_s": 0.75,
+      "min_separation_m": 2.0
+    }
+  },
+  "model_versions": {
+    "engine": "0.1.0",
+    "plant": "point_mass_jerk_v1",
+    "controller": "velocity_response_v1",
+    "observer": "ideal_kinematics_v1",
+    "integrator": "constant_jerk_v1"
+  },
+  "runtime": {
+    "python": "3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:20:11) [MSC v.1938 64 bit (AMD64)]",
+    "numpy": "2.5.3",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "source_identity": {
+    "files": [
+      {
+        "path": "scripts/benchmark_fast_dynamics.py",
+        "sha256": "58859020842cb3a7786f4d6087ca29d5d67c2e93ba9951fb881f59bfb62d8bc3"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/__init__.py",
+        "sha256": "4981fa7224099203fda26c0de9b79eb1a8ad336a3a7d0c9d984de64a38d05fe9"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/contracts.py",
+        "sha256": "aaefc6e1e6f3b61b8fa820124ceaa27eb315f21800cabfda0fce00846b1ad79e"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/controllers.py",
+        "sha256": "f1d5a15c9d9a50e75039caf93faae813bab03d97cc002189be163011bc58f58c"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/engine.py",
+        "sha256": "b1cfbb6bae53e4566d23d15d9d2bc3e72a4de56eaa1b8583600d7a9a5b14ee81"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/observations.py",
+        "sha256": "0be822a1f3d5c6539395c83bfc9d5c876c9db5add3a9deb9a82ec1880e32dd47"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/plants.py",
+        "sha256": "472391796e315e691f348bc55627d442fd68179d7ae18aef9423630d417dd48e"
+      }
+    ],
+    "list_sha256": "ab03b584d1b9fdc984da62c35d14306e15282e491df636840d4a9362b432b662",
+    "method": "actual local source contents; no clean Git checkout assumed"
+  },
+  "test_source_sha256": "09f7b963d4498982b01dcc8281e0057d9ca70d2a70c9c80381f8c9b57e91f2c2",
+  "comparisons": [
+    {
+      "coarse_step_us": 20000,
+      "fine_step_us": 10000,
+      "common_frame_count": 240,
+      "position_m": {
+        "p99": 0.014973339869455218,
+        "max": 0.015003914118807677,
+        "rms": 0.01076926056587047
+      },
+      "velocity_m_s": {
+        "p99": 0.00977168505259693,
+        "max": 0.009920105082999347,
+        "rms": 0.004002755786004856
+      }
+    },
+    {
+      "coarse_step_us": 20000,
+      "fine_step_us": 5000,
+      "common_frame_count": 240,
+      "position_m": {
+        "p99": 0.022415328255791234,
+        "max": 0.022461154573302663,
+        "rms": 0.016143683150664213
+      },
+      "velocity_m_s": {
+        "p99": 0.014646135408799764,
+        "max": 0.014848627452660716,
+        "rms": 0.006002312361482269
+      }
+    },
+    {
+      "coarse_step_us": 10000,
+      "fine_step_us": 5000,
+      "common_frame_count": 240,
+      "position_m": {
+        "p99": 0.007442141746457168,
+        "max": 0.007457392890538634,
+        "rms": 0.005374727860525071
+      },
+      "velocity_m_s": {
+        "p99": 0.004874450356203017,
+        "max": 0.004928522369661505,
+        "rms": 0.001999599096477144
+      }
+    }
+  ],
+  "final_speed_m_s": {
+    "20000": 2.2224647823791432e-06,
+    "10000": 2.715233948588698e-06,
+    "5000": 2.988097558111502e-06
+  },
+  "test_result": {
+    "tests_run": 15,
+    "failures": 0,
+    "errors": 0,
+    "success": true,
+    "runner_output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 0.828s\n\nOK\n"
+  },
+  "limitations": "Deterministic synthetic numerical checks only; no SITL calibration, real-aircraft validation, or mission coverage claim."
+}

@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "language_version": "language_zh_v06",
+  "templates_version": "templates_zh_v06",
+  "dataset_manifest_sha256": "9db4545faf04de1ea2a9e8866ecf4667a12e9b10b331139bc6fd55ff77deafb7",
+  "descriptions": [
+    {
+      "description_id": "fast_m1_rapid_passage:train:1",
+      "episode_id": "fast_m1_rapid_passage",
+      "episode_split": "train",
+      "template_partition": "train",
+      "facts_version": "observer_facts_fast_dynamics_v1",
+      "template_version": "templates_zh_v06",
+      "sentences": [
+        {
+          "template_id": "T1.side.train.1",
+          "text": "由 2 架无人机组成的机群整体从目标区域东侧接近。",
+          "fact_ids": [
+            "observed.num_uavs",
+            "observed.entry_side"
+          ]
+        },
+        {
+          "template_id": "T2.direct.train.1",
+          "text": "随后，轨迹从区域一侧直穿至对侧。",
+          "fact_ids": [
+            "observed.observed_pattern"
+          ]
+        },
+        {
+          "template_id": "T3.passage_pass.train.2",
+          "text": "到通过阶段结束时，轨迹满足直线进入、对侧离开且区域内不停留、不绕圈的条件。",
+          "fact_ids": [
+            "labels.mission_result.conditions.entered",
+            "labels.mission_result.conditions.opposite_exit",
+            "labels.mission_result.conditions.straight",
+            "labels.mission_result.conditions.no_dwell",
+            "labels.mission_result.conditions.no_loop"
+          ]
+        },
+        {
+          "template_id": "T4.return_false.train.2",
+          "text": "在飞行末段，机群未全部回到各自出发位置。",
+          "fact_ids": [
+            "observed.return_observed"
+          ]
+        },
+        {
+          "template_id": "T5.rapid_match.train.2",
+          "text": "从随后形成的轨迹看，整体行为符合区域快速通过特征。",
+          "fact_ids": [
+            "labels.assigned_intent",
+            "observed.observed_pattern"
+          ]
+        }
+      ],
+      "text": "由 2 架无人机组成的机群整体从目标区域东侧接近。随后，轨迹从区域一侧直穿至对侧。到通过阶段结束时，轨迹满足直线进入、对侧离开且区域内不停留、不绕圈的条件。在飞行末段，机群未全部回到各自出发位置。从随后形成的轨迹看，整体行为符合区域快速通过特征。"
+    },
+    {
+      "description_id": "fast_m1_rapid_passage:train:2",
+      "episode_id": "fast_m1_rapid_passage",
+      "episode_split": "train",
+      "template_partition": "train",
+      "facts_version": "observer_facts_fast_dynamics_v1",
+      "template_version": "templates_zh_v06",
+      "sentences": [
+        {
+          "template_id": "T1.side.train.2",
+          "text": "起初，2 架无人机组成的机群整体由目标区域东侧靠近。",
+          "fact_ids": [
+            "observed.num_uavs",
+            "observed.entry_side"
+          ]
+        },
+        {
+          "template_id": "T2.direct.train.2",
+          "text": "在主要飞行阶段，可见轨迹直穿目标区域。",
+          "fact_ids": [
+            "observed.observed_pattern"
+          ]
+        },
+        {
+          "template_id": "T3.passage_pass.train.3",
+          "text": "依据轨迹，区域内的直线通过和对侧离开条件已满足，未见停留或绕圈。",
+          "fact_ids": [
+            "labels.mission_result.conditions.entered",
+            "labels.mission_result.conditions.opposite_exit",
+            "labels.mission_result.conditions.straight",
+            "labels.mission_result.conditions.no_dwell",
+            "labels.mission_result.conditions.no_loop"
+          ]
+        },
+        {
+          "template_id": "T4.return_false.train.3",
+          "text": "任务结束前，至少一条轨迹未进入对应起点附近。",
+          "fact_ids": [
+            "observed.return_observed"
+          ]
+        },
+        {
+          "template_id": "T5.rapid_match.train.3",
+          "text": "综合轨迹表现，可将其判断为符合区域快速通过特征。",
+          "fact_ids": [
+            "labels.assigned_intent",
+            "observed.observed_pattern"
+          ]
+        }
+      ],
+      "text": "起初，2 架无人机组成的机群整体由目标区域东侧靠近。在主要飞行阶段，可见轨迹直穿目标区域。依据轨迹，区域内的直线通过和对侧离开条件已满足，未见停留或绕圈。任务结束前，至少一条轨迹未进入对应起点附近。综合轨迹表现，可将其判断为符合区域快速通过特征。"
+    },
+    {
+      "description_id": "fast_m1_rapid_passage:train:3",
+      "episode_id": "fast_m1_rapid_passage",
+      "episode_split": "train",
+      "template_partition": "train",
+      "facts_version": "observer_facts_fast_dynamics_v1",
+      "template_version": "templates_zh_v06",
+      "sentences": [
+        {
+          "template_id": "T1.side.train.3",
+          "text": "任务开始时，可见 2 架无人机组成的机群整体从目标区域东侧进入。",
+          "fact_ids": [
+            "observed.num_uavs",
+            "observed.entry_side"
+          ]
+        },
+        {
+          "template_id": "T2.direct.train.3",
+          "text": "接近区域后，飞行路径呈直穿形态。",
+          "fact_ids": [
+            "observed.observed_pattern"
+          ]
+        },
+        {
+          "template_id": "T3.passage_pass.train.1",
+          "text": "按轨迹核验，已从一侧进入并从对侧离开，区域内未见停留或绕圈。",
+          "fact_ids": [
+            "labels.mission_result.conditions.entered",
+            "labels.mission_result.conditions.opposite_exit",
+            "labels.mission_result.conditions.straight",
+            "labels.mission_result.conditions.no_dwell",
+            "labels.mission_result.conditions.no_loop"
+          ]
+        },
+        {
+          "template_id": "T4.return_false.train.1",
+          "text": "最后，机群没有全部返回各自出发位置。",
+          "fact_ids": [
+            "observed.return_observed"
+          ]
+        },
+        {
+          "template_id": "T5.rapid_match.train.1",
+          "text": "整体行为符合区域快速通过的特征。",
+          "fact_ids": [
+            "labels.assigned_intent",
+            "observed.observed_pattern"
+          ]
+        }
+      ],
+      "text": "任务开始时，可见 2 架无人机组成的机群整体从目标区域东侧进入。接近区域后，飞行路径呈直穿形态。按轨迹核验，已从一侧进入并从对侧离开，区域内未见停留或绕圈。最后，机群没有全部返回各自出发位置。整体行为符合区域快速通过的特征。"
+    },
+    {
+      "description_id": "fast_m1_rapid_passage:test:4",
+      "episode_id": "fast_m1_rapid_passage",
+      "episode_split": "train",
+      "template_partition": "test",
+      "facts_version": "observer_facts_fast_dynamics_v1",
+      "template_version": "templates_zh_v06",
+      "sentences": [
+        {
+          "template_id": "T1.side.test.1",
+          "text": "在飞行初段，2 架无人机组成的机群整体自目标区域东侧抵近。",
+          "fact_ids": [
+            "observed.num_uavs",
+            "observed.entry_side"
+          ]
+        },
+        {
+          "template_id": "T2.direct.test.1",
+          "text": "此后，轨迹以直穿方式经过目标区域并到达对侧。",
+          "fact_ids": [
+            "observed.observed_pattern"
+          ]
+        },
+        {
+          "template_id": "T3.passage_pass.test.1",
+          "text": "通过阶段结束后核对轨迹，机群完成了一次区域内无停留、无绕圈的直线通过。",
+          "fact_ids": [
+            "labels.mission_result.conditions.entered",
+            "labels.mission_result.conditions.opposite_exit",
+            "labels.mission_result.conditions.straight",
+            "labels.mission_result.conditions.no_dwell",
+            "labels.mission_result.conditions.no_loop"
+          ]
+        },
+        {
+          "template_id": "T4.return_false.test.1",
+          "text": "此后，机群最终仍未全部返回出发位置附近。",
+          "fact_ids": [
+            "observed.return_observed"
+          ]
+        },
+        {
+          "template_id": "T5.rapid_match.test.1",
+          "text": "到主要阶段结束时，整体轨迹呈现区域快速通过特征。",
+          "fact_ids": [
+            "labels.assigned_intent",
+            "observed.observed_pattern"
+          ]
+        }
+      ],
+      "text": "在飞行初段，2 架无人机组成的机群整体自目标区域东侧抵近。此后，轨迹以直穿方式经过目标区域并到达对侧。通过阶段结束后核对轨迹，机群完成了一次区域内无停留、无绕圈的直线通过。此后，机群最终仍未全部返回出发位置附近。到主要阶段结束时，整体轨迹呈现区域快速通过特征。"
+    }
+  ],
+  "skipped": []
+}

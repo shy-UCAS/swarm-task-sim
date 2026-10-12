@@ -1,0 +1,943 @@
+{
+  "schema": "fast_dynamics_kernel_benchmark_v1",
+  "started_utc": "2026-10-12T11:33:40.841583+00:00",
+  "completed_utc": "2026-10-12T11:34:03.057029+00:00",
+  "hardware": {
+    "cpu": "AMD Ryzen 9 9950X3D 16-Core Processor",
+    "logical_cpu_count": 32,
+    "architecture": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "initial_host_snapshot": {
+      "status": "available",
+      "cpu_times_100ns": {
+        "idle": 6251100468750,
+        "kernel": 6664177500000,
+        "user": 515750156250
+      },
+      "physical_total_bytes": 68348276736,
+      "physical_available_bytes": 40947552256,
+      "commit_total_bytes": 55030038528,
+      "commit_limit_bytes": 109687336960,
+      "commit_peak_bytes": 64547172352
+    }
+  },
+  "runtime": {
+    "python": "3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:20:11) [MSC v.1938 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\shy\\anaconda3\\envs\\llm\\python.exe",
+    "numpy": "2.5.3"
+  },
+  "model_versions": {
+    "engine": "0.1.0",
+    "plant": "point_mass_jerk_v1",
+    "controller": "velocity_response_v1",
+    "observer": "ideal_kinematics_v1",
+    "integrator": "constant_jerk_v1"
+  },
+  "config": {
+    "engine": {
+      "step_us": 20000,
+      "output_period_us": 100000
+    },
+    "vehicle_profile": {
+      "max_speed_xy_m_s": 12.0,
+      "max_speed_up_m_s": 4.0,
+      "max_speed_down_m_s": 3.0,
+      "max_accel_xy_m_s2": 3.0,
+      "max_accel_up_m_s2": 2.0,
+      "max_accel_down_m_s2": 2.0,
+      "max_jerk_m_s3": 8.0,
+      "response_time_s": 0.25
+    },
+    "controller": {
+      "velocity_response_time_s": 0.8,
+      "state_source": "truth",
+      "control_type": "AccelerationENU"
+    },
+    "observation": {
+      "mode": "ideal"
+    },
+    "environment": {
+      "mode": "zero_disturbance"
+    },
+    "execution": {
+      "lifecycle_scope": "airborne_mission",
+      "max_duration_s": 600.0,
+      "arrival_radius_m": 1.0,
+      "arrival_speed_m_s": 0.15,
+      "terminal_hold_s": 0.0
+    },
+    "quality": {
+      "max_speed_tolerance_m_s": 0.75,
+      "min_separation_m": 2.0
+    }
+  },
+  "config_sha256": "9a0960c6876f868f3cbd9571e1b113f6576aff9dd07142edb60299155dbfdb22",
+  "source_identity": {
+    "files": [
+      {
+        "path": "scripts/benchmark_fast_dynamics.py",
+        "sha256": "58859020842cb3a7786f4d6087ca29d5d67c2e93ba9951fb881f59bfb62d8bc3"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/__init__.py",
+        "sha256": "4981fa7224099203fda26c0de9b79eb1a8ad336a3a7d0c9d984de64a38d05fe9"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/contracts.py",
+        "sha256": "aaefc6e1e6f3b61b8fa820124ceaa27eb315f21800cabfda0fce00846b1ad79e"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/controllers.py",
+        "sha256": "f1d5a15c9d9a50e75039caf93faae813bab03d97cc002189be163011bc58f58c"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/engine.py",
+        "sha256": "b1cfbb6bae53e4566d23d15d9d2bc3e72a4de56eaa1b8583600d7a9a5b14ee81"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/observations.py",
+        "sha256": "0be822a1f3d5c6539395c83bfc9d5c876c9db5add3a9deb9a82ec1880e32dd47"
+      },
+      {
+        "path": "swarm_sim/fast_dynamics/plants.py",
+        "sha256": "472391796e315e691f348bc55627d442fd68179d7ae18aef9423630d417dd48e"
+      }
+    ],
+    "list_sha256": "ab03b584d1b9fdc984da62c35d14306e15282e491df636840d4a9362b432b662",
+    "method": "actual local source contents; no clean Git checkout assumed"
+  },
+  "measurement_contract": {
+    "scope": "synthetic control/plant kernel plus 10 Hz in-memory output; not dataset throughput",
+    "included": [
+      "episode initialization",
+      "velocity reference selection",
+      "velocity controller",
+      "bounded constant-jerk integration",
+      "synchronous array commit",
+      "10 Hz state recording in memory"
+    ],
+    "excluded": [
+      "Python process startup and imports",
+      "episode teardown",
+      "task compilation",
+      "semantic/quality analysis",
+      "export",
+      "audit",
+      "facts/descriptions",
+      "file writes",
+      "source hashing"
+    ],
+    "episode_real_time_factor": "episode simulation seconds divided by timed wall-clock seconds; not agent-seconds",
+    "cold_definition": "first episode in a fresh worker process per count; imports excluded; OS cache not flushed",
+    "execution": "one worker at a time; shared non-exclusive host; no SITL and no host sleep",
+    "memory": "Windows commit is host committed memory, not process RSS; sampled before and after each timed run",
+    "cpu_load": "host-wide busy fraction from GetSystemTimes delta; not exclusive benchmark utilization",
+    "limitations": "four warm repeats give only a small-sample empirical p95; no production throughput claim"
+  },
+  "results": [
+    {
+      "agent_count": 2,
+      "simulation_duration_s": 300.0,
+      "runs": [
+        {
+          "repeat_index": 0,
+          "temperature": "first_episode_in_fresh_process",
+          "wall_time_s": 1.032553499997448,
+          "process_cpu_time_s": 1.03125,
+          "episode_real_time_factor": 290.5418460164451,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "1bf562b39529b78303b4772e0a8c9a6089608d3aca1c76c8fec6a415bb0a6051",
+          "host_cpu_busy_fraction": 0.13169114163903362,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6251144062500,
+              "kernel": 6664223437500,
+              "user": 515753125000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40912261120,
+            "commit_total_bytes": 55850377216,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6251430468750,
+              "kernel": 6664522968750,
+              "user": 515783437500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40828809216,
+            "commit_total_bytes": 56709816320,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 1,
+          "temperature": "warm",
+          "wall_time_s": 1.0521516000007978,
+          "process_cpu_time_s": 1.046875,
+          "episode_real_time_factor": 285.13001358337766,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "1bf562b39529b78303b4772e0a8c9a6089608d3aca1c76c8fec6a415bb0a6051",
+          "host_cpu_busy_fraction": 0.1215341959334566,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6251431718750,
+              "kernel": 6664524531250,
+              "user": 515783906250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40829026304,
+            "commit_total_bytes": 56709337088,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6251728750000,
+              "kernel": 6664828437500,
+              "user": 515818125000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40812650496,
+            "commit_total_bytes": 56717963264,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 2,
+          "temperature": "warm",
+          "wall_time_s": 1.0403882999999041,
+          "process_cpu_time_s": 1.046875,
+          "episode_real_time_factor": 288.3538771053343,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "1bf562b39529b78303b4772e0a8c9a6089608d3aca1c76c8fec6a415bb0a6051",
+          "host_cpu_busy_fraction": 0.14823529411764702,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6251728750000,
+              "kernel": 6664828437500,
+              "user": 515818125000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40813326336,
+            "commit_total_bytes": 56717733888,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252011562500,
+              "kernel": 6665123593750,
+              "user": 515855000000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40819544064,
+            "commit_total_bytes": 56708694016,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 3,
+          "temperature": "warm",
+          "wall_time_s": 1.0382224999993923,
+          "process_cpu_time_s": 1.046875,
+          "episode_real_time_factor": 288.9554021418102,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "1bf562b39529b78303b4772e0a8c9a6089608d3aca1c76c8fec6a415bb0a6051",
+          "host_cpu_busy_fraction": 0.16479925303454712,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252011718750,
+              "kernel": 6665123750000,
+              "user": 515855000000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40819544064,
+            "commit_total_bytes": 56708694016,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252291250000,
+              "kernel": 6665421093750,
+              "user": 515892343750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40819232768,
+            "commit_total_bytes": 56708259840,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 4,
+          "temperature": "warm",
+          "wall_time_s": 1.0381403000028513,
+          "process_cpu_time_s": 1.03125,
+          "episode_real_time_factor": 288.9782816437971,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "1bf562b39529b78303b4772e0a8c9a6089608d3aca1c76c8fec6a415bb0a6051",
+          "host_cpu_busy_fraction": 0.15091678420310295,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252291562500,
+              "kernel": 6665421406250,
+              "user": 515892343750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40819232768,
+            "commit_total_bytes": 56708259840,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252573750000,
+              "kernel": 6665715781250,
+              "user": 515930312500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40812228608,
+            "commit_total_bytes": 56706920448,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        }
+      ],
+      "warm_summary": {
+        "sample_count": 4,
+        "wall_time_median_s": 1.0393053999996482,
+        "wall_time_p95_s": 1.0503871050006637,
+        "episode_real_time_factor_median": 288.6546396235723,
+        "episode_real_time_factor_p05": 285.61359311167115,
+        "episode_real_time_factor_p95": 288.97484971849906,
+        "percentile_method": "NumPy linear interpolation; four warm samples at default repeats=5"
+      },
+      "repeatability_pass": true
+    },
+    {
+      "agent_count": 4,
+      "simulation_duration_s": 300.0,
+      "runs": [
+        {
+          "repeat_index": 0,
+          "temperature": "first_episode_in_fresh_process",
+          "wall_time_s": 1.0652626999981294,
+          "process_cpu_time_s": 1.0625,
+          "episode_real_time_factor": 281.62067441254334,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7d324442d7cec951786f8d7c368d8649f8bc0a89b92f754aded992511acd45e",
+          "host_cpu_busy_fraction": 0.14337733272644515,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252617812500,
+              "kernel": 6665762343750,
+              "user": 515935312500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40830214144,
+            "commit_total_bytes": 56700112896,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252911875000,
+              "kernel": 6666069062500,
+              "user": 515971875000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40773160960,
+            "commit_total_bytes": 56755859456,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 1,
+          "temperature": "warm",
+          "wall_time_s": 1.0668478000006871,
+          "process_cpu_time_s": 1.0625,
+          "episode_real_time_factor": 281.2022483430221,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7d324442d7cec951786f8d7c368d8649f8bc0a89b92f754aded992511acd45e",
+          "host_cpu_busy_fraction": 0.11828935395814377,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6252913125000,
+              "kernel": 6666070312500,
+              "user": 515972343750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40773332992,
+            "commit_total_bytes": 56755859456,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6253215937500,
+              "kernel": 6666378750000,
+              "user": 516007343750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40757563392,
+            "commit_total_bytes": 56770502656,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 2,
+          "temperature": "warm",
+          "wall_time_s": 1.0705248999984178,
+          "process_cpu_time_s": 1.078125,
+          "episode_real_time_factor": 280.23635881841085,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7d324442d7cec951786f8d7c368d8649f8bc0a89b92f754aded992511acd45e",
+          "host_cpu_busy_fraction": 0.12208504801097397,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6253215937500,
+              "kernel": 6666378750000,
+              "user": 516007343750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40757719040,
+            "commit_total_bytes": 56769777664,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6253515937500,
+              "kernel": 6666685156250,
+              "user": 516042656250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40759279616,
+            "commit_total_bytes": 56756400128,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 3,
+          "temperature": "warm",
+          "wall_time_s": 1.0695288999995682,
+          "process_cpu_time_s": 1.0625,
+          "episode_real_time_factor": 280.4973292447928,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7d324442d7cec951786f8d7c368d8649f8bc0a89b92f754aded992511acd45e",
+          "host_cpu_busy_fraction": 0.14522058823529416,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6253519687500,
+              "kernel": 6666688906250,
+              "user": 516042656250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40759152640,
+            "commit_total_bytes": 56757125120,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6253810312500,
+              "kernel": 6666992187500,
+              "user": 516079375000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40790560768,
+            "commit_total_bytes": 56730083328,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 4,
+          "temperature": "warm",
+          "wall_time_s": 1.0635316000007151,
+          "process_cpu_time_s": 1.0625,
+          "episode_real_time_factor": 282.0790656335912,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7d324442d7cec951786f8d7c368d8649f8bc0a89b92f754aded992511acd45e",
+          "host_cpu_busy_fraction": 0.1576011157601116,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6253813593750,
+              "kernel": 6666996250000,
+              "user": 516080312500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40780398592,
+            "commit_total_bytes": 56740868096,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6254096718750,
+              "kernel": 6667295156250,
+              "user": 516117500000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40793227264,
+            "commit_total_bytes": 56735498240,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        }
+      ],
+      "warm_summary": {
+        "sample_count": 4,
+        "wall_time_median_s": 1.0681883500001277,
+        "wall_time_p95_s": 1.0703754999985904,
+        "episode_real_time_factor_median": 280.84978879390746,
+        "episode_real_time_factor_p05": 280.2755043823681,
+        "episode_real_time_factor_p95": 281.9475430400058,
+        "percentile_method": "NumPy linear interpolation; four warm samples at default repeats=5"
+      },
+      "repeatability_pass": true
+    },
+    {
+      "agent_count": 8,
+      "simulation_duration_s": 300.0,
+      "runs": [
+        {
+          "repeat_index": 0,
+          "temperature": "first_episode_in_fresh_process",
+          "wall_time_s": 1.0702657000001636,
+          "process_cpu_time_s": 1.0625,
+          "episode_real_time_factor": 280.304227258665,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "ddb0875a1f34e5b6122ea305d25c7be521b04c39816e5df4345800f6e352ebb3",
+          "host_cpu_busy_fraction": 0.13640510948905105,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6254145937500,
+              "kernel": 6667346875000,
+              "user": 516121718750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40792166400,
+            "commit_total_bytes": 56725430272,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6254441718750,
+              "kernel": 6667655468750,
+              "user": 516155625000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40798314496,
+            "commit_total_bytes": 56728580096,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 1,
+          "temperature": "warm",
+          "wall_time_s": 1.0819061000001966,
+          "process_cpu_time_s": 1.09375,
+          "episode_real_time_factor": 277.2883894452074,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "ddb0875a1f34e5b6122ea305d25c7be521b04c39816e5df4345800f6e352ebb3",
+          "host_cpu_busy_fraction": 0.12320143884892087,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6254441718750,
+              "kernel": 6667655468750,
+              "user": 516155625000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40799907840,
+            "commit_total_bytes": 56726896640,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6254746406250,
+              "kernel": 6667968437500,
+              "user": 516190156250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40799690752,
+            "commit_total_bytes": 56718811136,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 2,
+          "temperature": "warm",
+          "wall_time_s": 1.071234299997741,
+          "process_cpu_time_s": 1.078125,
+          "episode_real_time_factor": 280.0507788078039,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "ddb0875a1f34e5b6122ea305d25c7be521b04c39816e5df4345800f6e352ebb3",
+          "host_cpu_busy_fraction": 0.12272727272727268,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6254748281250,
+              "kernel": 6667970312500,
+              "user": 516190156250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40801099776,
+            "commit_total_bytes": 56717115392,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255049843750,
+              "kernel": 6668282031250,
+              "user": 516222187500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40800595968,
+            "commit_total_bytes": 56720515072,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 3,
+          "temperature": "warm",
+          "wall_time_s": 1.0746450000006007,
+          "process_cpu_time_s": 1.078125,
+          "episode_real_time_factor": 279.1619558085064,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "ddb0875a1f34e5b6122ea305d25c7be521b04c39816e5df4345800f6e352ebb3",
+          "host_cpu_busy_fraction": 0.12562358276643992,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255050156250,
+              "kernel": 6668282343750,
+              "user": 516222187500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40802402304,
+            "commit_total_bytes": 56719519744,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255351406250,
+              "kernel": 6668592656250,
+              "user": 516256406250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40802455552,
+            "commit_total_bytes": 56722706432,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 4,
+          "temperature": "warm",
+          "wall_time_s": 1.0841856000006374,
+          "process_cpu_time_s": 1.078125,
+          "episode_real_time_factor": 276.7053906635761,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "ddb0875a1f34e5b6122ea305d25c7be521b04c39816e5df4345800f6e352ebb3",
+          "host_cpu_busy_fraction": 0.24087591240875916,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255353750000,
+              "kernel": 6668595000000,
+              "user": 516256406250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40803487744,
+            "commit_total_bytes": 56721227776,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255613750000,
+              "kernel": 6668888593750,
+              "user": 516305312500
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40789716992,
+            "commit_total_bytes": 56727093248,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        }
+      ],
+      "warm_summary": {
+        "sample_count": 4,
+        "wall_time_median_s": 1.0782755500003987,
+        "wall_time_p95_s": 1.0838436750005713,
+        "episode_real_time_factor_median": 278.2251726268569,
+        "episode_real_time_factor_p05": 276.7928404808208,
+        "episode_real_time_factor_p95": 279.91745535790926,
+        "percentile_method": "NumPy linear interpolation; four warm samples at default repeats=5"
+      },
+      "repeatability_pass": true
+    },
+    {
+      "agent_count": 16,
+      "simulation_duration_s": 300.0,
+      "runs": [
+        {
+          "repeat_index": 0,
+          "temperature": "first_episode_in_fresh_process",
+          "wall_time_s": 1.0973358000010194,
+          "process_cpu_time_s": 1.09375,
+          "episode_real_time_factor": 273.3894219068778,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7b4f30fe4fae1befe6da12f723ca7ef820431b3da504e2fa44159b5328d7b7f",
+          "host_cpu_busy_fraction": 0.13150926743159752,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255658750000,
+              "kernel": 6668937187500,
+              "user": 516311250000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40799186944,
+            "commit_total_bytes": 56716492800,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255966250000,
+              "kernel": 6669255000000,
+              "user": 516347500000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40783687680,
+            "commit_total_bytes": 56739147776,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 1,
+          "temperature": "warm",
+          "wall_time_s": 1.096312300000136,
+          "process_cpu_time_s": 1.09375,
+          "episode_real_time_factor": 273.64465399135156,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7b4f30fe4fae1befe6da12f723ca7ef820431b3da504e2fa44159b5328d7b7f",
+          "host_cpu_busy_fraction": 0.11528268551236753,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6255966562500,
+              "kernel": 6669255312500,
+              "user": 516347500000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40787316736,
+            "commit_total_bytes": 56735780864,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6256279531250,
+              "kernel": 6669577812500,
+              "user": 516378750000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40776298496,
+            "commit_total_bytes": 56744693760,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 2,
+          "temperature": "warm",
+          "wall_time_s": 1.0853486999985762,
+          "process_cpu_time_s": 1.09375,
+          "episode_real_time_factor": 276.4088628847057,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7b4f30fe4fae1befe6da12f723ca7ef820431b3da504e2fa44159b5328d7b7f",
+          "host_cpu_busy_fraction": 0.11741071428571426,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6256279531250,
+              "kernel": 6669577812500,
+              "user": 516378750000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40777850880,
+            "commit_total_bytes": 56741408768,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6256588437500,
+              "kernel": 6669897656250,
+              "user": 516408906250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40770650112,
+            "commit_total_bytes": 56746123264,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 3,
+          "temperature": "warm",
+          "wall_time_s": 1.096550499998557,
+          "process_cpu_time_s": 1.09375,
+          "episode_real_time_factor": 273.58521107819,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7b4f30fe4fae1befe6da12f723ca7ef820431b3da504e2fa44159b5328d7b7f",
+          "host_cpu_busy_fraction": 0.12159141707644161,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6256588437500,
+              "kernel": 6669897656250,
+              "user": 516408906250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40760340480,
+            "commit_total_bytes": 56756867072,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6256895468750,
+              "kernel": 6670215312500,
+              "user": 516440781250
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40778534912,
+            "commit_total_bytes": 56738451456,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        },
+        {
+          "repeat_index": 4,
+          "temperature": "warm",
+          "wall_time_s": 1.0906074999984412,
+          "process_cpu_time_s": 1.078125,
+          "episode_real_time_factor": 275.07604706590485,
+          "output_frames": 3000,
+          "end_us": 300000000,
+          "terminal_state_sha256": "d7b4f30fe4fae1befe6da12f723ca7ef820431b3da504e2fa44159b5328d7b7f",
+          "host_cpu_busy_fraction": 0.17781769196228114,
+          "host_before": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6256896406250,
+              "kernel": 6670216406250,
+              "user": 516441250000
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40781828096,
+            "commit_total_bytes": 56735019008,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          },
+          "host_after": {
+            "status": "available",
+            "cpu_times_100ns": {
+              "idle": 6257182500000,
+              "kernel": 6670528281250,
+              "user": 516477343750
+            },
+            "physical_total_bytes": 68348276736,
+            "physical_available_bytes": 40684830720,
+            "commit_total_bytes": 56853839872,
+            "commit_limit_bytes": 109687336960,
+            "commit_peak_bytes": 64547172352
+          }
+        }
+      ],
+      "warm_summary": {
+        "sample_count": 4,
+        "wall_time_median_s": 1.0934598999992886,
+        "wall_time_p95_s": 1.0965147699987938,
+        "episode_real_time_factor_median": 274.3603505286282,
+        "episode_real_time_factor_p05": 273.59412751516425,
+        "episode_real_time_factor_p95": 276.20894051188554,
+        "percentile_method": "NumPy linear interpolation; four warm samples at default repeats=5"
+      },
+      "repeatability_pass": true
+    }
+  ]
+}

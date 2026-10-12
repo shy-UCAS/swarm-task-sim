@@ -23,6 +23,16 @@ V061_TIME_POLICY = dict(version="sim_source_time_v061", alignment_residual_p95_s
     strict_residual_diagnostic_sim_s=0.02, strict_is_gate=False, record_hz=10,
     rationale="At 3 m/s, 0.2 simulation seconds corresponds to about 0.6 m; passive residual is not an absolute synchronization bound. Reassess for higher speeds.")
 V06_COMPONENT_KEYS = frozenset(("planner", "validator", "facts", "templates"))
+FAST_DYNAMICS_PROTOCOL = "fast_dynamics_v1"
+FAST_DYNAMICS_SEMANTIC_VERSION = "multi_intent_validation_fast_dynamics_v1"
+
+
+def fast_dynamics_protocol():
+    """Separate source contract; the original TaskSpec keeps its own protocol."""
+    return dict(task_kind="mission_v3", ontology_version="multi_intent_mission_v1", label_schema_version=3,
+                semantic_validation_version=FAST_DYNAMICS_SEMANTIC_VERSION,
+                eligibility_protocol_version="fast_dynamics_quality_v1",
+                execution_constraints_version="airborne_mission_limits_fast_dynamics_v1")
 
 PROTOCOL_FIELDS = ("task_kind", "ontology_version", "label_schema_version", "semantic_validation_version",
                    "eligibility_protocol_version", "execution_constraints_version")
@@ -136,6 +146,9 @@ def manifest_protocol(manifest):
 def validate_artifact_protocol(manifest, root):
     """Reject inconsistent version claims even when each file's hash is valid."""
     protocol = manifest_protocol(manifest)
+    if manifest.get("protocol_version") == FAST_DYNAMICS_PROTOCOL:
+        from .fast_dynamics.artifacts import validate_episode
+        return validate_episode(manifest, Path(root))
     if protocol["task_kind"] == "mission_v3":
         return _validate_v3_artifacts(manifest, Path(root), protocol)
     if protocol["task_kind"] != "mission_v2":
@@ -168,7 +181,7 @@ def supported_protocols():
                                 patrol_validator_version="perimeter_revisit_v2")
     v06 = semantic_protocol({"task_spec": {"schema_version": 3, "execution": {"protocol_version": "v0.6"}}})
     v061 = semantic_protocol({"task_spec": {"schema_version": 3, "execution": {"protocol_version": "v0.6.1"}}})
-    return historical | {tuple(p[key] for key in PROTOCOL_FIELDS) for p in (current, v06, v061)}
+    return historical | {tuple(p[key] for key in PROTOCOL_FIELDS) for p in (current, v06, v061, fast_dynamics_protocol())}
 
 
 def _validate_v3_artifacts(manifest, root, protocol):

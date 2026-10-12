@@ -1,0 +1,111 @@
+{
+  "facts_version": "observer_facts_fast_dynamics_v1",
+  "labels": {
+    "assigned_intent": "rapid_passage",
+    "return_required": false,
+    "mission_result": {
+      "success": true,
+      "conditions": {
+        "entered": true,
+        "opposite_exit": true,
+        "straight": true,
+        "no_dwell": true,
+        "no_loop": true,
+        "return": true
+      }
+    }
+  },
+  "observed": {
+    "num_uavs": 2,
+    "entry_side": "east",
+    "observed_pattern": "direct_passage",
+    "scan_orientation": null,
+    "loop_direction": null,
+    "per_agent_laps_observed": null,
+    "return_observed": false,
+    "max_revisit_gap_s": null,
+    "exit_side": "west",
+    "crossed": true,
+    "inside_dwell_s": 0.0,
+    "turning_rad": 2.5177114526542255e-07
+  },
+  "model_metrics": {
+    "coverage_ratio": null,
+    "coverage_model": null
+  },
+  "segments": [
+    {
+      "id": "seg_approach",
+      "kind": "approach",
+      "start_s": 0.0,
+      "end_s": 8.004232,
+      "boundary_source": {
+        "start": "median_per_agent_start_s",
+        "end": "median_per_agent_arrival_s"
+      }
+    },
+    {
+      "id": "seg_transit",
+      "kind": "transit",
+      "start_s": 8.658638,
+      "end_s": 27.320326,
+      "boundary_source": {
+        "start": "median_per_agent_start_s",
+        "end": "median_per_agent_arrival_s"
+      }
+    }
+  ],
+  "events": [],
+  "channel_check": {
+    "fields_checked": [
+      "num_uavs",
+      "entry_side",
+      "observed_pattern",
+      "scan_orientation",
+      "loop_direction",
+      "per_agent_laps_observed",
+      "return_observed",
+      "max_revisit_gap_s",
+      "exit_side",
+      "crossed",
+      "inside_dwell_s",
+      "turning_rad",
+      "segments.seg_approach.start_s",
+      "segments.seg_approach.end_s",
+      "segments.seg_transit.start_s",
+      "segments.seg_transit.end_s",
+      "events.ev_first_boundary_coverage.t",
+      "events.ev_first_complete_lap.t"
+    ],
+    "disagreements": [],
+    "enum_policy": "exact",
+    "continuous_policy": "max(2_percent, 0.5_seconds)",
+    "primary_channel": "fast_dynamics_truth",
+    "crosscheck_channel": "ideal_kinematics_observation"
+  },
+  "provenance": {
+    "primary_channel": "fast_dynamics_truth",
+    "dataset_manifest_sha256": "5169694b2b7bf6f1817cb0514039dbb375a34efe7284e78d5cd7f4eb98d3e817",
+    "versions": {
+      "semantic_validation_version": "multi_intent_validation_fast_dynamics_v1",
+      "time_base": "sim_clock",
+      "simulation_backend": "fast_dynamics",
+      "evidence_sampling": "internal-step support including actual endpoint",
+      "observation_dependency": "ideal observer derived from plant; no independent sensor",
+      "facts_version": "observer_facts_fast_dynamics_v1",
+      "pattern_detector_version": "pattern_detector_v06b"
+    },
+    "pattern_parameters": {
+      "perimeter_sample_fraction": 0.8,
+      "full_lap_radians": 6.283185307179586,
+      "perimeter_visit_radius_m": 3.0,
+      "region_buffer_m": 1.0,
+      "parallel_sample_fraction": 0.8,
+      "straight_path_fraction": 0.6,
+      "direction_tolerance_deg": 15.0,
+      "minimum_straight_run_m": 2.0,
+      "downgrade_cumulative_turn_deg": 230.0,
+      "downgrade_resample_segment_m": 2.0
+    }
+  }
+}

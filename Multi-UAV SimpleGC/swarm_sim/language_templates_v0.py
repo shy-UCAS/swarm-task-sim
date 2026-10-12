@@ -18,6 +18,7 @@ TEMPLATE_VERSION = "templates_zh_v0"
 FACTS_VERSION = "observer_facts_v0"
 V06_FACTS_VERSION = "observer_facts_v06b"
 V061_FACTS_VERSION = "observer_facts_v061"
+FAST_DYNAMICS_FACTS_VERSION = "observer_facts_fast_dynamics_v1"
 V06_TEMPLATE_VERSION = "templates_zh_v06"
 
 # The fourth wording of each semantic branch is reserved for test.  Time
@@ -275,7 +276,7 @@ def _available_observed(facts: dict[str, Any], name: str, disagreements: set[str
 
 
 def _checked_result(facts: dict[str, Any]) -> tuple[str, bool, dict[str, bool | None]]:
-    if facts.get("facts_version") not in (FACTS_VERSION, V06_FACTS_VERSION, V061_FACTS_VERSION):
+    if facts.get("facts_version") not in (FACTS_VERSION, V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION):
         raise ValueError("unsupported observer facts version")
     labels = facts.get("labels")
     if not isinstance(labels, dict) or labels.get("assigned_intent") not in ("reconnaissance", "patrol", "rapid_passage"):
@@ -338,7 +339,7 @@ def _plans(facts: dict[str, Any]) -> list[_SentencePlan]:
                                        {"direction": _DIRECTION[direction]}))
         else:
             plans.append(_SentencePlan("T2.loop", ("observed.observed_pattern",), {}))
-    elif pattern == "direct_passage" and facts.get("facts_version") in (V06_FACTS_VERSION, V061_FACTS_VERSION):
+    elif pattern == "direct_passage" and facts.get("facts_version") in (V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION):
         plans.append(_SentencePlan("T2.direct", ("observed.observed_pattern",), {}))
     else:
         plans.append(_SentencePlan("T2.neutral", ("observed.observed_pattern",) if pattern == "unclear" else (), {}))
@@ -438,7 +439,7 @@ def validate_description(description: dict[str, Any], facts: dict[str, Any]) -> 
         return False, ["description_not_object"]
     if description.get("facts_version") != facts.get("facts_version"):
         errors.append("facts_version_mismatch")
-    version = V06_TEMPLATE_VERSION if facts.get("facts_version") in (V06_FACTS_VERSION, V061_FACTS_VERSION) else TEMPLATE_VERSION
+    version = V06_TEMPLATE_VERSION if facts.get("facts_version") in (V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION) else TEMPLATE_VERSION
     if description.get("template_version") != version:
         errors.append("template_version_mismatch")
     partition = description.get("template_partition")
@@ -509,7 +510,7 @@ def generate_descriptions(facts: dict[str, Any], episode_id: str, episode_split:
         description = dict(description_id=f"{episode_id}:{partition}:{variant + 1}",
                            episode_id=episode_id, episode_split=episode_split,
                            template_partition=partition, facts_version=facts["facts_version"],
-                           template_version=V06_TEMPLATE_VERSION if facts["facts_version"] in (V06_FACTS_VERSION, V061_FACTS_VERSION) else TEMPLATE_VERSION,
+                           template_version=V06_TEMPLATE_VERSION if facts["facts_version"] in (V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION) else TEMPLATE_VERSION,
                            sentences=sentences,
                            text="".join(sentence["text"] for sentence in sentences))
         valid, errors = validate_description(description, facts)

@@ -1,16 +1,19 @@
 # Multi-UAV SimpleGC
 
-> 新会话先读[仓库根 README](../README.md)。2026-10-10 状态：v0.5 已冻结；v0.6 三意图、四种生产飞法、两路 pilot 和暂停 B 复核已完成；正式生产在 296/900 个任务后因台账持久化失败而规则停止，未导出，停在暂停 C。本文下方 v0.4 及更早章节保留历史接口与使用说明，历史“当前状态”、测试数量及命令不代表最新进度，也不授权启动或续跑已停止批次。
+> 2026-10-12 更新。新窗口先读[仓库根 README](../README.md)、[快速引擎开发交接](docs/fast_dynamics_engine_kickoff.md)和[M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。现有代码已实现 v0.6.1 时间契约并完成 T1/T2/T4/T5 验证收尾；快速动力学 M0/M1 已本地落地，最小双机完整数据链已接通，M0/M1 最终本地验收已通过，下一包为 M2。暂不提交或推送。下方 v0.4 及更早章节为历史接口，不能按其“当前状态”或命令启动旧批次。
 
-基于本机 ArduCopter SITL 的多无人机实验框架。包内历史版本字符串为 **0.5.0-dev**，当前实现已支持 TaskSpec v3 与 v0.6 协议；版本字符串不能代替任务协议、Git 提交及批次状态。既有 v1/v2 支持 1～6 架飞机，当前三意图 profile 使用 2/3/4 机。v3 已接通连续语义航线、参数/固件核验、双通道分析、family 整族生成、并行暂停续跑及数据导出/描述/加载。
+已实现的执行后端包括 ArduCopter SITL 和范围明确的快速动力学 M1。包内历史版本字符串 **0.5.0-dev** 不能代替实际协议：SITL 支持 TaskSpec v3、v0.6 三意图和显式 v0.6.1 公共源时间。SITL 三意图 profile 使用 2/3/4 机；v3 已接通连续航线、固件/参数核验、双通道分析、family 整族生成、并行控制、导出/描述/加载。快速后端使用 `fast_dynamics_v1` / `sim_clock`，目前只验证双机单段快速通过空中任务、理想合成观测和六维输入，未校准、非训练。
 
-## 当前 v0.6 状态（2026-10-10）
+## 当前状态与下一步（2026-10-12）
 
-- **代码与飞法**：本次文档核对 HEAD 为 `main=037ed7e`；侦察 `equal_strip_lawnmower`／`equal_strip_rectangular_spiral`，巡逻 `staggered_same_loop`，快速通过 `line_abreast`；`echelon` 未生产登记。事实层 v06b 修复已提交并离线验收，最终悬停 2 秒、固件等待 10 秒。
+- **SITL 代码与飞法**：本次已提交基线为 `5e45637`，新增快速引擎保留为未提交实现；SITL 侦察 `equal_strip_lawnmower`／`equal_strip_rectangular_spiral`，巡逻 `staggered_same_loop`，快速通过 `line_abreast`；`echelon` 未生产登记。事实层 v06b 修复已提交并离线验收，最终悬停 2 秒、固件等待 10 秒。
 - **pilot30**：运行提交 `0dffcd8`／`v0.6-pauseA3`；30 个 episode，质量与语义一致均为 29/30，116 条描述，已收尾，标记 pilot、不用于训练。暂停 B 冻结阈值与事实层修复见 [pilot 报告](docs/v0.6_pilot_report.md)。
 - **正式生产**：运行提交 `762a303`／`v0.6-pilot`；批次 `v06_production900_seed2026100812`，296 次记录（completed 288、failed 8），质量合格 287/296、语义一致 289/296；台账持久化 `WinError 5` 规则停止，未完成、未 finalize，无正式导出数据集或描述层。见 [生产停止报告](docs/v0.6_production_stop_01.md)。
-- **当前边界**：停在暂停 C 等复核，不直接 resume、不清除停止原因、不补飞、不覆盖重建。代码与少量示例在 `Simulation-dev`，v0.5 全量在 `Simulation`，新增数据在仓库外 `SwarmData`。
-- **阅读入口**：[系统框架概览](docs/system_architecture_overview.md)、[运行命令及停止状态](docs/v0.6_formal_run_commands.md)、[原正式计划及执行状态](docs/v06_formal_plan.md)、[v0.5 冻结报告](docs/v0.5_final_report.md)。以下章节均按对应历史版本理解。
+- **后续已实现**：r2 465/900 停止保留；规则暂停、子集 prepare、基础端口配置及 v0.6.1 时间契约已实现。`v0.6.1-time` 对应 `bd1f40a`，当前文档核对 HEAD 为 `5e45637`。
+- **验证最终状态**：T1 K2×1、T4 K4×1 通过，各 42/42 执行、41/42 合格并 finalize；T2 K2×2 失败，T3/T3+ 取消；T5 K6×1 在 15/42 后规则暂停、9/15 合格，未 finalize；T6 未运行。非独占条件，自动检查已暂停，r3 尚未准备。
+- **本地实现进展**：[动力学引擎计划融合修订版 r2](docs/fast_dynamics_engine_implementation_plan.md)的 M0/M1 已落地：适配备忘/契约、受限加速度/jerk 内核及最小双机完整数据链，最终验收见 [M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。下一包 M2 扩三意图四飞法，M3 确定性校准，M4 扰动与两类输出/试产，M5 独立验收，均未完成。`scripts/run_fast_dynamics.py` 已新增，依赖已声明 `numpy==2.5.3`；4 机内核固定用例约 281 倍实时，完整生产吞吐仍未验收。
+- **工作边界**：仅本地开发、测试、文档；暂不提交/推送/打标签，不启动 SITL、不续跑旧批次、不准备 r3。保留未提交文档和全部历史证据。
+- **阅读入口**：[开发交接](docs/fast_dynamics_engine_kickoff.md)、[系统架构](docs/system_architecture_overview.md)、[数据契约](docs/data_contract_v0.md)、[v0.6.1 实施报告](docs/v0.6.1_time_report.md)、[最终验证报告](docs/v0.6.1_time_validation_report.md)。下方章节均按历史版本理解。
 
 ## v0.4 里程碑（历史记录）
 
@@ -85,7 +88,7 @@ conda run -n llm --no-capture-output python main.py plan tasks/patrol_3uav.json 
 
 ## 环境
 
-项目 `.conda-env` 指定 `llm`。当前验证环境为 Windows、Python 3.12.3、pymavlink 2.4.50。SITL EXE 和 DLL 已随工程提供；本次改造没有安装依赖。`requirements.txt` 声明 pymavlink，`requirements-dev.txt` 额外提供可选的 pytest；标准库 `unittest` 可直接运行全部测试。当前项目验证过的路径不要求直接安装 NumPy。
+项目 `.conda-env` 指定 `llm`。当前本地环境为 Windows、Python 3.12.3、pymavlink 2.4.50、NumPy 2.5.3。SITL EXE 和 DLL 已随工程提供；快速引擎在 `requirements.txt` 新增 `numpy==2.5.3`，本机复用已可用版本。`requirements-dev.txt` 额外提供可选的 pytest；标准库 `unittest` 为既有离线测试入口，历史集成测试是否可运行仍取决于归档证据。
 
 本历史阶段曾记录“尚未验证远端执行结果”；后续发布与 v0.6 已有远端 CI 验收记录，入口见根 README 和对应阶段报告。当前 workflow 为 `.github/workflows/unit-tests.yml`，不启动真实 SITL；具体通过数与提交绑定，不能用历史数字证明当前 HEAD 已验收。
 
