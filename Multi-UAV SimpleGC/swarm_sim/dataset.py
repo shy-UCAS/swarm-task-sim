@@ -115,9 +115,12 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
         if protocol["task_kind"] == "mission_v3":
             entries[-1][1].update({key: manifest.get(key) for key in ("family_scheme", "control_mode", "episode_quality_eligible",
                                   "mission_success", "semantic_consistency", "intent")})
-            if manifest.get("protocol_version") == "v0.6":
+            if manifest.get("protocol_version") in ("v0.6", "v0.6.1"):
                 entries[-1][1].update({key: manifest[key] for key in
                                       ("protocol_version", "flight_pattern", "component_versions")})
+            if manifest.get("protocol_version") == "v0.6.1":
+                entries[-1][1].update({key: manifest[key] for key in
+                                      ("time_base", "sim_speedup", "time_policy", "common_time_axis")})
         if explicit:
             entries[-1][1].update(source_analysis_path=str(analysis),
                                   analysis_selection_mode="explicit_manifest_binding")
@@ -151,5 +154,10 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
         result["counts"].update(episode_quality_eligible=sum(e["episode_quality_eligible"] for _,e in entries),
                                mission_success=sum(e["mission_success"] is True for _,e in entries),
                                semantic_agree=sum(e["semantic_consistency"] == "agree" for _,e in entries))
+    if any(e.get("time_base") == "sim_source" for _, e in entries):
+        speeds = sorted({e["sim_speedup"] for _, e in entries})
+        result.update(time_base="sim_source", sim_speedups=speeds, time_policy=entries[0][1]["time_policy"])
+        if len(speeds) == 1:
+            result["sim_speedup"] = speeds[0]
     write_json(output / "dataset_manifest.json", result)
     return result

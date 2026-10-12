@@ -4,6 +4,14 @@ import hashlib
 import json
 import math
 
+from .time_contract import is_sim_time, sim_speedup
+from .protocol import V061_TIME_POLICY
+
+
+SIM_CLOCK_ACCEPTABLE_P95_S = V061_TIME_POLICY["alignment_residual_p95_sim_s"]
+SIM_CLOCK_STRICT_P95_S = V061_TIME_POLICY["strict_residual_diagnostic_sim_s"]
+SIM_CLOCK_RATIONALE = V061_TIME_POLICY["rationale"]
+
 
 DEFAULT_POLICY = {
     "version": "0.2.2",
@@ -57,26 +65,39 @@ def policy_hash(policy):
     return hashlib.sha256(json.dumps(normalized, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
 
 
-def clock_grade(model, policy):
+def clock_grade(model, policy, scene=None):
     residual = model.get("receive_residual_abs_p95_s")
     if (not model.get("available") or isinstance(residual, bool) or
             not isinstance(residual, (int, float)) or not math.isfinite(residual) or residual < 0):
         return "unknown"
-    if residual <= policy["clock_strict_p95_s"]:
+    if is_sim_time(scene or {}):
+        residual *= sim_speedup(scene)
+        strict, acceptable = SIM_CLOCK_STRICT_P95_S, SIM_CLOCK_ACCEPTABLE_P95_S
+    else:
+        strict, acceptable = policy["clock_strict_p95_s"], policy["clock_acceptable_p95_s"]
+    if residual <= strict:
         return "strict"
-    if residual <= policy["clock_acceptable_p95_s"]:
+    if residual <= acceptable:
         return "acceptable"
     return "failed"
 
 
-def summarize_clocks(clocks, policy):
-    per_agent = {agent: clock_grade(model, policy) for agent, model in clocks.items()}
+def summarize_clocks(clocks, policy, scene=None):
+    per_agent = {agent: clock_grade(model, policy, scene) for agent, model in clocks.items()}
     grades = list(per_agent.values())
     # A known failed vehicle suffices to reject the run even if another is unknown.
     overall = ("failed" if "failed" in grades else "unknown" if not grades or "unknown" in grades
                else "acceptable" if "acceptable" in grades else "strict")
-    return dict(overall=overall, per_agent=per_agent,
+    result = dict(overall=overall, per_agent=per_agent,
                 metric="heldout_host_receive_residual_p95; not an absolute synchronization bound")
+    if is_sim_time(scene or {}):
+        result.update(time_base="sim_source", sim_speedup=sim_speedup(scene),
+            acceptable_p95_s=SIM_CLOCK_ACCEPTABLE_P95_S, strict_diagnostic_p95_s=SIM_CLOCK_STRICT_P95_S,
+            strict_is_diagnostic_only=True, threshold_rationale=SIM_CLOCK_RATIONALE,
+            residual_conversion="host_receive_residual_s * declared_sim_speedup",
+            per_agent_residual_sim_s={agent: model.get("receive_residual_abs_p95_s") * sim_speedup(scene)
+                if per_agent[agent] != "unknown" else None for agent, model in clocks.items()})
+    return result
 
 
 def eligibility(quality, mission_success):
@@ -92,6 +113,7 @@ def episode_quality_eligibility(quality):
     """V3 data qualification, deliberately independent of mission outcome."""
     return bool(all(quality.get(k) is True for k in ("run_completed", "data_quality_pass", "truth_available_pass",
                      "timing_diagnostic_pass", "execution_constraints_pass"))
+                and (quality.get("time_base") != "sim_source" or quality.get("parameter_firmware_check") is True)
                 and (not quality.get("onboard_mission_param_check_required")
                      or quality.get("onboard_mission_param_check_pass") is True)
                 and quality.get("clock_quality", {}).get("overall") in ("strict", "acceptable")
@@ -104,6 +126,7 @@ def v3_eligibility(quality, labels):
     result = eligibility(quality, labels["mission_success"])
     additional = (quality.get("execution_constraints_pass") is True and labels.get("semantic_consistency") == "agree"
                   and labels.get("mission_success_observation") is True
+                  and (quality.get("time_base") != "sim_source" or quality.get("parameter_firmware_check") is True)
                   and (not quality.get("onboard_mission_param_check_required")
                        or quality.get("onboard_mission_param_check_pass") is True))
     result["benchmark_eligible"] &= additional

@@ -102,7 +102,7 @@ def _verify_result(run_path, expected_scene, policy_fingerprint, selected=None, 
 
 def run_mission_list(mission_list_path, max_runs=3, resume=False, output_root=None, binary=None,
                      parameters=None, base_port=19100, quality_policy=None, max_environment_retries=0,
-                     retryable_errors=(), mission_ids=None):
+                     retryable_errors=(), mission_ids=None, execution_override=None):
     """Run at most max_runs attempts, including retries; never parallelize scenes.
 
     Resume skips only terminal attempts backed by a verified frozen analysis.
@@ -144,10 +144,15 @@ def run_mission_list(mission_list_path, max_runs=3, resume=False, output_root=No
                    runner_script_sha256=file_hash(__file__), max_environment_retries=max_environment_retries,
                    retryable_errors=sorted(set(retryable_errors)))
     scenes, generation_contexts = {}, {}
+    if execution_override is not None:
+        context["execution_override"] = execution_override
     for entry in selected_entries:
         if entry["status"] == "planned":
             scene = json.loads(checked_path(list_path.parent, entry["scene"]).read_text(encoding="utf-8"))
             validate_task_binding(scene)
+            if execution_override is not None:
+                from swarm_sim.protocol import apply_execution_override
+                scene = apply_execution_override(scene, execution_override)
             scenes[entry["mission_id"]] = scene
             generation_contexts[entry["mission_id"]] = dict(generation_profile=generation_profile,
                 generation_manifest=generation_manifest, generation_entry=entry)

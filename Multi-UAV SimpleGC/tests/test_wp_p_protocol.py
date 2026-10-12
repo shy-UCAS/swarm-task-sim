@@ -67,7 +67,10 @@ class V05ProtocolTests(unittest.TestCase):
                               ("semantic_validation_version", "execution_constraints_version")},
                              {k: old_protocol[k] for k in PROTOCOL_FIELDS if k not in
                               ("semantic_validation_version", "execution_constraints_version")})
-        self.assertEqual(len(supported_protocols()), 6)
+        # v0.6.1 adds one opt-in contract without replacing the six older ones.
+        self.assertEqual(len(supported_protocols()), 7)
+        new = semantic_protocol({"task_spec": {"schema_version": 3, "execution": {"protocol_version": "v0.6.1"}}})
+        self.assertIn(tuple(new[key] for key in PROTOCOL_FIELDS), supported_protocols())
 
     def test_real_v04_v06_episode_still_loads(self):
         archive = ROOT / "verification/v04_v06_20261002/dataset/episodes"

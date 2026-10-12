@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 from .scenario import enu_to_geo
+from .time_contract import is_sim_time, sim_speedup
 
 
 class SITLProcesses:
@@ -16,6 +17,7 @@ class SITLProcesses:
         self.run_dir = Path(run_dir)
         self.scenario = scenario
         self.base_port = base_port
+        self.speedup = sim_speedup(scenario)
         self.processes = []
         self.logs = []
         self.instances = []
@@ -41,6 +43,8 @@ class SITLProcesses:
                 directory.mkdir(parents=True, exist_ok=False)
                 params = self.template.read_text(encoding="utf-8")
                 params += f"\nSYSID_THISMAV {vehicle['sysid']}\nLOG_DISARMED 1\n"
+                if is_sim_time(self.scenario):
+                    params += f"SIM_SPEEDUP {self.speedup:.17g}\n"
                 (directory / "defaults.parm").write_text(params, encoding="utf-8")
                 lat, lon = enu_to_geo(vehicle["east_m"], vehicle["north_m"], self.scenario["origin"])
                 home = f"{lat:.10f},{lon:.10f},{self.scenario['origin']['alt_msl_m']},{vehicle['heading_deg']}"
@@ -50,7 +54,7 @@ class SITLProcesses:
                         "--base-port", str(port), "--instance", str(index), "--uartA", "tcp:0",
                         "--rc-in-port", str(port + 8), "--sim-port-in", str(port + 6),
                         "--sim-port-out", str(port + 7), "--irlock-port", str(port + 9),
-                        "--defaults", "defaults.parm", "--speedup", "1", "--wipe", "--disable-fgview"]
+                        "--defaults", "defaults.parm", "--speedup", f"{self.speedup:.17g}", "--wipe", "--disable-fgview"]
                 log = (directory / "console.log").open("wb")
                 self.logs.append(log)
                 process = subprocess.Popen(args, cwd=directory, stdout=log, stderr=subprocess.STDOUT,
@@ -60,6 +64,10 @@ class SITLProcesses:
                 self.instances.append(dict(id=vehicle["id"], sysid=vehicle["sysid"], pid=process.pid,
                                            url=f"tcp:127.0.0.1:{port}", argv=args,
                                            directory=str(directory.resolve())))
+                if is_sim_time(self.scenario):
+                    self.instances[-1].update(sim_speedup=self.speedup,
+                        defaults_sha256=hashlib.sha256((directory / "defaults.parm").read_bytes()).hexdigest(),
+                        dynamic_parameter_overrides={"SIM_SPEEDUP": self.speedup})
         except BaseException:
             self.close()
             raise
@@ -73,7 +81,7 @@ class SITLProcesses:
 
     def metadata(self):
         return dict(binary=str(self.binary), sha256=hashlib.sha256(self.binary.read_bytes()).hexdigest(),
-                    instances=self.instances, speedup=1)
+                    instances=self.instances, speedup=self.speedup)
 
     def close(self):
         for process in self.processes:

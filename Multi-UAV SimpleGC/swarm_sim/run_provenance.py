@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import re
+import struct
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -118,7 +119,7 @@ def check_stat_reset(raw_value, run_started_utc):
     return result
 
 
-def compare_parameter_readback(evidence, baseline, sysid, *, run_started_utc):
+def compare_parameter_readback(evidence, baseline, sysid, *, run_started_utc, expected_sim_speedup=None):
     """V2: full table, fresh EEPROM statistics, and bounded startup timestamp.
 
     Only STAT_RESET stops using cross-run equality. Navigation/control values,
@@ -126,14 +127,27 @@ def compare_parameter_readback(evidence, baseline, sysid, *, run_started_utc):
     their previous treatment. This function never modifies parameter values.
     """
     evidence["parameter_comparison_version"] = PARAMETER_COMPARISON_VERSION
+    if expected_sim_speedup is not None and (isinstance(expected_sim_speedup, bool)
+            or not isinstance(expected_sim_speedup, (int, float))
+            or not math.isfinite(expected_sim_speedup) or expected_sim_speedup <= 0):
+        raise ValueError("expected SIM_SPEEDUP must be a finite positive number")
+    expected_parameter_speedup = None
+    if expected_sim_speedup is not None:
+        # PARAM_VALUE uses binary32; compare its exact wire representation,
+        # allowing no tolerance window that could hide a different setting.
+        try:
+            expected_parameter_speedup = struct.unpack("f", struct.pack("f", expected_sim_speedup))[0]
+        except (OverflowError, struct.error) as exc:
+            raise ValueError("expected SIM_SPEEDUP cannot be represented by MAVLink PARAM_VALUE") from exc
+        if not math.isfinite(expected_parameter_speedup) or expected_parameter_speedup <= 0:
+            raise ValueError("expected SIM_SPEEDUP cannot be represented by MAVLink PARAM_VALUE")
     actual = evidence.get("all_parameters", {})
     reference = baseline["baselines"][0]["agents"]
     reference = reference[sorted(reference)[0]]["all_parameters"]
     changes, unexplained = [], []
     count, received = evidence.get("parameter_count"), evidence.get("received_count")
     complete = (evidence.get("complete") is True and type(count) is int and count > 0
-                and type(received) is int and received == count == len(actual) == len(reference)
-                and set(actual) == set(reference)
+                and type(received) is int and received == count == len(actual)
                 and evidence.get("missing_indices", []) == []
                 and evidence.get("status", "complete") == "complete"
                 and all(not isinstance(value, bool) and isinstance(value, (int, float)) and math.isfinite(value)
@@ -144,7 +158,12 @@ def compare_parameter_readback(evidence, baseline, sysid, *, run_started_utc):
             and all(isinstance(item, dict) and item.get("name") in actual
                     and item.get("value") == actual[item["name"]] for item in entries.values())
             and len({item.get("name") for item in entries.values()}) == count)
-    if not complete:
+    physical_readback_complete = complete
+    collection_matches_frozen = len(actual) == len(reference) and set(actual) == set(reference)
+    if expected_sim_speedup is None:
+        # Freeze the historical meaning of collection_complete for old runs.
+        complete = complete and collection_matches_frozen
+    if not physical_readback_complete or not collection_matches_frozen:
         unexplained.append("parameter readback incomplete or parameter collection differs")
     timestamp = check_stat_reset(actual.get("STAT_RESET"), run_started_utc)
     if not timestamp["pass"]:
@@ -161,6 +180,8 @@ def compare_parameter_readback(evidence, baseline, sysid, *, run_started_utc):
         if before == after:
             continue
         explanation = INSTANCE_PARAMETERS.get(name) if name in reference and name in actual else None
+        if name == "SIM_SPEEDUP" and expected_sim_speedup is not None and after == expected_parameter_speedup:
+            explanation = "v0.6.1 declared sim_speedup; independently checked before takeoff"
         if name == "STAT_RESET" and name in reference and name in actual:
             explanation = "startup timestamp checked against this run start within +/-300 s; not cross-run equality"
         change = dict(name=name, reference_value=before, observed_value=after,
@@ -170,17 +191,27 @@ def compare_parameter_readback(evidence, baseline, sysid, *, run_started_utc):
             unexplained.append(name)
     if actual.get("SYSID_THISMAV") != sysid:
         unexplained.append("SYSID_THISMAV does not match the connected instance")
+    if expected_sim_speedup is not None and actual.get("SIM_SPEEDUP") != expected_parameter_speedup:
+        unexplained.append("SIM_SPEEDUP does not match the declared simulation speedup")
     evidence["parameter_comparison"] = dict(version=PARAMETER_COMPARISON_VERSION, changes=changes,
         status="evaluated", collection_complete=complete, stat_reset=timestamp, fresh_instance=fresh_instance,
         unchanged_count=sum(actual.get(name) == value for name, value in reference.items()),
         unexplained=unexplained, pass_=not unexplained)
     evidence["parameter_comparison"]["pass"] = evidence["parameter_comparison"].pop("pass_")
+    if expected_sim_speedup is not None:
+        evidence["parameter_comparison"]["collection_matches_frozen"] = collection_matches_frozen
+        if not complete:
+            evidence["parameter_comparison"]["pass"] = None
+        evidence["parameter_comparison"]["sim_speedup"] = dict(declared=expected_sim_speedup,
+            expected_parameter_float32=expected_parameter_speedup, observed=actual.get("SIM_SPEEDUP"),
+            pass_=actual.get("SIM_SPEEDUP") == expected_parameter_speedup)
+        evidence["parameter_comparison"]["sim_speedup"]["pass"] = evidence["parameter_comparison"]["sim_speedup"].pop("pass_")
     if unexplained:
         raise ValueError("unexplained parameter readback differences require review/new WP-S GO: " + ", ".join(unexplained))
 
 
 def read_firmware_parameters(client, binary_firmware, evidence=None, timeout=30, retry_interval_s=5,
-                             version_timeout_s=10):
+                             version_timeout_s=10, sim_time=False):
     """Bounded complete readback; partial results and every TX survive failures.
 
     The provided evidence object is updated in place so the owner can persist
@@ -237,6 +268,8 @@ def read_firmware_parameters(client, binary_firmware, evidence=None, timeout=30,
             evidence["firmware"]["runtime_version_string"] = ".".join(str(part) for part in runtime) + f" (type {number & 255})"
             embedded = re.match(r"ArduCopter V(\d+)\.(\d+)\.(\d+)", binary_firmware["version_string"])
             if embedded is None or runtime != tuple(int(part) for part in embedded.groups()):
+                if sim_time:
+                    evidence["firmware"]["confirmed_mismatch"] = True
                 raise ValueError("AUTOPILOT_VERSION differs from verified binary version; a new WP-S GO is required")
         cursor = client.cursor()
         deadline = time.perf_counter() + timeout

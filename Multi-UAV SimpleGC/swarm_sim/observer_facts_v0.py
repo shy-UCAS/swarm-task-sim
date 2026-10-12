@@ -18,6 +18,7 @@ from .mission_evaluation import window_evidence
 
 FACTS_VERSION = "observer_facts_v0"
 V06_FACTS_VERSION = "observer_facts_v06b"
+V061_FACTS_VERSION = "observer_facts_v061"
 PATTERN_VERSION = "pattern_detector_v0"
 V06_PATTERN_VERSION = "pattern_detector_v06b"
 PATTERN_PARAMETERS = dict(perimeter_sample_fraction=0.80, full_lap_radians=2 * math.pi,
@@ -312,7 +313,7 @@ def _return_observed(traces, windows, agents, main_phase, max_gap, duration_s, r
 
 def _channel_facts(traces, windows, task, region, manifest, metrics, agents):
     mission, execution = task["mission"], task["execution"]
-    v06 = execution.get("protocol_version") == "v0.6"
+    v06 = execution.get("protocol_version") in ("v0.6", "v0.6.1")
     main_phase = {"patrol": "patrol", "rapid_passage": "transit"}.get(mission["intent"], "observe")
     max_gap = execution["max_gap_s"]
     points = _main_points(traces, windows, agents, main_phase, max_gap)
@@ -487,9 +488,14 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
     versions = {key: manifest[key] for key in ("semantic_validation_version", "observation_processing_version",
                 "duplicate_policy_version", "timeline_policy_version", "clock_model_version",
                 "route_progress_version", "ac4_timing_version", "execution_artifacts_version") if key in manifest}
-    facts_version = V06_FACTS_VERSION if task["execution"].get("protocol_version") == "v0.6" else FACTS_VERSION
+    protocol_version = task["execution"].get("protocol_version")
+    facts_version = (V061_FACTS_VERSION if protocol_version == "v0.6.1" else
+                     V06_FACTS_VERSION if protocol_version == "v0.6" else FACTS_VERSION)
+    if protocol_version == "v0.6.1":
+        versions.update(time_base="sim_source", sim_speedup=manifest["sim_speedup"],
+                        common_time_axis=manifest["common_time_axis"])
     versions.update(facts_version=facts_version,
-                    pattern_detector_version=V06_PATTERN_VERSION if facts_version == V06_FACTS_VERSION else PATTERN_VERSION)
+                    pattern_detector_version=V06_PATTERN_VERSION if facts_version in (V06_FACTS_VERSION, V061_FACTS_VERSION) else PATTERN_VERSION)
     return dict(facts_version=facts_version,
                 labels=dict(assigned_intent=labels["assigned_intent"],
                             return_required=task["mission"]["return_required"],

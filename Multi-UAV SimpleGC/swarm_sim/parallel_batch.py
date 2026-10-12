@@ -5,6 +5,7 @@ controller ledger defines completion order. Shard ledgers are rebuildable views.
 """
 import copy
 import json
+import math
 import os
 import re
 import shutil
@@ -20,7 +21,8 @@ from pathlib import Path
 
 from .dataset import family_split
 from .generation import canonical_hash, checked_path, file_hash, generate, verify_generation
-from .protocol import semantic_protocol
+from .protocol import apply_execution_override, semantic_protocol
+from .time_contract import is_sim_time
 from .quality import policy_hash, resolve_policy
 from .run_provenance import verify_preflight_files
 from .validation_policy_r12b import VERSION as POLICY_VERSION, assess_recent_runs
@@ -157,6 +159,26 @@ def shard_base_port(plan, shard_id):
     return plan.get("base_port", 19100) + 100*shard_id
 
 
+def execution_settings(protocol_version=None, sim_speedup=None, startup_stagger_host_s=None):
+    """Explicit opt-in; legacy prepare has no new fields or scheduling delay."""
+    if protocol_version not in (None, "v0.6.1"):
+        raise ValueError("execution protocol override must be v0.6.1")
+    if protocol_version is None and sim_speedup is not None:
+        raise ValueError("sim_speedup requires protocol_version=v0.6.1")
+    settings = {}
+    if protocol_version is not None:
+        speed = 1.0 if sim_speedup is None else sim_speedup
+        if type(speed) not in (int, float) or not math.isfinite(speed) or speed <= 0:
+            raise ValueError("sim_speedup must be finite and positive")
+        settings["execution_override"] = dict(protocol_version=protocol_version, sim_speedup=float(speed))
+    if startup_stagger_host_s is not None or protocol_version is not None:
+        delay = 30.0 if startup_stagger_host_s is None else startup_stagger_host_s
+        if type(delay) not in (int, float) or not math.isfinite(delay) or delay < 0:
+            raise ValueError("startup_stagger_host_s must be finite and nonnegative")
+        settings["startup_stagger_host_s"] = float(delay)
+    return settings
+
+
 def probe_ports(blocks):
     seen = set()
     for block in blocks:
@@ -208,7 +230,9 @@ def _protected_files(project, binary, parameters):
 
 def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_attempt,
             export_reserve_bytes, split_salt="simplegc-v02", binary=None,
-            parameters=None, quality_policy=None, base_port=19100):
+            parameters=None, quality_policy=None, base_port=19100,
+            protocol_version=None, sim_speedup=None, startup_stagger_host_s=None):
+    settings = execution_settings(protocol_version, sim_speedup, startup_stagger_host_s)
     data_root = resolve_data_root()
     root = batch_directory(data_root, batch_id)
     for name, value in (("max_attempts", max_attempts),
@@ -240,6 +264,9 @@ def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_atte
         if not len(tasks) <= max_attempts <= 2*len(tasks):
             raise ValueError("global attempt budget must cover tasks and at most one retry each")
         scenes = [read(checked_path(root / "bundle", t["entry"]["scene"])) for t in tasks]
+        scenes = [apply_execution_override(s, settings.get("execution_override")) for s in scenes]
+        if "startup_stagger_host_s" not in settings and all(is_sim_time(s) for s in scenes):
+            settings["startup_stagger_host_s"] = 30.0
         protocols = [semantic_protocol(s, patrol_validator_version=PATROL_VERSION) for s in scenes]
         if any(p != protocols[0] for p in protocols):
             raise ValueError("one consistent v0.5 protocol required")
@@ -258,6 +285,7 @@ def prepare(profile, batch_id, *, shards=2, max_attempts, storage_bytes_per_atte
                     bundle_sha256={str(p.resolve()): file_hash(p) for p in sorted((root / "bundle").rglob("*.json"))})
         if base_port != 19100:
             plan["base_port"] = base_port
+        plan.update(settings)
         disk_status(plan, 0)
         save_atomic(root / "plan.json", plan)
         (root / "plan.sha256").write_text(file_hash(root / "plan.json") + "\n", encoding="ascii")
@@ -282,6 +310,11 @@ def load_plan(root):
         raise ValueError("batch path, environment or version binding changed")
     if plan["ports"] != port_blocks(plan["shards"], 1, plan.get("base_port", 19100)):
         raise ValueError("frozen port blocks differ from base_port/shards")
+    override = plan.get("execution_override") or {}
+    normalized = execution_settings(override.get("protocol_version"), override.get("sim_speedup"),
+                                    plan.get("startup_stagger_host_s"))
+    if any(plan.get(key) != value for key, value in normalized.items()):
+        raise ValueError("frozen execution settings differ")
     return plan
 
 
@@ -556,6 +589,27 @@ class Controller:
         self.processes = {}
         self.pause_requested = False
 
+    def _startup_deadline(self, state):
+        delay = self.plan.get("startup_stagger_host_s", 0)
+        if not delay:
+            return time.monotonic()
+        if "dispatch_epoch_utc" not in state:
+            if state["attempts"]:
+                raise ValueError("staggered batch has attempts but no durable dispatch epoch")
+            state["dispatch_epoch_utc"] = utc()
+            _save_state(self.root, state)
+        epoch = datetime.fromisoformat(state["dispatch_epoch_utc"])
+        if epoch.tzinfo is None:
+            raise ValueError("dispatch epoch must include timezone")
+        # UTC bridges controller sessions only. During one session monotonic
+        # host seconds govern scheduling, unaffected by wall-clock corrections.
+        elapsed = max(0.0, (datetime.now(timezone.utc) - epoch).total_seconds())
+        return time.monotonic() - elapsed
+
+    def _shard_start_ready(self, state, shard_id, epoch):
+        return (any(a["shard_id"] == shard_id for a in state["attempts"])
+                or time.monotonic() >= epoch + shard_id*self.plan.get("startup_stagger_host_s", 0))
+
     @contextmanager
     def _pause_signals(self):
         """Ctrl+C requests a pause without interrupting reservation/Popen/commit.
@@ -684,6 +738,7 @@ class Controller:
                 finished = sum(a["status"] == "finished" for a in state["attempts"])
                 state["disk_check"] = disk_status(self.plan, finished)
                 probe_ports(self.plan["ports"])
+                dispatch_epoch = self._startup_deadline(state)
             except Exception as exc:
                 _stop(state, f"startup verification: {type(exc).__name__}: {exc}")
                 self._persist(state)
@@ -710,6 +765,8 @@ class Controller:
                                 self._apply_pause(state)
                                 if state.get("paused"):
                                     break
+                                if not self._shard_start_ready(state, k, dispatch_epoch):
+                                    continue
                                 if any(a["shard_id"] == k and a["attempt_id"] in self.processes for a in state["attempts"]):
                                     continue
                                 selection = _next_task(self.plan, state, k)
@@ -749,6 +806,12 @@ class Controller:
                             state.update(paused=False, status="completed", pause_kind=None, pause_reason=None)
                         else:
                             self._apply_pause(state)
+                        if (not state["completed"] and not state["stopped_reason"] and not state.get("paused")
+                                and any(_next_task(self.plan, state, k) is not None
+                                        for k in range(self.plan["shards"]))):
+                            self._persist(state)
+                            time.sleep(poll_seconds)
+                            continue
                         self._persist(state)
                         return state
                     self._persist(state)

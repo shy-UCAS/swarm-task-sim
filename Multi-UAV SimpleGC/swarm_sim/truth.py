@@ -23,16 +23,19 @@ def percentile(values, fraction):
     return values[left] + (values[min(left + 1, len(values) - 1)] - values[left]) * (x - left)
 
 
-def fit_clock(pairs):
+def fit_clock(pairs, sim_speedup=1, *, source_time_contract=False):
     """Piecewise 1-second medians with an affine trend; audit on held-out samples."""
     info = dict(method="passive_SYSTEM_TIME_piecewise_1s_medians_with_heldout_audit", available=False,
                 transport_delay_identified=False, absolute_alignment_bound_s=None,
                 warning="residuals include scheduling/transport jitter; not a clock accuracy bound")
+    if not finite_number(sim_speedup) or sim_speedup <= 0:
+        raise ValueError("sim_speedup must be a finite positive number")
     if any(not finite_number(source) or source < 0 or not finite_number(host) for source, host in pairs):
         return dict(info, reason="invalid source/receive clock value")
     if any(b[0] < a[0] or b[1] < a[1] for a, b in zip(pairs, pairs[1:])):
         return dict(info, reason="source or receive clock reset/nonmonotonic")
-    if any(b[0] - a[0] > 2 or b[1] - a[1] > 2 for a, b in zip(pairs, pairs[1:])):
+    if any(b[0] - a[0] > 2 or (not source_time_contract and b[1] - a[1] > 2)
+           for a, b in zip(pairs, pairs[1:])):
         return dict(info, reason="clock evidence gap exceeds 2 seconds")
     if len(pairs) < 20 or pairs[-1][0] - pairs[0][0] < 5:
         return dict(info, reason="need >=20 samples spanning >=5 source seconds")
@@ -46,12 +49,13 @@ def fit_clock(pairs):
     mx, my = statistics.mean(p[0] for p in centers), statistics.mean(p[1] for p in centers)
     denominator = sum((x - mx) ** 2 for x, _ in centers)
     slope = sum((x - mx) * (y - my) for x, y in centers) / denominator
-    if not 0.5 <= slope <= 2:
-        return dict(info, reason="source/host rate outside supported speedup=1 range")
+    if not 0.5 / sim_speedup <= slope <= 2 / sim_speedup:
+        return dict(info, reason=f"source/host rate outside supported speedup={sim_speedup} range")
     offset = my - slope * mx
     residuals = [host - (slope * source + offset) for source, host in pairs]
-    if any(not 0.5 <= (b[1] - a[1]) / (b[0] - a[0]) <= 2 for a, b in zip(centers, centers[1:])):
-        return dict(info, reason="local source/host rate outside supported speedup=1 range")
+    if any(not 0.5 / sim_speedup <= (b[1] - a[1]) / (b[0] - a[0]) <= 2 / sim_speedup
+           for a, b in zip(centers, centers[1:])):
+        return dict(info, reason=f"local source/host rate outside supported speedup={sim_speedup} range")
     model = dict(knots=centers, available=True)
     heldout = [abs(host - clock_to_host(source, model)) for source, host in pairs[1::2]
                if centers[0][0] <= source <= centers[-1][0]]

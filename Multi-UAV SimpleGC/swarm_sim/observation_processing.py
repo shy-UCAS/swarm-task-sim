@@ -11,7 +11,11 @@ VERSION = "exact_duplicate_drop_v1"
 KINDS = ("GLOBAL_POSITION_INT", "SYSTEM_TIME")
 
 
-def processing_versions():
+def processing_versions(scene_or_task=None):
+    from .time_contract import is_sim_time
+    if is_sim_time(scene_or_task):
+        return dict(observation_processing_version="v061_common_source_observation_v1", duplicate_policy_version=VERSION,
+                    timeline_policy_version="full_stream_strict_v1", clock_model_version="passive_system_time_common_source_v061")
     return dict(observation_processing_version="v3_observation_v1", duplicate_policy_version=VERSION,
                 timeline_policy_version="full_stream_strict_v1", clock_model_version="passive_system_time_piecewise_v1")
 
@@ -107,7 +111,7 @@ def filter_exact_duplicates(packets, *, flight_window=None, observe_windows=None
                       dropped_count=sum(s["dropped"] for s in counts.values()))
 
 
-def prepare_v3_observations(packets, origin, policy, epoch, end):
+def prepare_v3_observations(packets, origin, policy, epoch, end, scene_or_task=None):
     """Prepare one aircraft/session stream. Window bounds only label statistics.
 
     The clock is fitted after deduplication using all SYSTEM_TIME messages.
@@ -116,6 +120,7 @@ def prepare_v3_observations(packets, origin, policy, epoch, end):
     """
     from .observations import ObservationStream
     from .truth import fit_clock
+    from .time_contract import is_sim_time, sim_speedup
     packets = list(packets)
     identities = {(p.get("session_id"),p.get("sysid"),p.get("component_id")) for p in packets
                   if p.get("message",{}).get("mavpackettype") in KINDS}
@@ -132,11 +137,18 @@ def prepare_v3_observations(packets, origin, policy, epoch, end):
             pairs.append((source/1000 if _finite(source) else None, host-epoch if _finite(host) else None))
     if audit["counts"]["GLOBAL_POSITION_INT"]["timeline_invalid"]:
         stream.timeline_error = "full_stream_strict_v1: invalid GLOBAL_POSITION_INT timeline"
-    model = fit_clock(pairs)
+    model = fit_clock(pairs, sim_speedup(scene_or_task), source_time_contract=is_sim_time(scene_or_task))
     if audit["counts"]["SYSTEM_TIME"]["timeline_invalid"]:
         model.update(available=False,reason="full_stream_strict_v1: invalid SYSTEM_TIME timeline")
-    model.update(clock_model_version=processing_versions()["clock_model_version"],
+    model.update(clock_model_version=processing_versions(scene_or_task)["clock_model_version"],
                  duplicate_policy_version=VERSION, fit_evidence="all retained SYSTEM_TIME; dedup before even/odd split")
+    if is_sim_time(scene_or_task):
+        model.update(time_base="host_receive", sim_speedup=sim_speedup(scene_or_task),
+                     source_gap_limit_s=2, host_gap_diagnostic_only=True,
+                     max_host_evidence_gap_s=max((b[1]-a[1] for a,b in zip(pairs,pairs[1:])
+                         if _finite(a[1]) and _finite(b[1])), default=None))
+        audit.update(processing_versions(scene_or_task))
     return dict(samples=stream.samples(model,epoch) if model.get("available") else [], clock_model=model,
                 timeline_error=stream.timeline_error, observation_filter=stream.statistics, audit=audit,
-                processing_versions=processing_versions(), raw_message_count=len(packets), retained_message_count=len(retained))
+                processing_versions=processing_versions(scene_or_task), raw_message_count=len(packets), retained_message_count=len(retained),
+                **({"source_records":stream.records} if is_sim_time(scene_or_task) else {}))

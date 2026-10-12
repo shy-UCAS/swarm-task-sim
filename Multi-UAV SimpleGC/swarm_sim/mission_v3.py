@@ -117,7 +117,7 @@ def normalize_v3(spec):
         pattern = spec.get("flight_pattern")
         if pattern not in FLIGHT_PATTERNS.get(intent.name, ()):
             raise ValueError("invalid flight_pattern for intent")
-        expected_versions = component_versions(intent.name, pattern)
+        expected_versions = component_versions(intent.name, pattern, spec.get("execution", {}).get("protocol_version", "v0.6"))
         if spec.get("component_versions") != expected_versions or plugin.version != expected_versions["planner"]:
             raise ValueError("component_versions must match registered flight pattern components")
 
@@ -138,13 +138,20 @@ def normalize_v3(spec):
     # parameter_firmware 硬门禁。缩短该值之前必须先实现显式的参数表就绪条件；
     # 依据见 docs/v0.6_pilot_stop_01.md（v0.6 计划第 2.2 节已撤回，该值恢复为 10 秒）。
     v06_fields = ("protocol_version", "final_hold_s", "firmware_version_timeout_s")
-    _object(execution, f"execution ({mode})", common + exclusive + v06_fields,
-            optional=("phase_timeout_override_s", "hold_semantics") + v06_fields)
+    _object(execution, f"execution ({mode})", common + exclusive + v06_fields + ("sim_speedup",),
+            optional=("phase_timeout_override_s", "hold_semantics", "sim_speedup") + v06_fields)
     if any(key in execution for key in v06_fields):
-        if execution.get("protocol_version") != "v0.6" or any(key not in execution for key in v06_fields):
+        if execution.get("protocol_version") not in ("v0.6", "v0.6.1") or any(key not in execution for key in v06_fields):
             raise ValueError("v0.6 execution requires protocol_version, final_hold_s and firmware_version_timeout_s")
         _numeric(execution, "final_hold_s", "execution", 0, 60)
         _numeric(execution, "firmware_version_timeout_s", "execution", .1, 60)
+    if execution.get("protocol_version") == "v0.6.1":
+        from .time_contract import sim_speedup
+        execution["sim_speedup"] = sim_speedup(spec)
+        if execution.get("record_hz") != 10:
+            raise ValueError("v0.6.1 requires a 10 Hz simulation-time grid")
+    elif "sim_speedup" in execution:
+        raise ValueError("sim_speedup requires explicit v0.6.1 protocol")
     if "hold_semantics" in execution:
         _enum(execution, "hold_semantics", "execution", ("integer_seconds_v1",))
     if "phase_timeout_override_s" in execution:

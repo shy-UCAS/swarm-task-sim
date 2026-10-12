@@ -9,6 +9,7 @@ from collections import deque
 from pymavlink import mavutil
 
 from .scenario import geo_to_enu
+from .time_contract import is_sim_time, sim_speedup
 
 
 class ManagedTCP(mavutil.mavtcp):
@@ -22,7 +23,7 @@ class ManagedTCP(mavutil.mavtcp):
 
 
 class Vehicle:
-    def __init__(self, instance, raw_path, cancel, event, record_lifecycle=False):
+    def __init__(self, instance, raw_path, cancel, event, record_lifecycle=False, time_contract=None):
         self.instance = instance
         self.id = instance["id"]
         self.sysid = instance["sysid"]
@@ -42,6 +43,12 @@ class Vehicle:
         self.record_lifecycle = record_lifecycle
         self.execution_waypoint_indices = None
         self._execution_context = None
+        self.sim_time = is_sim_time(time_contract or {})
+        self.speedup = sim_speedup(time_contract or {})
+
+    def evidence_age(self, received, now=None):
+        """Receive freshness expressed in simulation seconds for v0.6.1."""
+        return ((time.perf_counter() if now is None else now) - received) * self.speedup
 
     def lifecycle_event(self, kind):
         if not self.record_lifecycle:
@@ -51,6 +58,9 @@ class Vehicle:
         if sample:
             fields = dict(source_boot_s=sample[1].time_boot_ms / 1000,
                           source_sample_age_s=time.perf_counter() - sample[0])
+            if self.sim_time:
+                fields.update(host_sample_age_s=fields["source_sample_age_s"],
+                              source_sample_age_s=self.evidence_age(sample[0]))
         self.event(kind, self.id, **fields)
 
     def connect(self, timeout=40):
@@ -81,7 +91,7 @@ class Vehicle:
                     if now >= next_heartbeat:
                         self.send("heartbeat_send", mavutil.mavlink.MAV_TYPE_GCS,
                                   mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0)
-                        next_heartbeat = now + 1
+                        next_heartbeat = now + 1 / self.speedup
                     message = self.master.recv_match(blocking=True, timeout=0.05)
                     if message is not None:
                         received = time.perf_counter()
@@ -182,7 +192,7 @@ class Vehicle:
             gps, ekf, position = (state.get(k) for k in ("GPS_RAW_INT", "EKF_STATUS_REPORT", "GLOBAL_POSITION_INT"))
             return (gps and ekf and position and gps[1].fix_type >= 3 and
                     ekf[1].flags & 1 and ekf[1].flags & 16 and
-                    all(time.perf_counter() - sample[0] < 2 for sample in (gps, ekf, position)))
+                    all(self.evidence_age(sample[0]) < 2 for sample in (gps, ekf, position)))
         self.wait_state(ready, timeout, "GPS/EKF not ready")
         self.mode("GUIDED")
         # The readiness flags can precede the complete pre-arm settling checks.
@@ -205,15 +215,19 @@ class Vehicle:
         def airborne(state):
             nonlocal stable_since
             sample = state.get("GLOBAL_POSITION_INT")
-            valid = (sample and time.perf_counter() - sample[0] < 1 and
+            valid = (sample and self.evidence_age(sample[0]) < 1 and
                      abs(sample[1].relative_alt / 1000 - altitude) < 0.6 and
                      abs(sample[1].vz / 100) < 0.4)
             if not valid:
                 stable_since = None
                 return False
             if stable_since is None:
-                stable_since = time.perf_counter()
-            return time.perf_counter() - stable_since >= 1
+                stable_since = sample[1].time_boot_ms / 1000 if self.sim_time else time.perf_counter()
+            stamp = sample[1].time_boot_ms / 1000 if self.sim_time else time.perf_counter()
+            if stamp < stable_since:
+                stable_since = stamp
+                return False
+            return stamp - stable_since >= 1
         self.wait_state(airborne, timeout, "takeoff did not stabilize")
         self.mode("BRAKE" if self.record_lifecycle else "LOITER")
         self.event("airborne_ready", self.id)
@@ -261,7 +275,7 @@ class Vehicle:
     def execute(self, epoch, mission_count, timeout, phase):
         while time.perf_counter() < epoch:
             self.check()
-            self.cancel.wait(min(0.01, max(0, epoch - time.perf_counter())))
+            self.cancel.wait(min(0.01 / self.speedup, max(0, epoch - time.perf_counter())))
         cursor = self.cursor()
         # A passive diagnostic sink in the existing RX owner sees every seq,
         # including messages received while mode(AUTO) awaits its heartbeat.
@@ -326,9 +340,10 @@ class Vehicle:
             content_valid = True
             if quality_policy is not None:
                 from .observations import live_observation
-                values, _ = live_observation(message, received, time.perf_counter(), max_gap, origin, quality_policy)
+                values, _ = live_observation(message, received, time.perf_counter(), max_gap / self.speedup,
+                                             origin, quality_policy)
                 content_valid = values is not None
-            inside = content_valid and math.dist(actual, position) <= tolerance and time.perf_counter() - received <= max_gap
+            inside = content_valid and math.dist(actual, position) <= tolerance and self.evidence_age(received) <= max_gap
             continuous = previous is not None and 0 < source - previous <= max_gap
             if not inside:
                 since = None

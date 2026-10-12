@@ -5,7 +5,8 @@ from pathlib import Path
 
 from . import parallel_batch as batch
 from .generation import checked_path, file_hash, verify_generation
-from .protocol import semantic_protocol
+from .protocol import apply_execution_override, semantic_protocol
+from .time_contract import is_sim_time
 from .quality import policy_hash, resolve_policy
 
 
@@ -66,7 +67,8 @@ def audit_manifest(plan):
 def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attempts,
                    storage_bytes_per_attempt, export_reserve_bytes,
                    split_salt="simplegc-v02", binary=None, parameters=None, quality_policy=None,
-                   base_port=19100):
+                   base_port=19100, protocol_version=None, sim_speedup=None, startup_stagger_host_s=None):
+    settings = batch.execution_settings(protocol_version, sim_speedup, startup_stagger_host_s)
     data_root = batch.resolve_data_root()
     root = batch.batch_directory(data_root, batch_id)
     source = Path(source_bundle).resolve()
@@ -95,6 +97,9 @@ def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attemp
     policy = resolve_policy(quality_policy)
     protected = batch._protected_files(batch.PROJECT, binary, parameters)
     scenes = [batch.read(checked_path(source, t["entry"]["scene"])) for t in tasks]
+    scenes = [apply_execution_override(s, settings.get("execution_override")) for s in scenes]
+    if "startup_stagger_host_s" not in settings and all(is_sim_time(s) for s in scenes):
+        settings["startup_stagger_host_s"] = 30.0
     protocols = [semantic_protocol(s, patrol_validator_version=batch.PATROL_VERSION) for s in scenes]
     if any(p != protocols[0] for p in protocols):
         raise ValueError("one consistent v0.5 protocol required")
@@ -125,6 +130,7 @@ def prepare_subset(source_bundle, mission_ids, batch_id, *, shards=4, max_attemp
                                                        if e["mission_id"] in set(mission_ids)]))
         if base_port != 19100:
             plan["base_port"] = base_port
+        plan.update(settings)
         batch.disk_status(plan, 0)
         batch.save_atomic(root / "plan.json", plan)
         (root / "plan.sha256").write_text(file_hash(root / "plan.json") + "\n", encoding="ascii")

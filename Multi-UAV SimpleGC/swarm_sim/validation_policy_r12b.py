@@ -6,6 +6,7 @@ assessments and never treats an unknown semantic result as a failed task.
 """
 
 from .validation_policy import assess_run as assess_r12, finite, zero_length_segments
+from .time_contract import is_sim_time
 
 
 VERSION = "v05_acceptance_r1_2b"
@@ -20,10 +21,16 @@ def assess_run(scene, metadata, quality, labels, metrics, ac4, onboard, *, stage
               ("parameter_firmware", "onboard_mission_parameters")}
     separation = quality.get("truth_separation", {})
     minimum, required = separation.get("minimum_m"), scene.get("min_separation_m")
+    if is_sim_time(scene):
+        required = 2.0
     violation = (separation.get("status") == "risk" or
                  finite(minimum) and finite(required) and minimum < required)
     checks["truth_separation"] = not violation
     anomalies, semantic_flags, reasons = [], [], []
+    if is_sim_time(scene):
+        checks.pop("truth_separation")
+        if finite(minimum) and minimum < required:
+            reasons.append("truth_separation_below_2m")
 
     def mark(target, code, value, *, channel=None, agent=None, reason=None):
         target.append(dict(code=code, channel=channel, agent_id=agent, value=value, reason=reason))

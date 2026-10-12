@@ -1,6 +1,7 @@
 """Semantic protocol identity, independent of numerical quality-policy versions."""
 
 import json
+import copy
 from pathlib import Path
 
 SHARED_SEMANTIC_VERSION = "shared_coverage_v2"
@@ -16,6 +17,11 @@ V05_AC4_TIMING_VERSION = "ac4_relative_progress_timing_v3"
 V05_EXECUTION_ARTIFACTS_VERSION = "execution_artifacts_v2"
 V06_SEMANTIC_VERSION = "multi_intent_validation_v06"
 V06_CONSTRAINT_VERSION = "multi_intent_execution_limits_v06"
+V061_SEMANTIC_VERSION = "multi_intent_validation_v061_sim_source"
+V061_CONSTRAINT_VERSION = "multi_intent_execution_limits_v061_sim_source"
+V061_TIME_POLICY = dict(version="sim_source_time_v061", alignment_residual_p95_sim_s=0.2,
+    strict_residual_diagnostic_sim_s=0.02, strict_is_gate=False, record_hz=10,
+    rationale="At 3 m/s, 0.2 simulation seconds corresponds to about 0.6 m; passive residual is not an absolute synchronization bound. Reassess for higher speeds.")
 V06_COMPONENT_KEYS = frozenset(("planner", "validator", "facts", "templates"))
 
 PROTOCOL_FIELDS = ("task_kind", "ontology_version", "label_schema_version", "semantic_validation_version",
@@ -25,7 +31,28 @@ PROTOCOL_FIELDS = ("task_kind", "ontology_version", "label_schema_version", "sem
 def is_v06_task_spec(task):
     return (isinstance(task, dict) and task.get("schema_version") == 3
             and isinstance(task.get("execution", {}), dict)
-            and task.get("execution", {}).get("protocol_version") == "v0.6")
+            and task.get("execution", {}).get("protocol_version") in ("v0.6", "v0.6.1"))
+
+
+def apply_execution_override(scene, override):
+    """Compile an explicit new runtime contract without rewriting a source bundle."""
+    if override is None:
+        return copy.deepcopy(scene)
+    if (not isinstance(override, dict) or set(override) - {"protocol_version", "sim_speedup"}
+            or override.get("protocol_version") != "v0.6.1" or not is_v06_task_spec(scene.get("task_spec"))):
+        raise ValueError("execution_override requires a v0.6-family task and explicit v0.6.1 protocol")
+    from .tasks import compile_task, validate_task_binding
+    from .registry import component_versions
+    from .time_contract import sim_speedup
+    validate_task_binding(scene)
+    task = copy.deepcopy(scene["task_spec"])
+    task["execution"].update(override)
+    task["execution"]["sim_speedup"] = sim_speedup(task)
+    task["component_versions"] = component_versions(task["mission"]["intent"], task["flight_pattern"], "v0.6.1")
+    compiled = compile_task(task)
+    if any(compiled.get(key) != value for key, value in scene.items() if key != "task_spec"):
+        raise ValueError("execution_override changed frozen planning geometry or timing")
+    return compiled
 
 
 def task_metadata(task):
@@ -38,9 +65,14 @@ def task_metadata(task):
             or any(not isinstance(value, str) or not value for value in versions.values())):
         raise ValueError("v0.6 requires flight_pattern and four component versions")
     from .registry import component_versions
-    if versions != component_versions(task["mission"]["intent"], pattern):
+    version = task["execution"]["protocol_version"]
+    if versions != component_versions(task["mission"]["intent"], pattern, version):
         raise ValueError("v0.6 component versions differ from registered components")
-    return dict(protocol_version="v0.6", flight_pattern=pattern, component_versions=dict(versions))
+    result = dict(protocol_version=version, flight_pattern=pattern, component_versions=dict(versions))
+    if version == "v0.6.1":
+        from .time_contract import sim_speedup
+        result.update(time_base="sim_source", sim_speedup=sim_speedup(task), time_policy=copy.deepcopy(V061_TIME_POLICY))
+    return result
 
 
 def is_v05_task_spec(task):
@@ -64,10 +96,11 @@ def semantic_protocol(scene, *, patrol_validator_version="perimeter_revisit_v1")
         raise ValueError("perimeter_revisit_v2 requires the v0.5 semantic contract")
     if task.get("schema_version") == 3:
         if is_v06_task_spec(task):
+            new_time = task["execution"]["protocol_version"] == "v0.6.1"
             return dict(task_kind="mission_v3", ontology_version="multi_intent_mission_v1", label_schema_version=3,
-                        semantic_validation_version=V06_SEMANTIC_VERSION,
+                        semantic_validation_version=V061_SEMANTIC_VERSION if new_time else V06_SEMANTIC_VERSION,
                         eligibility_protocol_version="multi_intent_quality_v1",
-                        execution_constraints_version=V06_CONSTRAINT_VERSION)
+                        execution_constraints_version=V061_CONSTRAINT_VERSION if new_time else V06_CONSTRAINT_VERSION)
         new_contract = is_v05_task_spec(task)
         version = (V05_R12B_SEMANTIC_VERSION if patrol_validator_version == "perimeter_revisit_v2"
                    else V05_SEMANTIC_VERSION if new_contract else V3_SEMANTIC_VERSION)
@@ -134,7 +167,8 @@ def supported_protocols():
     current = semantic_protocol({"task_spec": {"schema_version": 3, "mission": {"intent": "patrol"}}},
                                 patrol_validator_version="perimeter_revisit_v2")
     v06 = semantic_protocol({"task_spec": {"schema_version": 3, "execution": {"protocol_version": "v0.6"}}})
-    return historical | {tuple(current[key] for key in PROTOCOL_FIELDS), tuple(v06[key] for key in PROTOCOL_FIELDS)}
+    v061 = semantic_protocol({"task_spec": {"schema_version": 3, "execution": {"protocol_version": "v0.6.1"}}})
+    return historical | {tuple(p[key] for key in PROTOCOL_FIELDS) for p in (current, v06, v061)}
 
 
 def _validate_v3_artifacts(manifest, root, protocol):
@@ -149,7 +183,7 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError(f"semantic protocol artifact is not hashed: {name}")
         files[name] = json.loads((root/name).read_text(encoding="utf-8"))
     labels, quality, task = files["labels.json"], files["quality.json"], files["task.json"]
-    patrol_version = ("perimeter_revisit_v2" if protocol["semantic_validation_version"] in (V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION)
+    patrol_version = ("perimeter_revisit_v2" if protocol["semantic_validation_version"] in (V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION, V061_SEMANTIC_VERSION)
                       else "perimeter_revisit_v1")
     if semantic_protocol({"task_spec": task}, patrol_validator_version=patrol_version) != protocol:
         raise ValueError("v3 TaskSpec semantic protocol mismatch")
@@ -177,7 +211,7 @@ def _validate_v3_artifacts(manifest, root, protocol):
                 or any(channel.get("version") != V05_AC4_TIMING_VERSION or
                        channel.get("mapping_version") != route_version
                        for channel in ac4["channels"].values())
-                or any(ac4.get(key) != value for key, value in processing_versions().items())):
+                or any(ac4.get(key) != value for key, value in processing_versions(task).items())):
             raise ValueError("inconsistent v0.5 route evidence versions")
     acceptance_version = manifest.get("acceptance_policy_version")
     if acceptance_version is not None or "validation_policy" in quality:
@@ -196,10 +230,11 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError("inconsistent r1.2 acceptance diagnostics")
         if acceptance_version == "v05_acceptance_r1_2b":
             reasons = assessment.get("aggregate_anomaly_reasons")
-            if (protocol["semantic_validation_version"] not in (V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION)
+            if (protocol["semantic_validation_version"] not in (V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION, V061_SEMANTIC_VERSION)
                     or assessment.get("stage") not in ("pilot", "batch")
                     or set(assessment.get("hard_checks", {})) !=
-                        {"parameter_firmware", "onboard_mission_parameters", "truth_separation"}
+                        ({"parameter_firmware", "onboard_mission_parameters"} if task["execution"].get("protocol_version") == "v0.6.1"
+                         else {"parameter_firmware", "onboard_mission_parameters", "truth_separation"})
                     or not isinstance(assessment.get("semantic_flags"), list)
                     or not isinstance(assessment.get("new_anomalies"), list)
                     or not isinstance(reasons, list)
@@ -275,11 +310,11 @@ def _validate_v3_artifacts(manifest, root, protocol):
                     or set(semantic.get("condition_results", {}).get(channel, {})) != {"max_gap", "return_to_launch"}):
                 raise ValueError("inconsistent perimeter_revisit_v2 diagnostic-only visit counts")
     for artifact in (manifest, quality):
-        if any(artifact.get(k) != v for k,v in processing_versions().items()):
+        if any(artifact.get(k) != v for k,v in processing_versions(task).items()):
             raise ValueError("inconsistent or unsupported v3 observation processing versions")
         if not isinstance(artifact.get("episode_quality_eligible"), bool):
             raise ValueError("v3 episode_quality_eligible must be boolean")
-    versions = processing_versions()
+    versions = processing_versions(task)
     if any(labels.get("label_provenance", {}).get(k) != v for k, v in versions.items()):
         raise ValueError("inconsistent v3 label observation processing versions")
     for name in ("semantic_validation.json", "phase_windows.json", "execution_constraints.json",
@@ -314,3 +349,13 @@ def _validate_v3_artifacts(manifest, root, protocol):
             if (set(models) != set(manifest["agent_ids"])
                     or any(any(model.get(k) != v for k, v in versions.items()) for model in models.values())):
                 raise ValueError("inconsistent v3 clock model processing versions")
+    if task["execution"].get("protocol_version") == "v0.6.1":
+        from .time_contract import CommonTimeAxis
+        if "time_axis.json" not in manifest.get("artifact_sha256", {}):
+            raise ValueError("simulation-time contract requires a hashed common axis")
+        models = json.loads((root / "clock_models.json").read_text(encoding="utf-8"))
+        axis = CommonTimeAxis(models, manifest["time_epoch_host_s"]).metadata
+        if (manifest.get("common_time_axis") != axis or quality.get("common_time_axis") != axis
+                or json.loads((root / "time_axis.json").read_text(encoding="utf-8")) != axis
+                or any(quality.get(key) != value for key, value in task_metadata(task).items())):
+            raise ValueError("common simulation axis or time policy is not bound to source clock evidence")

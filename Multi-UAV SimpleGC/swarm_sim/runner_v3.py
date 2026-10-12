@@ -21,6 +21,7 @@ from .run_provenance import (PARAMETER_COMPARISON_VERSION, PROVENANCE_VERSION, c
 from .scenario import mission_for, validate
 from .tasks import target_confirmation, validate_task_binding
 from .vehicle import Vehicle
+from .time_contract import is_sim_time, sim_speedup
 
 
 RUNNER_VERSION = "v3_phase_runner_v1"
@@ -45,6 +46,7 @@ def execute_phases(scenario, clients, parallel, event, metadata, epoch, deadline
     from .scenario import route_mission_for
 
     route_mode = scenario["schema_version"] == 2
+    speedup = sim_speedup(scenario)
     metadata["phase_timing"] = {}
     for phase in scenario["phases"]:
         started = time.perf_counter()
@@ -89,26 +91,30 @@ def execute_phases(scenario, clients, parallel, event, metadata, epoch, deadline
                 event("phase_upload_complete", client.id, phase=phase["name"], duration_s=time.perf_counter() - begin)
 
             operation("upload", upload)
-            release = time.perf_counter() + .3
+            release = time.perf_counter() + .3 / speedup
             if "flight_epoch_monotonic_s" not in metadata:
                 metadata["flight_epoch_monotonic_s"] = release
             timing["release_monotonic_s"] = release
             start_delays = phase.get("start_delays_s", {})
+            if is_sim_time(scenario):
+                timing.update(time_base="host_receive", release_offset_sim_s=.3,
+                              agent_start_delays_sim_s=dict(start_delays), sim_speedup=speedup,
+                              release_scheduling="simulation_seconds_divided_by_declared_speedup")
             if start_delays:
                 timing["agent_release_monotonic_s"] = {
-                    client.id: release + start_delays.get(client.id, 0.0) for client in clients}
+                    client.id: release + start_delays.get(client.id, 0.0) / speedup for client in clients}
             persist()
             event("phase_release_scheduled", phase=phase["name"], release_t=release - epoch)
 
             def execute(client, vehicle):
-                agent_release = release + start_delays.get(client.id, 0.0)
+                agent_release = release + start_delays.get(client.id, 0.0) / speedup
                 if client.id in plans:
                     client.execution_waypoint_indices = roles[client.id].get("waypoint_planner_indices")
                     client.execute(agent_release, len(plans[client.id]), max(.001, phase_deadline - time.perf_counter()), phase["name"])
                 else:
                     while time.perf_counter() < agent_release:
                         client.check()
-                        client.cancel.wait(min(.01, max(0, agent_release - time.perf_counter())))
+                        client.cancel.wait(min(.01 / speedup, max(0, agent_release - time.perf_counter())))
                     event("phase_no_op_started", client.id, phase=phase["name"], role="hold_no_op", service_enabled=False)
 
             operation("execute", execute)
@@ -187,6 +193,8 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
     if scenario["task_spec"]["schema_version"] != 3:
         raise ValueError("v3 runner requires a bound TaskSpec v3")
     policy = resolve_policy(quality_policy)
+    source_time_contract = is_sim_time(scenario)
+    speedup = sim_speedup(scenario)
     if generation_context is not None and (not isinstance(generation_context, dict) or set(generation_context) != {
             "generation_profile", "generation_manifest", "generation_entry"}):
         raise ValueError("generation context must contain exactly profile, manifest and entry evidence")
@@ -205,6 +213,8 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
     def event(kind, agent=None, **fields):
         stamp = fields["recv_monotonic_s"] if kind == "waypoint_reached" else time.perf_counter()
         packet = dict(event=kind, agent_id=agent, t=stamp - epoch, **fields)
+        if source_time_contract:
+            packet.update(host_receive_t_s=stamp-epoch, time_base="host_receive")
         with event_lock:
             events.append(packet)
             event_file.write(json.dumps(packet, ensure_ascii=False) + "\n")
@@ -220,6 +230,14 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
         source_sha256={p.name: digest(p) for p in Path(__file__).parent.glob("*.py")},
         run_provenance=dict(version=PROVENANCE_VERSION,
                            parameter_comparison_version=PARAMETER_COMPARISON_VERSION, status="pending"))
+    if source_time_contract:
+        metadata.update(protocol_version="v0.6.1", time_base="sim_source", sim_speedup=speedup,
+            raw_event_time_base="host_receive", phase_start_spread_time_base="host_receive",
+            clock="raw receive perf_counter retained as evidence; export uses calibrated common FCU source time",
+            runtime_time_contract=dict(recording="source_clock_driven", freshness="host_receive_age_times_speedup",
+                start_delays="simulation_seconds_divided_by_declared_speedup", phase_release_offset_sim_s=.3,
+                takeoff_stability="FCU_source_boot_seconds", timeout_budget="host_seconds_not_shortened",
+                heartbeat_period_host_s=1/speedup))
     persist = lambda: write_json(directory / "metadata.json", metadata)
     persist()
     write_json(directory / "scenario.json", scenario)
@@ -264,10 +282,13 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
         if metadata["sitl"]["sha256"] != metadata["binary_firmware"]["sha256"] or digest(parameters) != metadata["parameters_sha256"]:
             raise ValueError("firmware/template changed during launch; a new WP-S GO is required")
         persist()
-        clients = [Vehicle(instance, directory / "raw" / f"{instance['id']}.jsonl", cancel, event, record_lifecycle=True)
+        contract_options = {"time_contract": scenario} if source_time_contract else {}
+        clients = [Vehicle(instance, directory / "raw" / f"{instance['id']}.jsonl", cancel, event, record_lifecycle=True,
+                           **contract_options)
                    for instance in instances]
         parallel(lambda client, vehicle: client.connect())
-        recorder = Recorder(directory, clients, scenario["origin"], epoch, scenario["record_hz"], scenario["max_gap_s"], policy)
+        recorder = Recorder(directory, clients, scenario["origin"], epoch, scenario["record_hz"], scenario["max_gap_s"],
+                            policy, **contract_options)
         recorder.start()
 
         def read_parameters(client, vehicle):
@@ -275,18 +296,22 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
                 execution = scenario["task_spec"]["execution"]
                 options = ({"version_timeout_s": execution["firmware_version_timeout_s"]}
                            if "firmware_version_timeout_s" in execution else {})
+                if source_time_contract:
+                    options["sim_time"] = True
                 result = read_firmware_parameters(client, metadata["binary_firmware"], parameter_evidence[client.id], **options)
             except BaseException:
                 # Also record the version and any available STAT_RESET evidence
                 # on cancellation/partial RX, without masking the original error.
                 try:
                     compare_parameter_readback(parameter_evidence[client.id], provenance["baseline"], client.sysid,
-                                               run_started_utc=metadata["started_utc"])
+                        run_started_utc=metadata["started_utc"],
+                        **({"expected_sim_speedup": speedup} if source_time_contract else {}))
                 except ValueError:
                     pass
                 raise
             compare_parameter_readback(result, provenance["baseline"], client.sysid,
-                                       run_started_utc=metadata["started_utc"])
+                run_started_utc=metadata["started_utc"],
+                **({"expected_sim_speedup": speedup} if source_time_contract else {}))
 
         parallel(read_parameters, context="preflight parameter readback")
         metadata["run_provenance"]["status"] = "verified_before_takeoff"
@@ -314,6 +339,8 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
         executor.shutdown(wait=True, cancel_futures=True)
         if recorder:
             recorder.close()
+            if source_time_contract:
+                metadata["online_recording_clock"] = dict(recorder.source_clock)
             if recorder.error:
                 metadata.update(status="failed", error=f"recorder: {recorder.error}")
         for client in clients:
@@ -326,6 +353,10 @@ def run_scene_v3(scenario, output_root, binary, parameters, base_port=19100, qua
             sha256=digest(directory / "firmware_parameters.json"),
             per_agent={agent: {key: record.get(key) for key in ("complete", "status", "parameter_count", "received_count", "missing_indices")}
                        for agent, record in parameter_evidence.items()})
+        if source_time_contract:
+            for agent, record in parameter_evidence.items():
+                metadata["run_provenance"]["parameter_evidence"]["per_agent"][agent].update(
+                    parameter_comparison=record.get("parameter_comparison"), firmware=record.get("firmware"))
         metadata["elapsed_s"] = time.perf_counter() - epoch
         metadata["cleanup"] = ({v["id"]: p.poll() for v, p in zip(processes.instances, processes.processes)} if processes else {})
         metadata["phase_start_spread_s"] = {}

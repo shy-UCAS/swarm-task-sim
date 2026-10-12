@@ -36,7 +36,8 @@ def apply_flight_pattern(spec, pattern):
     from .registry import component_versions
     spec = copy.deepcopy(spec)
     spec["flight_pattern"] = pattern
-    spec["component_versions"] = component_versions(spec["mission"]["intent"], pattern)
+    spec["component_versions"] = component_versions(spec["mission"]["intent"], pattern,
+                                                    spec.get("execution", {}).get("protocol_version", "v0.6"))
     spec["planner"]["name"] = f"{pattern}_v1"
     if spec["mission"]["intent"] == "patrol":
         spec["planner"]["params"].pop("lane_offset_m", None)

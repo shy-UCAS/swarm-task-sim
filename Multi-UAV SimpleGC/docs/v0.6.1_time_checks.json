@@ -1,0 +1,283 @@
+{
+  "baseline_commit": "84cc3551ce6af99927c4a6de69dad076e7ea333a",
+  "protocol": "v0.6.1",
+  "simulator_launch_forbidden": true,
+  "historical_batches_reanalyzed": false,
+  "source_snapshot_matches_current": true,
+  "golden": {
+    "checked": 260,
+    "passed": 260,
+    "differences": [],
+    "metadata_exclusions": []
+  },
+  "frozen_v05_examples": {
+    "checked": 4,
+    "passed": 4,
+    "test": "test_v06_data_contract.V06DataContractTests.test_four_frozen_v05_examples_preserve_all_features_targets_and_old_metadata",
+    "fixture": "tests/fixtures/v05_example_loader_baseline.json",
+    "fixture_sha256": "989f734eb83a94a5a26015a7fc7239c52a365de90f0c003da353c83e77f25e68"
+  },
+  "local_ci": {
+    "workflow_tests": 367,
+    "additional_protocol_registry_assertion": 1,
+    "total": 368,
+    "failures": 0,
+    "errors": 0,
+    "passed": true
+  },
+  "full": {
+    "baseline_total": 825,
+    "baseline_failures": 1,
+    "baseline_errors": 5,
+    "final_total": 872,
+    "final_passed": 866,
+    "final_failures": 1,
+    "final_errors": 5,
+    "new_regressions": [],
+    "same_preexisting_failure_ids": [
+      "test_parameter_comparison_v2.ParameterComparisonV2Tests.test_real_wp_s_and_v01_readbacks_have_valid_reset_but_partial_v01_stays_rejected",
+      "test_task_v3.TaskV3Tests.test_G06_production_registry_and_exception_cleanup",
+      "test_v05_batch_controller.BatchIOTests.test_prepare_then_successful_next_uses_real_analysis",
+      "test_v05_r12_controllers.R12ValidationTests.test_history_preserves_original_fail_and_charges_two",
+      "test_v05c_validation_controller.V05cValidationControllerTests.test_history_is_one_real_nonretryable_attempt_and_hash_bound",
+      "test_wp_p_protocol.V05ProtocolTests.test_real_v04_v06_episode_still_loads"
+    ]
+  },
+  "new_protocol_tests": [
+    {
+      "test": "test_v061_batch.ExecutionPrepareTests.test_legacy_defaults_unchanged_and_settings_reject_invalid_values",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_batch.ExecutionPrepareTests.test_subset_new_execution_keeps_source_bundle_and_generation_entries_identical",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_batch.StartupStaggerTests.test_first_shard_dispatch_stagger_and_followups_without_delay",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_batch.StartupStaggerTests.test_pause_resume_preserves_epoch_and_never_restarts_stagger",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.SourceClockGates.test_clock_rate_window_scales_but_insufficient_evidence_stays_invalid",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.SourceClockGates.test_residual_threshold_in_simulation_seconds_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_2m_through_5m_remains_qualified_with_minimum_diagnostic",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_complete_changed_parameter_names_reach_confirmed_batch_stop",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_confirmed_firmware_mismatch_and_missing_frozen_identity",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_confirmed_full_mismatch_survives_missing_other_aircraft_and_stops",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_empty_partial_failed_readback_is_unknown_but_complete_pass_succeeds",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_missing_parameter_proof_cannot_qualify_even_when_run_says_completed",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_null_identity_or_provenance_stays_unknown_in_full_assessment",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_gates.ThreeValueAndSeparationGates.test_under_2m_excluded_and_rolling_pause_not_batch_stop",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_protocol.TimeProtocolTests.test_existing_wordings_are_reused_for_new_time_facts",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_protocol.TimeProtocolTests.test_invalid_speed_or_geometry_override_cannot_enter_new_contract",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_protocol.TimeProtocolTests.test_override_changes_only_explicit_runtime_contract_and_is_reproducible",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_protocol.TimeProtocolTests.test_runner_freezes_override_in_ledger_without_rewriting_generation",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.RelativeTimingTests.test_heartbeat_period_tracks_sim_seconds_without_changing_host_stale_timeout",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.RelativeTimingTests.test_relative_departures_and_phase_release_are_same_sim_seconds_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.RelativeTimingTests.test_takeoff_stability_is_source_seconds_and_receive_age_is_converted",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SourceRecordingTests.test_live_sampling_reference_is_fixed_and_missing_source_never_falls_back_to_host",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SourceRecordingTests.test_source_driven_ten_hz_recording_ignores_host_clock_scale",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_complete_speedup_mismatch_and_other_parameter_differences_still_reject",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_fractional_speedup_compares_exact_mavlink_float32_without_tolerance",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_incomplete_readback_is_unknown_in_new_protocol",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_launch_and_effective_parameter_file_use_declared_speedup_only_for_new_protocol",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_physically_complete_but_changed_parameter_collection_is_confirmed_conflict",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_runner_forwards_declared_speed_and_readback_mismatch_prevents_all_takeoff",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_runtime.SpeedupLaunchTests.test_runtime_firmware_conflict_has_explicit_evidence_before_readback",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_clock_rate_window_and_source_evidence_gap_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_declared_one_x_does_not_substitute_host_seconds_for_source",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_no_extrapolation_or_host_fallback_and_exact_piecewise_composition",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_piecewise_velocity_derivative_has_declared_bounded_knot_semantics",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_production_analysis_reference_fallback_and_all_invalid_exports_ineligible",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_production_analyzer_exports_identical_601_frames_and_sim_metadata_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_real_analyzer_scales_nonreference_fcu_velocity_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_real_patrol_revisit_pass_and_fail_are_invariant_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_real_phase_windows_are_invariant_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_real_rapid_passage_low_speed_dwell_pass_and_fail_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_real_return_dwell_and_frame_allowance_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_reference_selection_is_natural_deterministic_and_fails_closed",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_same_grid_positions_velocities_and_relative_departures_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_speedup_is_explicit_v061_only_and_validated",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_unmapped_event_stays_unknown_and_never_becomes_zero",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_velocity_jacobian_preserves_fcu_measurement_units_at_1_2_4",
+      "result": "passed"
+    },
+    {
+      "test": "test_v061_time_axis.TimeAxisTests.test_velocity_scaling_is_not_position_difference_substitution",
+      "result": "passed"
+    }
+  ],
+  "evidence_sha256": {
+    "baseline-full.json": "c59bfc069680a8299da57f93578ce46d3c30d2d5c7247f24bea95c673bb3160c",
+    "candidate-final-full.json": "2685230cc1edfe01a44c90cac63eac438670d33612674da97dfab2d5c2385260",
+    "candidate-ci.json": "4ae953dea9abd425217ca7846484290134030a8692a07d5cbb2c43652244b6b7",
+    "golden/golden_report.json": "3b56fd7b74b232ca1954286858725e00ffe0db7c5147673047dce9913a21fe07"
+  },
+  "tested_source_sha256": {
+    ".github/workflows/unit-tests.yml": "ecf377eff61e2e0501531907101c61f6b32dee9a915ff0d6c69230cf55383ff3",
+    "Multi-UAV SimpleGC/scripts/prepare_parallel_subset.py": "4906c7d8f5aec5ba9af5ee8668500ec14e85b3a2bda139294dd4768e0819bd00",
+    "Multi-UAV SimpleGC/scripts/run_mission_list.py": "a3e45fad5da7073f10cafb3357f7be38e40fe6e175ec9d916df65e4539561e07",
+    "Multi-UAV SimpleGC/scripts/run_parallel_batch.py": "60db4a3adf6532d1033c5cc7691ec8e53758401104b931cf53b2769be41d0081",
+    "Multi-UAV SimpleGC/swarm_sim/analysis_v3.py": "cebf667a8e11482214dfcfa0fba63ad86cf202424e01c0bcc5242d18abd36f5b",
+    "Multi-UAV SimpleGC/swarm_sim/dataset_audit_v3.py": "c1ef9768cb896d95b7fd3d80e711fe5213e316673aa5982c7625a020bd19433c",
+    "Multi-UAV SimpleGC/swarm_sim/dataset.py": "abbb8bb3d2232c2b3691ba90ac1626816033927be10063b8c35fd12f42be30b5",
+    "Multi-UAV SimpleGC/swarm_sim/episode_loader.py": "83cd841620b3aa1baa0027787ce5e2d5de5980353bfc63f94cac8d31d3bf5ee2",
+    "Multi-UAV SimpleGC/swarm_sim/execution_constraints.py": "1d89fa25c533de2d58e31d8b85c459dcdb580e8cdcc8ee9b3891aea3bf3ec482",
+    "Multi-UAV SimpleGC/swarm_sim/generation_v2.py": "8e187cff1b3aa0a4e8ed34ba44bca191546cc5c6b011b08a0354d36a89a7928f",
+    "Multi-UAV SimpleGC/swarm_sim/language_templates_v0.py": "5963d7ed516620749564908fc7d0010be3bf6cc62e9a6249c0a3b130a069476e",
+    "Multi-UAV SimpleGC/swarm_sim/language_v0.py": "aa8cf143b12821a65d86154726949cf0d0e628f46c549e48fcee5cd82afd556b",
+    "Multi-UAV SimpleGC/swarm_sim/mission_v3.py": "ce801575074c56ab7f8ee0b2d4914fc90a77b8ffc51dd95be5cdedf0dcea317b",
+    "Multi-UAV SimpleGC/swarm_sim/observation_processing.py": "66fe766cedb71ab50a0e5c4115356089453193a248050f56f1437d094b94caf7",
+    "Multi-UAV SimpleGC/swarm_sim/observer_facts_v0.py": "0c84564424ac029d3801ea1f9d7180d5bb09b412b7e959b0c8b274b3cebdeec3",
+    "Multi-UAV SimpleGC/swarm_sim/onboard_mission_params.py": "3d8eb4ac76c68152534297e5de0fa18053ef0a654b12b9cbe85095ff9f2d12f7",
+    "Multi-UAV SimpleGC/swarm_sim/parallel_batch.py": "67c52f715d3495f5934a0358c353c1058cee25fb73393206d7ce1f4934c46d84",
+    "Multi-UAV SimpleGC/swarm_sim/parallel_subset.py": "82f91e6ebc7793aeb5b4eddb45cfbe0ea786243146d19cca9c086116be5cc040",
+    "Multi-UAV SimpleGC/swarm_sim/parallel_worker.py": "b113c9d1fdf2065fa6915af972edb6be1d00b6de1e24cc4b7ef1d37cbe99ae7c",
+    "Multi-UAV SimpleGC/swarm_sim/processes.py": "aa3b00069eb84939d18a16f70812c7ae5f7cf6e0ab951ef3ea70b51494feaf37",
+    "Multi-UAV SimpleGC/swarm_sim/protocol.py": "d343c66e9c779fa4b122766c95e9e6a3c86670a68280d0292ceae636d50b9b05",
+    "Multi-UAV SimpleGC/swarm_sim/quality.py": "d3ab8af5defa91db7f9e16c47fe5f20e63fbd4feaf80bc3a116587e292131384",
+    "Multi-UAV SimpleGC/swarm_sim/recording.py": "0d0d58ff1de27b5c6867cb460b71608f51be9b5c076c7c9932b35f28a5f8b7fc",
+    "Multi-UAV SimpleGC/swarm_sim/registry.py": "d6e9dda914ab88ec8c8b8493cab24e61a8184bb06b642ec59bf45050f2ee3291",
+    "Multi-UAV SimpleGC/swarm_sim/route_timing.py": "afa091ef925eba6136f14b8221e536f719bf213972e86df7aa64eadb4dd88e92",
+    "Multi-UAV SimpleGC/swarm_sim/run_provenance.py": "bdc404b1f7af5e8c6324c104d7a9b4199c021f5941fba1eae58d0726cc97643e",
+    "Multi-UAV SimpleGC/swarm_sim/runner_v3.py": "f5a7290548188fc9f58ed042e69804ce36f705932efa78dfb9616b6537fdef99",
+    "Multi-UAV SimpleGC/swarm_sim/scenario.py": "05955cc32f3af343d12df8570a39da169c96215699c8ff01b59e789f0608a282",
+    "Multi-UAV SimpleGC/swarm_sim/time_contract.py": "ee6cfb079c3883ed9e9691a773571e9281e867a3ea4a5e83a8dc44ae37ba4e5b",
+    "Multi-UAV SimpleGC/swarm_sim/truth.py": "5d6ba9475ec2b0ca3b870d5a0a11b1d74b953495fdf88be015a033a9ac392de2",
+    "Multi-UAV SimpleGC/swarm_sim/validation_policy_r12b.py": "d92ea83757847c71f2ddd3c5fbe1c39986188c20e6ae268d30891e7344f334ae",
+    "Multi-UAV SimpleGC/swarm_sim/validation_policy.py": "1812a648e575bd6a80ce94ebce6e9ed147376987d771eed307e03055fda2f5e1",
+    "Multi-UAV SimpleGC/swarm_sim/vehicle.py": "c60a335df06b07e0ecad4616cb0c43d089c8f9045d8007530cff515d5df3b6e7",
+    "Multi-UAV SimpleGC/tests/test_v061_batch.py": "41a2234cb7edd8bd668eed113f6955122c216114166ed6612b71830c0a1e344f",
+    "Multi-UAV SimpleGC/tests/test_v061_gates.py": "f1cdce6cd5a0b6647abbfc28ba398fc69d6915bb21d7b8cacc127fd992ff9342",
+    "Multi-UAV SimpleGC/tests/test_v061_protocol.py": "e7c12d1edfdadcf6413117b6042a77145ebc77e1810f7c2471b91c605e2701db",
+    "Multi-UAV SimpleGC/tests/test_v061_runtime.py": "b2d13c674f6dac62ba9f88587c5309d0e02a1b44614c081389ac562d77926f6b",
+    "Multi-UAV SimpleGC/tests/test_v061_time_axis.py": "cae2d7977ead131eeb5a752b2b794b7b6e0a464028121c0b81bfee62603b4de6",
+    "Multi-UAV SimpleGC/tests/test_wp_p_protocol.py": "503e586d91ae0b111c6890baf708ae7d9de99413cac8bceb9dbc45f46335c610"
+  }
+}

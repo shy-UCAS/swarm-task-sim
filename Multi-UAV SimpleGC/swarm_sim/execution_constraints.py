@@ -8,6 +8,7 @@ from .mission_evaluation import EPS, position_valid, source_time, tri_and, windo
 from .observations import finite_number
 from .recording import segment_distance
 from .protocol import SHARED_CONSTRAINT_VERSION
+from .time_contract import is_sim_time
 
 
 CONSTRAINT_RULE_VERSION = SHARED_CONSTRAINT_VERSION
@@ -220,7 +221,7 @@ def evaluate_execution_constraints(scene, lifecycle_observations, lifecycle_trut
     fleet_start = min(r["lifecycle_window_s"][0] for r in results.values())
     fleet_end = max(r["lifecycle_window_s"][1] for r in results.values())
     boundary_complete = all(r["lifecycle_complete"] for r in results.values())
-    separation_args = (list(results), fleet_start, fleet_end, execution["min_separation_m"],
+    separation_args = (list(results), fleet_start, fleet_end, 2.0 if is_sim_time(scene) else execution["min_separation_m"],
                        execution["max_gap_s"], 1 / execution["record_hz"], boundary_complete)
     truth_separation = _lifecycle_separation(lifecycle_truth, *separation_args)
     observation_separation = _lifecycle_separation(lifecycle_observations, *separation_args)

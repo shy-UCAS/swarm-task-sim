@@ -11,6 +11,8 @@ from pathlib import Path
 
 from .scenario import mission_for, route_mission_for
 from .truth import clock_to_host
+from .observations import finite_number
+from .time_contract import is_sim_time
 
 
 VERSION = "onboard_mission_param_check_v1"
@@ -65,9 +67,9 @@ def compare_onboard_mission_params(scene, events, commands_by_agent, read_errors
         upload_windows[agent] = {}
         for phase in scene["phases"]:
             starts = [e["t"] for e in events if e.get("event") == "phase_upload_started"
-                      and e.get("agent_id") == agent and e.get("phase") == phase["name"]]
+                      and e.get("agent_id") == agent and e.get("phase") == phase["name"] and finite_number(e.get("t"))]
             ends = [e["t"] for e in events if e.get("event") == "phase_upload_complete"
-                    and e.get("agent_id") == agent and e.get("phase") == phase["name"]]
+                    and e.get("agent_id") == agent and e.get("phase") == phase["name"] and finite_number(e.get("t"))]
             upload_windows[agent][phase["name"]] = (
                 (starts[0], ends[0]) if len(starts) == len(ends) == 1 and starts[0] <= ends[0] else None)
     for phase in scene["phases"]:
@@ -133,7 +135,8 @@ def compare_onboard_mission_params(scene, events, commands_by_agent, read_errors
               else "pass")
     return dict(version=VERSION, required=required, status=status, pass_gate=(status == "pass") if required else None,
                 key_fields=["agent_id", "semantic_phase", "phase", "mission_seq"],
-                clock_semantics="BIN TimeUS mapped with v3 passive FCU-to-host clock; no extrapolation",
+                clock_semantics=("BIN TimeUS mapped to common FCU source seconds; 0.2 simulation-second match margin; no extrapolation"
+                                 if is_sim_time(scene) else "BIN TimeUS mapped with v3 passive FCU-to-host clock; no extrapolation"),
                 matching_semantics="within this agent's phase upload interval, then CTot/CNum/CId/Prm1",
                 counts=counts, read_errors=read_errors, rows=rows)
 

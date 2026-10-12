@@ -9,9 +9,10 @@ from pathlib import Path
 
 from .generation import canonical_hash, checked_path, file_hash, verify_generation
 from .parallel_batch import shard_base_port
-from .protocol import manifest_protocol, semantic_protocol, validate_artifact_protocol
+from .protocol import apply_execution_override, manifest_protocol, semantic_protocol, validate_artifact_protocol
 from .quality import policy_hash
-from .validation_policy import finite
+from .validation_policy import finite, frozen_identity_check
+from .time_contract import is_sim_time
 from .validation_policy_r12b import VERSION as POLICY_VERSION, assess_run
 
 
@@ -54,6 +55,7 @@ def _inputs(plan, attempt):
         raise ValueError("attempt entry differs from the complete frozen generation bundle")
     entry = entries[0]
     scene = _read(checked_path(bundle, entry["scene"]))
+    scene = apply_execution_override(scene, plan.get("execution_override"))
     protocol = semantic_protocol(scene, patrol_validator_version=PATROL_VERSION)
     if (plan.get("protocol", protocol) != protocol
             or plan.get("progress_mapping_version", PROGRESS_VERSION) != PROGRESS_VERSION
@@ -72,6 +74,8 @@ def _inputs(plan, attempt):
         quality_policy_sha256=plan["quality_policy_sha256"], semantic_protocol=protocol,
         progress_mapping_version=PROGRESS_VERSION, patrol_validator_version=PATROL_VERSION,
         acceptance_policy_version=POLICY_VERSION)
+    if "execution_override" in plan:
+        binding["execution_override"] = plan["execution_override"]
     generation = dict(generation_profile=_read(bundle / "generation_profile.json"),
         generation_manifest=manifest, generation_entry=entry)
     return task, scene, binding, generation
@@ -105,6 +109,8 @@ is preserved for global rolling accounting; confirmed violations still stop.
         onboard_check = True
     agents = {vehicle["id"] for vehicle in scene["vehicles"]}
     cleanup, firmware = metadata.get("cleanup", {}), metadata.get("binary_firmware", {})
+    if is_sim_time(scene):
+        firmware = firmware or {}
     checks = dict(assessment["hard_checks"], truth_separation=separation_check,
         onboard_mission_parameters=onboard_check,
         frozen_firmware_and_parameters=firmware.get("sha256") == plan["firmware"]["sha256"]
@@ -113,10 +119,13 @@ is preserved for global rolling accounting; confirmed violations still stop.
         infrastructure_cleanup_complete=bool(agents) and set(cleanup) == agents
             and all(type(cleanup[agent]) is int for agent in agents),
         infrastructure_execution_completed=not quality.get("analysis_error"))
+    if is_sim_time(scene):
+        checks.pop("truth_separation")
+        checks["frozen_firmware_and_parameters"] = frozen_identity_check(metadata, plan)
     # The inherited whitelist proves a transient pre-arm failure, including
     # incomplete readback, rather than a confirmed firmware/parameter mismatch.
     # Its stored r1.2b assessment remains unchanged. A mismatch never whitelists.
-    if retry_reason and checks["parameter_firmware"] is False:
+    if retry_reason and checks["parameter_firmware"] is False and not is_sim_time(scene):
         checks["parameter_firmware"] = None
     if metadata.get("status") != "completed" and quality.get("episode_quality_eligible") is not False:
         raise ValueError("failed execution must retain its quality-ineligible verdict")
@@ -154,6 +163,8 @@ def _validated_evidence(plan, attempt, result, scene, generation):
         generation_manifest_sha256=result["generation_manifest_sha256"],
         quality_policy_sha256=plan["quality_policy_sha256"],
         binary_sha256=plan["firmware"]["sha256"], parameters_sha256=plan["parameters_sha256"])
+    if "execution_override" in plan:
+        required_context["execution_override"] = plan["execution_override"]
     if (any(context.get(key) != value for key, value in required_context.items())
             or len(missions) != 1 or missions[0].get("mission_id") != result["mission_id"]
             or len(missions[0].get("attempts", [])) != 1
@@ -251,7 +262,8 @@ result.json atomically after this function returns, then verifies and registers.
         ledger = run_mission_list(Path(plan["bundle"]) / "mission_list.json", max_runs=1,
             resume=False, output_root=root / "run", mission_ids=[task["mission_id"]],
             binary=plan["binary"], parameters=plan["parameters"], base_port=attempt["base_port"],
-            quality_policy=plan["quality_policy"], max_environment_retries=0, retryable_errors=())
+            quality_policy=plan["quality_policy"], max_environment_retries=0, retryable_errors=(),
+            **({"execution_override": plan["execution_override"]} if "execution_override" in plan else {}))
         missions = ledger.get("missions", [])
         if (len(missions) != 1 or missions[0].get("mission_id") != task["mission_id"]
                 or len(missions[0].get("attempts", [])) != 1):

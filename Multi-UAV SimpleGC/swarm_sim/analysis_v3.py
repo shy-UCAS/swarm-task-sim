@@ -20,6 +20,7 @@ from .recording import resample, write_json
 from .route_timing import nominal_arrival_evidence
 from .tasks import validate_task_binding
 from .truth import percentile, read_truth, write_csv
+from .time_contract import CommonTimeAxis, is_sim_time, sim_speedup, simulation_artifact
 
 
 def _read_packets(path):
@@ -84,7 +85,8 @@ def analyze_run_v3(directory, quality_policy=None, *,
     if is_v06_task_spec(spec):
         patrol_validator_version = "perimeter_revisit_v2"
     policy=resolve_policy(quality_policy)
-    versions=processing_versions(); protocol=semantic_protocol(scene, patrol_validator_version=patrol_validator_version)
+    sim_time=is_sim_time(scene)
+    versions=processing_versions(scene); protocol=semantic_protocol(scene, patrol_validator_version=patrol_validator_version)
     lifecycle_epoch=metadata["run_epoch_monotonic_s"]
     lifecycle_end=lifecycle_epoch+metadata["elapsed_s"]
     epoch=metadata.get("flight_epoch_monotonic_s",lifecycle_epoch)
@@ -108,6 +110,30 @@ def analyze_run_v3(directory, quality_policy=None, *,
     grid=[i/scene["record_hz"] for i in range(count)]
     semantic_grid=grid+[count/scene["record_hz"]] if count else grid
     lifecycle_grid=[i/scene["record_hz"] for i in range(max(0,math.floor(metadata["elapsed_s"]*scene["record_hz"])+1))]
+    prepared={}; axis=None; evaluation_clocks={}
+    evaluation_metadata=metadata; evaluation_epoch=epoch; evaluation_lifecycle_epoch=lifecycle_epoch
+    duration=end-epoch
+    if sim_time:
+        for vehicle in scene["vehicles"]:
+            agent=vehicle["id"]
+            packets=_read_packets(directory/"raw"/f"{agent}.jsonl")
+            prepared[agent]=prepare_v3_observations(packets,scene["origin"],policy,epoch,end,scene)
+        axis=CommonTimeAxis({agent:item["clock_model"] for agent,item in prepared.items()},epoch)
+        duration=axis.host(end-epoch)
+        grid=[] if unstarted else axis.grid(duration,scene["record_hz"])
+        count=len(grid)
+        semantic_grid=grid+[count/scene["record_hz"]] if count else grid
+        lifecycle_grid=[]
+        if axis.available:
+            low=axis.reference["knots"][0][0]-axis.source_epoch_s
+            high=axis.reference["knots"][-1][0]-axis.source_epoch_s
+            lifecycle_grid=[i/scene["record_hz"] for i in range(math.ceil(low*scene["record_hz"]),
+                math.floor(high*scene["record_hz"])+1)]
+        observation_window.update(time_base="sim_source", effective_start_sim_s=0.0 if axis.available else None,
+            effective_end_sim_s=duration, time_mapping_available=axis.available and duration is not None)
+        evaluation_metadata=axis.metadata_view(metadata)
+        evaluation_epoch=evaluation_lifecycle_epoch=0.0
+        evaluation_clocks={agent:axis.evaluation_model(agent) for agent in prepared}
     traces={}; truth_traces={}; semantic_traces={}; semantic_truth_traces={}
     clocks={}; lifecycle_clocks={}; lifecycle_observations={}; lifecycle_truth={}
     filters={}; timeline_errors={}; audits={}; truth_info={}; parameters={}; source_hashes={}; estimate_errors={}
@@ -116,26 +142,36 @@ def analyze_run_v3(directory, quality_policy=None, *,
         agent=vehicle["id"]; raw_path=directory/"raw"/f"{agent}.jsonl"
         packets=_read_packets(raw_path)
         if raw_path.exists(): source_hashes[str(raw_path.relative_to(directory))]=digest(raw_path)
-        processed=prepare_v3_observations(packets,scene["origin"],policy,epoch,end)
-        lifecycle=prepare_v3_observations(packets,scene["origin"],policy,lifecycle_epoch,lifecycle_end)
+        processed=prepared[agent] if sim_time else prepare_v3_observations(packets,scene["origin"],policy,epoch,end)
+        lifecycle=prepare_v3_observations(packets,scene["origin"],policy,lifecycle_epoch,lifecycle_end,scene)
         model=dict(processed["clock_model"],**versions)
         lifecycle_model=dict(lifecycle["clock_model"],**versions)
         clocks[agent]=model; lifecycle_clocks[agent]=lifecycle_model
         filters[agent]=processed["observation_filter"]; timeline_errors[agent]=processed["timeline_error"]
         audits[agent]=processed["audit"]
-        semantic_traces[agent]=resample(processed["samples"],semantic_grid,scene["max_gap_s"])
+        samples=processed["samples"]
+        if sim_time:
+            samples=[] if processed["timeline_error"] else [(stamp,values)
+                for source,_,values in processed["source_records"]
+                if (stamp:=axis.source(agent,source)) is not None]
+        semantic_traces[agent]=resample(samples,semantic_grid,scene["max_gap_s"])
+        if sim_time:
+            semantic_traces[agent]=axis.observation_velocities(agent,semantic_traces[agent])
         traces[agent]=semantic_traces[agent][:count]
-        lifecycle_observations[agent]=resample(lifecycle["samples"],lifecycle_grid,scene["max_gap_s"])
+        lifecycle_observations[agent]=resample(samples if sim_time else lifecycle["samples"],lifecycle_grid,scene["max_gap_s"])
+        if sim_time:
+            lifecycle_observations[agent]=axis.observation_velocities(agent,lifecycle_observations[agent])
         for t,values in traces[agent]:
-            observation_rows.append([t,agent,int(values is not None),"passive_piecewise_source_clock_fit_v3" if model["available"] else "unavailable_no_fallback",
+            observation_rows.append([t,agent,int(values is not None),("sim_source" if sim_time else "passive_piecewise_source_clock_fit_v3") if model["available"] else "unavailable_no_fallback",
                                      *(values or [""]*6)])
         truth,params,info=read_truth(directory,agent,scene["origin"],preserve_invalid=True)
         truth_info[agent]=info; parameters[agent]=params
         if "path" in info: source_hashes[info["path"]]=digest(directory/info["path"])
         for source,values in truth: raw_truth_rows.append([agent,source,*(values if values is not None else [""]*7)])
-        semantic_truth_traces[agent]=resample(aligned_truth_samples(truth,model),semantic_grid,scene["max_gap_s"])
+        aligned_model=axis.aligned_model(agent) if sim_time else model
+        semantic_truth_traces[agent]=resample(aligned_truth_samples(truth,aligned_model),semantic_grid,scene["max_gap_s"])
         truth_traces[agent]=semantic_truth_traces[agent][:count]
-        lifecycle_truth[agent]=resample(aligned_truth_samples(truth,lifecycle_model),lifecycle_grid,scene["max_gap_s"])
+        lifecycle_truth[agent]=resample(aligned_truth_samples(truth,aligned_model if sim_time else lifecycle_model),lifecycle_grid,scene["max_gap_s"])
         errors=[]
         for (t,actual),(_,estimated) in zip(truth_traces[agent],traces[agent]):
             truth_rows.append([t,agent,int(actual is not None),*(actual or [""]*3)])
@@ -146,9 +182,9 @@ def analyze_run_v3(directory, quality_policy=None, *,
                                    p95_m=percentile(errors,.95),max_m=max(errors) if errors else None)
     fraction={agent:sum(p is not None for _,p in rows)/count if count else 0 for agent,rows in traces.items()}
     truth_fraction={agent:sum(p is not None for _,p in rows)/count if count else 0 for agent,rows in truth_traces.items()}
-    observed_separation=assess_separation(traces,scene["min_separation_m"])
-    actual_separation=assess_separation(truth_traces,scene["min_separation_m"])
-    clock_quality=summarize_clocks(clocks,policy)
+    observed_separation=assess_separation(traces,2.0 if sim_time else scene["min_separation_m"])
+    actual_separation=assess_separation(truth_traces,2.0 if sim_time else scene["min_separation_m"])
+    clock_quality=summarize_clocks(clocks,policy,scene)
     clock_ok=clock_quality["overall"] in ("strict","acceptable")
     context={key:scene[key] for key in ("record_hz","max_gap_s","min_separation_m")}
     context.update(mission=spec["mission"],platform=spec["scenario"]["platform"],world=spec["scenario"]["world"],execution=spec["execution"])
@@ -164,16 +200,27 @@ def analyze_run_v3(directory, quality_policy=None, *,
         truth_available_pass=count>0 and all(v>=policy["min_truth_valid_fraction"] for v in truth_fraction.values()),
         run_completed=metadata["status"]=="completed",estimation_error=estimate_errors,
         estimation_error_note="FCU vs BIN SIM source-time comparison; internal FCU filtering latency remains; passive fit is not absolute synchronization")
-    events=_read_packets(directory/"events.jsonl")
+    if sim_time:
+        from .validation_policy import parameter_firmware_check
+        quality.update(**task_metadata(spec),common_time_axis=axis.metadata,
+                       parameter_firmware_check=parameter_firmware_check(scene,metadata),
+                       timing_residual_threshold_s=.2, timing_residual_threshold_host_s=.2/sim_speedup(scene),
+                       timing_residual_time_base="sim_source", minimum_separation_gate_m=2.0)
+    raw_events=_read_packets(directory/"events.jsonl")
+    events=axis.event_view(raw_events,metadata) if sim_time else raw_events
+    if sim_time:
+        quality.update(phase_start_spread_s=axis.phase_start_spreads(events,scene),phase_start_spread_time_base="sim_source")
     semantic=evaluate_mission_v3(scene,semantic_traces,semantic_truth_traces,events=events,
-                                 metadata=metadata,time_epoch=epoch,clocks=clocks,
+                                 metadata=evaluation_metadata,time_epoch=evaluation_epoch,clocks=evaluation_clocks if sim_time else clocks,
                                  progress_mapping_version=progress_mapping_version,
                                  patrol_validator_version=patrol_validator_version)
     semantic["semantic_validation"]["evaluation_support"]=dict(extra_end_bracket_s=semantic_grid[-1] if len(semantic_grid)>count else None,
-        exported_grid_last_s=grid[-1] if grid else None,mission_end_s=None if unstarted else end-epoch,model_input_grid_unchanged=True,
+        exported_grid_last_s=grid[-1] if grid else None,mission_end_s=None if unstarted else duration,model_input_grid_unchanged=True,
         semantics="one internal boundary-support sample; never exported as an observation; no invalid/gap bridging")
-    constraints=evaluate_execution_constraints(scene,lifecycle_observations,lifecycle_truth,events,metadata,lifecycle_epoch,clocks=lifecycle_clocks)
-    onboard=diagnose_onboard_mission_params(directory,scene,events,lifecycle_clocks)
+    constraints=evaluate_execution_constraints(scene,lifecycle_observations,lifecycle_truth,events,evaluation_metadata,
+        evaluation_lifecycle_epoch,clocks=evaluation_clocks if sim_time else lifecycle_clocks)
+    onboard=diagnose_onboard_mission_params(directory,scene,events if sim_time else raw_events,
+        {agent:axis.aligned_model(agent) for agent in clocks} if sim_time else lifecycle_clocks)
     quality.update(onboard_mission_param_check_version=onboard["version"],
                    onboard_mission_param_check_status=onboard["status"],
                    onboard_mission_param_check_required=onboard["required"],
@@ -183,11 +230,11 @@ def analyze_run_v3(directory, quality_policy=None, *,
     quality.update(execution_constraints_pass=constraints["hard_constraints_pass"],mission_success=labels["mission_success"],
                    semantic_consistency=labels["semantic_consistency"])
     quality.update(v3_eligibility(quality,labels))
-    nominal=nominal_arrival_evidence(scene,events,metadata,epoch)
+    nominal=nominal_arrival_evidence(scene,events,evaluation_metadata,evaluation_epoch)
     v05_route_evidence=_uses_v05_route_evidence(spec)
     metrics_fn=compute_execution_metrics_v2 if v05_route_evidence else compute_execution_metrics
     metrics_options=({"progress_mapping_version":progress_mapping_version} if v05_route_evidence else {})
-    metrics=metrics_fn(scene,traces,semantic["phase_windows"],events=events,metadata=metadata,time_epoch=epoch,
+    metrics=metrics_fn(scene,traces,semantic["phase_windows"],events=events,metadata=evaluation_metadata,time_epoch=evaluation_epoch,
                        nominal_arrivals=nominal["records"],**metrics_options)
     metrics["nominal_timing_deviation_s"]["assessment"]=nominal
     v05_versions={}
@@ -196,16 +243,17 @@ def analyze_run_v3(directory, quality_policy=None, *,
         v05_versions=dict(route_progress_version=progress_mapping_version,
                           ac4_timing_version=AC4_TIMING_V3_VERSION,
                           execution_artifacts_version=EXECUTION_ARTIFACTS_V2)
-        releases=[event.get("phase") for event in events if event.get("event")=="phase_release_scheduled"]
-        hover_supported=(metadata["status"]=="completed" and "mission_end_monotonic_s" in metadata
+        releases=[event.get("phase") for event in events if event.get("event")=="phase_release_scheduled"
+                  and (not sim_time or isinstance(event.get("release_t"),(int,float)))]
+        hover_supported=(metadata["status"]=="completed" and "mission_end_monotonic_s" in evaluation_metadata
                          and all(releases.count(phase["name"])==1 for phase in scene["phases"]))
         ac4_channels={}
         hover_evidence={}
         for channel,channel_traces in (("truth",semantic_truth_traces),("observation",semantic_traces)):
-            starts,evidence=(terminal_hover_evidence_v3(scene,channel_traces,events,metadata,epoch,channel,clocks)
+            starts,evidence=(terminal_hover_evidence_v3(scene,channel_traces,events,evaluation_metadata,evaluation_epoch,channel,evaluation_clocks if sim_time else clocks)
                              if hover_supported else ({},[]))
             hover_evidence[channel]=evidence
-            ac4_channels[channel]=evaluate_ac4_timing_v3(scene,channel_traces,events,metadata,epoch,
+            ac4_channels[channel]=evaluate_ac4_timing_v3(scene,channel_traces,events,evaluation_metadata,evaluation_epoch,
                                                           channel=channel,terminal_hover_starts=starts,
                                                           progress_mapping_version=progress_mapping_version)
         ac4_report=dict(**v05_versions,**versions,channels=ac4_channels,hover_evidence=hover_evidence,
@@ -233,6 +281,11 @@ def analyze_run_v3(directory, quality_policy=None, *,
         "observation_processing.json":dict(**versions,per_agent=audits,raw_evidence_preserved=True)}
     if ac4_report is not None:
         extra["ac4_timing_v3.json"]=ac4_report
+    if sim_time:
+        labels=simulation_artifact(labels)
+        extra={name:dict(simulation_artifact(value),time_base="sim_source") if name in ("semantic_validation.json","phase_windows.json",
+            "execution_constraints.json","execution_metrics.json","ac4_timing_v3.json") else value for name,value in extra.items()}
+        extra.update({"time_axis.json":axis.metadata,"events_sim_source.json":dict(time_base="sim_source",events=events)})
     output=output_directory or directory/("analysis_v"+__version__.replace(".","")+"_"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_")+uuid.uuid4().hex[:8])
     output.mkdir()
     fields=["t_s","agent_id","valid"]
@@ -252,7 +305,8 @@ def analyze_run_v3(directory, quality_policy=None, *,
         scenario_id=scene["scenario_id"],family_id=spec["family_id"],family_scheme=spec["family_scheme"],
         control_mode=spec["execution"]["control_mode"],intent=spec["mission"]["intent"],**protocol,**versions,**v05_versions,
         quality_policy=policy,quality_policy_sha256=policy_hash(policy),evaluation_context=context,
-        partial_window="mission_end_monotonic_s" not in metadata,time_epoch_host_s=epoch,duration_s=end-epoch,
+        partial_window="mission_end_monotonic_s" not in evaluation_metadata,time_epoch_host_s=epoch,
+        duration_s=duration if duration is not None else 0.0,
         observation_window=observation_window,
         time_semantics="full-stream strict source times; exact duplicates dropped before passive clock fit; no clock fallback",
         reference_semantics="nominal uniform-speed stage route; diagnostic reference, not a closed-loop timing guarantee",
@@ -270,6 +324,11 @@ def analyze_run_v3(directory, quality_policy=None, *,
     if acceptance_policy:
         manifest["acceptance_policy_version"]=acceptance_policy
     manifest.update(task_metadata(spec))
+    if sim_time:
+        manifest.update(time_base="sim_source",sim_speedup=sim_speedup(scene),common_time_axis=axis.metadata,
+                        duration_host_s=end-epoch,time_epoch_sim_s=0.0,
+                        phase_start_spread_s=quality["phase_start_spread_s"],phase_start_spread_time_base="sim_source",
+                        time_semantics="common reference FCU source seconds; 10 Hz per simulation second; host bridge only; no extrapolation or fallback")
     validate_artifact_protocol(manifest,output)
     write_json(output/"manifest.json",manifest)
     if update_latest:

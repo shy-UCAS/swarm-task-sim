@@ -199,7 +199,7 @@ def validate_route_scene(data):
         _object(phase, "route phase", ("name", "semantic_phase", "routes", "speed_m_s", "terminal_hold_s", "start_delays_s"),
                 optional=("start_delays_s",))
         if "start_delays_s" in phase:
-            if spec["execution"].get("protocol_version") != "v0.6" or set(phase["start_delays_s"]) != agents:
+            if spec["execution"].get("protocol_version") not in ("v0.6", "v0.6.1") or set(phase["start_delays_s"]) != agents:
                 raise ValueError("phase start_delays_s requires v0.6 and every agent")
             for delay in phase["start_delays_s"].values():
                 number(delay, "phase.start_delays_s", 0, 3600)

@@ -219,8 +219,11 @@ def audit_dataset_v3(dataset_path, generation_manifest=None, attempt_ledger=None
             id_position_order=id_position_order(task["scenario"]["vehicles"]),
             topology_signature=signature, topology_signature_error=signature_error,
             topology_token=canonical_hash([intent_name, mode, signature]) if signature is not None else None)
-        if manifest.get("protocol_version") == "v0.6":
+        if manifest.get("protocol_version") in ("v0.6", "v0.6.1"):
             sample.update(flight_pattern=manifest["flight_pattern"], component_versions=manifest["component_versions"])
+        if manifest.get("protocol_version") == "v0.6.1":
+            sample.update(time_base="sim_source", sim_speedup=manifest["sim_speedup"],
+                          common_time_axis=manifest["common_time_axis"])
         samples.append(sample)
         groups[intent_name, mode].append(sample)
     group_reports = []

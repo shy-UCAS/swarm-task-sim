@@ -13,7 +13,7 @@ from pathlib import Path
 
 from .episode_loader import load_episode
 from .generation import file_hash
-from .protocol import V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION
+from .protocol import V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION, V061_SEMANTIC_VERSION
 from .recording import write_json
 
 
@@ -59,10 +59,11 @@ def describe_dataset(dataset_directory, output=None, templates="zh_v0") -> dict:
     manifest_hash = file_hash(manifest_path)
     manifest = _read_json(manifest_path)
     semantic_version = manifest.get("semantic_protocol", {}).get("semantic_validation_version")
-    if semantic_version not in (V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION):
+    if semantic_version not in (V05_SEMANTIC_VERSION, V05_R12B_SEMANTIC_VERSION, V06_SEMANTIC_VERSION, V061_SEMANTIC_VERSION):
         raise ValueError("zh_v0 descriptions require a supported multi-intent semantic protocol")
-    v06 = semantic_version == V06_SEMANTIC_VERSION
-    facts_version = "observer_facts_v06b" if v06 else "observer_facts_v0"
+    v06 = semantic_version in (V06_SEMANTIC_VERSION, V061_SEMANTIC_VERSION)
+    facts_version = ("observer_facts_v061" if semantic_version == V061_SEMANTIC_VERSION else
+                     "observer_facts_v06b" if v06 else "observer_facts_v0")
     templates_version = "templates_zh_v06" if v06 else TEMPLATES_VERSION
     description_version = "language_zh_v06" if v06 else DESCRIPTION_VERSION
     entries = manifest.get("episodes")

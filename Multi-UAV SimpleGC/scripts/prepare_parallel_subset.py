@@ -19,6 +19,9 @@ def main(argv=None):
     parser.add_argument("--batch-id", required=True)
     parser.add_argument("--shards", type=int, default=4)
     parser.add_argument("--base-port", type=int, default=19100)
+    parser.add_argument("--protocol-version", choices=["v0.6.1"])
+    parser.add_argument("--sim-speedup", type=float)
+    parser.add_argument("--startup-stagger-host-s", type=float)
     parser.add_argument("--max-attempts", type=int, required=True)
     parser.add_argument("--storage-bytes-per-attempt", type=int, required=True)
     parser.add_argument("--export-reserve-bytes", type=int, required=True)
@@ -27,7 +30,8 @@ def main(argv=None):
         plan = prepare_subset(args.source_bundle, read(args.mission_ids), args.batch_id,
             shards=args.shards, max_attempts=args.max_attempts, base_port=args.base_port,
             storage_bytes_per_attempt=args.storage_bytes_per_attempt,
-            export_reserve_bytes=args.export_reserve_bytes)
+            export_reserve_bytes=args.export_reserve_bytes, protocol_version=args.protocol_version,
+            sim_speedup=args.sim_speedup, startup_stagger_host_s=args.startup_stagger_host_s)
     except (ValueError, OSError, KeyError, TypeError) as exc:
         parser.exit(2, f"Error: {exc}\n")
     print(json.dumps(dict(batch_directory=plan["root"], tasks=len(plan["tasks"]),

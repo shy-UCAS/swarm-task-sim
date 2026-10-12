@@ -10,6 +10,7 @@ from itertools import combinations
 
 from .observations import ObservationStream, finite_number, live_observation
 from .quality import policy_hash, resolve_policy
+from .time_contract import is_sim_time, sim_speedup
 
 
 def write_json(path, value):
@@ -19,10 +20,16 @@ def write_json(path, value):
 
 
 class Recorder:
-    def __init__(self, directory, vehicles, origin, epoch, hz, max_age, quality_policy=None):
+    def __init__(self, directory, vehicles, origin, epoch, hz, max_age, quality_policy=None, time_contract=None):
         self.directory, self.vehicles, self.origin = directory, vehicles, origin
         self.epoch, self.hz, self.max_age = epoch, hz, max_age
         self.policy = resolve_policy(quality_policy)
+        self.sim_time = is_sim_time(time_contract or {})
+        self.speedup = sim_speedup(time_contract or {})
+        self.source_clock = dict(time_base="sim_source", reference_agent_id=None,
+            selection_rule="lowest_sysid_then_agent_id_with_valid_position_source_at_first_tick",
+            origin_source_boot_s=None, last_source_boot_s=None, status="awaiting_source",
+            missing_source_polls=0, skipped_ticks=0)
         self.stop = threading.Event()
         self.error = None
         self.thread = threading.Thread(target=self._run, name="swarm-recorder", daemon=True)
@@ -31,6 +38,9 @@ class Recorder:
         self.thread.start()
 
     def _run(self):
+        if self.sim_time:
+            self._run_source()
+            return
         fields = ["t", "agent_id", "valid_position", "position_invalid_reason", "valid_attitude", "position_age_s",
                   "attitude_age_s", "position_boot_ms", "attitude_boot_ms", "east_m", "north_m", "up_m",
                   "ve_m_s", "vn_m_s", "vu_m_s", "lat", "lon", "alt_msl_m", "relative_alt_m",
@@ -83,6 +93,97 @@ class Recorder:
                         flush_at = now + 1
                     # Never manufacture a burst of backfilled samples after a scheduler delay.
                     tick = max(tick + 1 / self.hz, now + 0.001)
+        except Exception as exc:
+            self.error = exc
+
+    def _source_stamp(self, states):
+        """Fix the online sampling oscillator once; never substitute host time.
+
+        Offline export separately chooses its reference from fitted clock models.
+        This live oscillator only controls sampling density; raw evidence keeps
+        each message's boot time and receive time for the offline common axis.
+        """
+        clock = self.source_clock
+        def source(agent):
+            sample = states[agent].get("GLOBAL_POSITION_INT")
+            boot = getattr(sample[1], "time_boot_ms", None) if sample else None
+            return boot / 1000 if finite_number(boot) and boot >= 0 else None
+        if clock["reference_agent_id"] is None:
+            for vehicle in sorted(self.vehicles, key=lambda item: (item.sysid, item.id)):
+                stamp = source(vehicle.id)
+                if stamp is not None:
+                    clock.update(reference_agent_id=vehicle.id, origin_source_boot_s=stamp,
+                                 last_source_boot_s=stamp, status="available")
+                    break
+            else:
+                clock["missing_source_polls"] += 1
+                return None
+        stamp = source(clock["reference_agent_id"])
+        if stamp is None or stamp < clock["last_source_boot_s"]:
+            clock["status"] = "invalid_source"
+            raise ValueError("online recorder reference source clock disappeared or reset")
+        clock["last_source_boot_s"] = stamp
+        return stamp - clock["origin_source_boot_s"]
+
+    def _run_source(self):
+        fields = ["t", "host_receive_t_s", "time_base", "velocity_time_base", "agent_id", "valid_position", "position_invalid_reason",
+                  "valid_attitude", "position_age_s", "attitude_age_s", "position_host_age_s", "attitude_host_age_s",
+                  "position_boot_ms", "attitude_boot_ms", "east_m", "north_m", "up_m", "ve_m_s", "vn_m_s", "vu_m_s",
+                  "lat", "lon", "alt_msl_m", "relative_alt_m", "roll_rad", "pitch_rad", "yaw_rad", "p_rad_s",
+                  "q_rad_s", "r_rad_s", "armed", "mode"]
+        try:
+            with (self.directory / "samples.csv").open("w", encoding="utf-8", newline="") as file:
+                writer = csv.DictWriter(file, fieldnames=fields)
+                writer.writeheader()
+                next_tick, flush_at = 0.0, time.perf_counter()
+                while not self.stop.is_set():
+                    now = time.perf_counter()
+                    states = {vehicle.id: vehicle.snapshot() for vehicle in self.vehicles}
+                    stamp = self._source_stamp(states)
+                    if stamp is None or stamp + 1e-8 < next_tick:
+                        self.stop.wait(min(.01, .01 / self.speedup))
+                        continue
+                    for vehicle in self.vehicles:
+                        state = states[vehicle.id]
+                        row = dict(t=stamp, host_receive_t_s=now-self.epoch, time_base="sim_source",
+                                   velocity_time_base="agent_source",
+                                   agent_id=vehicle.id, valid_position=0, valid_attitude=0)
+                        for kind, prefix in (("GLOBAL_POSITION_INT", "position"), ("ATTITUDE", "attitude")):
+                            if kind not in state:
+                                continue
+                            received, message = state[kind]
+                            host_age = now-received if finite_number(received) and received >= 0 else None
+                            age = host_age * self.speedup if host_age is not None else None
+                            row[f"{prefix}_host_age_s"] = host_age if host_age is not None else ""
+                            row[f"{prefix}_age_s"] = age if age is not None else ""
+                            row[f"{prefix}_boot_ms"] = getattr(message, "time_boot_ms", "")
+                            row[f"valid_{prefix}"] = int(age is not None and age <= self.max_age)
+                            if prefix == "position":
+                                values, reason = live_observation(message, received, now, self.max_age/self.speedup,
+                                                                   self.origin, self.policy)
+                                row.update(valid_position=int(values is not None), position_invalid_reason=reason or "")
+                                if values is None:
+                                    continue
+                            if age is None or age > self.max_age:
+                                continue
+                            if prefix == "position":
+                                row.update(east_m=values[0], north_m=values[1], up_m=values[2], ve_m_s=message.vy/100,
+                                    vn_m_s=message.vx/100, vu_m_s=-message.vz/100, lat=message.lat/1e7, lon=message.lon/1e7,
+                                    alt_msl_m=message.alt/1000, relative_alt_m=message.relative_alt/1000)
+                            else:
+                                row.update(roll_rad=message.roll, pitch_rad=message.pitch, yaw_rad=message.yaw,
+                                    p_rad_s=message.rollspeed, q_rad_s=message.pitchspeed, r_rad_s=message.yawspeed)
+                        if "HEARTBEAT" in state:
+                            heartbeat = state["HEARTBEAT"][1]
+                            row.update(armed=int(bool(heartbeat.base_mode & 128)), mode=heartbeat.custom_mode)
+                        writer.writerow(row)
+                    if now >= flush_at:
+                        file.flush()
+                        flush_at = now + 1  # Persistence budget remains host seconds.
+                    # Do not invent missing evidence when the receiver falls behind.
+                    next_index = math.floor((stamp + 1e-8) * self.hz) + 1
+                    self.source_clock["skipped_ticks"] += max(0, next_index-round(next_tick*self.hz)-1)
+                    next_tick = next_index / self.hz
         except Exception as exc:
             self.error = exc
 

@@ -6,12 +6,59 @@ inputs, firmware identities, protected files and infrastructure/retry budgets.
 import math
 
 from .run_provenance import PARAMETER_COMPARISON_VERSION
+from .time_contract import is_sim_time
 
 VERSION = "v05_acceptance_r1_2"
 
 
 def finite(value):
     return type(value) in (int, float) and math.isfinite(value)
+
+
+def parameter_firmware_check(scene, metadata):
+    """V0.6.1: complete conflicting evidence is false; absence is unknown.
+
+    A confirmed conflict on one aircraft survives missing evidence on another.
+    Never infer a parameter conflict from a generic failed-run error string.
+    """
+    prov = metadata.get("run_provenance") or {}
+    rows = (prov.get("parameter_evidence") or {}).get("per_agent") or {}
+    agents = {v["id"] for v in scene["vehicles"]}
+    complete = {}
+    for agent, row in rows.items():
+        if not isinstance(row, dict):
+            complete[agent] = False
+            continue
+        if (row.get("firmware") or {}).get("confirmed_mismatch") is True:
+            return False
+        full = (row.get("complete") is True and row.get("status") == "complete"
+                and type(row.get("received_count")) is int and row["received_count"] > 0
+                and row["received_count"] == row.get("parameter_count")
+                and row.get("missing_indices") == [])
+        comparison = row.get("parameter_comparison") or {}
+        if full and comparison.get("collection_complete") is True and comparison.get("pass") is False:
+            return False
+        complete[agent] = (full and comparison.get("status") == "evaluated"
+                           and comparison.get("collection_complete") is True and comparison.get("pass") is True)
+    if set(rows) != agents or not all(complete.values()):
+        return None
+    if (prov.get("status") != "verified_before_takeoff"
+            or not (metadata.get("binary_firmware") or {}).get("sha256")
+            or not metadata.get("parameters_sha256")
+            or prov.get("parameter_comparison_version") != PARAMETER_COMPARISON_VERSION
+            or metadata.get("parameter_comparison_version") != PARAMETER_COMPARISON_VERSION):
+        return None
+    return True
+
+
+def frozen_identity_check(metadata, plan):
+    """Missing identity evidence is unknown; a present conflicting value is false."""
+    firmware = metadata.get("binary_firmware") or {}
+    pairs = [(firmware.get(key), plan["firmware"].get(key)) for key in ("sha256", "version_string")]
+    pairs.append((metadata.get("parameters_sha256"), plan["parameters_sha256"]))
+    if any(actual not in (None, "") and expected not in (None, "") and actual != expected for actual, expected in pairs):
+        return False
+    return True if all(actual and expected for actual, expected in pairs) else None
 
 
 def zero_length_segments(scene):
@@ -38,18 +85,21 @@ def assess_run(scene, metadata, quality, labels, metrics, ac4, onboard, *, stage
     if stage not in ("validation", "pilot", "batch"):
         raise ValueError("unsupported r1.2 acceptance stage")
     agents = {v["id"] for v in scene["vehicles"]}
-    prov = metadata.get("run_provenance", {})
-    readback = prov.get("parameter_evidence", {}).get("per_agent", {})
-    parameters_ok = (prov.get("status") == "verified_before_takeoff"
-        and prov.get("parameter_comparison_version") == PARAMETER_COMPARISON_VERSION
-        and metadata.get("parameter_comparison_version") == PARAMETER_COMPARISON_VERSION
-        and bool(metadata.get("binary_firmware", {}).get("sha256"))
-        and bool(metadata.get("parameters_sha256"))
-        and set(readback) == agents
-        and all(row.get("complete") is True and row.get("status") == "complete"
-                and type(row.get("received_count")) is int and row["received_count"] > 0
-                and row["received_count"] == row.get("parameter_count")
-                and row.get("missing_indices") == [] for row in readback.values()))
+    if is_sim_time(scene):
+        parameters_ok = parameter_firmware_check(scene, metadata)
+    else:
+        prov = metadata.get("run_provenance", {})
+        readback = prov.get("parameter_evidence", {}).get("per_agent", {})
+        parameters_ok = (prov.get("status") == "verified_before_takeoff"
+            and prov.get("parameter_comparison_version") == PARAMETER_COMPARISON_VERSION
+            and metadata.get("parameter_comparison_version") == PARAMETER_COMPARISON_VERSION
+            and bool(metadata.get("binary_firmware", {}).get("sha256"))
+            and bool(metadata.get("parameters_sha256"))
+            and set(readback) == agents
+            and all(row.get("complete") is True and row.get("status") == "complete"
+                    and type(row.get("received_count")) is int and row["received_count"] > 0
+                    and row["received_count"] == row.get("parameter_count")
+                    and row.get("missing_indices") == [] for row in readback.values()))
     separation = quality.get("truth_separation", {})
     minimum, required = separation.get("minimum_m"), scene.get("min_separation_m")
     zero = zero_length_segments(scene)
@@ -59,6 +109,13 @@ def assess_run(scene, metadata, quality, labels, metrics, ac4, onboard, *, stage
             and separation.get("status") == "clear_observed",
         no_zero_length_segments=zero == 0,
         run_completed=metadata.get("status") == "completed" and not quality.get("analysis_error"))
+    if is_sim_time(scene):
+        mismatches = onboard.get("counts", {}).get("mismatch_count")
+        checks["onboard_mission_parameters"] = (False if onboard.get("status") == "mismatch"
+            or finite(mismatches) and mismatches > 0 else True
+            if onboard.get("pass_gate") is True and onboard.get("status") == "pass" else None)
+        # The 2 m gate excludes this episode; it is never a confirmed batch violation.
+        checks.pop("truth_separation")
     if stage == "validation":
         checks["dual_channel_mission_success"] = (labels.get("mission_success") is True
             and labels.get("mission_success_observation") is True

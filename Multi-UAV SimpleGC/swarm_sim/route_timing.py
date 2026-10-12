@@ -1,5 +1,6 @@
 """Compare raw waypoint event times with the bound per-phase nominal model."""
 from .observations import finite_number
+from .time_contract import is_sim_time
 
 
 def nominal_arrival_evidence(scene, events, metadata, time_epoch):
@@ -52,5 +53,6 @@ def nominal_arrival_evidence(scene, events, metadata, time_epoch):
         expected_waypoints=sum(p["expected_waypoints"] for p in phases.values()),paired_waypoints=len(records),
         complete=bool(phases) and all(p["complete"] for p in phases.values()),
         within_tau=False if False in values else True if values and all(v is True for v in values) else None,
-        time_basis="raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route",
+        time_basis=("common reference FCU source time minus scheduled phase release; compared to bound uniform-speed route"
+                    if is_sim_time(scene) else "raw waypoint receive monotonic time minus scheduled phase release; compared to bound uniform-speed route"),
         criterion="abs(actual_s - nominal_s) < that phase's tau_s; missing evidence is unknown")
