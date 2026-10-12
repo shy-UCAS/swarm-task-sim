@@ -1,18 +1,18 @@
 # Multi-UAV SimpleGC
 
-> 2026-10-12 更新。新窗口先读[仓库根 README](../README.md)、[快速引擎开发交接](docs/fast_dynamics_engine_kickoff.md)和[M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。现有代码已实现 v0.6.1 时间契约并完成 T1/T2/T4/T5 验证收尾；快速动力学 M0/M1 已本地落地，最小双机完整数据链已接通，M0/M1 最终本地验收已通过，下一包为 M2。暂不提交或推送。下方 v0.4 及更早章节为历史接口，不能按其“当前状态”或命令启动旧批次。
+> 2026-10-12 更新。新窗口先读[仓库根 README](../README.md)、[快速引擎开发交接](docs/fast_dynamics_engine_kickoff.md)和[M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。现有代码已实现 v0.6.1 时间契约并完成 T1/T2/T4/T5 验证收尾；快速动力学 M0/M1 已本地落地，最小双机完整数据链已接通，M0/M1 最终本地验收已通过。M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执），M2-01 未开始。本轮不提交或推送；用户明确启动后续阶段时，可按指南本地提交上一轮已获准的差异。下方 v0.4 及更早章节为历史接口，不能按其“当前状态”或命令启动旧批次。
 
 已实现的执行后端包括 ArduCopter SITL 和范围明确的快速动力学 M1。包内历史版本字符串 **0.5.0-dev** 不能代替实际协议：SITL 支持 TaskSpec v3、v0.6 三意图和显式 v0.6.1 公共源时间。SITL 三意图 profile 使用 2/3/4 机；v3 已接通连续航线、固件/参数核验、双通道分析、family 整族生成、并行控制、导出/描述/加载。快速后端使用 `fast_dynamics_v1` / `sim_clock`，目前只验证双机单段快速通过空中任务、理想合成观测和六维输入，未校准、非训练。
 
 ## 当前状态与下一步（2026-10-12）
 
-- **SITL 代码与飞法**：本次已提交基线为 `5e45637`，新增快速引擎保留为未提交实现；SITL 侦察 `equal_strip_lawnmower`／`equal_strip_rectangular_spiral`，巡逻 `staggered_same_loop`，快速通过 `line_abreast`；`echelon` 未生产登记。事实层 v06b 修复已提交并离线验收，最终悬停 2 秒、固件等待 10 秒。
+- **SITL 代码与飞法**：历史开发基线为 `5e45637`，M0/M1 快速引擎已保存到本地检查点 `0f7c42d`；SITL 侦察 `equal_strip_lawnmower`／`equal_strip_rectangular_spiral`，巡逻 `staggered_same_loop`，快速通过 `line_abreast`；`echelon` 未生产登记。事实层 v06b 修复已提交并离线验收，最终悬停 2 秒、固件等待 10 秒。
 - **pilot30**：运行提交 `0dffcd8`／`v0.6-pauseA3`；30 个 episode，质量与语义一致均为 29/30，116 条描述，已收尾，标记 pilot、不用于训练。暂停 B 冻结阈值与事实层修复见 [pilot 报告](docs/v0.6_pilot_report.md)。
 - **正式生产**：运行提交 `762a303`／`v0.6-pilot`；批次 `v06_production900_seed2026100812`，296 次记录（completed 288、failed 8），质量合格 287/296、语义一致 289/296；台账持久化 `WinError 5` 规则停止，未完成、未 finalize，无正式导出数据集或描述层。见 [生产停止报告](docs/v0.6_production_stop_01.md)。
-- **后续已实现**：r2 465/900 停止保留；规则暂停、子集 prepare、基础端口配置及 v0.6.1 时间契约已实现。`v0.6.1-time` 对应 `bd1f40a`，当前文档核对 HEAD 为 `5e45637`。
+- **后续已实现**：r2 465/900 停止保留；规则暂停、子集 prepare、基础端口配置及 v0.6.1 时间契约已实现。`v0.6.1-time` 对应 `bd1f40a`，该历史阶段核对的基线为 `5e45637`，当前 M0/M1 本地检查点为 `0f7c42d`。
 - **验证最终状态**：T1 K2×1、T4 K4×1 通过，各 42/42 执行、41/42 合格并 finalize；T2 K2×2 失败，T3/T3+ 取消；T5 K6×1 在 15/42 后规则暂停、9/15 合格，未 finalize；T6 未运行。非独占条件，自动检查已暂停，r3 尚未准备。
-- **本地实现进展**：[动力学引擎计划融合修订版 r2](docs/fast_dynamics_engine_implementation_plan.md)的 M0/M1 已落地：适配备忘/契约、受限加速度/jerk 内核及最小双机完整数据链，最终验收见 [M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。下一包 M2 扩三意图四飞法，M3 确定性校准，M4 扰动与两类输出/试产，M5 独立验收，均未完成。`scripts/run_fast_dynamics.py` 已新增，依赖已声明 `numpy==2.5.3`；4 机内核固定用例约 281 倍实时，完整生产吞吐仍未验收。
-- **工作边界**：仅本地开发、测试、文档；暂不提交/推送/打标签，不启动 SITL、不续跑旧批次、不准备 r3。保留未提交文档和全部历史证据。
+- **本地实现进展**：[动力学引擎计划融合修订版 r2](docs/fast_dynamics_engine_implementation_plan.md)的 M0/M1 已落地：适配备忘/契约、受限加速度/jerk 内核及最小双机完整数据链，最终验收见 [M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。**M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执），M2-01 未开始**（[M2-00 报告](docs/fast_dynamics_m2/M2-00_report.md)、[审阅回执](docs/fast_dynamics_m2/M2-00_review_03.md)）；M2 飞行功能（三意图四飞法、2/3/4 机、完整多机时序）尚未实现，M3 确定性校准、M4 扰动与两类输出/试产、M5 独立验收均未完成。`scripts/run_fast_dynamics.py` 已新增，依赖已声明 `numpy==2.5.3`；4 机内核固定用例约 281 倍实时，完整生产吞吐仍未验收。
+- **工作边界**：仅本地开发、测试、文档；不推送/打标签；本地提交仅限用户明确启动阶段时按指南保存上一轮获准差异，不启动 SITL、不续跑旧批次、不准备 r3。保留未提交文档和全部历史证据。
 - **阅读入口**：[开发交接](docs/fast_dynamics_engine_kickoff.md)、[系统架构](docs/system_architecture_overview.md)、[数据契约](docs/data_contract_v0.md)、[v0.6.1 实施报告](docs/v0.6.1_time_report.md)、[最终验证报告](docs/v0.6.1_time_validation_report.md)。下方章节均按历史版本理解。
 
 ## v0.4 里程碑（历史记录）

@@ -4,8 +4,8 @@
 
 ## 当前方向和边界
 
-- 现有代码已实现 SITL 的 v0.6.1 时间契约；快速引擎 M0/M1 已本地落地，包含适配备忘/独立契约、确定性内核、双机快速通过完整数据链与回归。M0/M1 最终本地验收已通过，先读 [M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)核对结果和未完成项；下一包为 M2，不能宣称三意图四飞法、校准或生产验收已完成。
-- 用户当前要求仅本地开发、测试、记录，暂不提交、推送、建 PR、打标签或以远端 CI 作为推进条件。保留已有未提交文档和新计划，不 reset/clean。
+- 现有代码已实现 SITL 的 v0.6.1 时间契约；快速引擎 M0/M1 已本地落地，包含适配备忘/独立契约、确定性内核、双机快速通过完整数据链与回归。M0/M1 最终本地验收已通过，先读 [M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)核对结果和未完成项。**M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01 未开始，M2 飞行功能尚未实现，不能宣称三意图四飞法、校准或生产验收已完成。** 进度见 [M2-00 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_report.md)与[审阅回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md)。
+- 用户当前要求仅本地开发、测试、记录，暂不推送、建 PR、打标签或以远端 CI 作为推进条件；本地提交仅限用户明确启动 M2 阶段时按指南做的检查点提交（M2-00 已用此例外，后续阶段启动时方可提交上一轮获准差异）。保留已有未提交文档和新计划，不 reset/clean。
 - 开发位置为 `Simulation-dev/Multi-UAV SimpleGC`。原 `Simulation` 是冻结归档；`Simulation-dev-wip` 属另一会话；两者不作为本阶段写入范围。大型历史证据在仓库外 `SwarmData`。
 - 不启动 SITL，不续跑旧批次，不准备 r3。新引擎本地合成验证按实现里程碑执行，使用独立输出及新后端来源身份。
 

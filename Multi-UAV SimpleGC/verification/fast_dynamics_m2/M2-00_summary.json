@@ -1,0 +1,379 @@
+{
+  "stage_id": "M2-00",
+  "attempt_id": "attempt_01",
+  "revision_attempt_id": "attempt_03_record_fix",
+  "status": "PASS",
+  "written_at_local": "2026-10-12T05:45:00-07:00",
+  "revised_at_local": "2026-10-12T06:24:05.1892416-07:00",
+  "revision_reason": "User authorized Codex to directly complete review_02 A/B/C; documentation and bookkeeping only, final verification recorded in review_03",
+  "previous_review": {
+    "note": "Historical review; superseded by the final review_03 PASS",
+    "conclusion": "FIX_REQUIRED",
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_review_02.md",
+    "sha256": "0ddaf3c31ebae9b613dbde57931be150a409311162f96bd8367e8cff04522bbc"
+  },
+  "reviewed_baseline": {
+    "report_path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/M2-00_report.reviewed.md",
+    "report_sha256": "4b007704c4ea3e7038d8d9e51d71afb37053eb822157489cca2c5fb46e4b4bb0",
+    "summary_path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/M2-00_summary.reviewed.json",
+    "summary_sha256": "c9166101c2bc24a97128498ca2e8a32686415620dd83e85ea73722b2d22f8ba0",
+    "both_match_review_receipt": true
+  },
+  "git": {
+    "repo_root": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev",
+    "branch": "codex/fast-dynamics",
+    "branch_created_from": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "base_commit": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "checkpoint_commit": "0f7c42d8688880b1d8e1a416184383a94a5ae123",
+    "commit_subject": "# feat(fast-dynamics): 落地 M0/M1 内核与双机完整数据链",
+    "commit_stat": "243 files changed, 54273 insertions(+), 95 deletions(-)",
+    "head_unchanged_by_repair": true,
+    "upstream": null,
+    "main_commit": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "origin_main_commit": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "working_tree_tracked_diff": "nonempty: documentation only",
+    "working_tree_diff_sha256": "19dc69cc4275705d97f95af3398607f33a4a3efaccf6345d78906b09a2e1c9c9",
+    "working_tree_diff_note": "SHA256 of raw stdout bytes from git diff --binary --no-ext-diff --no-color HEAD -- at Git root; tracked documents only, untracked artifacts separately indexed",
+    "business_code_diff_in_repair": "empty (swarm_sim, scripts, tests, requirements.txt, .gitignore untouched)",
+    "remote_operations": "none (no fetch, push, PR or tag)",
+    "checkpoint_post_commit_snapshot": {
+      "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "note": "Historical state immediately after checkpoint; not the current document repair state",
+      "tracked_diff": "empty",
+      "attempt_id": "attempt_01"
+    },
+    "working_tree_diff_bytes": 30274,
+    "working_tree_changed_files": [
+      "CLAUDE.md",
+      "Multi-UAV SimpleGC/README.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_engine_kickoff.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_engine_m01_report.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_engine_m2_staged_guide.md",
+      "README.md"
+    ],
+    "untracked_evidence_scope": "M2-00 report, summary, three review receipts and M2-01 instruction; report hash bound below, final validation records all files"
+  },
+  "source_snapshot": {
+    "path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/source_snapshot.txt",
+    "sha256": "38c5d0cf401a0d5e018aaa7719cde22f676142c247ed3fd033143e8c45a91b2f",
+    "files": 29,
+    "scope": "fast_dynamics package, new scripts, new tests and fixture, public interface dispatch modules, requirements.txt, unit-tests.yml"
+  },
+  "commit_inventory": {
+    "files": 243,
+    "total_bytes": 2752929,
+    "max_file_bytes": 210493,
+    "manifest": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/checkpoint_manifest.json",
+    "worktree_equals_index_blobs": "243/243",
+    "by_category": {
+      "engine_pkg": {
+        "files": 11,
+        "bytes": 78085
+      },
+      "interface_dispatch": {
+        "files": 9,
+        "bytes": 162343
+      },
+      "tests_and_fixture": {
+        "files": 4,
+        "bytes": 34459
+      },
+      "scripts": {
+        "files": 3,
+        "bytes": 24819
+      },
+      "docs": {
+        "files": 14,
+        "bytes": 311559
+      },
+      "deps_and_ci": {
+        "files": 2,
+        "bytes": 3562
+      },
+      "evidence_git_visible": {
+        "files": 200,
+        "bytes": 2138102,
+        "note": "not all summaries: 180 files are per-episode records, see evidence_boundary"
+      }
+    },
+    "identity_scope": "243/243 equality describes attempt_01 commit time; current entry documents intentionally differ"
+  },
+  "evidence_boundary": {
+    "deviation_registered": "R1: the explicit file list was built as 'all modified + all git-visible untracked files'. The existing .gitignore decides what Git sees; it is not a purpose whitelist. 180 evidence files are per-episode records including labels, events, descriptions and facts payloads, and cannot be called small summaries.",
+    "classification_rule": "single attempt/episode scope -> externalize; stage-level aggregate or tooling -> keep",
+    "classification_files": {
+      "json": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/evidence_classification.json",
+      "markdown": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/evidence_classification.md",
+      "script": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/classify_evidence.py"
+    },
+    "categories": {
+      "keep_stage_summary": {
+        "files": 18,
+        "bytes": 694586
+      },
+      "externalize_sample_payload": {
+        "files": 126,
+        "bytes": 771141
+      },
+      "externalize_sample_bookkeeping": {
+        "files": 56,
+        "bytes": 672375
+      }
+    },
+    "externalize_total": {
+      "files": 182,
+      "bytes": 1443516
+    },
+    "files_in_eight_attempt_dirs": {
+      "files": 180,
+      "bytes": 1443395,
+      "matches_review_receipt": true
+    },
+    "m2_01_cleanup_scope": {
+      "tracked_files": 182,
+      "ignored_files": 156,
+      "total_files": 338,
+      "total_bytes": 29521505
+    },
+    "history_note": "these files are already in commit 0f7c42d history; cleaning the latest tree in M2-01 does not remove them from history; no history rewrite (no amend/reset/filter-repo)",
+    "open_questions_for_review": [],
+    "classification_decision": {
+      "review": "docs/fast_dynamics_m2/M2-00_review_02.md",
+      "stage_completion": "retain with stage-level verification",
+      "single_case_configs": "externalize both",
+      "status": "APPROVED",
+      "cleanup_rule": "338 candidates only; copy all 356 originals and verify before cleanup during user-started M2-01",
+      "per_attempt_completion": "externalize all 8 with their payloads"
+    }
+  },
+  "excluded_from_git": {
+    "scope": "Multi-UAV SimpleGC/verification/fast_dynamics_m01 (ignored by the pre-existing .gitignore policy)",
+    "files": 156,
+    "total_bytes": 28077989,
+    "breakdown": {
+      "csv": {
+        "files": 64,
+        "bytes": 27313964
+      },
+      "log": {
+        "files": 4,
+        "bytes": 135674
+      },
+      "dataset_tree_json": {
+        "files": 88,
+        "bytes": 628351
+      }
+    },
+    "still_in_workspace": true,
+    "evidence_tree_after_commit": {
+      "files": 356,
+      "bytes": 30216091
+    },
+    "list": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/excluded_ignored_files.txt",
+    "migration_owner": "M2-01"
+  },
+  "commands": [
+    {
+      "step": "pre_state",
+      "command": "git status --porcelain -uall / git diff --cached --name-only / git branch / git log -1",
+      "exit_code": 0,
+      "note": "no staged content; 20 modified + 223 untracked; HEAD 5e45637"
+    },
+    {
+      "step": "branch",
+      "command": "git switch -c codex/fast-dynamics",
+      "exit_code": 0,
+      "note": "workspace entry count 243 unchanged"
+    },
+    {
+      "step": "inventory",
+      "command": "git diff --name-only ; git ls-files --others --exclude-standard",
+      "exit_code": 0,
+      "note": "243 intended files, 2752929 bytes; boundary later registered as R1 deviation"
+    },
+    {
+      "step": "stage",
+      "command": "git add -- @intended_files",
+      "exit_code": 0,
+      "note": "staged set == intended set; no ignored file staged; no git add -A"
+    },
+    {
+      "step": "identity",
+      "command": "git hash-object <file> vs git ls-files -s blob",
+      "exit_code": 0,
+      "note": "243/243 exact worktree==index bytes"
+    },
+    {
+      "step": "commit",
+      "command": "git commit -F <external commit_message.txt>",
+      "exit_code": 0,
+      "note": "0f7c42d, 243 files"
+    },
+    {
+      "step": "post_state",
+      "command": "git status --porcelain -uall ; git ls-files -o -i ; git rev-parse main origin/main",
+      "exit_code": 0,
+      "note": "clean tracked tree; 156 ignored data files intact; main/origin/main unchanged"
+    },
+    {
+      "step": "restore_A",
+      "command": "git archive HEAD -o checkpoint_tree.tar ; tar -xf",
+      "exit_code": 1,
+      "note": "SUPERSEDED: 3220/3223 extracted; 3 non-ASCII names 'Invalid empty pathname'; 176138240-byte tar and partial tree deleted, only the note file remains"
+    },
+    {
+      "step": "restore_B",
+      "command": "git archive HEAD -- swarm_sim tests missions scripts requirements .conda-env ; tar -xf ; python -m unittest",
+      "exit_code": 1,
+      "note": "Ran 39 tests, errors=7: cannot find source Git baseline (exported tree is outside Git)"
+    },
+    {
+      "step": "restore_C",
+      "command": "git worktree add --no-checkout --detach <ext> 0f7c42d ; git sparse-checkout set --cone ... ; git checkout ; python -m unittest",
+      "exit_code": 0,
+      "note": "Ran 39 tests in 26.383s -> OK; worktree clean; removed with git worktree remove --force"
+    },
+    {
+      "step": "cleanup",
+      "command": "git worktree prune -v ; git worktree list",
+      "exit_code": 0,
+      "note": "worktree list restored to the original two entries"
+    },
+    {
+      "step": "repair_R1",
+      "command": "conda run -n llm python -B classify_evidence.py",
+      "exit_code": 0,
+      "note": "classified the 200 committed evidence files; 180/1443395 bytes in eight attempt dirs matches the review receipt"
+    },
+    {
+      "step": "repair_R2_R3",
+      "command": "read test sources, count call sites, edit report/summary/entry documents",
+      "exit_code": 0,
+      "note": "documentation and JSON only; no test rerun, no worktree, no commit"
+    }
+  ],
+  "tests": {
+    "passed": 39,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "restore smoke test only: test_fast_dynamics_core + test_fast_dynamics_execution + test_fast_dynamics_artifacts, run in a detached sparse worktree at commit 0f7c42d",
+    "test_case_count": {
+      "core": 15,
+      "execution": 10,
+      "artifacts": 14,
+      "total": 39
+    },
+    "not_metered": "number of run_mission executions, episodes, datasets and descriptions produced during the run is not recorded in the logs and cannot be reconstructed; 39 is the test case count, not an episode count",
+    "failed_attempt": {
+      "attempt": "restore_B",
+      "ran": 39,
+      "errors": 7,
+      "reason": "artifacts._git_revision() requires a Git baseline; the exported tree is not a repository"
+    },
+    "not_run": [
+      "367-module legacy offline list",
+      "DR130 260/260",
+      "v0.5 example loading 4/4",
+      "M0/M1 406/406 acceptance"
+    ],
+    "evidence_limitation": "A's raw tar and unpacked tree were deleted; commands.log is a post-hoc summary, not raw full output; not all raw evidence of the three attempts is preserved"
+  },
+  "mission_results": {
+    "independent_m2_batches": 0,
+    "production_runs": 0,
+    "in_test_simulation": "yes: real M1 runs inside the recovery tests",
+    "call_sites": {
+      "run_mission": {
+        "core": 0,
+        "execution": 7,
+        "artifacts": 4,
+        "total": 11
+      },
+      "write_episode": 3,
+      "build_dataset": 3,
+      "describe_dataset": 3,
+      "audit_dataset": 2
+    },
+    "artifacts_from_tests": "temporary episodes, dataset exports and Chinese descriptions were generated inside TemporaryDirectory and cleaned up in tearDown; nothing kept in the repository",
+    "execution_count": "not metered (see tests.not_metered); not reported as 0",
+    "inputs_read": [
+      {
+        "path": "tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json",
+        "sha256": "dd5beb91f5388991487aab15c07493f74075e5ea17d99225db7313b2412ee318",
+        "development_family": "scene_74f9c65a90cdb4ffd5ed",
+        "usage": "Read and executed by test_fast_dynamics_execution and test_fast_dynamics_artifacts; test_fast_dynamics_core uses synthetic numerical states and does not read this fixture"
+      },
+      {
+        "path": "missions/v3/rapid_passage_route_v06.json",
+        "identity": "3-vehicle rapid_passage task",
+        "usage": "read by the unimplemented-scope test only; run_mission raises ValueError('two-vehicle'); read but not successfully executed"
+      },
+      {
+        "path": "historical SITL results, exported datasets, language artifacts",
+        "usage": "not read"
+      },
+      {
+        "path": "future calibration/blind_holdout data",
+        "usage": "not read; the split does not exist yet"
+      }
+    ],
+    "coverage_cells_updated": [],
+    "note": "no independent M2 mission batch, new task, production batch or M2 semantic adaptation was performed"
+  },
+  "evidence": [
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/commands.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/intended_files.txt",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/excluded_ignored_files.txt",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/checkpoint_manifest.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/source_snapshot.txt",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/commit_message.txt",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/restore_check_b/restore_tests.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/restore_check_c/restore_tests.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_01/restore_check/ATTEMPT_A_SUPERSEDED.md",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/evidence_classification.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/evidence_classification.md",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/M2-00_report.reviewed.md",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/M2-00_summary.reviewed.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/M2-00_review.receipt.md",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_report.md",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_review.md",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_03_record_fix/before_manifest.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_03_record_fix/validation.json",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_review_02.md"
+  ],
+  "holdout_protection": {
+    "families_used": [
+      "scene_74f9c65a90cdb4ffd5ed (development_reference, via the frozen M1 fixture read by the recovery tests)"
+    ],
+    "calibration_intersection": "not computed: the calibration/blind_holdout split does not exist yet (M2-02 freezes it); absence of a set is not a verified empty intersection",
+    "blind_holdout_intersection": "not computed for the same reason; no evidence of any future holdout data being read",
+    "historical_results_read": "none (tests used only newly generated temporary artifacts)",
+    "note": "source index files were committed but their contents were not parsed for any development decision"
+  },
+  "unresolved": [],
+  "next_action": "WAIT_FOR_USER_TO_START_M2_01",
+  "deferred_to_next_stage": [
+    "M2-01 migration, relocation index, external output-root enforcement and validated cleanup; not executed in M2-00",
+    "M2-02 family split and task registration; later M2 flight features remain unimplemented"
+  ],
+  "final_review": {
+    "scope": "M2-00 checkpoint and corrected records only",
+    "conclusion": "PASS",
+    "user_authorized_direct_record_fix": true,
+    "reviewer": "Codex",
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md"
+  },
+  "current_report": {
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_report.md",
+    "sha256": "99a417c481a866848c50f60a14f40a0249807d33da1104fb9a809abc47a7c8aa"
+  },
+  "record_fix": {
+    "tests_rerun": false,
+    "author": "Codex",
+    "backup_manifest": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_03_record_fix/before_manifest.json",
+    "attempt_id": "attempt_03_record_fix",
+    "head_unchanged": true,
+    "business_code_changed": false
+  }
+}
