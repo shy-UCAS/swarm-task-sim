@@ -1,5 +1,7 @@
 # 项目交接与本地开发约束
 
+> **2026-10-12 后续：覆盖几何提速完成验证，M3 在来源映射处停止。** 当前冻结 M2-02B 的 213 个校准任务与 r2 只有名称相同，family/场景/输入哈希均不匹配。不得据同名任务配对，不改冻结划分，不启动 SITL；M3 b/c 尚未执行。20 条旧 run 的 120 个 JSON 完全一致；12 正例通过，512 离线测试及旧路径回归通过。4 机扫描 47.549 秒，性能目标未达到，不做范围外优化。见[本轮报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_coverage_performance_report.md)，本补注优先于历史说明。用户授权本地提交，不推送。
+
 > **2026-10-12 最新状态：M2 已完成并停止。** 已修复实际计划阶段标签；固定 12 正例＋4 状态变化负例完整链全部通过，16 条质量合格、64 条描述。离线测试 502/502、DR130 260/260、v0.5 示例 4/4；后处理仅复用相同语义计算，19 个导出文件逐字节不变。用户授权本地提交，不推送；未进入 M3。详见[本轮完成报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2_runtime_resume_report.md)（含字段来源表、覆盖与耗时）；旧 P0 和历史产物保留。本补注优先于下文历史阶段状态与旧暂停说明。
 
 更新于 2026-10-12，核对代码基线 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`。先读根 [README](README.md)，再读 [快速引擎开发交接](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_kickoff.md) 与 [实现计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_implementation_plan.md)。

@@ -14,6 +14,17 @@ Do not silently switch to base or install into another interpreter.
 
 ## Current local development handoff (2026-10-12)
 
+Latest follow-up: coverage geometry acceleration is verified (20 prior runs,
+120 JSON files byte-identical; 12 positive reruns, 144 evidence files identical).
+512 offline tests, DR130 260 cases and four v0.5 examples passed. Four-agent
+lawnmower takes 47.549 s, so the 30 s target is not met; no other optimization.
+M3 stopped at source mapping: the frozen M2-02B calibration inputs use the new
+2026101203 source, and none of 213 tasks matches r2 family/scene/task identity.
+Do not substitute same-name r2 tasks, change the split, or launch SITL. No M3
+baseline or parameter calibration has run. Read
+docs/fast_dynamics_coverage_performance_report.md before further work.
+This follow-up supersedes the older M2-only stop description below.
+
 Latest status: M2 implementation and the planned_phases P0 repair are complete.
 The fixed 12 positive + 4 physical-state negative tasks passed the full chain;
 502 offline tests, DR130 260 cases and all four v0.5 examples passed.
