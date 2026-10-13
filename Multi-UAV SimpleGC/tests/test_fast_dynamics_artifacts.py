@@ -31,7 +31,7 @@ class FastDynamicsArtifactsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.task = json.loads(FIXTURE.read_text(encoding="utf-8"))
-        cls.result = run_mission(cls.task)
+        cls.result = run_mission(cls.task, FastDynamicsConfig())
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

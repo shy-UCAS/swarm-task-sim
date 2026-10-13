@@ -1,4 +1,4 @@
-"""Run the local M1 labeled-episode pipeline into a NEW attempt directory."""
+"""Run a development fast-dynamics episode through the complete public data pipeline."""
 
 import argparse
 import hashlib
@@ -9,7 +9,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from swarm_sim.fast_dynamics.contracts import FastDynamicsConfig
+from swarm_sim.fast_dynamics.contracts import FastDynamicsConfig, M2Config
 from swarm_sim.fast_dynamics.mission_executor import run_mission
 from swarm_sim.fast_dynamics.output_policy import (
     OutputPolicyError, assert_created_within, assert_new_attempt_path,
@@ -19,15 +19,19 @@ from swarm_sim.fast_dynamics.output_policy import (
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("task", type=Path, help="frozen TaskSpec v3 JSON (M1: 2-agent rapid passage)")
+    parser.add_argument("task", type=Path, help="TaskSpec v3 JSON")
     parser.add_argument("--output", type=Path,
                         help="new attempt directory outside the repository; "
                              "default: <output-root>/<UTC timestamp>_<run-id>")
     parser.add_argument("--output-root", type=Path,
                         help="external root for attempts; default: FAST_DYNAMICS_OUTPUT_ROOT, "
                              "else the sibling SwarmData/fast_dynamics directory")
-    parser.add_argument("--config", type=Path, help="strict seven-group fast_dynamics JSON overrides")
-    parser.add_argument("--run-id", default="fast_m1_rapid_passage")
+    parser.add_argument("--config", type=Path, help="strict fast_dynamics JSON configuration overrides")
+    parser.add_argument("--legacy-m1", action="store_true", help="use the frozen M1 executor and data contract")
+    parser.add_argument("--test-harness", type=Path, help="development-only reference fault configuration JSON")
+    parser.add_argument("--no-semantic-reuse", action="store_true",
+                        help="diagnostic: recompute identical M2 semantic inputs at every data-pipeline stage")
+    parser.add_argument("--run-id", default="fast_dynamics_m2")
     args = parser.parse_args(argv)
 
     # Output policy first: a rejected root or target must fail before any artefact exists.
@@ -43,7 +47,11 @@ def main(argv=None):
     pipeline_started = time.perf_counter()
     task_bytes = args.task.read_bytes()
     task = json.loads(task_bytes.decode("utf-8-sig"))
-    config = FastDynamicsConfig.from_dict(json.loads(args.config.read_text(encoding="utf-8-sig")) if args.config else {})
+    config_type = FastDynamicsConfig if args.legacy_m1 else M2Config
+    config = config_type.from_dict(json.loads(args.config.read_text(encoding="utf-8-sig")) if args.config else {})
+    args.test_harness_config = json.loads(args.test_harness.read_text(encoding="utf-8-sig")) if args.test_harness else None
+    if args.legacy_m1 and args.test_harness_config is not None:
+        parser.error("--test-harness requires M2 execution")
     args.output.mkdir(parents=True, exist_ok=False)
     try:
         assert_created_within(args.output, root["root"])
@@ -52,14 +60,18 @@ def main(argv=None):
         raise
     (args.output / "input_task.json").write_bytes(task_bytes)
     (args.output / "config.json").write_text(json.dumps(config.to_dict(), indent=2) + "\n", encoding="utf-8")
+    if args.test_harness_config is not None:
+        (args.output / "test_harness.json").write_text(json.dumps(args.test_harness_config, indent=2) + "\n", encoding="utf-8")
     attempt = dict(status="running", task_path=str(args.task.resolve()),
                    input_sha256=hashlib.sha256(task_bytes).hexdigest(), run_id=args.run_id,
-                   training_eligible=False, purpose="M1 local development integration",
+                   training_eligible=False, purpose="M1 local development integration" if args.legacy_m1 else "M2 local development integration",
                    output_root=str(root["root"]), output_root_source=root["source"],
                    output_path=str(args.output))
     (args.output / "attempt.json").write_text(json.dumps(attempt, indent=2), encoding="utf-8")
     try:
-        report = _run_pipeline(args, task, task_bytes, config, pipeline_started)
+        from swarm_sim.fast_dynamics.adapter import reuse_semantics
+        with reuse_semantics(enabled=not args.no_semantic_reuse):
+            report = _run_pipeline(args, task, task_bytes, config, pipeline_started)
     except BaseException as exc:
         attempt.update(status="failed", error_type=type(exc).__name__, error=str(exc))
         (args.output / "failure.json").write_text(json.dumps(attempt, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -77,7 +89,8 @@ def _run_pipeline(args, task, task_bytes, config, pipeline_started):
     from swarm_sim.episode_loader import load_episode
 
     started = time.perf_counter()
-    result = run_mission(task, config)
+    harness = getattr(args, "test_harness_config", None)
+    result = run_mission(task, config, **({"test_harness": harness} if harness is not None else {}))
     simulate_s = time.perf_counter() - started
     # An interrupted/failed attempt is retained without a completion marker.
     analysis = write_episode(result.scene, result, args.output / "run", run_id=args.run_id,
@@ -97,7 +110,7 @@ def _run_pipeline(args, task, task_bytes, config, pipeline_started):
         simulation_wall_s=simulate_s, end_to_end_wall_s=elapsed,
         episode_realtime_factor=result.end_us / 1e6 / simulate_s,
         timing_scope="task/config loading through public loader; final report/completion write excluded; outer benchmark includes them",
-        scope="M1 local integration; uncalibrated, development only, not a production throughput benchmark",
+        scope=("M2" if isinstance(config, M2Config) else "M1") + " local integration; uncalibrated, development only, not a production throughput benchmark",
         output=dict(path=str(args.output), root=str(args.output_root_info["root"]),
                     root_source=args.output_root_info["source"]),
         analysis=analysis, dataset=exported, audit=audit, language=language,

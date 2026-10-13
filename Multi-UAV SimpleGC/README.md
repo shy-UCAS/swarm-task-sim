@@ -1,6 +1,6 @@
 # Multi-UAV SimpleGC
 
-> **2026-10-12 最新状态：** M2-01 已提交 `16b7cb7`；原 M2-02 因旧来源全部暴露而 BLOCKED。用户授权的 **M2-02B 新来源补充已实现并复核 PASS**，固定 144 个 base，经历史近重复排除后冻结校准/盲测各 71 个接纳 family（各 213 任务）。详见[报告](docs/fast_dynamics_m2/M2-02B_report.md)、[回执](docs/fast_dynamics_m2/M2-02B_review.md)与[下一阶段指令](docs/fast_dynamics_m2/M2-03_instruction.md)。本轮未提交，M2-03 未执行；新留出无飞行/reference episode，M2 飞行功能尚未扩展。
+> **2026-10-12 最新状态：M2 已完成并停止。** 已修复实际计划阶段标签；固定 12 正例＋4 状态变化负例完整链全部通过，16 条质量合格、64 条描述。离线测试 502/502、DR130 260/260、v0.5 示例 4/4；后处理仅复用相同语义计算，19 个导出文件逐字节不变。用户授权本地提交，不推送；未进入 M3。详见[本轮完成报告](docs/fast_dynamics_m2/M2_runtime_resume_report.md)（含字段来源表、覆盖与耗时）；旧 P0 和历史产物保留。本补注优先于下文历史阶段状态与旧暂停说明。
 
 > 2026-10-12 更新。新窗口先读[仓库根 README](../README.md)、[快速引擎开发交接](docs/fast_dynamics_engine_kickoff.md)和[M0/M1 报告](docs/fast_dynamics_engine_m01_report.md)。现有代码已实现 v0.6.1 时间契约并完成 T1/T2/T4/T5 验证收尾；快速动力学 M0/M1 已本地落地，最小双机完整数据链已接通，M0/M1 最终本地验收已通过。M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01（M1 证据迁移与外部输出约束）已执行、已获 Codex 最终 `PASS`、已提交 `16b7cb7`；M2-02B 新来源补充已获 PASS，本阶段起始已按授权把 M2-00 获准记录提交为检查点 `57cca91`。不推送；用户明确启动后续阶段时，可按指南本地提交上一轮已获准的差异。下方 v0.4 及更早章节为历史接口，不能按其“当前状态”或命令启动旧批次。
 
@@ -179,4 +179,4 @@ conda run -n llm --no-capture-output python scripts/spike_continuous_route.py --
 试验 CLI 的退出码 0 表示运行及离线分析完成，1 表示运行失败，2 表示离线分析失败；**GO/NO-GO 必须读取指标报告，不能以退出码 0 替代**。覆盖与最近距离使用被动源时钟对齐，其残差不代表绝对同步精度。WP-S、WP-G 和 V1 已获用户确认；V06 已完成 10 次试生产，阶段 0–1 的最终结论见上方报告。
 
 
-2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，下一步为 M2-03 设计。见 [最终回执](docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](docs/fast_dynamics_m2/M2-02_instruction.md)。
+2026-10-12 M2-01 历史收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，该历史节点的下一步为 M2-03 设计（现已执行并修复待审，以头部为准）。见 [最终回执](docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](docs/fast_dynamics_m2/M2-02_instruction.md)。

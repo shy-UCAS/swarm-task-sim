@@ -1,6 +1,6 @@
 # 项目交接与本地开发约束
 
-> **2026-10-12 最新状态：** M2-01 已提交 `16b7cb7`；原 M2-02 因旧来源全部暴露而 BLOCKED。用户授权的 **M2-02B 新来源补充已实现并复核 PASS**，固定 144 个 base，经历史近重复排除后冻结校准/盲测各 71 个接纳 family（各 213 任务）。详见[报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02B_report.md)、[回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02B_review.md)与[下一阶段指令](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-03_instruction.md)。本轮未提交，M2-03 未执行；新留出无飞行/reference episode，M2 飞行功能尚未扩展。
+> **2026-10-12 最新状态：M2 已完成并停止。** 已修复实际计划阶段标签；固定 12 正例＋4 状态变化负例完整链全部通过，16 条质量合格、64 条描述。离线测试 502/502、DR130 260/260、v0.5 示例 4/4；后处理仅复用相同语义计算，19 个导出文件逐字节不变。用户授权本地提交，不推送；未进入 M3。详见[本轮完成报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2_runtime_resume_report.md)（含字段来源表、覆盖与耗时）；旧 P0 和历史产物保留。本补注优先于下文历史阶段状态与旧暂停说明。
 
 更新于 2026-10-12，核对代码基线 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`。先读根 [README](README.md)，再读 [快速引擎开发交接](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_kickoff.md) 与 [实现计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_implementation_plan.md)。
 
@@ -44,4 +44,4 @@ Git 状态在 `Simulation-dev` 根检查，Python 通常在 `Multi-UAV SimpleGC`
 更新 `docs/fast_dynamics_engine_kickoff.md` 的实施登记、根 README 当前范围及必要契约，记录改动、实际测试、失败/未完成项与下一个工作包。完整设计在实现计划中维护，历史 SITL 报告保留原判。本地工作可连续推进，不需要先发布 GitHub。
 
 
-2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，下一步为 M2-03 设计。见 [最终回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md)。
+2026-10-12 M2-01 历史收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，该历史节点的下一步为 M2-03 设计（现已执行并修复待审，以头部为准）。见 [最终回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md)。

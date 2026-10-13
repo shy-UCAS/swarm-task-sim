@@ -258,3 +258,68 @@ def model_versions() -> dict[str, str]:
     return {"engine": ENGINE_VERSION, "plant": PLANT_VERSION,
             "controller": CONTROLLER_VERSION, "observer": OBSERVER_VERSION,
             "integrator": INTEGRATOR_VERSION}
+
+
+M2_ENGINE_VERSION = "0.2.0"
+M2_BEHAVIOR_VERSION = "m2_continuous_v2"
+M2_CONFIG_SCHEMA_VERSION = "fast_dynamics_config_v2"
+
+
+@dataclass(frozen=True)
+class ReferenceConfig:
+    policy: str = "continuous_route_v2"
+    corner_cut_max_m: float = 0.25
+    corner_leg_fraction: float = 0.1
+    tracking_tube_m: float = 0.5
+    position_gain_per_s: float = 1.25
+    velocity_damping: float = 0.25
+    preview_time_s: float = 0.2
+
+    def __post_init__(self) -> None:
+        if self.policy != "continuous_route_v2":
+            raise ValueError("unsupported continuous reference policy")
+        for name, upper in (("corner_cut_max_m", .25), ("corner_leg_fraction", .1),
+                            ("tracking_tube_m", .5), ("preview_time_s", .2),
+                            ("velocity_damping", 1.)):
+            value = getattr(self, name)
+            _positive(name, value, zero=name == "velocity_damping")
+            if value > upper:
+                raise ValueError(f"{name} must not exceed {upper}")
+        _positive("position_gain_per_s", self.position_gain_per_s)
+
+
+@dataclass(frozen=True)
+class M2Config(FastDynamicsConfig):
+    reference: ReferenceConfig = field(default_factory=ReferenceConfig)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.reference, ReferenceConfig):
+            raise ValueError("reference must be a ReferenceConfig")
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "M2Config":
+        if not isinstance(value, Mapping):
+            raise ValueError("configuration must be an object")
+        extra = set(value) - (set(_CONFIG_GROUPS) | {"reference"})
+        if extra:
+            raise ValueError(f"unknown configuration groups: {sorted(extra)}")
+        base = FastDynamicsConfig.from_dict({k: v for k, v in value.items() if k != "reference"})
+        reference = value.get("reference", {})
+        if not isinstance(reference, Mapping):
+            raise ValueError("reference must be an object")
+        extra = set(reference) - {item.name for item in fields(ReferenceConfig)}
+        if extra:
+            raise ValueError(f"unknown reference fields: {sorted(extra)}")
+        return cls(**{name: getattr(base, name) for name in _CONFIG_GROUPS},
+                   reference=ReferenceConfig(**reference))
+
+
+def config_from_dict(value: Mapping[str, Any]) -> FastDynamicsConfig:
+    """Execution may complete defaults; readers additionally require exact round trips."""
+    return (M2Config if "reference" in value else FastDynamicsConfig).from_dict(value)
+
+
+def model_versions_m2() -> dict[str, str]:
+    return dict(model_versions(), engine=M2_ENGINE_VERSION,
+                reference="continuous_route_v2", executor="airborne_multi_intent_m2")

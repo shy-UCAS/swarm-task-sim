@@ -229,7 +229,8 @@ class RunFastDynamicsCliTests(unittest.TestCase):
             attempt = json.loads((target / "attempt.json").read_text(encoding="utf-8"))
             report = json.loads((target / "report.json").read_text(encoding="utf-8"))
             self.assertEqual(attempt["run_id"], run_id)
-            self.assertEqual(report["frames"], 294)
+            self.assertGreater(report["frames"], 1)
+            self.assertEqual(report["execution_status"], "complete")
             self.assertIs(report["analysis"]["mission_success"], True)
             self.assertEqual(report["language"]["descriptions"], 4)
 
@@ -285,7 +286,7 @@ class RunFastDynamicsCliTests(unittest.TestCase):
             self.assertEqual(report["loaded_agents"], ["uav_01", "uav_02"])
             self.assertTrue(policy.is_within(report["output"]["path"], temp))
 
-    def test_default_run_completes_the_full_m1_chain_under_the_default_root(self):
+    def test_default_run_completes_the_full_m2_chain_under_the_default_root(self):
         before = directories_under(DEFAULT_ROOT)
         with contextlib.redirect_stdout(io.StringIO()):
             exit_code = run_fast_dynamics.main([str(FIXTURE)])

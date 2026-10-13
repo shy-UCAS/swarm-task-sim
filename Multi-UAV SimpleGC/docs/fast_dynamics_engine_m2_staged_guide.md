@@ -1,12 +1,12 @@
 # M2 分阶段实施与逐轮代码审阅指南
 
-> **2026-10-12 最新状态：** M2-01 已提交 `16b7cb7`；原 M2-02 因旧来源全部暴露而 BLOCKED。用户授权的 **M2-02B 新来源补充已实现并复核 PASS**，固定 144 个 base，经历史近重复排除后冻结校准/盲测各 71 个接纳 family（各 213 任务）。详见[报告](fast_dynamics_m2/M2-02B_report.md)、[回执](fast_dynamics_m2/M2-02B_review.md)与[下一阶段指令](fast_dynamics_m2/M2-03_instruction.md)。本轮未提交，M2-03 未执行；新留出无飞行/reference episode，M2 飞行功能尚未扩展。
+> **2026-10-12 最新状态：M2 已完成并停止。** 已修复实际计划阶段标签；固定 12 正例＋4 状态变化负例完整链全部通过，16 条质量合格、64 条描述。离线测试 502/502、DR130 260/260、v0.5 示例 4/4；后处理仅复用相同语义计算，19 个导出文件逐字节不变。用户授权本地提交，不推送；未进入 M3。详见[本轮完成报告](fast_dynamics_m2/M2_runtime_resume_report.md)（含字段来源表、覆盖与耗时）；旧 P0 和历史产物保留。本补注优先于下文历史阶段状态与旧暂停说明。
 
 编写日期：2026-10-12。依据：[实施计划](fast_dynamics_engine_implementation_plan.md)、[M0/M1 实施报告](fast_dynamics_engine_m01_report.md)、[适配备忘](fast_dynamics_engine_adapter_memo.md)，以及用户补充的六项 M2 要求。
 
 **本文件是待执行指南。编写本文件没有执行 M2，没有提交代码、迁移数据或启动 DeepSeek。所有阶段初始状态均为 NOT_STARTED。** 后续由用户逐次把指令交给 DeepSeek，再请 Codex 审阅实际代码与证据。执行模型不能自行批准、连续执行下一阶段，或进入 M3。
 
-> **2026-10-12 当前进度补注（区分于上段的编写时状态）：** M2-00 已执行并建立本地检查点 `codex/fast-dynamics` / `0f7c42d`（M0/M1 实现入版本库）；先前两轮指出的记录问题已在 `attempt_03_record_fix` 修正，Codex 最终审阅为 `PASS`，获准记录另存为检查点 `57cca91`。**M2-01 已执行：M1 证据树（356 文件 / 30,216,091 字节）迁移到仓库外 `SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`，338 项显式候选经逐项核验后清理，仓库只留 18 项阶段级汇总/工具加小型迁移索引，三个入口改为只允许仓库外输出并加了路径保护；已获 Codex 最终 `PASS`、已提交 `16b7cb7`。M2-02B 新来源补充已获 PASS，M2-03 及后续阶段未开始；M2 飞行功能（三意图四飞法、2/3/4 机、完整多机时序）尚未实现。** 证据见 [M2-00 阶段报告](fast_dynamics_m2/M2-00_report.md)、[最终审阅回执](fast_dynamics_m2/M2-00_review_03.md)、[M2-01 阶段报告](fast_dynamics_m2/M2-01_report.md)与[摘要](../verification/fast_dynamics_m2/M2-01_summary.json)。上段仍是本指南的编写时说明，不改写各阶段的放行标准。
+> **2026-10-12 当前进度补注（区分于上段的编写时状态）：** M2-00 已执行并建立本地检查点 `codex/fast-dynamics` / `0f7c42d`（M0/M1 实现入版本库）；先前两轮指出的记录问题已在 `attempt_03_record_fix` 修正，Codex 最终审阅为 `PASS`，获准记录另存为检查点 `57cca91`。**M2-01 已执行：M1 证据树（356 文件 / 30,216,091 字节）迁移到仓库外 `SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`，338 项显式候选经逐项核验后清理，仓库只留 18 项阶段级汇总/工具加小型迁移索引，三个入口改为只允许仓库外输出并加了路径保护；已获 Codex 最终 `PASS`、已提交 `16b7cb7`。M2-02B 新来源补充已获 PASS，M2-03 已执行并完成本轮设计修复待审，M2-04 及后续未开始；M2 飞行功能（三意图四飞法、2/3/4 机、完整多机时序）尚未实现。** 证据见 [M2-00 阶段报告](fast_dynamics_m2/M2-00_report.md)、[最终审阅回执](fast_dynamics_m2/M2-00_review_03.md)、[M2-01 阶段报告](fast_dynamics_m2/M2-01_report.md)与[摘要](../verification/fast_dynamics_m2/M2-01_summary.json)。上段仍是本指南的编写时说明，不改写各阶段的放行标准。
 
 ## 1. 使用方法与职责
 
@@ -575,4 +575,4 @@ PASS 意味着“本阶段足以进入下一阶段”，不等于“M2 已完成
 M2-12 最终审阅只有在覆盖矩阵、状态负例、四类特殊检查、数值/确定性、离线回归、外部证据存储、冻结留出与逐类耗时均通过后才可 PASS。通过后只完成用户授权的 M2 本地收口与汇报；M3 的开始必须收到新的明确指令。
 
 
-2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，下一步为 M2-03 设计。见 [最终回执](fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](fast_dynamics_m2/M2-02_instruction.md)。
+2026-10-12 M2-01 历史收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，该历史节点的下一步为 M2-03 设计（现已执行并修复待审，以头部为准）。见 [最终回执](fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](fast_dynamics_m2/M2-02_instruction.md)。

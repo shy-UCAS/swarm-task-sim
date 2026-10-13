@@ -14,6 +14,14 @@ Do not silently switch to base or install into another interpreter.
 
 ## Current local development handoff (2026-10-12)
 
+Latest status: M2 implementation and the planned_phases P0 repair are complete.
+The fixed 12 positive + 4 physical-state negative tasks passed the full chain;
+502 offline tests, DR130 260 cases and all four v0.5 examples passed.
+Read docs/fast_dynamics_m2/M2_runtime_resume_report.md for provenance, coverage,
+timings and limitations. Preserve the previous P0 report and external evidence.
+The user authorized this completion to be committed locally, without pushing.
+M2 is stopped after completion; do not enter M3 or rerun historical batches.
+
 Read `../README.md`, `../CLAUDE.md`, `docs/fast_dynamics_engine_kickoff.md`, then
 `docs/fast_dynamics_engine_implementation_plan.md` before new engine work.
 SITL v0.6.1 remains available. The local fast dynamics M0/M1 implementation now
@@ -27,7 +35,7 @@ directory. `requirements.txt` declares `numpy==2.5.3` in addition to pymavlink.
 Preserve existing local documentation changes and record actual progress in the handoff.
 T1/T4 share 42 tasks from 14 families; merge source identities before splitting data.
 
-The user currently wants local development only: no commit, push, PR or tag.
+The M2 completion has explicit authorization for a local commit only; no push, PR or tag.
 Do not start SITL, resume historical batches, run T6, prepare r3, or rewrite old data.
 Use PowerShell 7 and the project Conda environment. `Simulation` is a frozen archive;
 the active project is `Simulation-dev/Multi-UAV SimpleGC`.

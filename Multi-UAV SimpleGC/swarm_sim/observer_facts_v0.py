@@ -20,6 +20,7 @@ FACTS_VERSION = "observer_facts_v0"
 V06_FACTS_VERSION = "observer_facts_v06b"
 V061_FACTS_VERSION = "observer_facts_v061"
 FAST_DYNAMICS_FACTS_VERSION = "observer_facts_fast_dynamics_v1"
+FAST_DYNAMICS_M2_FACTS_VERSION = "observer_facts_fast_dynamics_v2"
 PATTERN_VERSION = "pattern_detector_v0"
 V06_PATTERN_VERSION = "pattern_detector_v06b"
 PATTERN_PARAMETERS = dict(perimeter_sample_fraction=0.80, full_lap_radians=2 * math.pi,
@@ -491,7 +492,7 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                 "duplicate_policy_version", "timeline_policy_version", "clock_model_version",
                 "route_progress_version", "ac4_timing_version", "execution_artifacts_version") if key in manifest}
     protocol_version = task["execution"].get("protocol_version")
-    facts_version = (FAST_DYNAMICS_FACTS_VERSION if fast else V061_FACTS_VERSION if protocol_version == "v0.6.1" else
+    facts_version = (FAST_DYNAMICS_M2_FACTS_VERSION if fast and manifest.get("semantic_validation_version") == "multi_intent_validation_fast_dynamics_v2" else FAST_DYNAMICS_FACTS_VERSION if fast else V061_FACTS_VERSION if protocol_version == "v0.6.1" else
                      V06_FACTS_VERSION if protocol_version == "v0.6" else FACTS_VERSION)
     if fast:
         versions.update(time_base="sim_clock", simulation_backend="fast_dynamics",
@@ -501,7 +502,7 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
         versions.update(time_base="sim_source", sim_speedup=manifest["sim_speedup"],
                         common_time_axis=manifest["common_time_axis"])
     versions.update(facts_version=facts_version,
-                    pattern_detector_version=V06_PATTERN_VERSION if facts_version in (V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION) else PATTERN_VERSION)
+                    pattern_detector_version=V06_PATTERN_VERSION if facts_version in (V06_FACTS_VERSION, V061_FACTS_VERSION, FAST_DYNAMICS_FACTS_VERSION, FAST_DYNAMICS_M2_FACTS_VERSION) else PATTERN_VERSION)
     return dict(facts_version=facts_version,
                 labels=dict(assigned_intent=labels["assigned_intent"],
                             return_required=task["mission"]["return_required"],

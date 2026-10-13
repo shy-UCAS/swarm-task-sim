@@ -19,6 +19,7 @@ sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / "tests"))
 
 from swarm_sim.fast_dynamics.mission_executor import run_mission
+from swarm_sim.fast_dynamics.contracts import FastDynamicsConfig
 from swarm_sim.fast_dynamics.output_policy import (
     OutputPolicyError, assert_created_within, assert_new_attempt_path,
     new_attempt_path, resolve_output_root,
@@ -73,7 +74,7 @@ def main():
 
     fixture = PROJECT / "tests/fixtures/fast_dynamics/rapid_passage_0000_v00.json"
     task = json.loads(fixture.read_text(encoding="utf-8"))
-    coarse = run_mission(task)
+    coarse = run_mission(task, FastDynamicsConfig())
     fine = run_mission(task, {"engine": {"step_us": 10000}})
     count = min(len(coarse.time_us), len(fine.time_us))
     convergence = dict(coarse_step_us=20000, fine_step_us=10000, common_frames=count,
@@ -91,7 +92,7 @@ def main():
         destination = args.output / f"success_{index + 1:02d}"
         started = time.perf_counter()
         with contextlib.redirect_stdout(io.StringIO()):
-            run_pipeline([str(fixture), "--output", str(destination),
+            run_pipeline([str(fixture), "--legacy-m1", "--output", str(destination),
                           "--output-root", str(root["root"])])
         elapsed = time.perf_counter() - started
         wall_times.append(elapsed)
@@ -107,7 +108,7 @@ def main():
         save(config_path, overrides)
         destination = args.output / name
         with contextlib.redirect_stdout(io.StringIO()):
-            run_pipeline([str(fixture), "--output", str(destination), "--config", str(config_path),
+            run_pipeline([str(fixture), "--legacy-m1", "--output", str(destination), "--config", str(config_path),
                           "--output-root", str(root["root"])])
         report = json.loads((destination / "report.json").read_text(encoding="utf-8"))
         outcomes.append(dict(case=name, execution_status=report["execution_status"],

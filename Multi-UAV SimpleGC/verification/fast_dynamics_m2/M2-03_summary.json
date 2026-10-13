@@ -1,0 +1,273 @@
+{
+  "stage": "M2-03",
+  "attempt": "attempt_03_codex_repair",
+  "status": "AWAITING_REVIEW",
+  "repair_scope": "design, test specifications, external executable static probes; no production M2 implementation",
+  "self_check_result": "PASS",
+  "git": {
+    "branch": "codex/fast-dynamics",
+    "head": "a46f034cbad21dfee670c0a76c2f0939c0572055",
+    "parent": "16b7cb740d081f7c66e73ed80eff4c7bad8dbb5f",
+    "main_and_origin": [
+      "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+      "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac"
+    ],
+    "tracked_diff": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\final_tracked_diff_02.bin",
+      "bytes": 29701,
+      "sha256": "5ebe39e9aa24fd595b3bcd9556b3c0f9d84eb9ce14f3efafaf620af997de79c5"
+    },
+    "staged_diff_bytes": 0,
+    "commit_this_attempt": false,
+    "pushed": false
+  },
+  "deliverables": [
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\docs\\fast_dynamics_m2\\M2-03_design.md",
+      "bytes": 72562,
+      "sha256": "44f4d886c246983a6210ec5cf102a251e69e7f7aca41b1772a0d8a1bf9f1da47"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\docs\\fast_dynamics_m2\\M2-03_test_spec.md",
+      "bytes": 22903,
+      "sha256": "7a02b3aa37fd49d727e3640f5ba3a5eaac2a93cbe9e893842d69b933906549e2"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\docs\\fast_dynamics_m2\\M2-03_report.md",
+      "bytes": 12605,
+      "sha256": "193552eb950c2760c10867c1918d1ad20aba5285d5361f96a7c5edec4fccc643"
+    }
+  ],
+  "entry_documents": [
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\README.md",
+      "preserved_original_eol": "b'\\n'",
+      "sha256": "1ef6f5cf752fdb6d3f4e775f8f06b4bc564062ff4adc109655c743a9ab1ffa71"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\CLAUDE.md",
+      "preserved_original_eol": "b'\\n'",
+      "sha256": "1d33a6f3c7ac7a451466c8e85008cc684e66bfb3e6adfbf0ca5062b1c27510d5"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\README.md",
+      "preserved_original_eol": "b'\\n'",
+      "sha256": "a01f7d11d992d3d7a6a0be42fdc2211b0f81b8718da948586f49b04ea413fa0e"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\docs\\fast_dynamics_engine_kickoff.md",
+      "preserved_original_eol": "b'\\n'",
+      "sha256": "9a578e084c6f0fcfe653cfa6dd73e0b77e7896c3c3501d8e393bb2643c1f8661"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-dev\\Multi-UAV SimpleGC\\docs\\fast_dynamics_engine_m2_staged_guide.md",
+      "preserved_original_eol": "b'\\n'",
+      "sha256": "1e57abb55ec11a4f53f1b4fbeeef50b0dccd08fc363c32e1a12567c5dd32cf45"
+    }
+  ],
+  "scope_counts": {
+    "this_attempt": {
+      "actual_flight_engine_runs": 0,
+      "actual_m2_mission_runs": 0,
+      "episode_writes": 0,
+      "heldout_input_or_result_reads": 0,
+      "distinct_development_tasks_static_compiled": 12
+    },
+    "historical_attempt_01": {
+      "regression_test_cases": 55,
+      "modules": {
+        "core": 15,
+        "execution": 10,
+        "artifacts": 14,
+        "ordered_route_progress_v2": 10,
+        "patrol_revisit_v2": 6
+      },
+      "actual_run_mission_calls": null,
+      "episode_writes": null,
+      "integrated_sim_seconds": null,
+      "reason": "not metered; real M1 simulation did occur inside regression tests; not rerun this attempt"
+    }
+  },
+  "static_checks": [
+    {
+      "name": "adaptive_math_repair",
+      "file": "math_independent_review_02.json",
+      "total": 8,
+      "passed": 8,
+      "limitation": "external static wrapper only; production quadrature/inversion/tracker unimplemented; original7/8 retained"
+    },
+    {
+      "name": "path_geometry_ideal_time",
+      "file": "path_static_verification.json",
+      "total": 52,
+      "passed": 52,
+      "limitation": "contains constant progress examples; no production tracker"
+    },
+    {
+      "name": "independent_ordered_gate_oracle",
+      "file": "ordered_gate_oracle_02.json",
+      "total": 13,
+      "passed": 13,
+      "limitation": "synthetic piecewise-linear analytical evidence; no dynamics"
+    },
+    {
+      "name": "state_contract",
+      "file": "state_contract_checks_02.json",
+      "total": 36,
+      "passed": 36,
+      "limitation": "manual predicate/clock model and analytical counterexamples"
+    },
+    {
+      "name": "up_terminal_reference_guard",
+      "file": "terminal_reference_gate_checks.json",
+      "total": 8,
+      "passed": 8,
+      "limitation": "pure boolean guard model; no harness execution"
+    },
+    {
+      "name": "compatibility_metadata_model",
+      "file": "compat_static_results_03.json",
+      "total": 44,
+      "passed": 44,
+      "limitation": "not new config parser, task guard, loader/audit or semantic recomputation"
+    },
+    {
+      "name": "independent_math_diagnostics",
+      "file": "math_independent_review.json",
+      "total": 8,
+      "passed": 7,
+      "failed": 1,
+      "limitation": "174.9 degree fixed64 versus256 quadrature exceeds diagnostic1e-8m; design requires future adaptive implementation"
+    },
+    {
+      "name": "negative_statistics_audit",
+      "file": "negative_probe_statistics_final.json",
+      "total": 21,
+      "passed": 21,
+      "limitation": "audit checks overlap geometry/predicate computations; do not aggregate"
+    },
+    {
+      "name": "state_spec_cross_review",
+      "file": "state_spec_cross_review.json",
+      "total": 25,
+      "passed": 25,
+      "limitation": "document/static evidence cross-review and author's self-check; no production test"
+    }
+  ],
+  "counting_policy": "Do not sum groups into a total regression count; fixture checks and mathematics overlap.",
+  "ideal_model": {
+    "agent_phase_routes": 87,
+    "compiled_phases": 28,
+    "lines": 253,
+    "beziers": 155,
+    "joins": 408,
+    "assumptions": [
+      "rest to rest each phase",
+      "constant planned altitude",
+      "no closed-loop response/settling losses",
+      "no faults"
+    ],
+    "timing_kind": "ideal reference time, not wall_time or measured task sim_time; not deadline guarantee"
+  },
+  "negative_plan": {
+    "real_cells": 12,
+    "paired_negative_plans": 12,
+    "execution_status": "NOT_RUN",
+    "actual_result": null,
+    "recon_six": "registered external UP reference sequence, EN original route, restore original 3D terminal, then original dwell/hold",
+    "patrol_three": "service speed reference capability factor0.4 with original max_gap threshold",
+    "rapid_three": "max_speed_xy0.3; M1 two-agent mechanism evidence only; 3/4-agent migration unvalidated",
+    "new_public_fault_config_fields": 0,
+    "requires_execution_mode_and_harness_hashes": true,
+    "up_reference_completion_guard": true,
+    "synthetic_predicate_trials": 18,
+    "expected_outcomes_matched": 18,
+    "quality_eligible_actual_negatives": null,
+    "reason": "No actual M2 missions executed; synthetic false is not a qualified episode."
+  },
+  "contract_counts": {
+    "phase_states": 7,
+    "tracker_substates": [
+      "corner_rest"
+    ],
+    "new_reference_fields": 7,
+    "m2_config_groups": 8,
+    "m2_config_fields": 29,
+    "dynamic_boundary_specs": 14
+  },
+  "preservation": {
+    "source_files": 75,
+    "old_attempt_01_external_files": 28,
+    "previous_receipt_bindings": 17,
+    "previous_repair_files": 17,
+    "frozen_metadata_files": 5,
+    "fixtures_and_originals": 12,
+    "starting_backups": 8,
+    "all_checked_unchanged": true,
+    "evidence": "repair_identity_checks.json"
+  },
+  "historical_known_defects": [
+    "attempt01 overwritten failure logs were reconstructed, not originals",
+    "attempt01 index_evidence.stdout.log self-binding mismatch preserved",
+    "406 is historical test cases, not flight combinations"
+  ],
+  "local_process_failures_preserved": [
+    "compat first missing git guard, second regex naming failure",
+    "state first synthetic activation timestamps superseded",
+    "negative diagnostic syntax error and n4 end-time precision issue",
+    "ordered gate first overstrict loss-of-history expectation",
+    "identity check first read expected hashes from bool-only summary",
+    "independent fixed64 quadrature near175 diagnostic"
+  ],
+  "cross_reviews": [
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\design_independent_review_01.md",
+      "bytes": 2828,
+      "sha256": "0a6b18ddc54baaf1495736b0af3bad5aca9cdba35647edda4610258e1726f400"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\design_independent_review_02.md",
+      "bytes": 6141,
+      "sha256": "f8e040b0097b0b64c82107d4951bd5dc9c69c503c29466d18e80d19af8b61020"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\negative_merged_review_01.md",
+      "bytes": 2419,
+      "sha256": "9b5c0e846c31b0329890d471fd0784c096674155b937749e4c71ef978f4a345f"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\negative_merged_review_02.md",
+      "bytes": 3979,
+      "sha256": "a05d7258928a1f5d15bd9d96835f3bfdfa95948dd6917042c704950904d55560"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\negative_merged_review_02_followup.md",
+      "bytes": 1157,
+      "sha256": "00709b8188521c52986e4947ef46fbfa9f9051d89398a19dc81582b30ba90cde"
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\state_spec_cross_review.md",
+      "bytes": 2457,
+      "sha256": "8c360889d19375ad6e440006553a988a5bee061217ba5bffb3af2a54cdec6d0c"
+    }
+  ],
+  "external_root": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair",
+  "final_identity_manifest": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-03\\attempt_03_codex_repair\\repair_identity_manifest.json",
+  "next_boundary": "Review M2-03 at this identity; M2-04 single-agent tracking only after explicit stage start. No M2-04 work performed.",
+  "not_validated": [
+    "actual closed-loop tracker",
+    "actual 2/3/4-agent event executor",
+    "production v2 reader and M1 full load/audit",
+    "real qualified positive/negative coverage",
+    "dynamic step convergence",
+    "end-to-end wall time",
+    "new holdout reference episodes"
+  ],
+  "adaptive_static_followup": {
+    "oracle": "independent2048 order explicit polynomial",
+    "generic_bend_max_abs_error_m": 2.4980018054066022e-14,
+    "max_selected_order": 512,
+    "real_cell_ideal_time_max_change_s": 0.0,
+    "production_implementation": false
+  }
+}

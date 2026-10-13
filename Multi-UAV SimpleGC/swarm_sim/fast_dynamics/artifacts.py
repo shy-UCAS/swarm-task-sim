@@ -10,16 +10,17 @@ from pathlib import Path
 import numpy as np
 
 from .adapter import ADAPTER_VERSION, analyze_semantics, checked_samples, result_value, traces_from_samples
-from .contracts import (CONTROLLER_VERSION, ENGINE_VERSION, INTEGRATOR_VERSION, OBSERVER_VERSION,
-                        PLANT_VERSION, FastDynamicsConfig)
+from .contracts import (CONTROLLER_VERSION, M2_ENGINE_VERSION as ENGINE_VERSION, INTEGRATOR_VERSION, OBSERVER_VERSION,
+                        PLANT_VERSION, M2Config as FastDynamicsConfig)
 from ..execution_constraints import _channel_limits, _lifecycle_separation
 from ..families import family_metadata
 from ..generation import canonical_hash, file_hash
 from ..mission_evaluation import tri_and
-from ..protocol import FAST_DYNAMICS_PROTOCOL, fast_dynamics_protocol, manifest_protocol
+from ..protocol import FAST_DYNAMICS_PROTOCOL, fast_dynamics_m2_protocol as fast_dynamics_protocol, manifest_protocol
 from ..recording import write_json
 from ..tasks import compile_task
 
+M2_FACTS_VERSION = "observer_facts_fast_dynamics_v2"
 FACTS_VERSION = "observer_facts_fast_dynamics_v1"
 QUALITY_VERSION = "fast_dynamics_quality_v1"
 TIME_POLICY = dict(version="integer_sim_clock_half_open_v1", time_base="sim_clock",
@@ -30,6 +31,120 @@ CAPABILITIES = dict(position=True, velocity=True, net_acceleration=True, attitud
                     body_rates=False, imu=False, motors=False, takeoff=False, landing=False)
 SOURCE_DECLARATIONS = dict(coordinate_frame="ENU", feature_schema="enu_position_velocity_6_v1",
     controller_state_source="truth", observation_dependency="ideal observation derived from plant; no independent sensor/estimator")
+
+
+def _strict_equal(left, right):
+    """JSON identity keeps booleans distinct from integers."""
+    return json.dumps(left, sort_keys=True, separators=(",", ":"), allow_nan=False) == json.dumps(
+        right, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def _validate_m2_task(scene):
+    from ..registry import FLIGHT_PATTERNS
+    task = scene["task_spec"]
+    intent = task["mission"]["intent"]
+    if (len(scene["vehicles"]) not in (2, 3, 4) or intent not in FLIGHT_PATTERNS
+            or task.get("flight_pattern") not in FLIGHT_PATTERNS[intent]
+            or task["execution"]["control_mode"] != "semantic_phase_route_v1"):
+        raise ValueError("task is outside registered M2 2/3/4-agent route capabilities")
+    for phase in scene["phases"]:
+        roles = scene["semantic_plan"]["execution_phases"][phase["name"]]["agents"]
+        for agent, route in phase["routes"].items():
+            altitude = roles[agent]["start_point"]["up_m"]
+            if any(abs(point["up_m"] - altitude) > 1e-9 for point in route):
+                raise ValueError("M2 reference domain requires constant planned route altitude")
+
+
+def _validate_m2_identity(manifest, source, events, root):
+    expected = dict(config_schema_version="fast_dynamics_config_v2", behavior_version="m2_continuous_v2",
+                    reference_version="continuous_route_v2", executor_version="airborne_multi_intent_m2")
+    if (manifest.get("simulator_version") != ENGINE_VERSION or manifest.get("analysis_version") != ADAPTER_VERSION
+            or manifest.get("component_versions", {}).get("facts") != M2_FACTS_VERSION
+            or any(source.get(k) != v or manifest.get(k) != v for k, v in expected.items())):
+        raise ValueError("mixed or missing M2 implementation identity")
+    if not _strict_equal(source.get("capabilities"), CAPABILITIES):
+        raise ValueError("invalid source capabilities JSON types")
+    if not isinstance(events, list):
+        raise ValueError("M2 requires ordered execution events")
+    previous = -1
+    for index, event in enumerate(events):
+        if (type(event.get("event_seq")) is not int or event["event_seq"] != index
+                or type(event.get("epoch")) is not int or event["epoch"] < 0
+                or type(event.get("t_us")) is not int or event["t_us"] < previous):
+            raise ValueError("invalid M2 causal event sequence or epoch")
+        previous = event["t_us"]
+        if event.get("event") == "phase_confirmation_reset" and event.get("revoked_epoch") != event["epoch"] - 1:
+            raise ValueError("confirmation reset must revoke the preceding epoch")
+    mode = source.get("execution_mode")
+    if mode not in ("normal", "test_reference_fault") or manifest.get("execution_mode") != mode:
+        raise ValueError("missing or inconsistent M2 execution mode")
+    fault_events = [e for e in events if e.get("event", "").startswith("test_reference_")]
+    name = "test_harness.json"
+    if mode == "normal":
+        if (name in manifest["artifact_sha256"] or fault_events
+                or source.get("diagnostics", {}).get("test_harness") is not None
+                or any(k in source or k in manifest for k in ("harness_contract_version", "harness_sha256"))):
+            raise ValueError("normal episode contains undeclared reference fault evidence")
+        return
+    version = "fast_dynamics_test_reference_fault_v1"
+    if (source.get("harness_contract_version") != version or manifest.get("harness_contract_version") != version
+            or name not in manifest["artifact_sha256"] or source.get("harness_sha256") != file_hash(root / name)):
+        raise ValueError("missing or mismatched test harness attachment")
+    harness = json.loads((root / name).read_text(encoding="utf-8"))
+    from .mission_executor import normalize_test_harness
+    descriptor = harness.get("descriptor")
+    if descriptor is None or normalize_test_harness(descriptor) != descriptor:
+        raise ValueError("test harness descriptor is incomplete or unregistered")
+    if (harness.get("contract_version") != version or harness.get("source_sha256") != source["source_sha256"]
+            or harness.get("task_sha256") != source["task_sha256"]
+            or harness.get("config_sha256") != source["config_sha256"] or harness.get("seed") != source["seed"]
+            or descriptor != source.get("diagnostics", {}).get("test_harness")
+            or harness.get("events") != fault_events):
+        raise ValueError("test harness evidence disagrees with actual execution")
+    starts = [e for e in fault_events if e["event"] == "test_reference_started"]
+    if source.get("status") == "completed" and not starts:
+        raise ValueError("completed test fault episode never activated its reference fault")
+
+
+def write_episode(scene, result, output, *, run_id, input_hashes, config, seed):
+    raw = config.to_dict() if hasattr(config, "to_dict") else config
+    if not isinstance(raw, dict):
+        raise ValueError("configuration must be an object")
+    if "reference" not in raw:
+        from .artifacts_m1 import write_episode as legacy_write
+        return legacy_write(scene, result, output, run_id=run_id, input_hashes=input_hashes, config=config, seed=seed)
+    return _write_m2_episode(scene, result, output, run_id=run_id, input_hashes=input_hashes, config=config, seed=seed)
+
+
+def validate_episode(manifest, root):
+    """Strict version selection; incompatible metadata never falls back to SITL."""
+    root = Path(root)
+    source = json.loads((root / "source.json").read_text(encoding="utf-8"))
+    if source.get("engine_version") == ENGINE_VERSION:
+        return _validate_m2_episode(manifest, root)
+    from .artifacts_m1 import validate_episode as legacy_validate
+    from .adapter_m1 import ADAPTER_VERSION as old_adapter
+    if (source.get("engine_version") != "0.1.0" or manifest.get("simulator_version") != "0.1.0"
+            or source.get("semantic_adapter_version") != old_adapter or manifest.get("analysis_version") != old_adapter
+            or manifest.get("component_versions", {}).get("facts") != FACTS_VERSION):
+        raise ValueError("unknown or mixed fast dynamics implementation identity")
+    m2_keys = {"config_schema_version", "behavior_version", "reference_version", "executor_version",
+               "execution_mode", "harness_contract_version", "harness_sha256"}
+    if m2_keys.intersection(source) or m2_keys.intersection(manifest) or "test_harness.json" in manifest.get("artifact_sha256", {}):
+        raise ValueError("M2 metadata cannot be downgraded to the legacy M1 reader")
+    events = json.loads((root / "events.json").read_text(encoding="utf-8"))["events"]
+    if any("epoch" in event or "event_seq" in event for event in events):
+        raise ValueError("M2 execution events cannot be downgraded to M1")
+    task = json.loads((root / "task.json").read_text(encoding="utf-8"))
+    scene = compile_task(task)
+    if (task["mission"]["intent"] != "rapid_passage" or len(scene["vehicles"]) != 2
+            or task["planner"]["name"] != "line_abreast_v1"
+            or task["execution"]["control_mode"] != "semantic_phase_route_v1"
+            or any(len(route) > 1 for phase in scene["phases"] for route in phase["routes"].values())):
+        raise ValueError("task is outside the frozen M1 capability range")
+    if not _strict_equal(source.get("capabilities"), CAPABILITIES):
+        raise ValueError("invalid source capabilities JSON types")
+    return legacy_validate(manifest, root)
 
 
 def resolve_quality_policy(policy=None):
@@ -150,6 +265,18 @@ def _validate_execution_events(events, status, end, windows):
             or any(window.get("complete_execution_window") is not True
                    for channel in windows["channels"].values() for window in channel)):
         raise ValueError("completed execution requires every actual phase window to be complete")
+    for barrier in (event for event in events if event.get("event") == "phase_completed"):
+        rows = [window for window in windows["channels"]["truth"] if window["phase"] == barrier.get("phase")]
+        epochs = {window["agent_id"]: window["confirmation_epoch"] for window in rows}
+        if (set(epochs) != agents or not _strict_equal(barrier.get("confirmed_epochs"), epochs)
+                or any(window["end_s"] != barrier["t_us"] / 1e6 for window in rows)):
+            raise ValueError("phase barrier disagrees with current per-agent confirmation epochs")
+        for agent, epoch in epochs.items():
+            holds = [event for event in events if event.get("event") == "phase_hold_ended"
+                     and event.get("phase") == barrier["phase"] and event.get("agent_id") == agent
+                     and event.get("epoch") == epoch]
+            if len(holds) != 1 or holds[0]["t_us"] > barrier["t_us"]:
+                raise ValueError("phase barrier precedes a currently valid per-agent hold")
 
 
 def _constraints(scene, traces, end_s, config):
@@ -211,7 +338,7 @@ def _numerics(result, streams, config):
                 speed_capability_is_numerical_error=False)
 
 
-def write_episode(scene, result, output, *, run_id, input_hashes, config, seed):
+def _write_m2_episode(scene, result, output, *, run_id, input_hashes, config, seed):
     """Write a new run; return its manifest. Public build_dataset consumes output.
 
     A completion pointer is written last, after hashes and protocol validation.
@@ -240,6 +367,7 @@ def write_episode(scene, result, output, *, run_id, input_hashes, config, seed):
         raise ValueError("source files changed since execution; run a fresh attempt before exporting")
     if compile_task(scene["task_spec"]) != scene:
         raise ValueError("compiled scene differs from its frozen TaskSpec")
+    _validate_m2_task(scene)
     agents, end, streams = checked_samples(result)
     if agents != sorted(v["id"] for v in scene["vehicles"]):
         raise ValueError("engine agent identities differ from the task")
@@ -287,13 +415,26 @@ def write_episode(scene, result, output, *, run_id, input_hashes, config, seed):
         source_sha256=executed_source, input_sha256=dict(input_hashes),
         git_commit=_git_revision(), git_identity_scope="baseline only; source_sha256 binds uncommitted implementation contents",
         task_sha256=canonical_hash(scene["task_spec"]), config=config, config_sha256=canonical_hash(config),
-        seed=seed, rng=dict(algorithm="PCG64", consumed=False, reason="M1 deterministic; disturbances disabled"),
+        seed=seed, rng=dict(algorithm="PCG64", consumed=False, reason="M2 deterministic; disturbances disabled"),
         execution_environment=dict(python=platform.python_version(), numpy=np.__version__, platform=platform.platform()),
         end_us=end, time_policy=TIME_POLICY, status=status, diagnostics=result_value(result, "diagnostics"),
-        calibration_status="uncalibrated_M1_baseline", intended_use="local_development")
+        calibration_status="uncalibrated_M2", intended_use="local_development")
+    mode = "test_reference_fault" if source["diagnostics"].get("test_harness") is not None else "normal"
+    identity = dict(config_schema_version="fast_dynamics_config_v2", behavior_version="m2_continuous_v2",
+                    reference_version="continuous_route_v2", executor_version="airborne_multi_intent_m2",
+                    execution_mode=mode)
+    source.update(identity)
     root.mkdir(parents=True)
     analysis = root / "analysis"
     analysis.mkdir()
+    if mode == "test_reference_fault":
+        harness = dict(contract_version="fast_dynamics_test_reference_fault_v1",
+            descriptor=source["diagnostics"]["test_harness"], source_sha256=executed_source,
+            task_sha256=source["task_sha256"], config_sha256=source["config_sha256"], seed=seed,
+            events=[e for e in events if e["event"].startswith("test_reference_")])
+        write_json(analysis / "test_harness.json", harness)
+        source.update(harness_contract_version=harness["contract_version"],
+                      harness_sha256=file_hash(analysis / "test_harness.json"))
     write_json(root / "metadata.json", dict(run_id=run_id, status=status, source=source))
     write_json(root / "input_task.json", scene["task_spec"])
     objects = {"task.json": scene["task_spec"], "compiled_scene.json": scene, "source.json": source,
@@ -314,23 +455,26 @@ def write_episode(scene, result, output, *, run_id, input_hashes, config, seed):
         run_id=run_id, scenario_id=scene["task_spec"]["scenario"]["scene_id"], run_directory=str(root),
         agent_ids=agents, run_status=status, control_mode=scene["task_spec"]["execution"]["control_mode"],
         intent=scene["task_spec"]["mission"]["intent"], flight_pattern=scene["task_spec"].get("flight_pattern", "line_abreast"),
-        component_versions=dict(scene["task_spec"].get("component_versions", {}), facts=FACTS_VERSION),
+        component_versions=dict(scene["task_spec"].get("component_versions", {}), facts=M2_FACTS_VERSION),
         mission_success=labels["mission_success"], semantic_consistency=labels["semantic_consistency"],
         clock_quality=clock_quality, quality_policy=policy, quality_policy_sha256=policy_hash(policy),
         duration_s=end / 1e6, end_us=end, record_hz=10, frames=(end + 99_999) // 100_000,
         time_base="sim_clock", time_policy=TIME_POLICY, lifecycle_scope="airborne_mission",
-        evaluation_context="local_development_uncalibrated_M1", training_eligible=False,
+        evaluation_context="local_development_uncalibrated_M2", training_eligible=False,
         training_eligibility_reason="calibration and independent validation not completed",
         source_sha256=source_hashes, artifact_sha256={p.name: file_hash(p) for p in analysis.iterdir()})
+    manifest.update(identity)
+    if mode == "test_reference_fault":
+        manifest["harness_contract_version"] = source["harness_contract_version"]
     write_json(analysis / "manifest.json", manifest)
-    validate_episode(manifest, analysis)
+    _validate_m2_episode(manifest, analysis)
     pointer = root / "analysis_latest.json.tmp"
     write_json(pointer, dict(directory="analysis", manifest_sha256=file_hash(analysis / "manifest.json")))
     pointer.replace(root / "analysis_latest.json")
     return manifest
 
 
-def validate_episode(manifest, root):
+def _validate_m2_episode(manifest, root):
     """Backend-specific cross-artifact checks, separate from the SITL gates."""
     from ..quality import policy_hash
     if manifest_protocol(manifest) != fast_dynamics_protocol():
@@ -346,6 +490,7 @@ def validate_episode(manifest, root):
             raise ValueError(f"fast dynamics artifact changed: {name}")
     objects = {name: json.loads((root / name).read_text(encoding="utf-8")) for name in required if name.endswith(".json")}
     source, quality, task = objects["source.json"], objects["quality.json"], objects["task.json"]
+    _validate_m2_identity(manifest, source, objects["events.json"]["events"], root)
     labels, semantic = objects["labels.json"], objects["semantic_validation.json"]
     end = manifest.get("end_us")
     if type(end) is not int or end < 0 or manifest.get("duration_s") != end / 1e6 or manifest.get("frames") != (end + 99_999) // 100_000:
@@ -365,6 +510,7 @@ def validate_episode(manifest, root):
         raise ValueError("inconsistent frozen configuration/task hashes")
     if compile_task(task) != objects["compiled_scene.json"] or any(manifest.get(k) != value for k, value in family_metadata(task).items()):
         raise ValueError("compiled input or source family identity changed")
+    _validate_m2_task(objects["compiled_scene.json"])
     for key, value in dict(engine_version=ENGINE_VERSION, plant_model=PLANT_VERSION,
             controller_version=CONTROLLER_VERSION, observer_version=OBSERVER_VERSION,
             integrator_version=INTEGRATOR_VERSION, semantic_adapter_version=ADAPTER_VERSION).items():
@@ -374,7 +520,7 @@ def validate_episode(manifest, root):
             or source.get("capabilities") != CAPABILITIES
             or type(source.get("seed")) is not int or source["seed"] < 0
             or not re.fullmatch(r"[0-9a-f]{40,64}", source.get("git_commit", ""))
-            or source.get("rng") != dict(algorithm="PCG64", consumed=False, reason="M1 deterministic; disturbances disabled")):
+            or source.get("rng") != dict(algorithm="PCG64", consumed=False, reason="M2 deterministic; disturbances disabled")):
         raise ValueError("inconsistent or unsupported source capabilities, units, seed or code identity")
     if any(name in manifest["artifact_sha256"] for name in ("clock_models.json", "lifecycle_clock_models.json")):
         raise ValueError("fast dynamics must not claim passive FCU clock evidence")

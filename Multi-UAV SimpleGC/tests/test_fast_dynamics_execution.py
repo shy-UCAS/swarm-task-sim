@@ -12,13 +12,19 @@ from unittest.mock import patch
 
 import numpy as np
 
-from swarm_sim.fast_dynamics.contracts import PlantState
+from swarm_sim.fast_dynamics.contracts import PlantState, FastDynamicsConfig
 from swarm_sim.fast_dynamics.engine import SynchronousEngine
-from swarm_sim.fast_dynamics.mission_executor import run_mission
+from swarm_sim.fast_dynamics.mission_executor import run_mission as _run_mission
 from swarm_sim.fast_dynamics.references import arrival_intervals, region_crossings
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "fast_dynamics" / "rapid_passage_0000_v00.json"
+
+
+def run_mission(task, config=None):
+    """This module pins the M1 behavior; M2 has independent dynamic tests."""
+    config = FastDynamicsConfig.from_dict(config or {}) if not isinstance(config, FastDynamicsConfig) else config
+    return _run_mission(task, config)
 
 
 def _run_fingerprint(arguments):
