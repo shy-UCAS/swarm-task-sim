@@ -1,42 +1,51 @@
-# 项目交接
+# 项目交接与本地开发约束
 
-本仓库用 ArduCopter SITL 生成多无人机轨迹、双通道标签及描述；v0.5 已冻结，v0.6 三意图与 pilot 已完成。r1 在 296/900 后持久化停止；r2 在 465/900 后因外部负载触发滚动异常停止；两批均未收尾、不可续跑，仅保留证据。停止规则已修订：滚动异常为可人工续跑的规则暂停，确认违规及基础设施类停止不变。下一步先做并行扩展与仿真倍率对照测试（`v06_accel_test_plan.md`，尚未纳入仓库），确定配置后准备 r3 从头运行 900 个任务；本轮不准备/运行新批次。先读根 `README.md` 与 [规则修订记录](Multi-UAV%20SimpleGC/docs/v06_rule_pause_kickoff.md)。本文件状态更新于 2026-10-11。
+> **2026-10-13 当前状态：M3 已完成，参数已冻结，停止于本地收尾。** 25个配置搜索与前三名282条复验后冻结config_020：加速度3.75、jerk14、响应时间0.10/0.475 s，配置SHA256为94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193。调参282/282与内部留出122/122均合格、双通道判定全一致；已知模式分别226/226与98/98一致。总时长误差中位数分别1.57%与1.59%，全部阶段目标通过；内部没有触发默认回退。42条高速用例完成且不超动力学上限，但10 m/s存在约4 m冲出，四机汇聚最小间距仅2.931 m，不能宣称高速规划合格。551项离线、DR130 260项、v0.5四例通过。M2-02B两组继续封存；4–10 m/s未经SITL校准；未启动SITL，不推送，不进入M4/v0.7实现。详见[M3收尾报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m3_closeout.md)；本补注优先于下方历史状态。
 
-- `Multi-UAV SimpleGC/`：当前多机工程；`swarm_sim/` 源码，`tests/` 测试，`scripts/` 执行与复核，`docs/` 规则/报告，`verification/` 实跑台账，`tmp_v05/` 离线证据，`generation_profiles/` 配置。
-- `SimpleGC/`：原始单机工程；`.claude/progress/`：仓库级进度快照。
+> **2026-10-12 后续：覆盖几何提速完成验证，M3 在来源映射处停止。** 当前冻结 M2-02B 的 213 个校准任务与 r2 只有名称相同，family/场景/输入哈希均不匹配。不得据同名任务配对，不改冻结划分，不启动 SITL；M3 b/c 尚未执行。20 条旧 run 的 120 个 JSON 完全一致；12 正例通过，512 离线测试及旧路径回归通过。4 机扫描 47.549 秒，性能目标未达到，不做范围外优化。见[本轮报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_coverage_performance_report.md)，本补注优先于历史说明。用户授权本地提交，不推送。
 
-## 环境与常用命令
+> **2026-10-12 最新状态：M2 已完成并停止。** 已修复实际计划阶段标签；固定 12 正例＋4 状态变化负例完整链全部通过，16 条质量合格、64 条描述。离线测试 502/502、DR130 260/260、v0.5 示例 4/4；后处理仅复用相同语义计算，19 个导出文件逐字节不变。用户授权本地提交，不推送；未进入 M3。详见[本轮完成报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2_runtime_resume_report.md)（含字段来源表、覆盖与耗时）；旧 P0 和历史产物保留。本补注优先于下文历史阶段状态与旧暂停说明。
 
-Windows 只用 PowerShell 7；首次运行检查 `$PSVersionTable.PSVersion` 主版本 ≥ 7。已验证路径：`C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe`。
+更新于 2026-10-12，核对代码基线 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`。先读根 [README](README.md)，再读 [快速引擎开发交接](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_kickoff.md) 与 [实现计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_implementation_plan.md)。
 
-Python 前先读 `Multi-UAV SimpleGC/.conda-env`（当前 `llm`），遵循项目 `AGENTS.md`；在该项目目录运行：
+## 当前方向和边界
 
-```powershell
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python -m unittest discover -s tests -p test_publication_runtime.py
-& 'C:/Users/shy/anaconda3/Scripts/conda.exe' run -n llm --no-capture-output python main.py --help
-```
+- 现有代码已实现 SITL 的 v0.6.1 时间契约；快速引擎 M0/M1 已本地落地，包含适配备忘/独立契约、确定性内核、双机快速通过完整数据链与回归。M0/M1 最终本地验收已通过，先读 [M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)核对结果和未完成项。**M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01（M1 证据迁移与外部输出约束）已执行、已获 Codex 最终 `PASS`、已提交 `16b7cb7`；M2-02B 新来源补充已获 PASS，M2 飞行功能尚未实现，不能宣称三意图四飞法、校准或生产验收已完成。** 进度见 [M2-00 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_report.md)、[M2-01 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_report.md)与[审阅回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md)。
+- 用户当前要求仅本地开发、测试、记录，暂不推送、建 PR、打标签或以远端 CI 作为推进条件；本地提交仅限用户明确启动 M2 阶段时按指南做的检查点提交（M2-00 与 M2-00 记录修正已用此例外：`0f7c42d`、`57cca91`，后续阶段启动时方可提交上一轮获准差异）。保留已有未提交文档和新计划，不 reset/clean。**M2-01 起，快速引擎的样本、dataset、原始日志、基准与失败证据只能写仓库外的全新 attempt（缺省根为仓库同级 `SwarmData/fast_dynamics`），入口会拒绝仓库内路径、已存在 attempt 与联接越界；M1 证据树已迁移到 `SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/`。**
+- 开发位置为 `Simulation-dev/Multi-UAV SimpleGC`。原 `Simulation` 是冻结归档；`Simulation-dev-wip` 属另一会话；两者不作为本阶段写入范围。大型历史证据在仓库外 `SwarmData`。
+- 不启动 SITL，不续跑旧批次，不准备 r3。新引擎本地合成验证按实现里程碑执行，使用独立输出及新后端来源身份。
 
-Git 在当前 `Simulation-dev` 仓库根执行：`git status --short`、`git diff --check`；Python 通常在 `Multi-UAV SimpleGC` 中执行。原 `Simulation` 仅作冻结归档，不从其旧 main 开发或推送。发布 PR #1 与并行开发 PR #2 已合并；规则修订起始 HEAD 为 `main=8fbe1d7`，r2 运行提交为 `8d366b4`／`v0.6-production-r2`，r1 运行提交为 `762a303`／`v0.6-pilot`，pilot30 运行提交为 `0dffcd8`／`v0.6-pauseA3`，不能混同。尚未打 `v0.6-production` 标签。后续以 `git log -1`、标签指向与工作区状态为准；提交/推送按当前用户授权执行。当前离线 CI 清单见 `.github/workflows/unit-tests.yml`，历史通过数不等于当前 HEAD 已重新验收。当前没有自动接续的仿真任务。
+## 现状摘要
 
-## 铁律与报告
+v0.5 已冻结 260 次运行，252 次质量合格。v0.6 三意图及四种生产飞法已实现，r1 在 296/900、r2 在 465/900 后停止，均未 finalize。v0.6.1 已发布 `v0.6.1-time`（实现 `bd1f40a`），支持公共源时间、确定性参考机、10 Hz 仿真网格及速度换算；正式和子集 prepare 支持 `--base-port`，缺省 19100。
 
-- 不修改或删除旧证据、原运行、已有分析/判定和受保护文件；新版本分析另存目录并绑定来源。历史停止记录和旧哈希保留；旧阶段的接续授权不等于当前授权，不修改冻结台账来启动新实验。
-- 未经用户指令不改阈值、门禁和已有判定；失败如实保留，不能重跑洗掉失败；停止时写停止报告并更新进度快照。
-- 报告按“结论 → 异常 → 证据位置”；数字带分母。代码摘录必须从源码原样复制并标注行号；正文公式用 `\(...\)`。
+T1（K2×1）与 T4（K4×1）最终通过，各 42/42 执行、41/42 质量合格并 finalize；T2（K2×2）11/42 后规则暂停、不通过；T3/T3+ 取消；T5（K6×1）15/42 后规则暂停，9/15 合格、6/15 时钟不可用，排空后停止，不 finalize、不恢复；T6 未准备未运行。自动检查已暂停。分母、证据和标准纠错见 [最终验证报告](Multi-UAV%20SimpleGC/docs/v0.6.1_time_validation_report.md) 的最终章节及仓库外收尾回执。
 
-## 决策原则
-- 优先级：P0 研究正确性（模型输入、标签与描述事实、数据划分泄漏、任务语义、数据完整与可复现）> P1 完成当前里程碑 > P2 诊断记录 > P3 形式完备与未来扩展（不做）。
-- 遇到异常，先回答"它具体会让哪项研究结果出错"。能回答才停止；答不出就记录并继续；无法判断时只做一轮影响定位，不顺手修复。
-- 规则误报时的处理顺序：判断是否必要 → 删除 → 简化 → 降级为诊断 → 最后才加例外。
-- 不新增当前里程碑非必需的模块、字段、版本或检查；想到的改进写入待办，不实现。
-- 停止报告必须写明：此问题会导致哪一项研究结果错误。
+本机实际条件为**非独占**，后台应用可以常驻，旧独占门槛已由用户取代。SITL 备用推荐 K4×1、首批错峰 30 主机秒，r3 尚未准备。不能从历史报告的运行前授权重新启动任务。
 
-## 新会话恢复顺序
+## 环境与检查
 
-1. 先读根目录 `README.md` 并核对 Git 状态；本机 `.claude/progress/` 的最新快照可辅助恢复，但新克隆不保证存在。
-2. 再读 [生产停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md) 和 [pilot 报告的暂停 B 复核结论](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md)，以及本次任务涉及的规则、源码和证据；涉及 v0.5 时读其冻结最终报告。历史规则文件的“剩余步骤”不代表当前进度。
-3. v0.5 已完成 260 次运行并冻结。v0.6 pilot20（质量 20/20、语义一致 19/20）与 pilot30（质量 29/30、语义一致 29/30）均已收尾，不用于训练。快速通过六项阈值冻结；事实层 `observer_facts_v06b`／`pattern_detector_v06b` 修复已在 `a345f27` 提交，12/12 离线验收通过；最后终点悬停 2 秒，固件版本等待恢复 10 秒。
-4. 正式生产 `v06_production900_seed2026100812` 已执行两段并发生一次人工暂停续跑；目前 296/900 个不同任务有终态记录（completed 288、failed 8），质量合格 287/296、语义一致 289/296。2026-10-10 05:22:08（America/Los_Angeles）台账替换 `control.json.tmp -> control.json` 的 `WinError 5` 导致规则停止；`completed=false`、`finalized=false`，无正式导出数据集或描述层。逐尝试证据位于仓库外 `SwarmData/parallel_batch/v06_production900_seed2026100812/`。
-5. r2 使用 `8d366b4`／`v0.6-production-r2`，465/900 次尝试中质量合格 446/465、语义一致 453/465。外部负载突发导致 4 次时钟失败与 1 次断连，触发旧规则不可恢复停止；见 [r2 停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md)。r1/r2 不得清除 `stopped_reason`、直接 `--resume`、补飞、覆盖 prepare 或强行 finalize。
-6. 新代码滚动异常改为规则暂停：停止派发、排空登记、`paused=true` 且停止原因为空，事件分 manual/rule，记录原因、触发尝试、排空完成及累计次数；人工检查后显式续跑，预算与窗口不清零。续跑后只有新异常且窗口达阈值才再次暂停。确认违规、持久化/派发基础设施失败、合并错误和 family 泄漏仍不可恢复。
-7. 生产期间机器独占使用，不运行播放器、本地大模型、文档解析服务或训练。进度只读 `progress.json`；控制器退出后才读台账。资源采样写在批次外，记录整机指标及内存/CPU 前五进程。生产期间不在本仓库开发；`Simulation-dev-wip` 属另一会话，本轮不碰。旧计划和历史授权不自动转化为新运行授权。
+Windows 使用 PowerShell 7，首次检查 `$PSVersionTable.PSVersion`。已验证路径：`C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe`。
+
+Python 前读取项目 `.conda-env`（当前 `llm`）和 `AGENTS.md`；使用本机 `C:/Users/shy/anaconda3/Scripts/conda.exe run -n <环境> --no-capture-output python -B ...`。不自动切换 base。新引擎已在 `requirements.txt` 声明 `numpy==2.5.3`；本地使用 Python 3.12.3 / NumPy 2.5.3。入口为项目 `scripts/run_fast_dynamics.py`，仅输出到全新目录，配置严格分为七组。
+
+Git 状态在 `Simulation-dev` 根检查，Python 通常在 `Multi-UAV SimpleGC` 执行。无归档依赖的离线测试清单在 `.github/workflows/unit-tests.yml`；远端历史 367 项通过绑定 `5e45637`，不代表新本地代码已测试。全量历史集成测试的既有依赖/断言失败见 v0.6.1 实施报告。
+
+## 研究与证据规则
+
+- P0 研究正确性（模型输入、标签/描述、family 划分、时间/坐标、完整性与可复现）优先于 P1 当前里程碑；P2 记录诊断，P3 扩展按计划触发，不提前实现完整飞控。
+- 遇到异常先回答“它会让哪项研究结果出错”；无法判断时做一轮影响定位。不得绕过冻结验收门槛或改写失败判定。规则误报先判断必要性，再考虑删除、简化或降级诊断，最后才加例外；更改冻结规则须有当前用户依据。
+- 旧原始数据、分析、标签、语言产物、台账和受保护证据不修改、不删除；派生结果另存并绑定来源。不通过补飞、重试洗掉失败。
+- 任务成功、数据质量、语义一致分别判断；未知不能填通过。报告按结论、异常、证据位置组织，计数带分母，并说明测量范围、版本和局限。
+- 新后端用独立 `sim_clock` 与来源协议，不伪造 FCU、SIM、固件或未实现的姿态/IMU。六维输入兼容不代表旧协议校验自动兼容。
+- 当前 T1/T4 为同源 42 任务、14 family，只作开发对照；先合并来源/重复测量再划分。同一 family 跨意图、后端、参数变体不得泄漏；98% 一致等候选阈值不自动成为门槛。
+- 新输出为半开网格，旧端点规则保持；M3 先做确定性校准，M4 才增加共享环境/观测扰动与两类输出。未提交实现以执行文件内容哈希绑定来源，不要求先提交才能测试。
+- 如以后重新运行 SITL 批次，期间不得修改它绑定的受保护源码；本阶段不使用旧监测器/控制器作为开发入口。
+- 正文内公式使用 `\(...\)`；代码摘录从源码原样核对并标注位置，不能把提案当实现。
+
+## 每个本地里程碑完成后
+
+更新 `docs/fast_dynamics_engine_kickoff.md` 的实施登记、根 README 当前范围及必要契约，记录改动、实际测试、失败/未完成项与下一个工作包。完整设计在实现计划中维护，历史 SITL 报告保留原判。本地工作可连续推进，不需要先发布 GitHub。
+
+
+2026-10-12 M2-01 历史收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，该历史节点的下一步为 M2-03 设计（现已执行并修复待审，以头部为准）。见 [最终回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md)。

@@ -1,6 +1,6 @@
 # 多无人机数据生成系统框架概览
 
-> 本文状态更新于 2026-10-11，规则修订基于 `main=8fbe1d7`。r1 在 296/900 后因持久化停止；r2 使用 `8d366b4`／`v0.6-production-r2`，465/900 后因外部负载触发滚动异常停止；两批均未导出、不可续跑，仅保留证据。新代码将滚动异常改为规则暂停，确认违规类停止不变。下一步先做并行扩展与仿真倍率对照测试（`v06_accel_test_plan.md`，尚未纳入仓库），确定配置后准备 r3 从头运行 900 个任务；本轮不准备新批次。pilot30 仍绑定 `0dffcd8`／`v0.6-pauseA3`。
+> 2026-10-12 更新，已提交基线 `5e45637`。SITL 三意图框架及 v0.6.1 时间契约的 T1/T4 已通过，T2/T5 失败收尾，T3/T3+ 取消、T6 未运行、r3 未准备。快速动力学 M0/M1 已本地实现，最小双机完整数据链已接通，M0/M1 最终本地验收已通过；实际范围见 [M0/M1 报告](fast_dynamics_engine_m01_report.md)，下一包 M2。暂不提交/推送。本文主体说明 SITL 实现，新后端当前能力与后续边界在 §20；历史 pilot 与生产统计按各自版本理解。
 
 ## 1. 这个系统解决什么问题
 
@@ -63,7 +63,7 @@ flowchart TD
 | analysis | 从某次 run 产生的一个版本化离线分析结果；同一个 run 可以有不同版本的分析 |
 | `episode` | 导出到数据集中的一个运行样本；可能合格，也可能明确标记为失败或不合格 |
 
-**几个版本号不能互相替代。** `TaskSpec.schema_version=3` 表示任务结构；`protocol_version=v0.6` 表示数据协议；分析 schema、语义验证器和质量策略还有各自版本。包内历史 `__version__` 也不能单独代表全部数据已经升级到 v0.6。
+**几个版本号不能互相替代。** `TaskSpec.schema_version=3` 表示任务结构；`protocol_version=v0.6` / `v0.6.1` 表示不同数据/执行契约；分析 schema、语义验证器、事实与质量策略还有各自版本。`v0.6.1-time` 是实现标签，当前 HEAD 是后续报告提交；包内历史 `__version__` 不代表数据已经升级。拟议快速后端也不能冒用 v0.6.1 的飞控来源身份。
 
 ## 4. 主要目录和文件如何分工
 
@@ -94,8 +94,8 @@ flowchart TD
 | 任务与生成 | `tasks.py`、`mission_v3.py`、`generation.py`、`generation_v2.py`、`families.py` |
 | 意图与规划 | `registry.py`、`reconnaissance.py`、`patrol.py`、`rapid_passage.py`、`flight_patterns_v06.py`、`route_planning.py` |
 | 实际执行 | `runner.py`、`runner_v3.py`、`processes.py`、`vehicle.py`、`recording.py`、`run_provenance.py` |
-| 批次控制 | `parallel_batch.py`、`parallel_worker.py`，加 `scripts/run_mission_list.py` |
-| 离线分析与导出 | `analysis.py`、`analysis_v3.py`、`observation_processing.py`、`observations.py`、`truth.py`、`route_windows.py`、`mission_evaluation_v3.py`、`quality.py`、`dataset.py`、`dataset_audit.py` |
+| 批次控制 | `parallel_batch.py`、`parallel_worker.py`、`parallel_subset.py`，加 `scripts/run_mission_list.py`、`scripts/prepare_parallel_subset.py` |
+| 离线分析与导出 | `analysis.py`、`analysis_v3.py`、`time_contract.py`、`observation_processing.py`、`observations.py`、`truth.py`、`route_windows.py`、`mission_evaluation_v3.py`、`quality.py`、`dataset.py`、`dataset_audit.py` |
 | 面向下游的数据接口 | `episode_loader.py`、`observer_facts_v0.py`、`language_templates_v0.py`、`language_v0.py` |
 
 ## 5. 第一层：如何产生可比较的任务
@@ -213,7 +213,9 @@ v0.6 有独立的 `final_hold_s=2.0`：最后一个任务端点到达后保留�
 
 prepare 不启动仿真。它生成并验证任务清单，检查所有发布任务都规划通过，冻结任务、场景、生成证据、执行代码与相关输入的哈希，写出任务顺序、shard、端口、预算和用途标记。
 
-它还检查端口和磁盘余量。pilot 两个端口块为 19100–19199 和 19200–19299；每机的基本端口按 10 的步长分配，实际使用还包含 TCP/UDP 的相应偏移。端口探测只说明检查时可用，不是操作系统层面的长期端口预留。
+正式与子集 prepare 均支持 `--base-port`，缺省 19100，每片 100 端口；T4 实际为 21100–21499，T5 为 21100–21699。每机基本端口步长 10，包含 TCP/UDP 偏移。端口探测只说明当时可用，不是长期预留；磁盘余量另行检查。子集路径按明确任务集合导入已有 bundle，逐文件哈希不变，执行覆盖配置另存，不改正式 prepare 的默认生成行为。
+
+v0.6.1 的协议/倍率和 `startup_stagger_host_s` 随计划冻结；每片首批默认错开 30 主机秒，后续派发不重复延迟。这是不同 episode 的资源调度，不是任务内多机相对出发时间；后者按仿真时间契约处理。
 
 磁盘检查结合每次尝试的估算存储量、剩余尝试预算和导出预留。它是容量护栏，不是固定保证每个 episode 产生完全相同大小的文件。
 
@@ -229,9 +231,9 @@ prepare 不启动仿真。它生成并验证任务清单，检查所有发布任
 
 - **人工 Ctrl+C**：停止继续派发，让正在执行的任务收尾，然后保存暂停状态。用户可以显式 `--resume`，恢复未完成任务；已登记任务不重新派发，预算和滚动窗口延续。
 - **规则暂停**：完成登记后，本次运行异常且最近 20 次中异常达到 5 次时，停止派发并排空，`paused=true`、`stopped_reason=null`、`kind="rule"`。`pause_reason` 保存触发窗口的所有异常 run_id 及原因；事件含触发时刻/尝试、排空完成的尝试及排空时刻；`rule_pause_count` 累计次数、不设上限。人工检查后显式续跑，预算和窗口连续，正常的新运行不因旧窗口再次暂停。即使排空时恰好全部任务已登记，也先保留规则暂停供复核，续跑后才置 completed。
-- **规则停止**：确认间距/参数/固件违规、受保护文件变化、持久化重试用尽、派发基础设施失败仍记录不可清除的停止原因；合并重复/遗漏与 family 泄漏仍拒绝收尾，`--resume` 被拒绝。旧 r1/r2 停止记录不转换为暂停。
+- **规则停止**：当前策略判定的确认违规、受保护文件变化、持久化重试用尽和派发基础设施失败记录不可清除的停止原因；合并重复/遗漏与 family 泄漏拒绝收尾。v0.6.1 已改变 D7/D8：真值间距低于 2 m 计质量异常，参数/固件无法核实计未知，完整证据确认冲突才硬停；不能套用旧间距硬停解释。旧 r1/r2 停止记录不转换为暂停。
 
-人工暂停事件标记 `kind="manual"`，续跑写入 `resume_events`。排空期间确认违规优先变为规则停止；人工暂停排空期间滚动异常达阈值则追加规则暂停事件。`progress.json` 与 `status` 通过 `pause_kind`、原因摘要、累计规则暂停次数区分状态。生产独占机器；整机及内存/CPU 前五进程采样写在批次外，见[命令文档](v0.6_formal_run_commands.md)。
+人工暂停事件标记 `kind="manual"`，续跑写入 `resume_events`。排空期间确认违规优先变为规则停止；人工暂停排空期间滚动异常达阈值则追加规则暂停事件。`progress.json` 与 `status` 可区分状态，但本轮验证运行中只允许按冻结间隔读取 progress，不使用 status CLI。用户已改为**非独占**，逐进程资源采样写在批次外；T2/T5 规则暂停后均按该轮要求不续跑，排空后完成失败报告。代码支持恢复不等于当前试验获准恢复。
 
 批次护栏包括真实间距证据、完整性检查、family 划分泄漏、描述一致性以及滚动异常监测等。规则执行和 hard failure 分类以当前控制器、worker 和所选验收策略为准；不能仅由一个错误字符串推断所有运行故障都会即时停批。
 
@@ -268,13 +270,17 @@ finalize 要求批次已完成、没有规则停止且尚未 finalize，然后�
 \mathbf{x}_{t,i}=(e,n,u,v_e,v_n,v_u).
 \]
 
-MAVLink 速度字段是 North/East/Down 方向的厘米每秒，进入 ENU 特征时对应 \(v_e=vy/100\)、\(v_n=vx/100\)、\(v_u=-vz/100\)。单位和轴向转换是数据契约的一部分，不能凭字段顺序直接拼接。
+MAVLink 速度字段是 North/East/Down 方向的厘米每秒，空间变换对应 \(v_e=vy/100\)、\(v_n=vx/100\)、\(v_u=-vz/100\)。v0.6.1 还需乘本机源秒相对共同仿真秒的局部导数，不能把空间换算后的值直接当最终输出。单位、轴向及时间单位均属数据契约。
 
 ### 9.3 时间处理和有效性
 
 系统保留宿主机单调时钟、消息接收时刻和飞控启动时间等证据，利用被动 `SYSTEM_TIME` 消息构建时钟映射并做留出检查。处理包含严格时间顺序检查、精确重复包处理，以及间隙与异常样本审计。
 
-被动时钟拟合残差能衡量映射的一致性，但无法直接证明绝对同步精度或识别全部传输延迟。最新 pilot 的时钟等级全部为 `acceptable`，不能改称 `strict`。
+被动时钟拟合残差能衡量映射一致性，不能证明绝对同步精度或识别全部传输延迟。历史 pilot30 的时钟均为 `acceptable`；v0.6.1 采用自己的时间政策，不能沿用该历史结论描述全部新数据。
+
+旧 v0.5/v0.6 保留主机接收网格。显式 v0.6.1 通过各机源钟→主机桥接→参考机源钟形成公共仿真秒；参考机按自然编号顺序选择首个有效且覆盖纪元的模型，无效顺延、全部无效则不合格，选择规则与编号进入 `time_axis.json`。导出网格、时长、事件、阶段窗口及秒数判据均使用公共仿真时间，原始主机/源时间保留。记录频率为 10 Hz 仿真时间；各机速度按局部时间导数换算。
+
+新政策的残差 p95 换算后须 ≤0.2 仿真秒，0.02 秒仅诊断；源/主机速率窗口为 \([0.5/s,2/s]\)，\(s\) 为声明倍率。该被动桥接不是物理锁步。T1/T4 最终通过，FCU 速度残余记 P2；具体公式、例外边界和已知特性见[数据契约 §1](data_contract_v0.md)。
 
 当前典型输出采用 10 Hz 网格。只有符合间隙规则的区间才可插值；无效区间要留下掩码与审计信息，不能跨越长缺口平滑补成“看起来完整”的轨迹。
 
@@ -334,6 +340,7 @@ MAVLink 速度字段是 North/East/Down 方向的厘米每秒，进入 ENU 特�
 | `quality.json`、`execution_constraints.json` | 质量、无效区间、间距及执行约束结果 |
 | `phase_windows.json`、`execution_metrics.json` | 实际阶段窗口与执行诊断 |
 | `clock_models.json`、`truth_provenance.json` | 时钟模型和真值来源 |
+| `time_axis.json`、`events_sim_source.json`（v0.6.1） | 参考机与公共源时间身份、转换后的事件；原始事件保留 |
 | `onboard_mission_param_check.json` | 板载任务参数检查 |
 | `manifest.json` | 该分析的协议、版本、来源哈希、文件哈希和资格摘要 |
 
@@ -361,7 +368,7 @@ MAVLink 速度字段是 North/East/Down 方向的厘米每秒，进入 ENU 特�
 
 已提交 pilot 使用 `observer_facts_v06`，其中矩形螺旋为 `unclear` 5/5；往返扫描为 `parallel_strips` 3/5、`null` 2/5。
 
-当前代码已改为 `observer_facts_v06b` / `pattern_detector_v06b`，修复在 `a345f27` 提交，注册表、任务模板和语言模块的事实版本也已同步。新的几何降级检查对主阶段轨迹按至少 2 m 的间隔保留点，计算有符号累计转角；原本被判为平行条带的轨迹若累计转角绝对值达到 230°，改为 `unclear`。
+v0.6 分支采用 `observer_facts_v06b` / `pattern_detector_v06b`，修复在 `a345f27` 提交。v0.6.1 使用独立事实版本 `observer_facts_v061`，模式检测仍沿用 v06b，描述模板几何含义未因时间契约而重定。几何降级检查对主阶段轨迹按至少 2 m 间隔保留点，计算有符号累计转角；原本判为平行条带、但累计转角绝对值达到 230° 时改为 `unclear`。
 
 这个检查不读取计划飞法或意图来强行命名运动模式。它用于减少持续同向转弯的环路/螺旋被误称为平行往返，同时避免旧横向折返判据造成通道分歧和槽位置空。暂停 B 的生产函数路径离线验收为 12/12：v0.5 原有 125/125 合格侦察槽位不变，pilot30 往返扫描修复为 5/5 `parallel_strips`，矩形螺旋保持 5/5 `unclear`，巡逻 9/9、快速通过 10/10 原有槽位不变。结果另存 `SwarmData/v06_pattern_acceptance_20261008/acceptance.json`，旧 pilot 事实与描述文件未覆盖，详见 pilot 报告的“复核结论”。本文更新时未重新执行验收。
 
@@ -435,7 +442,7 @@ A2 正式配置尝试 782 个候选 family，接受 300 个，拒绝 482 个。�
 
 ### 16.2 已提交的真实 pilot 证据
 
-最新成功收尾的 pilot 为 `v06_pilot30b_seed2026100811`，运行代码为 `v0.6-pauseA3` 对应 `0dffcd876722b30150c2cd5e246781df65b3e9dc`。后续事实修复提交为 `a345f27`，生产运行标签为 `v0.6-pilot=762a303`，规则修订起始 HEAD 为 r2 停止报告提交 `8fbe1d7`，r2 运行基线为 `8d366b4`；不能把当前 HEAD 与各批次运行 SHA 混为一谈。
+本节保留 v0.6 pilot30 的历史证据；之后 v0.6.1 的 T1/T4 也已成功收尾，见 §16.4。pilot30 为 `v06_pilot30b_seed2026100811`，运行代码 `v0.6-pauseA3=0dffcd8`；后续事实修复 `a345f27`，r1 运行 `762a303`，r2 运行 `8d366b4`。这些身份均不能与当前 HEAD `5e45637` 混同。
 
 | 意图/飞法 | 运行数 | 质量合格 | 双通道语义一致 |
 |---|---:|---:|---:|
@@ -469,13 +476,19 @@ A2 正式配置尝试 782 个候选 family，接受 300 个，拒绝 482 个。�
 
 停止发生于 2026-10-10 05:22:08（America/Los_Angeles）：`control.json.tmp` 替换 `control.json` 收到 `PermissionError: WinError 5`，控制器记为台账持久化规则停止。报告指出现有替换无重试，读者共享方式存在瞬态占用风险；具体占用进程未被直接捕获，不能把候选进程当成确定责任者。r2 修复已实现：`save_atomic` 对 WinError 5/32 做指数退避重试（首次 0.05 s、上限 1 s、累计约 8 s），重试用尽仍按原格式规则停止；worker 改读控制器在预留落盘后写入的 `attempts/<id>/assignment.json`，不再打开 `control.json`，原有身份、端口、目录和重复执行核对保留；控制器每次保存台账后另写只读展示用 `progress.json`，其写入失败只记日志、不影响批次。离线测试见 `tests/test_parallel_persistence.py`；r2 已使用此修复，但共享冲突为零，未实测触发重试。
 
-296 次运行的逐尝试证据保留在仓库外批次中，不是已导出的正式 episode。随后 r2 已运行 465/900，质量合格 446/465、语义一致 453/465；4 次时钟失败与 1 次断连触发旧滚动异常停止，具体抢占资源的进程因当时未采样而未知。r2 持久化共享冲突为 0/465 次尝试，但这不等于实测触发了重试。两批均不得清除停止原因、补飞、覆盖准备或强行 finalize，见 [r2 报告](v0.6_production_r2_stop_01.md)。新规则按 §8.4 实施；下一步对照测试后再准备 r3，本轮未执行。
+296 次运行的逐尝试证据保留在仓库外批次中，不是已导出的正式 episode。随后 r2 已运行 465/900，质量合格 446/465、语义一致 453/465；4 次时钟失败与 1 次断连触发旧滚动异常停止，具体抢占资源的进程因当时未采样而未知。r2 持久化共享冲突为 0/465，但不等于实测触发重试。两批均不得清除停止原因、补飞、覆盖准备或强行 finalize，见 [r2 报告](v0.6_production_r2_stop_01.md)。后续测试已完成下述收尾，r3 仍未准备。
 
-### 16.4 尚不能声称完成的部分
+### 16.4 v0.6.1 已实现与规模验证结论
+
+实现标签 `v0.6.1-time` 对应 `bd1f40a`，公共时间、倍率传递、参考机顺延及 D2/D7/D8 已有代码和离线测试；不能把倍率入口存在当成平台加速成功。T1（K2×1）与 T4（K4×1）各 42/42 执行、41/42 合格并完成 finalize，最终通过；T2（K2×2）11/42 后暂停失败，实际推进约 1.21 倍；T3/T3+ 已取消。T5（K6×1）15/42 后暂停并排空，9/15 合格、6/15 时钟不可用，未 finalize，T6 未运行。各组都是 pilot、非训练。
+
+最高已通过 SITL 配置为 K4×1、首批错峰 30 主机秒、非独占。T4 整体/稳态合格吞吐为 48.075819 / 46.483148 每小时；按用户规定的稳态外推与实测固定开销，900 任务约 18 小时 52 分、900 合格 episode 约 19 小时 32 分，内部空档等局限见[最终验证报告](v0.6.1_time_validation_report.md)。历史远端 CI 在 `5e45637` 通过 367 项；本次本地基线亦通过该清单，最终新代码检查见 [M0/M1 报告](fast_dynamics_engine_m01_report.md)。
+
+### 16.5 尚不能声称完成的部分
 
 现有证据支持三意图生成、四种生产飞法、900 任务离线规划、pilot 的执行和收尾，以及 r1 的 296/900 与 r2 的 465/900 次运行和停止诊断。它不支持宣称正式 900 任务完成、生产数据集可用于训练或已打 `v0.6-production` 标签，也不能把正式计划全部内容当作实现结果。
 
-事实层 v06b 已验证并用于生产运行代码；旧 pilot 质量、事实与描述仍绑定原版本。持久化修复已用于 r2，规则暂停本轮仅经离线验证；正式计划 P3 扩展仍是待办。
+事实层与旧产物按协议分版本；规则暂停已有 T2/T5 实跑证据，不能再称为仅离线验证。正式 r3 未准备；快速动力学 M0/M1 已本地实现，下一包 M2 尚未实施。Linux/WSL2 稳定加速和 SIM 速度尺度核对仍为 P3 待办。不能由 SITL 验证或 M1 合成样本结果推断新引擎真实性、生产吞吐或训练资格已通过。
 
 ## 17. 开发代码、冻结归档和大型数据分别在哪里
 
@@ -512,13 +525,13 @@ F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/
 
 | 项目 | 当前应采用的解释 | 依据 |
 |---|---|---|
-| 旧进度快照与计划基线 | `9812645` 是计划起始基线；规则修订基线为 `8fbe1d7`；r1 运行 `762a303`，r2 运行 `8d366b4`；根 README/CLAUDE 已同步 | Git、台账与生产停止报告 |
+| 旧进度快照与计划基线 | 当前核对 HEAD `5e45637`；v0.6.1 实现 `bd1f40a`；r1 `762a303`、r2 `8d366b4` 是历史运行身份；本地新文档未提交 | Git、收尾回执与当前交接 |
 | 部分旧接口文档只描述双意图或只登记侦察 | 当前生产登记为三意图、四种飞法，旧文档应按历史接口理解 | `registry.py`、三意图 profile |
 | 旧说明称连续航线待后续实现 | 当前 runner 与 compiler 已支持 `semantic_phase_route_v1`，并经 pilot 使用 | `mission_v3.py`、`route_planning.py`、`runner_v3.py`、pilot 报告 |
 | 正式计划或 A2 提及固件等待 2 秒 | 当前模板和 pilot 为 10 秒，优化已经撤回 | 当前 v06 模板、`run_provenance.py`、pilot 报告 |
 | 计划飞法等于观测运动模式 | 两者独立；矩形螺旋目前没有专门的可靠观测模式标签 | 注册表词表、事实提取器、pilot 报告 |
-| 旧 pilot 的事实版本与当前代码 | 旧 pilot 保持 v06；当前 v06b 已提交并通过另存的离线验收，不静默改写旧结果 | `a345f27`、事实提取器、pilot 暂停 B 复核 |
-| 正式生产原准备状态与实际运行 | r1 296/900、r2 465/900 均规则停止；无正式导出集，下一步对照测试后准备 r3 | `control.json`、生产停止报告 |
+| 旧 pilot 的事实版本与当前代码 | 旧 pilot 保持 v06；v0.6 使用 v06b，v0.6.1 使用 v061；不静默改写旧结果 | `observer_facts_v0.py`、`registry.py`、协议与对应报告 |
+| 正式生产原准备状态与实际运行 | r1/r2 停止不恢复；T1/T4 已通过、T2/T5 失败、T6 未运行；当前本地开发快速引擎，r3 未准备 | 最终验证报告、开发交接 |
 | 规划安全等于实际安全 | nominal 检查、实际真值检查和观测检查是不同证据层 | 规划诊断、`quality.py`、执行/验收策略 |
 | 数据生成已包含复杂现实感知环境 | 当前输入是合作式 FCU 遥测，场景仍主要围绕矩形区域和既有平台/参数 | 观测契约、模板和当前 profile |
 
@@ -528,19 +541,21 @@ F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/
 
 ## 19. 建议的代码阅读顺序与依据链接
 
+本节用于理解已经存在的 SITL 实现。新引擎开发先读[交接文件](fast_dynamics_engine_kickoff.md)和[实现计划](fast_dynamics_engine_implementation_plan.md)，不要将下面的 runner/worker 直接当成快速引擎执行入口。
+
 可以按“入口 → 任务编译 → 生成 → 执行 → 分析 → 导出 → 描述/加载”的顺序阅读，下面链接对应本文的主要依据。
 
 | 阅读目标 | 代码或报告 |
 |---|---|
-| 主入口与命令分派 | [main.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/main.py:184>)、[swarm.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm.py:12>) |
-| 任务版本分派与 v3 编译 | [tasks.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/tasks.py:29>)、[mission_v3.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/mission_v3.py:234>) |
+| 主入口与命令分派 | [main.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/main.py>)、[swarm.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm.py>) |
+| 任务版本分派与 v3 编译 | [tasks.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/tasks.py>)、[mission_v3.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/mission_v3.py>) |
 | 意图与飞法契约 | [registry.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/registry.py>) |
-| family 身份与整族生成 | [families.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/families.py:39>)、[generation_v2.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/generation_v2.py:220>) |
-| 多机执行生命周期 | [runner_v3.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/runner_v3.py:184>) |
-| 批次冻结、控制与统一收尾 | [parallel_batch.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/parallel_batch.py:178>)、[parallel_worker.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/parallel_worker.py:231>) |
-| 离线分析与资格规则 | [analysis_v3.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/analysis_v3.py:54>)、[quality.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/quality.py:91>) |
-| 数据导出与加载 | [dataset.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/dataset.py:20>)、[episode_loader.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/episode_loader.py:45>) |
-| 事实和描述 | [observer_facts_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/observer_facts_v0.py>)、[language_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/language_v0.py:47>)、[language_templates_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/language_templates_v0.py:486>) |
+| family 身份与整族生成 | [families.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/families.py>)、[generation_v2.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/generation_v2.py>) |
+| 多机执行生命周期 | [runner_v3.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/runner_v3.py>) |
+| 批次冻结、控制与统一收尾 | [parallel_batch.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/parallel_batch.py>)、[parallel_worker.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/parallel_worker.py>) |
+| 离线分析与资格规则 | [analysis_v3.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/analysis_v3.py>)、[quality.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/quality.py>) |
+| 数据导出与加载 | [dataset.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/dataset.py>)、[episode_loader.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/episode_loader.py>) |
+| 事实和描述 | [observer_facts_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/observer_facts_v0.py>)、[language_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/language_v0.py>)、[language_templates_v0.py](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/swarm_sim/language_templates_v0.py>) |
 | A2 离线验证和生产规划统计 | [v0.6_pauseA2_report.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_pauseA2_report.md>) |
 | 最新真实 pilot 结果与限制 | [v0.6_pilot_report.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_pilot_report.md>) |
 | 正式生产 296 次运行与规则停止 | [v0.6_production_stop_01.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v0.6_production_stop_01.md>) |
@@ -548,3 +563,24 @@ F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/
 | 原始正式计划，需结合调整及报告阅读 | [v06_formal_plan.md](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/Multi-UAV SimpleGC/docs/v06_formal_plan.md>) |
 
 本文是架构说明，不改变上述协议、任务、停止规则或正式计划的执行状态。
+
+## 20. 快速动力学后端：M0/M1 实现与后续边界
+
+快速轨迹生成后端已完成 M0/M1 的本地代码落地，完整路线仍以[实现计划](fast_dynamics_engine_implementation_plan.md)为准。`swarm_sim/fast_dynamics/` 和 `scripts/run_fast_dynamics.py` 已新增；当前只接通既有双机、单段 `line_abreast` 快速通过空中任务及完整数据链，理想观测、零新增扰动、未校准且非训练。M0/M1 最终本地验收已通过，详见 [M0/M1 报告](fast_dynamics_engine_m01_report.md)与[适配备忘](fast_dynamics_engine_adapter_memo.md)。
+
+| 层 | SITL 已有能力 | 新后端 M1 与后续范围 |
+| --- | --- | --- |
+| 任务与规划 | TaskSpec v3、三意图四飞法、family 整族生成 | M1 复用既有双机快速通过 TaskSpec 与编译航线；M2 扩全部意图/飞法，不另造 family |
+| 任务执行 | SITL runner、MAVLink、主机等待、阶段屏障 | M1 独立空中阶段状态机、实际确认/驻留与屏障；整数共同 tick，不运行 MAVLink |
+| 机体与控制 | ArduCopter SITL 闭环 | M1 已实现受限加速度/jerk 平动、常 jerk 步内积分、速度响应及单段终点参考 |
+| 时间和观测 | 飞控源钟映射、FCU 位置速度、SIM 日志 | M1 `sim_clock`、理想合成观测、10 Hz 半开输出及含边界支持轨迹；噪声/延迟/传感器待后续 |
+| 验证与数据 | 既有几何规则、质量、导出/描述/loader | M1 独立 `fast_dynamics_v1` 来源/质量分派，复用几何规则，已接通导出/审计/事实/描述/加载 |
+| 批量执行 | 端口、SITL worker、并行台账 | M1 单样本新目录、失败留痕及原子完成标记；M4 再增加 episode 进程池与规模试产 |
+
+融合修订版 r2 的首包已落地 M0 短适配备忘/契约、T1/T4 来源索引及 M1 单机数值测试/最小双机完整数据链。下一包 M2 补齐三意图四飞法；M3 保存无新增噪声基线、分步校准并冻结参数/验收，M4 扰动强度扫描、两类输出及逐级 pilot，M5 独立研究验收，均未完成。仍保留六维 ENU 模型输入；净平动加速度不等同 IMU 比力，未实现字段不得全零冒充有效真值。
+
+新后端采用整数时钟与半开输出区间；原 SITL 网格和数据定义保持。形状对照限制在同阶段/圈次，时间和多机间距独立按公共轴比较。T1/T4 为同源 42 任务、14 family，来源去重后按 family 划分，只作开发对照。带标签与无标注模式分别声明能力和吞吐；候选阈值在最终测试前冻结，数值目标不代替实测结论。
+
+升级边界为参考生成、控制器、执行器、机体、观测器和轨迹适配层；控制请求显式区分 ENU 加速度、机体系力/力矩及电机命令。未来可替换六自由度刚体、电机气动、IMU/GNSS 估计器，或在 profile 证实瓶颈后替换 C++ 数值内核，上层任务与标签语义不必因此重写。各层版本、参数、种子、坐标和支持能力进入新 manifest。
+
+新的 `sim_clock` 契约与 M1 模块已实现，最终测试数量和样本结果以实施报告为准；固定 4 机内核用例测得约 281 倍实时，完整生产吞吐仍待后续验收，不由局部基准或数值收敛代替。现有 42 配对任务只作开发对照，最终泛化需另留 family。当前只做本地开发与验证，GitHub 提交/CI/标签不是里程碑前置条件。进度统一登记在[本地开发交接](fast_dynamics_engine_kickoff.md)，不改写历史 SITL 验证报告。

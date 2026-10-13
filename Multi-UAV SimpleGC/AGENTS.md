@@ -1,4 +1,6 @@
 <!-- activate-conda-env:begin -->
+
+> **2026-10-13 当前状态：M3 已完成，参数已冻结，停止于本地收尾。** 25个配置搜索与前三名282条复验后冻结config_020：加速度3.75、jerk14、响应时间0.10/0.475 s，配置SHA256为94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193。调参282/282与内部留出122/122均合格、双通道判定全一致；已知模式分别226/226与98/98一致。总时长误差中位数分别1.57%与1.59%，全部阶段目标通过；内部没有触发默认回退。42条高速用例完成且不超动力学上限，但10 m/s存在约4 m冲出，四机汇聚最小间距仅2.931 m，不能宣称高速规划合格。551项离线、DR130 260项、v0.5四例通过。M2-02B两组继续封存；4–10 m/s未经SITL校准；未启动SITL，不推送，不进入M4/v0.7实现。详见[M3收尾报告](docs/fast_dynamics_m3_closeout.md)；本补注优先于下方历史状态。
 ## Project Python environment
 
 Read `.conda-env` from this project root before running Python or installing packages.
@@ -11,3 +13,42 @@ If the file is missing, empty, or names an environment unavailable on this machi
 list local environments and ask the user to choose before environment-dependent work.
 Do not silently switch to base or install into another interpreter.
 <!-- activate-conda-env:end -->
+
+## Current local development handoff (2026-10-12)
+
+Latest follow-up: coverage geometry acceleration is verified (20 prior runs,
+120 JSON files byte-identical; 12 positive reruns, 144 evidence files identical).
+512 offline tests, DR130 260 cases and four v0.5 examples passed. Four-agent
+lawnmower takes 47.549 s, so the 30 s target is not met; no other optimization.
+M3 stopped at source mapping: the frozen M2-02B calibration inputs use the new
+2026101203 source, and none of 213 tasks matches r2 family/scene/task identity.
+Do not substitute same-name r2 tasks, change the split, or launch SITL. No M3
+baseline or parameter calibration has run. Read
+docs/fast_dynamics_coverage_performance_report.md before further work.
+This follow-up supersedes the older M2-only stop description below.
+
+Latest status: M2 implementation and the planned_phases P0 repair are complete.
+The fixed 12 positive + 4 physical-state negative tasks passed the full chain;
+502 offline tests, DR130 260 cases and all four v0.5 examples passed.
+Read docs/fast_dynamics_m2/M2_runtime_resume_report.md for provenance, coverage,
+timings and limitations. Preserve the previous P0 report and external evidence.
+The user authorized this completion to be committed locally, without pushing.
+M2 is stopped after completion; do not enter M3 or rerun historical batches.
+
+Read `../README.md`, `../CLAUDE.md`, `docs/fast_dynamics_engine_kickoff.md`, then
+`docs/fast_dynamics_engine_implementation_plan.md` before new engine work.
+SITL v0.6.1 remains available. The local fast dynamics M0/M1 implementation now
+includes the adapter memo/contract, deterministic numerical core, and a minimal
+two-vehicle rapid-passage task through analysis/export/audit/descriptions/loading.
+Final local M0/M1 verification passed (367 legacy plus 39 new tests); read `docs/fast_dynamics_engine_m01_report.md`
+for actual results and remaining items. The next package is M2 full mission coverage;
+M2-M5, calibration, production qualification, and full-production throughput validation are not complete.
+The new entry point is `scripts/run_fast_dynamics.py`; always choose a new output
+directory. `requirements.txt` declares `numpy==2.5.3` in addition to pymavlink.
+Preserve existing local documentation changes and record actual progress in the handoff.
+T1/T4 share 42 tasks from 14 families; merge source identities before splitting data.
+
+The M2 completion has explicit authorization for a local commit only; no push, PR or tag.
+Do not start SITL, resume historical batches, run T6, prepare r3, or rewrite old data.
+Use PowerShell 7 and the project Conda environment. `Simulation` is a frozen archive;
+the active project is `Simulation-dev/Multi-UAV SimpleGC`.

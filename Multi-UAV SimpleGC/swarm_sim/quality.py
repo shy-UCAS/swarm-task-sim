@@ -30,6 +30,9 @@ DEFAULT_POLICY = {
 
 
 def resolve_policy(overrides=None):
+    if isinstance(overrides, dict) and overrides.get("version") == "fast_dynamics_quality_v1":
+        from .fast_dynamics.artifacts import resolve_quality_policy
+        return resolve_quality_policy(overrides)
     policy = dict(DEFAULT_POLICY)
     if overrides is not None:
         if not isinstance(overrides, dict) or set(overrides) - set(policy):

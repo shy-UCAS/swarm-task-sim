@@ -95,6 +95,14 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
                 if (dataset.get("time_base") != "sim_source" or dataset.get("time_policy") != manifest.get("time_policy")
                         or manifest["sim_speedup"] not in dataset.get("sim_speedups", [])):
                     raise ValueError("dataset and episode simulation-time contract disagree")
+            if manifest.get("protocol_version") == "fast_dynamics_v1":
+                v3_keys += ("protocol_version", "simulation_backend", "flight_pattern", "component_versions",
+                            "time_base", "time_policy", "end_us", "lifecycle_scope", "training_eligible")
+                if manifest.get("semantic_validation_version") == "multi_intent_validation_fast_dynamics_v2":
+                    v3_keys += ("execution_mode", "config_schema_version", "behavior_version", "reference_version", "executor_version")
+                if (dataset.get("time_base") != "sim_clock" or dataset.get("simulation_backend") != "fast_dynamics"
+                        or dataset.get("time_policy") != manifest.get("time_policy")):
+                    raise ValueError("dataset and episode fast dynamics contracts disagree")
             if any(type(entry.get(k)) is not type(manifest.get(k)) or entry.get(k) != manifest.get(k) for k in v3_keys):
                 raise ValueError("dataset and v3 episode metadata disagree")
             modes = dataset.get("control_modes", [])
@@ -164,6 +172,12 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
                     missing_row_policy="zero-filled with false mask", source_directory=str(root))
     metadata.update(protocol)
     metadata["time_base"] = "sim_source" if manifest.get("protocol_version") == "v0.6.1" else "host_receive"
+    if manifest.get("protocol_version") == "fast_dynamics_v1":
+        metadata.update({key: manifest[key] for key in ("time_base", "time_policy", "end_us", "lifecycle_scope",
+                        "simulation_backend", "training_eligible", "duration_s")})
+        if manifest.get("semantic_validation_version") == "multi_intent_validation_fast_dynamics_v2":
+            metadata.update({key: manifest[key] for key in ("execution_mode", "config_schema_version",
+                            "behavior_version", "reference_version", "executor_version")})
     if metadata["time_base"] == "sim_source":
         metadata.update({key: manifest[key] for key in ("sim_speedup", "time_policy", "common_time_axis")})
     if protocol["task_kind"] == "mission_v3":

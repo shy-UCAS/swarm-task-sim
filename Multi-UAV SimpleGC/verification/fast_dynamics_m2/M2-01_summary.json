@@ -1,0 +1,459 @@
+{
+  "stage_id": "M2-01",
+  "attempt_id": "attempt_01",
+  "revision_attempt_id": "attempt_03_id_guard",
+  "status": "PASS",
+  "written_at_local": "2026-10-12T07:15:00-07:00",
+  "revised_at_local": "2026-10-12T07:55:00-07:00",
+  "revision_reason": "User authorized Codex to directly finish unconditional run-ID guard and close M2-01; targeted tests passed",
+  "previous_review": {
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_review.md",
+    "sha256": "5e99c2428e7370117f38d7a88802345637513d0545c937ef83f04268a8a57a71",
+    "conclusion": "FIX_REQUIRED"
+  },
+  "m2_00_pass_receipt": {
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md",
+    "sha256": "d5fa9a6081163ad9514c7aacd2683f9d4b1b711c6c256eba5e086735e718f2e3",
+    "conclusion": "PASS"
+  },
+  "reviewed_baseline": {
+    "report_sha256": "fc24355f3c085ac4a9091c33fc4f03fc8e7922940c45d1d0258599f368f6a8aa",
+    "summary_sha256": "ca29400954525442e8cdfee0a6c9fe4fea9974b403b63726e1d4a1c653839dc5",
+    "output_policy_sha256": "1e485b55f3eb15b603dd5ad91e46bd9cd64d0f0136805473930c6c45f77b7c64",
+    "policy_test_sha256": "6f4100687255084e9b797a2804a73ea18592dd5907ab1e15a3ebff2aea20597c",
+    "copies": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/*.reviewed.*",
+    "all_match_receipt": true
+  },
+  "git": {
+    "branch": "codex/fast-dynamics",
+    "base_commit": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "previous_checkpoint": "0f7c42d8688880b1d8e1a416184383a94a5ae123",
+    "record_checkpoint": "57cca914f2e8b414e8820a1f08f6fd900f912d36",
+    "record_checkpoint_files": 12,
+    "record_checkpoint_stat": "12 files changed, 1079 insertions(+), 21 deletions(-)",
+    "new_commits_during_repair": 0,
+    "main_commit": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "origin_main_commit": "5e45637f2bf63054ed0ace2433fd7c9ea7b075ac",
+    "remote_operations": "none (no fetch, push, PR or tag)",
+    "tracked_diff_after_fix": {
+      "command": "git diff --binary --no-ext-diff --no-color HEAD --",
+      "sha256": "49945d06b9de5a9759ee51e8d136fa737a18f82c3ac6a17b907926b096c48539",
+      "bytes": 1634145
+    },
+    "pre_fix_tracked_diff_sha256_reported_by_review": "c9cc76649682eb002b61cab080cdb7fd8c5061dc5cb793c1d2c21d7d23280e82",
+    "whitespace_note": "M2-00_summary.json is CRLF (378 lines); its bytes are bound by the M2-00 PASS receipt and .gitattributes is * -text, so bytes were preserved",
+    "tracked_diff_after_root_repair": {
+      "bytes": 1627170,
+      "sha256": "19782fb7a966ba85626c9de4fd847e3b19897642472f0ebfbcf47c13150d2b4a",
+      "command": "git diff --binary --no-ext-diff --no-color HEAD --"
+    }
+  },
+  "source_snapshot": {
+    "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-01\\attempt_03_id_guard\\source_snapshot_final.json",
+    "scope": "final policy,three entry scripts,two tests,CI; document and result hashes separately bound",
+    "sha256": "69da7e861d78073e1339f8b81e4c73945806067df907112c0f5e925904735796",
+    "files": 7
+  },
+  "repair": {
+    "R1_default_root": {
+      "before": {
+        "resolved_root": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-dev/SwarmData/fast_dynamics",
+        "inside_repository": true,
+        "default_run": "SystemExit(2)",
+        "default_verify": "SystemExit(2)"
+      },
+      "after": {
+        "resolved_root": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics",
+        "inside_repository": false,
+        "default_run": "exit 0, complete, 294 frames",
+        "default_verify": "reached the run body (sentinel), not self-rejected"
+      },
+      "fix": "default_output_root() = repository_root().parent / 'SwarmData' / 'fast_dynamics'; assert_usable_root rejects in-repository, file or link-escaped roots"
+    },
+    "R2_root_ownership": {
+      "before": {
+        "output_outside_selected_root": "accepted, 4 artifacts written",
+        "run_id_escape": "new_attempt_path(root,'x/../../../escaped') accepted; resolved outside the root"
+      },
+      "after": {
+        "output_outside_selected_root": "SystemExit(2), target not created",
+        "run_id_escape": "OutputPolicyError before any path is built",
+        "inside_root_control": "still accepted"
+      },
+      "fix": "assert_new_attempt_path(path, root) requires outside-repository + under-root + fresh; sanitize_component rejects path fragments, drive letters, reserved characters/names; assert_created_within re-checks after mkdir"
+    },
+    "verify_root_propagation": "verify_fast_dynamics_m01.py passes --output-root to every child run_pipeline call; real end-to-end run confirms child attempt.json output_root equals the custom root",
+    "m1_cli_test": "tests/test_fast_dynamics_execution.py CLI case now passes an explicit isolated root (production policy was not relaxed)",
+    "internal_flaw_found_by_new_tests": "the redundant 'nearest existing ancestor must be inside the root' check falsely rejected a not-yet-created root; removed because resolved-path containment already covers link escapes",
+    "reproductions": {
+      "script": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repro_path_defects.py",
+      "before": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repro_before_fix.json",
+      "before_sha256": "8088c41811b65c6f7d841ae5b08aff8e25b1512bee7beb84b08db55a6e8cfe12",
+      "after": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repro_after_fix.json",
+      "after_sha256": "2249182ce70ba1ae1288d571c6685fad17cdb3369d59bd93f215750d8c503114",
+      "log": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repair_log.md",
+      "log_sha256": "cb3976c467ca4a56a5b9953564a3cd4a565442627ebd76456a024e313ee62b00"
+    },
+    "process_defects": [
+      "pass1 policy-test log overwritten by the rerun (failure list kept in PASS1_TEST_LOG_OVERWRITTEN.md)",
+      "after_fix pass1 repro aborted on the expected OutputPolicyError (kept as repro_after_fix_pass1_crash.log)",
+      "before_fix pass1 repro had an argv artifact (kept as repro_before_fix_pass1_argv_artifact.json + note)"
+    ],
+    "final_run_id_guard": {
+      "first_runner_result": "65 passed,1 error caused by missing external runner __main__ guard",
+      "final_result": "66/66 passed,0 skipped",
+      "both_output_modes_covered": true,
+      "previous_failure_preserved": true,
+      "unconditional_before_io": true,
+      "invalid_id_pairs": 22,
+      "valid_explicit_full_chain": true,
+      "new_cases": 2
+    }
+  },
+  "output_policy": {
+    "module": "Multi-UAV SimpleGC/swarm_sim/fast_dynamics/output_policy.py",
+    "sha256": "9c49f7fe93d1af95b6fbddd83113cf4e5b23c52a0746f8e8ebcae10df7aa4909",
+    "bytes": 9134,
+    "resolution_precedence": [
+      "--output-root",
+      "FAST_DYNAMICS_OUTPUT_ROOT",
+      "default sibling SwarmData/fast_dynamics (parent of the Git root)"
+    ],
+    "root_validation": [
+      "outside the repository",
+      "not a file",
+      "does not resolve into the repository through a link"
+    ],
+    "target_validation": [
+      "outside the repository",
+      "under the selected root (resolved comparison)",
+      "does not exist",
+      "root may not exist yet"
+    ],
+    "prefix_validation": "sanitize_component rejects empty/whitespace/. /.. /separators/drive letters/reserved characters and device names/leading or trailing dot",
+    "post_creation_recheck": true,
+    "entries_updated": [
+      "scripts/run_fast_dynamics.py",
+      "scripts/benchmark_fast_dynamics.py",
+      "scripts/verify_fast_dynamics_m01.py"
+    ],
+    "verify_child_root_propagation": true,
+    "benchmark_stdout_branch": "kept for the historical no-argument behaviour and writes no file",
+    "library_apis_unchanged": "write_episode / build_dataset / describe_dataset / load_episode keep their previous permissive contract",
+    "machine_paths_hardcoded": false,
+    "run_id_validation": "Unconditional before output branch selection and I/O; existing ASCII 1-100 run-ID grammar plus Windows filename checks; generic prefixes remain distinct"
+  },
+  "migration": {
+    "migration_id": "m01_20261012_v1",
+    "status": "verified in the first execution and not redone during the repair",
+    "source_totals": {
+      "files": 356,
+      "bytes": 30216091,
+      "tracked": 200,
+      "ignored": 156
+    },
+    "copy_verified": {
+      "files": 356,
+      "bytes": 30216091,
+      "missing": 0,
+      "extra": 0,
+      "hash_or_size_mismatch": 0
+    },
+    "approved_classification": {
+      "path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-00/attempt_02_repair/evidence_classification.json",
+      "sha256": "fc2a4e66d46f95d9da8f2e7923675c3ef6ac24cf425873a321751d1f48f55b3c",
+      "items_rechecked": 200,
+      "mismatches": 0
+    },
+    "decisions": {
+      "keep_files": 18,
+      "keep_bytes": 694586,
+      "externalize_tracked": 182,
+      "externalize_ignored": 156,
+      "cleanup_candidates": 338,
+      "cleanup_bytes": 29521505,
+      "unclassified": 0,
+      "overlap": 0
+    },
+    "deleted": 338,
+    "delete_errors": 0,
+    "removed_empty_directories": 64,
+    "remaining_in_repository": {
+      "files": 18,
+      "bytes": 694586,
+      "plus": "migration_index.json"
+    },
+    "relocation_index": {
+      "path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/relocation_index.json",
+      "sha256": "e023a4e3194f12790279710c3f2a785208a7165b1be736c5d55bdea0c5ccb55e",
+      "entries": 356
+    },
+    "repository_migration_index": {
+      "path": "Multi-UAV SimpleGC/verification/fast_dynamics_m01/migration_index.json",
+      "sha256": "96a3678d710e1a8093d008410ca2b55ecbde19ee55cb76ea3a3b9048fb6f7ad3"
+    },
+    "history_rewritten": false
+  },
+  "consumer_verification": {
+    "archive_run": {
+      "path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_01/consumer_check_archive.json",
+      "sha256": "dae82c091633916e44cdfb76d55fc342904c4eec71fe90cf9e416e758faab08a",
+      "archive_reads": 995,
+      "repo_evidence_reads": 0,
+      "episodes_loaded": 7,
+      "datasets_audited": 7,
+      "dataset_issues": [],
+      "language_descriptions": 4,
+      "public_scene_corners": 4
+    },
+    "repo_control_run": {
+      "archive_reads": 0,
+      "repo_evidence_reads": 995,
+      "same_outcomes": true
+    },
+    "frame_counts": {
+      "success_01..05": 294,
+      "semantic_failure": 1637,
+      "unknown_timeout": 1
+    },
+    "derived_equivalence_descriptions_sha256": "35d5f7d8d3fbe2ced7a486c6454ee579fbfdbc9310032eb83e75f1393143d752",
+    "intermediate_attempt_rejection": "integration_attempt_01 fails identically from both roots (intrinsic source identity, not relocation)",
+    "independent_review_note": "the reviewer reloaded and audited all 7 final samples after the old payloads were removed and forbade repository-evidence reads in the audit hook; result 0 repository reads"
+  },
+  "commands": [
+    {
+      "step": "repair_start",
+      "command": "copy reviewed bytes to attempt_02_repair; verify hashes",
+      "exit_code": 0,
+      "note": "report/summary/policy/test hashes matched the M2-01 review receipt"
+    },
+    {
+      "step": "repro_before",
+      "command": "conda run -n llm python -B repro_path_defects.py --label before_fix",
+      "exit_code": 0,
+      "note": "R1a/R1b/R1c/R2a/R2b defects reproduced; R2c control accepted"
+    },
+    {
+      "step": "fix_R1_R2",
+      "command": "edit output_policy.py and the three entry scripts",
+      "exit_code": 0,
+      "note": "default root sibling of the Git root; root/target/prefix validation before any artifact"
+    },
+    {
+      "step": "policy_tests",
+      "command": "conda run -n llm python -B -m unittest -v test_fast_dynamics_output_policy",
+      "exit_code": 0,
+      "note": "25/25 OK after fixing a redundant ancestor check that the new tests exposed"
+    },
+    {
+      "step": "affected_m1",
+      "command": "conda run -n llm python -B -m unittest test_fast_dynamics_core test_fast_dynamics_execution test_fast_dynamics_artifacts test_fast_dynamics_output_policy",
+      "exit_code": 0,
+      "note": "64/64 OK in 20.7 s"
+    },
+    {
+      "step": "offline_ci",
+      "command": "conda run -n llm python -B -m unittest -v @modules(39)",
+      "exit_code": 0,
+      "note": "431 tests OK (skipped=1, volume-dependent 8.3 alias test), 109.5 s"
+    },
+    {
+      "step": "repro_after",
+      "command": "conda run -n llm python -B repro_path_defects.py --label after_fix",
+      "exit_code": 0,
+      "note": "all four defects fixed; inside-root control still accepted"
+    },
+    {
+      "step": "verify_e2e_custom_root",
+      "command": "conda run -n llm python -B scripts/verify_fast_dynamics_m01.py --output-root <attempt_02_repair>/verify_e2e_custom_root",
+      "exit_code": 0,
+      "note": "131.8 s; legacy 392/392, fd 39/39; child attempt output_root equals the custom root"
+    },
+    {
+      "step": "migration",
+      "command": "(first execution) freeze manifest / copy+verify / consumer checks / cleanup / relocation index",
+      "exit_code": 0,
+      "note": "356 copied and verified, 338 cleaned with 0 errors, 18 kept; not redone during the repair"
+    }
+  ],
+  "tests": {
+    "output_policy": {
+      "errors": 0,
+      "skipped": 0,
+      "scope": "policy subset of final 66-case run",
+      "passed": 27,
+      "failed": 0,
+      "ran": 27,
+      "log": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-01\\attempt_03_id_guard\\targeted_tests_pass2.log"
+    },
+    "affected_m1_modules": {
+      "modules": [
+        "test_fast_dynamics_core",
+        "test_fast_dynamics_execution",
+        "test_fast_dynamics_artifacts",
+        "test_fast_dynamics_output_policy"
+      ],
+      "test_cases_by_module": {
+        "test_fast_dynamics_core": 15,
+        "test_fast_dynamics_execution": 10,
+        "test_fast_dynamics_artifacts": 14,
+        "test_fast_dynamics_output_policy": 27
+      },
+      "ran": 66,
+      "passed": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "successful": true,
+      "elapsed_s": 23.47575230000075,
+      "scope": "affected M1 core/execution/artifacts and output policy; no full CI or verify rerun",
+      "log": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-01\\attempt_03_id_guard\\targeted_tests_pass2.log",
+      "log_sha256": "960a50ddf909922c08f55f968f7ae7007b32d4f0cd6782ec2f6816288d76eefa"
+    },
+    "offline_ci_list": {
+      "modules": 39,
+      "passed": 430,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 1,
+      "exit_code": 0,
+      "elapsed_s": 109.5,
+      "skip_reason": "test_parallel_batch.DataRootAndIsolationTests.test_native_windows_short_name_is_accepted: no 8.3 short names on the F: volume used for the external test temp dir; it passes alone with the default C: TEMP",
+      "log": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/offline_ci_after_fix.log",
+      "log_sha256": "1b2a3cc7b05ebc77aefe689c999f73be32974854b3289896c0032417861079f6",
+      "ran": 431,
+      "identity_scope": "historical attempt_02_repair; not rerun after final local ID guard"
+    },
+    "verify_end_to_end_custom_root": {
+      "exit_code": 0,
+      "elapsed_s": 131.8,
+      "legacy": {
+        "modules": 36,
+        "tests": 392,
+        "successful": true,
+        "passed": 391,
+        "skipped": 1
+      },
+      "fast_dynamics": {
+        "modules": 3,
+        "tests": 39,
+        "successful": true
+      },
+      "child_root_propagation": "success_01/attempt.json output_root equals the custom root",
+      "log": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/verify_e2e_custom_root.log",
+      "log_sha256": "2b57dd6444bb3c0ef6df0c9f13a522cf24a4d79e1b457c6a2663ab425c552f1e"
+    },
+    "default_root_real_attempts": 7,
+    "not_rerun": [
+      "M0/M1 406/406 acceptance verdict",
+      "migration copy/cleanup",
+      "SITL batches",
+      "M2-02 data selection"
+    ],
+    "previous_targeted_checks": {
+      "output_policy": {
+        "passed": 25,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "log": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/policy_tests_after_fix.log",
+        "log_sha256": "f74ba20f7313e97a29cb97139f595da6ef0b47c3f1cf5e154165bf009c0027d2"
+      },
+      "scope": "historical attempt_02_repair before final ID guard",
+      "affected_m1_modules": {
+        "passed": 64,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "elapsed_s": 20.7,
+        "log": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/affected_m1_tests.log",
+        "log_sha256": "bf8f14b699f0f5f47033aaa18a216fb65941c1c360c3b1d31f5eb0908b9dcab6"
+      }
+    }
+  },
+  "documentation_updated": [
+    "Multi-UAV SimpleGC/docs/fast_dynamics_engine_m01_report.md",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_engine_adapter_memo.md",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_engine_kickoff.md",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_engine_m2_staged_guide.md",
+    "README.md",
+    "CLAUDE.md",
+    "Multi-UAV SimpleGC/README.md"
+  ],
+  "documentation_note": "the document bytes changed (navigation links, migration location, progress notes); the historical acceptance dates, verdicts, numbers and source identities were not changed, and no old verdict was recomputed. The M2-00 stage report and its three receipts were not touched in this stage and keep their original bytes.",
+  "working_tree": {
+    "entries": 203,
+    "untracked_additions": 9,
+    "archive_after_cleanup": "356 original files /30216091 bytes + relocation_index.json",
+    "diffstat": "194 files changed, 155 insertions(+), 36847 deletions(-)",
+    "repository_evidence_root_after_cleanup": "18 kept files + migration_index.json",
+    "tracked_modifications": 12,
+    "untracked_paths": [
+      "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_report.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_review.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_review_02.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md",
+      "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md",
+      "Multi-UAV SimpleGC/swarm_sim/fast_dynamics/output_policy.py",
+      "Multi-UAV SimpleGC/tests/test_fast_dynamics_output_policy.py",
+      "Multi-UAV SimpleGC/verification/fast_dynamics_m01/migration_index.json",
+      "Multi-UAV SimpleGC/verification/fast_dynamics_m2/M2-01_summary.json"
+    ],
+    "tracked_deletions": 182
+  },
+  "evidence": [
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repair_log.md",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repro_before_fix.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/repro_after_fix.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/policy_tests_after_fix.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/affected_m1_tests.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/offline_ci_after_fix.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/verify_e2e_custom_root.log",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/source_snapshot_m2_01_after_fix.txt",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/tracked_diff_after_fix.bin",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_01/source_manifest.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_01/copy_verification.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_01/cleanup_ledger.json",
+    "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m01_archive/m01_20261012_v1/relocation_index.json",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_report.md",
+    "Multi-UAV SimpleGC/verification/fast_dynamics_m01/migration_index.json",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-01\\attempt_03_id_guard\\before_manifest.json",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-01\\attempt_03_id_guard\\targeted_tests_pass2.json",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-01\\attempt_03_id_guard\\final_validation.json",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_review_02.md",
+    "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md"
+  ],
+  "current_report": {
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_report.md",
+    "note": "final report after Codex-authorized ID guard",
+    "sha256": "1a5f40ec2a980c91c0dc60d82a62e5b46d82c374506dc69fca3dcbd0f17c9b38",
+    "bytes": 28041
+  },
+  "coverage_cells_updated": [],
+  "holdout_protection": {
+    "families_used": [],
+    "split_created": false,
+    "blind_holdout_intersection": "not computed; the split does not exist yet (M2-02 freezes it)",
+    "note": "no family filtering, no trajectory or label development use, no blind-holdout read in this stage"
+  },
+  "unresolved": [],
+  "next_action": "WAIT_FOR_USER_TO_START_M2_02",
+  "revised_at_utc": "2026-10-12T15:09:16.6658534+00:00",
+  "final_review": {
+    "reviewer": "Codex",
+    "conclusion": "PASS",
+    "path": "Multi-UAV SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md",
+    "user_authorized_direct_fix": true
+  },
+  "source_snapshot_before_final_id_guard": {
+    "path": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/fast_dynamics/m2/M2-01/attempt_02_repair/source_snapshot_m2_01_after_fix.txt",
+    "sha256": "69594de41b0d324a1af1099af706f1f48e769304f0685770a3d7553ec10e42f0",
+    "files": 16,
+    "scope": "policy module, policy tests, M1 execution test, three entry scripts, CI workflow, seven entry documents, repository migration index, review receipt"
+  },
+  "deferred_to_next_stage": [
+    "Commit approved M2-01 changes only when user starts M2-02",
+    "M2-02 family split and task registration; not started",
+    "M2 flight features and M3 calibration remain unimplemented"
+  ]
+}

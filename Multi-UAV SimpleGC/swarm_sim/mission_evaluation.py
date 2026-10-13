@@ -2,6 +2,8 @@
 
 import math
 
+import numpy as np
+
 from .observations import finite_number
 from .truth import clock_to_host
 from .protocol import SHARED_LABEL_SCHEMA_VERSION, SHARED_SEMANTIC_VERSION
@@ -23,6 +25,10 @@ def position_valid(value):
 
 def source_time(host, model):
     """Invert an audited passive model; do not extrapolate at either boundary."""
+    # The offline backend already supplies common simulation seconds. This is
+    # an explicit source-clock contract, never a fabricated passive FCU fit.
+    if model and model.get("kind") == "simulation_clock":
+        return host if finite_number(host) and model["start_s"] <= host <= model["end_s"] else None
     if not model or not model.get("available"):
         return None
     knots = model.get("knots", [])
@@ -122,6 +128,74 @@ def _segment_distance(point, a, b):
     return math.hypot(*(point[i] - a[i] - weight * delta[i] for i in range(2)))
 
 
+def _covered_cells(centers, points, segments, radius):
+    """Same disk/segment predicate, with an x index and vectorized narrow phase.
+
+    The grid and evidence are supplied unchanged. Bounding boxes only remove
+    impossible candidates; a conservative roundoff band uses the original
+    scalar predicate, including its inclusive radius + EPS comparison. No
+    squared-distance threshold or approximate nearest-neighbour query is used.
+    """
+    if not centers or (not points and not segments):
+        return set()
+    threshold = radius + EPS
+    point_array = np.asarray(points, dtype=np.float64).reshape(-1, 2)
+    segment_array = np.asarray(segments, dtype=np.float64).reshape(-1, 2, 2)
+    scale = max(1.0, abs(threshold), float(np.max(np.abs(centers))),
+                float(np.max(np.abs(point_array))) if points else 0.0,
+                float(np.max(np.abs(segment_array))) if segments else 0.0)
+    # Avoid overflow/underflow subtleties for unusual public-library inputs.
+    if not math.isfinite(scale) or scale > 1e140 or threshold < 0:
+        return {i for i, c in enumerate(centers) if
+                any(math.dist(c, p) <= threshold for p in points) or
+                any(_segment_distance(c, a, b) <= threshold for a, b in segments)}
+    band = 64 * np.finfo(np.float64).eps * scale
+    bound = threshold + band
+    point_array = point_array[np.argsort(point_array[:, 0], kind="stable")]
+    if segments:
+        lower = np.min(segment_array, axis=1)
+        upper = np.max(segment_array, axis=1)
+        order = np.argsort(lower[:, 0], kind="stable")
+        segment_array, lower, upper = segment_array[order], lower[order], upper[order]
+    covered = set()
+    for index, center in enumerate(centers):
+        x, y = center
+        lo = np.searchsorted(point_array[:, 0], x - bound, side="left")
+        hi = np.searchsorted(point_array[:, 0], x + bound, side="right")
+        candidates = point_array[lo:hi]
+        candidates = candidates[np.abs(candidates[:, 1] - y) <= bound]
+        distance = np.hypot(x - candidates[:, 0], y - candidates[:, 1])
+        inside = bool(np.any(distance < threshold - band))
+        if not inside:
+            boundary = candidates[np.abs(distance - threshold) <= band]
+            inside = any(math.dist(center, p) <= threshold for p in boundary)
+        if inside:
+            covered.add(index)
+            continue
+        if not segments:
+            continue
+        stop = np.searchsorted(lower[:, 0], x + bound, side="right")
+        mask = ((upper[:stop, 0] >= x - bound) &
+                (lower[:stop, 1] <= y + bound) & (upper[:stop, 1] >= y - bound))
+        candidates = segment_array[:stop][mask]
+        if not len(candidates):
+            continue
+        a, b = candidates[:, 0], candidates[:, 1]
+        dx, dy = b[:, 0] - a[:, 0], b[:, 1] - a[:, 1]
+        length2 = dx * dx + dy * dy
+        numerator = (x - a[:, 0]) * dx + (y - a[:, 1]) * dy
+        weight = np.clip(np.divide(numerator, length2, out=np.zeros_like(length2),
+                                   where=length2 != 0), 0.0, 1.0)
+        distance = np.hypot(x - a[:, 0] - weight * dx, y - a[:, 1] - weight * dy)
+        inside = bool(np.any(distance < threshold - band))
+        if not inside:
+            boundary = candidates[np.abs(distance - threshold) <= band]
+            inside = any(_segment_distance(center, a, b) <= threshold for a, b in boundary)
+        if inside:
+            covered.add(index)
+    return covered
+
+
 def _grid(region, resolution):
     nx, ny = math.ceil(region["width_m"] / resolution), math.ceil(region["height_m"] / resolution)
     centers = [(region["min_east_m"] + (ix + 0.5) * region["width_m"] / nx,
@@ -211,9 +285,7 @@ def _evaluate_channel(scene, traces, windows, centers, grid_info, clocks):
             # Entire clipped segment must remain inside the height band. An
             # out-of-height endpoint breaks service, even with finite position.
             segments.extend((a[:2], b[:2]) for _, _, a, b in height_evidence["segments"])
-        covered = {index for index, center in enumerate(centers) if
-                   any(math.dist(center, p) <= model["radius_m"] + EPS for p in points) or
-                   any(_segment_distance(center, a, b) <= model["radius_m"] + EPS for a, b in segments)}
+        covered = _covered_cells(centers, points, segments, model["radius_m"])
         sets[agent] = covered
         complete &= agent_complete
         per_agent[agent] = dict(covered_cells=len(covered), coverage_ratio=len(covered) / len(centers),

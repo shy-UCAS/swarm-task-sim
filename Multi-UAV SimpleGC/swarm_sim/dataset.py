@@ -121,6 +121,13 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
             if manifest.get("protocol_version") == "v0.6.1":
                 entries[-1][1].update({key: manifest[key] for key in
                                       ("time_base", "sim_speedup", "time_policy", "common_time_axis")})
+            if manifest.get("protocol_version") == "fast_dynamics_v1":
+                entries[-1][1].update({key: manifest[key] for key in (
+                    "protocol_version", "simulation_backend", "flight_pattern", "component_versions",
+                    "time_base", "time_policy", "end_us", "lifecycle_scope", "training_eligible")})
+                if manifest.get("semantic_validation_version") == "multi_intent_validation_fast_dynamics_v2":
+                    entries[-1][1].update({key: manifest[key] for key in (
+                        "execution_mode", "config_schema_version", "behavior_version", "reference_version", "executor_version")})
         if explicit:
             entries[-1][1].update(source_analysis_path=str(analysis),
                                   analysis_selection_mode="explicit_manifest_binding")
@@ -159,5 +166,9 @@ def build_dataset(run_paths, output, salt="simplegc-v02", *, allow_mixed_control
         result.update(time_base="sim_source", sim_speedups=speeds, time_policy=entries[0][1]["time_policy"])
         if len(speeds) == 1:
             result["sim_speedup"] = speeds[0]
+    if any(e.get("time_base") == "sim_clock" for _, e in entries):
+        result.update(time_base="sim_clock", simulation_backend="fast_dynamics",
+                      time_policy=entries[0][1]["time_policy"], training_eligible=False,
+                      limitation="uncalibrated airborne mission backend; no independent sensor, FCU or whole-flight validation")
     write_json(output / "dataset_manifest.json", result)
     return result
