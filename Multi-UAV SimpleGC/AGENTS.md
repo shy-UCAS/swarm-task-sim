@@ -1,4 +1,6 @@
 <!-- activate-conda-env:begin -->
+
+> **2026-10-13 最新停止点：M3 默认参数基线完成，等待用户确认。** r2 排除 T1/T4 的14个 family 后固定为200个调参、86个内部留出 family（非严格盲测）。调参组282个合格参考已由fastsim重飞：281次完成、1次短段巡逻见证停滞超时；槽位首要一致率210/226，15条扫描另确认存在采样密度敏感性。已提出前置修复、四参数调校和数值标准，本轮未实际调参。M2-02B两组继续封存；参数冻结后仍须另行通知才执行内部留出和高速合成检查。47.549秒性能暂接受，不再优化，不启动SITL。见[基线与停止报告](docs/fast_dynamics_m3_baseline_report.md)；本补注优先于下方历史状态。本地提交，不推送。
 ## Project Python environment
 
 Read `.conda-env` from this project root before running Python or installing packages.
