@@ -94,6 +94,11 @@ def check_family(scene, family):
         corridor = LineString([centers[0], centers[-1]])
         if max(corridor.distance(Point(c)) for c in centers) > 1e-6:
             issue("linear_facilities_not_collinear", *[f["id"] for f in facilities])
+    if family.get("sampling_revision") == "s1.2":
+        for i, a in enumerate(obstacles):
+            for b in obstacles[:i]:
+                if to_shape(a["geometry"], q, True).intersects(to_shape(b["geometry"], q, True)):
+                    issue("independent_obstacles_overlap", a["id"], b["id"])
     placements = {p["obstacle_id"]: p for p in family["obstacle_placements"]}
     for obstacle in obstacles:
         oid = obstacle["id"]

@@ -145,15 +145,16 @@ def main():
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--attempt-name")
     parser.add_argument("--family-seed", type=int, help="Reconstruct one family; use --candidates 1")
-    parser.add_argument("--sampling-revision", choices=["s1","s1.1"],default="s1.1")
+    parser.add_argument("--sampling-revision", choices=["s1","s1.1","s1.2"],default="s1.1")
     parser.add_argument("--obstacle-attempts",type=int,default=48)
+    parser.add_argument("--no-plots", action="store_true")
     args = parser.parse_args()
     def progress(done, total, record):
         if done == 1 or done % 15 == 0 or done == total:
             print(f"{done}/{total}: {'accepted' if record['accepted'] else 'rejected'}; seed={record['sampling_seed']}", flush=True)
     summary = generate_attempt(args.candidates, args.seed, args.output_root, args.attempt_name,
-                               SceneConfig(), plot_family, progress, args.family_seed, args.sampling_revision,
-                               SamplingPolicy(obstacle_attempts=args.obstacle_attempts) if args.sampling_revision=="s1.1" else None)
+                               SceneConfig(), None if args.no_plots else plot_family, progress, args.family_seed, args.sampling_revision,
+                               SamplingPolicy(obstacle_attempts=args.obstacle_attempts) if args.sampling_revision in ("s1.1","s1.2") else None)
     print(f"Output: {summary['attempt_directory']}")
     print(f"Accepted: {summary['accepted_count']}/{summary['candidate_count']}; rejection rate {summary['rejection_rate']:.2%}")
     print(f"Timing (s): {summary['timing_s']}")

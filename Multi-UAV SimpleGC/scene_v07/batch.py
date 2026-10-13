@@ -228,7 +228,7 @@ def generate_attempt(candidate_count=300, master_seed=2026101307, output_root=DE
     summary.update({"schema_version": "traj2language.s1_attempt_summary/0.7-s1.2",
                     "public_scene_schema_version": SCHEMA_VERSION, "generator_version": family["generator_version"],
                     "sampling_revision": sampling_revision,
-                    "map_side_by_facility_count_m": MAP_SIDES_M if sampling_revision=="s1.1" else None,
+                    "map_side_by_facility_count_m": MAP_SIDES_M if sampling_revision in ("s1.1", "s1.2") else None,
                     "public_scene_count": sum(r["public_scene_published"] for r in records),
                     "representative_coverage": representative_coverage(representatives),
                     "attempt_directory": str(attempt), "master_seed": master_seed, "config": asdict(config),

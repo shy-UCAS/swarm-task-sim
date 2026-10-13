@@ -222,7 +222,7 @@ def sample_family(seed, config=None, *, revision="s1.1", policy=None):
         if policy is not None:
             raise ValueError("S1 does not support S1.1 placement policies")
         return sample_family_s1(seed, config)
-    if revision != "s1.1":
+    if revision not in ("s1.1", "s1.2"):
         raise ValueError("Unsupported sampling revision")
     from .sampling_s11 import sample_family_s11
-    return sample_family_s11(seed, config, policy)
+    return sample_family_s11(seed, config, policy, revision=revision)

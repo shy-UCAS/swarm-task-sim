@@ -217,7 +217,44 @@ def place_obstacles(rng, facilities, layers, entries, world, config, policy, req
                                     "skipped_count": requested-len(obstacles),"slots": slots}
 
 
-def sample_family_s11(seed, config=None, policy=None):
+def place_obstacles_s12(rng, facilities, layers, entries, world, config, policy):
+    """Retain successful slots; try each alternative type before skipping."""
+    requested = rng.randint(1, 3)
+    obstacles, placements, slots = [], [], []
+    types = ["entry_blocking", "facility_side"] + (["between_facilities"] if len(facilities)>1 else [])
+    for index in range(requested):
+        first = rng.choice(types)
+        alternatives = [t for t in types if t != first]
+        rng.shuffle(alternatives)
+        failures, tried, attempts, placed = Counter(), [], 0, False
+        for placement in [first, *alternatives]:
+            tried.append(placement)
+            for _ in range(policy.obstacle_attempts):
+                attempts += 1
+                geometry, record, problem = obstacle_candidate(rng, placement, facilities, layers, entries, config.safety_margin_m)
+                if problem is None:
+                    problem = _obstacle_problem(geometry, record, facilities, layers, entries, world, config)
+                if problem is None and any(to_shape(geometry, config.checking_quad_segs, True).intersects(
+                        to_shape(e["geometry"], config.checking_quad_segs, True)) for e in obstacles):
+                    problem = "obstacle_overlap"
+                if problem:
+                    failures[problem] += 1
+                    continue
+                identifier = f"obstacle_{index+1:02d}"
+                obstacles.append({"id": identifier, "type": "hard_constraint_obstacle", "geometry": geometry})
+                placements.append({**record, "obstacle_id": identifier, "placement_attempts": attempts})
+                placed = True
+                break
+            if placed:
+                break
+        slots.append({"slot": index+1, "placement": placement, "initial_placement": first,
+                      "tried_types": tried, "attempts": attempts, "placed": placed,
+                      "rejected_attempt_reasons": dict(failures)})
+    return obstacles, placements, {"requested_count": requested, "placed_count": len(obstacles),
+                                  "skipped_count": requested-len(obstacles), "slots": slots}
+
+
+def sample_family_s11(seed, config=None, policy=None, *, revision="s1.1"):
     if isinstance(seed,bool) or not isinstance(seed,int) or seed < 0:
         raise ValueError("Family seed must be a nonnegative integer")
     policy = policy or SamplingPolicy()
@@ -247,7 +284,7 @@ def sample_family_s11(seed, config=None, policy=None):
             entities.append(zone)
             layers[identifier][layer] = zone
     world_geometry = _rectangle(0,0,config.map_side_m,config.map_side_m)
-    obstacles, placements, obstacle_sampling = place_obstacles(
+    obstacles, placements, obstacle_sampling = (place_obstacles_s12 if revision == "s1.2" else place_obstacles)(
         rng,facilities,layers,entries,to_shape(world_geometry),config,policy)
     entities.extend(obstacles)
     radar_placements = []
@@ -310,6 +347,9 @@ def sample_family_s11(seed, config=None, policy=None):
                                       "position_slope_m_per_km": rng.uniform(.1,.3),
                                       "velocity_sigma0_m_s": rng.uniform(.03,.08),
                                       "velocity_slope_m_s_per_km": rng.uniform(.01,.03)}}
+    if revision == "s1.2":
+        family.update(generator_version="traj2language.scene_sampler/0.7-s1.4", sampling_revision=revision,
+                      family_id=f"family_s12_{seed:016x}", map_id=f"map_s12_{seed:016x}")
     if facility_sampling["exhausted"]:
         raise SamplingRejected("sampling_facility_placement_exhausted",scene,family)
     if not obstacles:
