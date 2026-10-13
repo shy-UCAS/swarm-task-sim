@@ -1,8 +1,10 @@
 # SwarmTaskSim：工程进度与新会话交接
 
-**请新会话先读本文件，再读[快速动力学引擎开发交接](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_kickoff.md)和[M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)。当前代码已实现 v0.6.1 仿真时间契约；T1/T4 通过，T2/T5 失败收尾，T3/T3+ 取消、T6 未运行。r3 尚未准备。快速动力学后端 M0/M1 已本地实现，最小双机完整数据链已接通，M0/M1 最终本地验收已通过。M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01（M1 证据迁移与外部输出约束）已执行、已获 Codex 最终 `PASS`、尚未提交，M2 飞行功能尚未实现、M2–M5 未完成。暂不推送、建 PR 或打标签（本地检查点提交仅限用户明确启动的 M2 阶段），不启动 SITL 或续跑旧批次。开发在 `Simulation-dev`，原 `Simulation` 为冻结归档，大型历史数据在 `SwarmData`。**
+> **2026-10-12 最新状态：** M2-01 已提交 `16b7cb7`；原 M2-02 因旧来源全部暴露而 BLOCKED。用户授权的 **M2-02B 新来源补充已实现并复核 PASS**，固定 144 个 base，经历史近重复排除后冻结校准/盲测各 71 个接纳 family（各 213 任务）。详见[报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02B_report.md)、[回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02B_review.md)与[下一阶段指令](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-03_instruction.md)。本轮未提交，M2-03 未执行；新留出无飞行/reference episode，M2 飞行功能尚未扩展。
 
-本文件最后更新于 **2026-10-12**，历史开发基线为 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`；M0/M1 新引擎实现、测试与当时文档已保存到本地检查点 `0f7c42d8688880b1d8e1a416184383a94a5ae123`，M2-00 获准记录已保存到检查点 `57cca914f2e8b414e8820a1f08f6fd900f912d36`。M2-01 的迁移与输出约束实现尚未提交。`v0.6.1-time` 对应实现提交 `bd1f40a`，不能和后续报告提交混同。本次运行新后端本地合成测试和离线回归，没有启动 SITL、重分析或重做旧数据。文中本机路径只适用于原开发电脑。
+**请新会话先读本文件，再读[快速动力学引擎开发交接](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_kickoff.md)和[M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)。当前代码已实现 v0.6.1 仿真时间契约；T1/T4 通过，T2/T5 失败收尾，T3/T3+ 取消、T6 未运行。r3 尚未准备。快速动力学后端 M0/M1 已本地实现，最小双机完整数据链已接通，M0/M1 最终本地验收已通过。M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01（M1 证据迁移与外部输出约束）已执行、已获 Codex 最终 `PASS`、已提交 `16b7cb7`；M2-02B 新来源补充已获 PASS，M2 飞行功能尚未实现、M2–M5 未完成。暂不推送、建 PR 或打标签（本地检查点提交仅限用户明确启动的 M2 阶段），不启动 SITL 或续跑旧批次。开发在 `Simulation-dev`，原 `Simulation` 为冻结归档，大型历史数据在 `SwarmData`。**
+
+本文件最后更新于 **2026-10-12**，历史开发基线为 `5e45637f2bf63054ed0ace2433fd7c9ea7b075ac`；M0/M1 新引擎实现、测试与当时文档已保存到本地检查点 `0f7c42d8688880b1d8e1a416184383a94a5ae123`，M2-00 获准记录已保存到检查点 `57cca914f2e8b414e8820a1f08f6fd900f912d36`。M2-01 的迁移与输出约束实现已保存到本地检查点 `16b7cb7`；M2-02 当前修复成果尚未提交。`v0.6.1-time` 对应实现提交 `bd1f40a`，不能和后续报告提交混同。M0/M1 既有验收运行了新后端本地合成测试和离线回归；此前 M2-02 仅做身份与使用史静态核查，没有启动 SITL 或重做旧数据。文中本机路径只适用于原开发电脑。
 
 ## 1. 工程已经做到哪一步
 
@@ -18,7 +20,7 @@
 | v0.6 正式生产 | r1：296/900 后持久化停止；r2：465/900 后外部负载触发滚动异常停止 | 两批未完成、未 finalize、未导出；旧停止不可续跑。[r1 报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)、[r2 报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md) |
 | v0.6.1 实现 | 公共源时间、确定性参考机、10 Hz 仿真网格、速度换算；子集 prepare、可配置端口及首批错峰 | 已实现并发布 `v0.6.1-time`；[实施报告](Multi-UAV%20SimpleGC/docs/v0.6.1_time_report.md) |
 | 时间/规模验证 | T1 K2×1 倍、T4 K4×1 倍通过；T2 加速失败；T5 K6 在 15/42 后规则暂停 | T3/T3+ 取消，T6 未运行；历史监测已暂停；[最终验证报告](Multi-UAV%20SimpleGC/docs/v0.6.1_time_validation_report.md) |
-| 快速动力学引擎 | M0 适配/来源登记、M1 受限加速度/jerk 内核和既有双机快速通过完整数据链已本地实现；NumPy 依赖已声明；M2-00 已把 M0/M1 实现作为本地检查点提交 `0f7c42d`；M2-01 已把 356 项 M1 证据迁移到仓库外并加上外部输出根约束 | M0/M1 最终本地验收已通过，结果见 M0/M1 报告；M2-00 已通过最终审阅（`PASS`），M2-01 最终 PASS，M2 飞行功能尚未实现；未校准、非训练，r3 不准备。[M2-00 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_report.md)、[M2-01 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_report.md)、[最终审阅回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md) |
+| 快速动力学引擎 | M0 适配/来源登记、M1 受限加速度/jerk 内核和既有双机快速通过完整数据链已本地实现；NumPy 依赖已声明；M2-00 已把 M0/M1 实现作为本地检查点提交 `0f7c42d`；M2-01 已把 356 项 M1 证据迁移到仓库外并加上外部输出根约束 | M0/M1 最终本地验收已通过，结果见 M0/M1 报告；M2-00 已通过最终审阅（`PASS`），M2-01 最终 PASS 并提交 `16b7cb7`，M2-02B 新来源补充已获 PASS，M2 飞行功能尚未实现；未校准、非训练，r3 不准备。[M2-00 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_report.md)、[M2-01 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_report.md)、[最终审阅回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-00_review_03.md) |
 
 历史提交 `5e45637` 的 CI 为 [38231824715](https://github.com/shy-UCAS/swarm-task-sim/actions/runs/38231824715)，367 项离线测试通过；该远端结果不代表本地检查点 `0f7c42d` 已运行远端 CI，也不表示全量历史集成测试通过。本次本地基线同样通过该清单，最终新代码回归与新增测试以 [M0/M1 报告](Multi-UAV%20SimpleGC/docs/fast_dynamics_engine_m01_report.md)为准。T1/T4 各执行 42/42、质量合格 41/42 并完成 finalize；T2 11/42 后 5/11 合格，T5 15/42 后 9/15 合格，均未 finalize。所有验证组为 pilot、非训练。完整分母及历史标准纠错见最终验证报告。
 
@@ -203,11 +205,11 @@ conda run -n $EnvName --no-capture-output python main.py validate tests/.tmp/rea
 
 可以把下面这段作为新对话的第一条消息：
 
-> 在 `Simulation-dev` 开发，先读 README、CLAUDE、项目 AGENTS、`docs/fast_dynamics_engine_kickoff.md`、`docs/fast_dynamics_engine_m01_report.md` 和引擎计划融合修订版 r2。保留全部未提交实现与文档；先核对 M0/M1 最终验收和未完成项。M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01 已执行完证据迁移与外部输出约束、已获 Codex 最终 `PASS`、**不要重复建分支、重建检查点或重做迁移**；按用户明确启动的单个阶段推进，M2 三意图四飞法及完整多机时序尚未实现。仅本地开发，不推送、不打标签（本地检查点提交仅限用户明确启动的阶段）；不启动 SITL、不续跑旧批次、不准备 r3、不改历史数据。继续记录实际能力、回归与限制，不把校准/吞吐目标写成已验收结果。
+> 在 `Simulation-dev` 开发，先读 README、CLAUDE、项目 AGENTS、`docs/fast_dynamics_engine_kickoff.md`、`docs/fast_dynamics_engine_m01_report.md` 和引擎计划融合修订版 r2。保留全部未提交实现与文档；先核对 M0/M1 最终验收和未完成项。M2 已启动分阶段执行：M2-00 已建立本地检查点 `0f7c42d`，最终审阅 `PASS`（见最新放行回执）；M2-01 已执行完证据迁移与外部输出约束、已获 Codex 最终 `PASS`、**不要重复建分支、重建检查点或重做迁移**；M2-02B 已补充新来源并冻结输入，下一步由用户启动 M2-03 设计；M2 三意图四飞法及完整多机时序尚未实现。仅本地开发，不推送、不打标签（本地检查点提交仅限用户明确启动的阶段）；不启动 SITL、不续跑旧批次、不准备 r3、不改历史数据。继续记录实际能力、回归与限制，不把校准/吞吐目标写成已验收结果。
 
 r1 批次 `v06_production900_seed2026100812` 以 296/900 个任务终态记录结束，`completed=false`、`finalized=false`、`paused=false` 且有 `stopped_reason`；**规则停止不是人工暂停，不能直接 `--resume`**，该批次保持原状作为证据，不补飞、不 finalize、不修改台账。快速通过六项阈值冻结，最终悬停为 2 秒，固件版本等待已恢复 10 秒。
 
-**下一步（融合计划 r2）：** M0/M1 代码已落地，M0/M1 最终本地验收已通过；适配备忘、T1/T4 来源索引、确定性单机数值测试和双机完整数据链已建立。**M2 已按分阶段指南启动：M2-00 已把 M0/M1 实现作为本地检查点 `0f7c42d`（最终审阅 `PASS`），M2-01（证据迁移与输出根约束）已执行完、已获最终审阅通过（`PASS`）、未提交**；M2 的功能目标仍是补齐三意图四飞法及 2/3/4 机任务覆盖。M3 保存未校准基线、分步校准并冻结模型/验收，M4 增加共享扰动、两类输出与逐级 pilot，M5 做独立研究验收。Python + NumPy 依赖已声明，4 机内核固定用例已测约 281 倍实时；真实性与完整生产吞吐仍待相应校准/验收。发布 GitHub 不是本地推进条件。
+**下一步（融合计划 r2）：** M0/M1 代码已落地，M0/M1 最终本地验收已通过；适配备忘、T1/T4 来源索引、确定性单机数值测试和双机完整数据链已建立。**M2 已按分阶段指南启动：M2-00 已把 M0/M1 实现作为本地检查点 `0f7c42d`（最终审阅 `PASS`），M2-01（证据迁移与输出根约束）已执行完、已获最终审阅通过（`PASS`）、已提交 `16b7cb7`；M2-02B 新来源补充已获 PASS**；M2 的功能目标仍是补齐三意图四飞法及 2/3/4 机任务覆盖。M3 保存未校准基线、分步校准并冻结模型/验收，M4 增加共享扰动、两类输出与逐级 pilot，M5 做独立研究验收。Python + NumPy 依赖已声明，4 机内核固定用例已测约 281 倍实时；真实性与完整生产吞吐仍待相应校准/验收。发布 GitHub 不是本地推进条件。
 
 融合修订保留新后端 `sim_clock` 和半开输出网格，不伪造旧固件/时钟证据。T1/T4 来自同一 42 任务、14 family，只作开发对照；先合并跨批次来源再划分。98% 标签一致等候选阈值不自动采用，必须在最终测试前按研究后果冻结。带标签与无标注预训练模式分别统计吞吐，未提交源码用实际内容哈希绑定。
 
@@ -253,7 +255,7 @@ P2 已知特性：FCU 速度与位置差分约 −1.8% 至 −2.1% 残差，时�
 ## 10. v0.5 冻结版本位置
 
 - 完整冻结归档：`F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation`。
-- 冻结 Git 提交：`8eaf583bc5a946e935d8ff0f410cb798fda6a6e8`（简称 `8eaf583b`）；包含最终报告 §c 的原因更正。
+- 冻结 Git 提交：`8eaf583bc5a946e935d8ff0f410cb798fda6a6e8`（简称 `8eaf583b`）；包含最终报告 `c 的原因更正。
 - 数据集清单：归档 `Multi-UAV SimpleGC/verification/v05_batch_20261002/dataset/dataset_manifest.json`。
   SHA256：`2ac8c17583ec93a43ef31f64a7bbfa2fd16355f58c4929b2cf88f990ee9df707`。
 - 描述层清单：归档 `Multi-UAV SimpleGC/verification/v05_batch_20261002/dataset_language_zh_v0/language_manifest.json`。
@@ -278,4 +280,4 @@ P2 已知特性：FCU 速度与位置差分约 −1.8% 至 −2.1% 残差，时�
 pilot20 细节见[两路试跑报告](Multi-UAV%20SimpleGC/docs/v0.6_parallel_pilot_report.md)，pilot30 及 v06b 验收见[pilot 报告](Multi-UAV%20SimpleGC/docs/v0.6_pilot_report.md)，r1/r2 分别见[停止报告](Multi-UAV%20SimpleGC/docs/v0.6_production_stop_01.md)、[r2 报告](Multi-UAV%20SimpleGC/docs/v0.6_production_r2_stop_01.md)。上表历史哈希与计数沿用既有核对；本轮不重写旧批次。停止批次行是证据登记，不代表已有正式数据集版本。
 
 
-2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；当前为 PASS、未提交。下一阶段 M2-02 尚未执行，仅在用户转发指令后启动。见 [最终回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md)。
+2026-10-12 收口补注：M2-01 最后 ID 前置校验已由 Codex 完成，针对性检查 66/66 通过；M2-01 已获 PASS 并保存到 `16b7cb7`；原 M2-02 来源阻塞已由获准的 M2-02B 新来源补充解除，下一步为 M2-03 设计。见 [最终回执](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-01_review_03.md)与[M2-02 任务计划](Multi-UAV%20SimpleGC/docs/fast_dynamics_m2/M2-02_instruction.md)。

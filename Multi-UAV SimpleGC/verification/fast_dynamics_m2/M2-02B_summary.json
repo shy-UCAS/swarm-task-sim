@@ -1,0 +1,88 @@
+{
+  "stage": "M2-02B",
+  "implementation_status": "COMPLETED",
+  "review_result": "PASS",
+  "head": "16b7cb740d081f7c66e73ed80eff4c7bad8dbb5f",
+  "current_split_index": "verification\\fast_dynamics_m2\\evaluation_split_current.json",
+  "counts": {
+    "accepted_families": 144,
+    "blind_components": 71,
+    "calibration_components": 71,
+    "eligible_components": 142,
+    "excluded_components": 2,
+    "new_candidate_families": 341,
+    "old_families": 1142
+  },
+  "groups": {
+    "calibration": {
+      "components": 71,
+      "candidate_families": 178,
+      "accepted_families": 71,
+      "tasks": 213
+    },
+    "blind_holdout": {
+      "components": 71,
+      "candidate_families": 160,
+      "accepted_families": 71,
+      "tasks": 213
+    }
+  },
+  "generation_counts": {
+    "accepted_bases": 144,
+    "accepted_candidates": 144,
+    "base_scenes": 144,
+    "candidates": 341,
+    "planned_missions": 432,
+    "rejected_candidates": 197,
+    "rejected_variants": 289
+  },
+  "historical_inputs": 24220,
+  "historical_scene_content_identities": 1142,
+  "tests": [
+    {
+      "log": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-02B\\work_01\\targeted_tests_01.log",
+      "tests": 80,
+      "failures": 0,
+      "skips": 0,
+      "seconds": 17.065,
+      "scope": "initial 25 holdout + generator/pattern/output-policy regression"
+    },
+    {
+      "log": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-02B\\work_01\\final_targeted_tests_02.log",
+      "tests": 67,
+      "failures": 0,
+      "skips": 0,
+      "seconds": 16.669,
+      "scope": "final 28 holdout + 39 existing M1; overlaps previous run"
+    },
+    {
+      "log": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m2\\M2-02B\\work_01\\independent_check_01.json",
+      "checks": 18,
+      "status": "PASS"
+    }
+  ],
+  "source_sha256": {
+    "swarm_sim\\fast_dynamics\\holdout.py": "91d9d9dc08935cc3fa40286ef96bde2806762ef6e9e436f24e79b71335345864",
+    "scripts\\prepare_fast_dynamics_holdout.py": "f198b43d7127ebe03b201d1b69dae92ef00d27f3d1119db595b95984f92c6070",
+    "scripts\\verify_fast_dynamics_holdout.py": "c4c1d716ba3717d40e37c7f42454fb4f27afa6e326a8bad40a3d873cf7e3296b",
+    "tests\\test_fast_dynamics_holdout.py": "699b40a52e6d4f066d446e0167df30c5060e66a00fccdcba693c4f34343d9475"
+  },
+  "registration_sha256": "ea365803918b4f5f30628bfd4ad73cf27fd47dc5e68d36a9ae284a3a55ef181c",
+  "method_sha256": "c418767bfae99fa31b73cefef3acdfd38c63a16a74b1238b4885edc1752db453",
+  "frozen_manifest_sha256": "76b295681bdcb720bb113e04d92aaeba7cc54085704b9ffb32b3712fcd938ca5",
+  "independent_check_sha256": "585a0f6fd03461528e24ec56d9f300abac369b83919135aebdaa00b0d049c263",
+  "heldout_flight_runs": 0,
+  "development_test_simulation_runs": null,
+  "development_test_simulation_note": "Existing M1 fixture simulations executed within tests; individual simulation calls/episodes not metered.",
+  "reference_episode_available": false,
+  "m3_ready": false,
+  "next_stage": "M2-03 design only",
+  "limitations": [
+    "historical scope is registered local inputs, not all possible external sources",
+    "rect_relative_d4_v1 does not cover arbitrary scaling/non-rectangle topology",
+    "independent algorithm written by same author; not a second reviewer"
+  ],
+  "no_commit": true,
+  "no_push": true,
+  "no_sitl": true
+}
