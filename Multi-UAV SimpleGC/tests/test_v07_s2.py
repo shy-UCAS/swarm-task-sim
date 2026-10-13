@@ -22,11 +22,11 @@ def fixture():
     scene={"world":{"geometry":{"type":"Polygon","vertices_m":[[0,0],[4000,0],[4000,4000],[0,4000]]}},
            "entities":[{"id":"f","type":"facility","geometry":{"type":"Circle","center_m":[2000,2000],"radius_m":20}}]}
     for name,r in [("warning",700),("alert",300),("protected",150)]:
-        scene["entities"].append({"id":name,"type":"protection_zone","facility_id":"f","layer":name,
+        scene["entities"].append({"id":name,"type":"protection_zone","facility_id":"f","layer":name,"offset_m":r-20,
                                  "geometry":{"type":"Circle","center_m":[2000,2000],"radius_m":r}})
     ids=["a","b","c","d"];ends=[[1950,1950,100],[2050,1950,100],[2050,2050,100],[1950,2050,100]]
     sk={"base_intent":"penetration","role":"intrusion","target_id":"f","group_id":"g","members":ids,
-        "agent_ids":ids,"execution_method":"polygon_visit","planning_min_separation_m":15,
+        "agent_ids":ids,"execution_method":"polygon_visit","intrusion_endpoint_min_spacing_m":15,
         "required_intrusion_depth_m":20,"terminal_radius_m":1,"terminal_speed_m_s":.15,
         "terminal_hold_s":2,"sync_window_s":10,"batch_split_gap_s":20,"initial_settle_s":20,
         "sequential_gap_s":60,"column_seed":54321,
@@ -122,7 +122,8 @@ class SemanticTests(unittest.TestCase):
         group=labels["task_groups"]["g"]
         self.assertEqual(group["assigned"]["planned_coordination"],"sequential")
         self.assertEqual(group["observed"]["coordination"]["classification"],"synchronous")
-        self.assertFalse(group["result"]["conditions"]["coordination_matches_assignment"])
+        self.assertFalse(group["observed"]["timing_diagnostics"]["coordination_matches_assignment"])
+        self.assertEqual(group["result"]["status"],"success")
 
     def test_one_incomplete_agent_not_copied_group_success(self):
         scene,sk,run=fixture()
@@ -137,7 +138,9 @@ class SemanticTests(unittest.TestCase):
         run["p"][5,1]=run["p"][5,0]+[2,0,0]
         labels,_=measure(scene,sk,run,"synchronous")
         self.assertAlmostEqual(labels["cluster"]["observed"]["minimum_separation_m"],2)
-        self.assertFalse(labels["agents"]["a"]["result"]["conditions"]["separation_clear"])
+        self.assertNotIn("separation_clear",labels["agents"]["a"]["result"]["conditions"])
+        self.assertEqual(labels["agents"]["a"]["result"]["status"],"success")
+        self.assertEqual(labels["generation_quality"]["status"],"valid")
 
     def test_highfrequency_grid_rejected(self):
         scene,sk,run=fixture()
@@ -148,10 +151,12 @@ class SemanticTests(unittest.TestCase):
     def test_delays_come_from_measured_times(self):
         _,sk,_=fixture()
         times=dict(zip("abcd",[100.,120.,150.,170.]))
-        schedules,batches=departure_delays(sk,times)
-        self.assertEqual({round(times[a]+schedules["synchronous"][a],6) for a in times},{175.})
-        self.assertEqual({round(times[a]+schedules["sequential"][a],6) for a in times},{175.,235.})
-        self.assertEqual(len({v for v in batches.values()}),2)
+        plans=departure_delays(sk,times)
+        for plan in plans.values():
+            for a in times:
+                self.assertAlmostEqual(times[a]+plan["departure_delays_s"][a],plan["target_event_times_grid_s"][a])
+                self.assertLessEqual(abs(plan["target_event_times_s"][a]-plan["target_event_times_grid_s"][a]),.05000001)
+        self.assertGreaterEqual(plans["sequential"]["batch_count"],2)
         with self.assertRaises(ValueError):
             departure_delays(sk,{**times,"a":None})
 

@@ -14,27 +14,27 @@ import numpy as np
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
 
-from scene_v07.geometry import to_shape
 from task_v07.execution import execute, departure_delays, CONFIG_PATH, FROZEN_SHA256
 from task_v07.io import read_json, save_json, write_episode, load_episode, load_pair, sha
 from task_v07.labels import measure
 from task_v07.planning import build_skeleton, seed_for
 from scripts.v07_s2_plotting import plot_episode, plot_pair
+from scripts.audit_v07_s2_exact import audit_episode as independent_audit_episode, audit_attempt
 
 DEFAULT_DATA=PROJECT.parent.parent/"SwarmData"/"v07_dataset"
 
 
-def audit_episode(scene,sk,run,labels,mode,batches,root):
+def audit_episode(scene,sk,run,labels,mode,batches,root,timing_plan=None):
     # Re-read the exact exported grid; no internal support trajectory is available here.
     with np.load(root/"truth_10hz.npz",allow_pickle=False) as data:
         reloaded={**run,**{k:data[k] for k in ("time_us","p","v","a")},"agent_ids":data["agent_ids"].tolist()}
-    observed,frames=measure(scene,sk,reloaded,mode,batches)
+    observed,frames=measure(scene,sk,reloaded,mode,batches,timing_plan=timing_plan)
     if observed!=labels:
         raise ValueError("P0: labels disagree with exported truth")
     order=list(reversed(range(len(run["agent_ids"]))))
     alternate={**reloaded,"agent_ids":[run["agent_ids"][i] for i in order],
                "p":run["p"][:,order],"v":run["v"][:,order],"a":run["a"][:,order]}
-    aligned,_=measure(scene,sk,alternate,mode,batches)
+    aligned,_=measure(scene,sk,alternate,mode,batches,timing_plan=timing_plan)
     for key in ("agents","task_groups","cluster"):
         if aligned[key]!=labels[key]:
             raise ValueError("P0: ID-aligned labels changed under column permutation")
@@ -45,18 +45,23 @@ def audit_episode(scene,sk,run,labels,mode,batches,root):
     times=[a["observed"]["core_event"]["t_s"] for a in labels["agents"].values()]
     known=[x for x in times if x is not None and x>.2]
     cutoff=min(known)-.1 if known else 1.0
-    prefix,_=measure(scene,sk,reloaded,mode,batches,cutoff_s=cutoff)
+    prefix,_=measure(scene,sk,reloaded,mode,batches,cutoff_s=cutoff,timing_plan=timing_plan)
     if any(a["observed"]["core_event"]["t_s"] is not None for a in prefix["agents"].values()):
         raise ValueError("P0: truncated prefix claims a future core event")
     save_json(root/"prefix_labels.json",prefix)
     ends=[r["endpoint_enu_m"] for r in sk["references"].values()]
     endpoint_min=min(np.linalg.norm(np.array(a)-b) for a,b in combinations(ends,2))
-    if endpoint_min<sk["planning_min_separation_m"] or endpoint_min<15 and sk["cruise_speed_m_s"]>7:
+    if sk["base_intent"]=="penetration" and endpoint_min<sk["intrusion_endpoint_min_spacing_m"]:
         raise ValueError("Independent endpoint spacing contract violated")
     minimum_waypoint=min(np.linalg.norm(np.diff(r["points_enu_m"],axis=0),axis=1).min() for r in sk["references"].values())
     if minimum_waypoint<1:
         raise ValueError("Sub-metre adjacent waypoint")
-    return {"labels_recomputed_from_saved_10hz":True,"id_aligned_permutation_invariant":True,
+    independent=independent_audit_episode(root)
+    save_json(root/"independent_exact_audit.json",independent)
+    if independent["status"]!="PASS":
+        save_json(root.parent.parent/"P0_STOP.json",independent)
+        raise ValueError("P0: independent full-frame exact contour audit failed")
+    return {"independent_exact_full_frame_audit":independent,"labels_recomputed_from_saved_10hz":True,"id_aligned_permutation_invariant":True,
             "input_whitelist_passed":True,"prefix_without_future_core_events":True,
             "independent_endpoint_minimum_m":float(endpoint_min),"minimum_adjacent_waypoint_m":float(minimum_waypoint)}
 
@@ -127,27 +132,29 @@ def main():
                 measured[a]=raw["agents"][a]["observed"]["core_event"]["t_s"]
                 np.savez_compressed(skroot/f"single_agent_{a}.npz",time_us=run["time_us"],p=run["p"],v=run["v"],agent_ids=np.array(run["agent_ids"]))
                 print(f"MEASURE map{map_index} {intent} {a}: {measured[a]} s ({run['wall_s']:.2f}s)",flush=True)
-            schedules,batch_indices=departure_delays(sk,measured)
+            timing_plans=departure_delays(sk,measured)
             preflight_s=time.perf_counter()-planning_started
             save_json(skroot/"timing_calibration.json",{"source":"single-agent independent fastsim execution, exported 10 Hz",
-                      "core_times_s":measured,"delays_s":schedules,"sequential_batches":batch_indices,
+                      "core_times_s":measured,"timing_plans":timing_plans,
                       "single_flight_wall_s":drywall,"geometry_and_single_flights_wall_s":preflight_s})
             pairrows=[]
             for mode in ("synchronous","sequential"):
                 episode_started=time.perf_counter()
-                batches={a:0 for a in sk["members"]} if mode=="synchronous" else batch_indices
-                run=execute(sk,schedules[mode])
-                labels,frame=measure(scene,sk,run,mode,batches)
+                plan=timing_plans[mode]
+                batches=plan["batch_by_agent"]
+                run=execute(sk,plan["departure_delays_s"])
+                labels,frame=measure(scene,sk,run,mode,batches,timing_plan=plan)
                 dest=skroot/mode
-                write_episode(dest,scene,family,sk,run,labels,frame,schedules[mode],mode,measured)
-                audit=audit_episode(scene,sk,run,labels,mode,batches,dest)
+                write_episode(dest,scene,family,sk,run,labels,frame,plan["departure_delays_s"],mode,measured,timing_plan=plan)
+                audit=audit_episode(scene,sk,run,labels,mode,batches,dest,timing_plan=plan)
                 plot_episode(scene,run,labels,dest/"topdown.png",f"Map {map_index} | {intent} | assigned {mode}")
                 group=next(iter(labels["task_groups"].values()));coord=group["observed"]["coordination"]
                 row={"map_candidate":record["candidate_index"],"facility_count":record["facility_count"],
                      "skeleton_id":sk["skeleton_id"],"intent":intent,"mode":mode,"directory":str(dest),
                      "execution_status":run["execution_status"],"observed_coordination":coord["classification"],
-                     "coordination_matches":coord["classification"]==mode,"event_times_s":coord["event_times_s"],
-                     "event_range_s":coord["event_range_s"],"minimum_separation_m":labels["cluster"]["observed"]["minimum_separation_m"],
+                     "coordination_matches":group["observed"]["timing_diagnostics"]["coordination_matches_assignment"],"event_times_s":coord["event_times_s"],
+                     "event_range_s":coord["event_range_s"],"observed_batches":coord["batches"],"timing_plan":plan,
+                     "generation_quality":labels["generation_quality"],"minimum_separation_m":labels["cluster"]["observed"]["minimum_separation_m"],
                      "task_result":group["result"]["status"],"task_conditions":group["result"]["conditions"],
                      "duration_s":run["end_us"]/1e6,"episode_execution_export_label_plot_audit_s":time.perf_counter()-episode_started,
                      "amortized_skeleton_setup_s":preflight_s/2,"audit":audit}
@@ -159,8 +166,10 @@ def main():
             plot_pair(pairrows,skroot/"timing_pair.png",f"Map {map_index} / {intent}")
             pairs.append({"skeleton_id":sk["skeleton_id"],"timing_plot":str(skroot/"timing_pair.png"),
                           "non_timing_inputs_identical":True,"same_column_order":True,
-                          "both_modes_match":all(r["coordination_matches"] for r in pairrows),
-                          "both_task_results_success":all(r["task_result"]=="success" for r in pairrows)})
+                          "both_modes_match":(False if any(r["coordination_matches"] is False for r in pairrows) else
+                                              None if any(r["coordination_matches"] is None for r in pairrows) else True),
+                          "both_task_results_success":all(r["task_result"]=="success" for r in pairrows),
+                          "both_retained":all(r["generation_quality"]["retained"] for r in pairrows)})
     # Full, unabridged labels are delivered as a single reviewable companion.
     save_json(out/"all_episode_labels.json",{f"{r['skeleton_id']}/{r['mode']}":read_json(Path(r["directory"])/"labels.json") for r in rows})
     with (out/"labels_full.md").open("x",encoding="utf-8") as f:
@@ -174,8 +183,17 @@ def main():
             f.write(f"## {r['intent']} / {r['mode']} / map {r['map_candidate']}\n\n![Actual trajectory](<{(Path(r['directory'])/'topdown.png').as_posix()}>)\n\n")
         for p in pairs:
             f.write(f"![Core event times](<{Path(p['timing_plot']).as_posix()}>)\n\n")
-    summary={"schema_version":"traj2language.s2_minimal_attempt/0.7-s2.1","directory":str(out),
-             "episodes":rows,"pairs":pairs,"episode_count":len(rows),"total_wall_s":time.perf_counter()-started,
+    full_audit=audit_attempt(out)
+    save_json(out/"independent_full_frame_audit.json",full_audit)
+    if full_audit["status"]!="PASS" or full_audit["episode_count"]!=8:
+        save_json(out/"P0_STOP.json",full_audit)
+        raise ValueError("P0: final full-frame audit failed")
+    save_json(out/"retained_episode_index.json",[r["directory"] for r in rows if r["generation_quality"]["retained"]])
+    save_json(out/"excluded_episode_index.json",[r["directory"] for r in rows if not r["generation_quality"]["retained"]])
+    summary={"schema_version":"traj2language.s2_minimal_attempt/0.7-s2.2","directory":str(out),
+             "episodes":rows,"pairs":pairs,"episode_count":len(rows),
+             "retained_count":sum(r["generation_quality"]["retained"] for r in rows),
+             "full_frame_audit_status":full_audit["status"],"region_difference_count":full_audit["region_difference_count"],"total_wall_s":time.perf_counter()-started,
              "timing_scope":"Per episode includes execution, labels, CSV/NPZ, loading, audit and topdown; half shared skeleton construction and four single-agent calibrations. Attempt total additionally includes 3 probes, pair plots and aggregate files.",
              "config_sha256":sha(CONFIG_PATH),"status":"completed","training_eligible":False}
     save_json(out/"summary.json",summary)

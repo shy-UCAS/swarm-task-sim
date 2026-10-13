@@ -50,7 +50,7 @@ def observations(scene,family,skeleton,run):
     return p,v
 
 
-def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measurement):
+def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measurement,timing_plan=None):
     root=Path(root);root.mkdir(exist_ok=False)
     validate_public_scene(scene)
     obs_p,obs_v=observations(scene,family,skeleton,run)
@@ -67,7 +67,7 @@ def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measur
     save_json(root/"task.json",skeleton)
     save_json(root/"source.json",{"source":"fastsim","simulation_backend":"fast_dynamics",
              "config_sha256":run["config_sha256"],"family_initial":family,"skeleton_id":skeleton["skeleton_id"],
-             "departure_delays_s":delays,"planned_coordination":mode,
+             "departure_delays_s":delays,"planned_coordination":mode,"timing_plan":timing_plan,
              "single_agent_measured_core_times_s":measurement,"sampling_rate_hz":10,
              "high_frequency_semantic_evidence_used":False,"execution_status":run["execution_status"],
              "simulation_wall_s":run["wall_s"],"end_us":run["end_us"],
@@ -78,7 +78,8 @@ def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measur
              "time_base":"sim_clock","time_policy":"integer_sim_clock_half_open_v1","sample_hz":10,
              "feature_columns":list(FEATURES),"artifact_sha256":artifacts,
              "label_schema_version":labels["schema_version"],"training_eligible":False,
-             "loader":"task_v07.io.load_episode","default_input_keys":sorted(INPUT_KEYS)})
+             "loader":"task_v07.io.load_episode","default_input_keys":sorted(INPUT_KEYS),
+             "generation_quality":labels["generation_quality"]})
     loaded=load_episode(root)
     if not np.array_equal(loaded["x"],np.concatenate((obs_p,obs_v),axis=2)):
         raise ValueError("P0: observation CSV reconstruction mismatch")

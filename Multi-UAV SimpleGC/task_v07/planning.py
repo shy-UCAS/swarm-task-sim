@@ -5,12 +5,14 @@ import math
 import random
 
 import numpy as np
-from shapely.geometry import LineString, Point, Polygon
+from shapely.geometry import Polygon
 
-from scene_v07.geometry import VisibilityPlanner, center_of, radial_boundary, to_shape
+from scene_v07.geometry import center_of
+from .geometry import geometry_facts, radial_boundary_exact
+from .visibility import ExactVisibilityPlanner
 
-PLANNING_VERSION = "v07_s2_minimal_geometry_v1"
-MIN_SEPARATION_M = 15.0
+PLANNING_VERSION = "v07_s2_exact_geometry_v2"
+MIN_INTRUSION_ENDPOINT_SEPARATION_M = 15.0
 
 
 def seed_for(seed, purpose):
@@ -30,7 +32,7 @@ def role_planner(scene, survey=False):
             if e.get("layer") == "alert":
                 e["type"] = "hard_constraint_obstacle"
     # Original 30 m obstacle clearance plus 5 m tracking allowance from M3.
-    return VisibilityPlanner(copy, 35.0, 8)
+    return ExactVisibilityPlanner(copy, 35.0)
 
 
 def clean_route(points, planner):
@@ -84,17 +86,17 @@ def build_skeleton(scene, family, intent, index, target_id):
     planner=role_planner(scene,intent=="reconnaissance")
     altitude=family["task_altitude_m"]
     references={}
-    common={"schema_version":"traj2language.skeleton/0.7-s2.1","skeleton_id":f"{family['family_id']}_sk{index:02d}",
+    common={"schema_version":"traj2language.skeleton/0.7-s2.2","skeleton_id":f"{family['family_id']}_s2r2_sk{index:02d}",
             "family_id":family["family_id"],"map_id":family["map_id"],"base_intent":intent,
             "target_id":target_id,"group_id":"task_group_01","members":ids,
             "role":"intrusion" if intent=="penetration" else "reconnaissance",
             "execution_method":"polygon_visit" if intent=="penetration" else "equal_strip_lawnmower",
             "agent_ids":order,"column_seed":column_seed,"cruise_speed_m_s":family["cruise_speed_m_s"],
-            "planning_min_separation_m":MIN_SEPARATION_M,"waypoint_min_spacing_m":1.0,
+            "intrusion_endpoint_min_spacing_m":MIN_INTRUSION_ENDPOINT_SEPARATION_M,"waypoint_min_spacing_m":1.0,
             "tracking_allowance_m":5.0,"obstacle_clearance_m":30.0,"initial_settle_s":20.0,
             "terminal_hold_s":2.0,"terminal_radius_m":1.0,"terminal_speed_m_s":0.15,
             "required_intrusion_depth_m":20.0,"sync_window_s":10.0,"batch_split_gap_s":20.0,
-            "sequential_gap_s":60.0,"planning_version":PLANNING_VERSION,
+            "timing_jitter_halfwidth_s":3.0,"sequential_gap_range_s":[40.0,90.0],"planning_version":PLANNING_VERSION,
             "initial_states":deepcopy(family["initial_states"])}
     if intent=="penetration":
         # Generic radial visit handles: attach nearest angular stations by geometry.
@@ -107,13 +109,13 @@ def build_skeleton(scene, family, intent, index, target_id):
             points=[]; ends=[]
             for theta in angles:
                 unit=np.array([math.cos(theta),math.sin(theta)])
-                boundary=np.array(radial_boundary(zones["warning"]["geometry"],center,theta))
+                boundary=np.array(radial_boundary_exact(zones["warning"]["geometry"],center,theta))
                 points.append(boundary+60*unit)
-                inner=np.array(radial_boundary(zones["protected"]["geometry"],center,theta))
+                inner=np.array(radial_boundary_exact(zones["protected"]["geometry"],center,theta))
                 ends.append(inner-40*unit)
             if not all(planner.visible(p.tolist(),e.tolist()) and planner.free(p.tolist()) for p,e in zip(points,ends)):
                 continue
-            if min(math.dist(a,b) for a,b in itertools.combinations(ends,2)) < MIN_SEPARATION_M:
+            if min(math.dist(a,b) for a,b in itertools.combinations(ends,2)) < MIN_INTRUSION_ENDPOINT_SEPARATION_M:
                 continue
             for assignment in itertools.permutations(range(4)):
                 routes={}
@@ -135,21 +137,23 @@ def build_skeleton(scene, family, intent, index, target_id):
         common["planned_approach_span_deg"]=angular_span([r["approach_azimuth_deg"] for r in references.values()])
     else:
         # One rectangular observation sector, divided into four equal strips.
-        warning=to_shape(zones["warning"]["geometry"],64)
-        alerts=[to_shape(e["geometry"],64,True) for e in scene["entities"] if e.get("layer")=="alert"]
-        obstacle_shapes=[to_shape(e["geometry"],64,True) for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"]
-        world=to_shape(scene["world"]["geometry"])
+        warning=zones["warning"]["geometry"]
+        alerts=[e["geometry"] for e in scene["entities"] if e.get("layer")=="alert"]
+        obstacle_shapes=[e["geometry"] for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"]
+        world=scene["world"]["geometry"]
         best=None
         for deg in range(0,360,15):
             theta=math.radians(deg); u=np.array([math.cos(theta),math.sin(theta)]); w=np.array([-u[1],u[0]])
-            inner=np.array(radial_boundary(zones["alert"]["geometry"],center,theta))
-            outer=np.array(radial_boundary(zones["warning"]["geometry"],center,theta))
+            inner=np.array(radial_boundary_exact(zones["alert"]["geometry"],center,theta))
+            outer=np.array(radial_boundary_exact(zones["warning"]["geometry"],center,theta))
             middle=(inner+outer)/2
             polygon=Polygon([middle+x*w+y*u for x,y in [(-120,-90),(120,-90),(120,90),(-120,90)]])
-            if not warning.covers(polygon.buffer(35)) or any(polygon.buffer(35).intersects(a) for a in alerts+obstacle_shapes):
+            vertices=list(polygon.exterior.coords)[:-1]
+            if np.any(geometry_facts(warning,vertices)["signed_distance_m"] > -35) or any(
+                    geometry_facts(a,vertices,footprint=True)["clearance_m"] <= 35 for a in alerts+obstacle_shapes):
                 continue
             retreat_center=outer+200*u
-            if not world.covers(Point(retreat_center).buffer(130)):
+            if geometry_facts(world,retreat_center)["signed_distance_m"] > -130:
                 continue
             # Assign strip identities by initial lateral position, then randomize export columns separately.
             assignment=sorted(ids,key=lambda a:float((np.array(states[a]["position_enu_m"][:2])-middle)@w))

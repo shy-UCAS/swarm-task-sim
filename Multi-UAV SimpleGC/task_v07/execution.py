@@ -88,14 +88,46 @@ def execute(skeleton, delays_s, *, only_agent=None):
 def departure_delays(skeleton, measured_event_s):
     if set(measured_event_s)!=set(skeleton["members"]) or any(t is None for t in measured_event_s.values()):
         raise ValueError("Missing measured core event: no schedule may be inferred")
-    # Event times come from independent single-agent exported truth, including settle.
-    latest=max(measured_event_s.values())+5.0
-    ids=list(skeleton["members"])
     from .planning import seed_for
     import random
-    random.Random(seed_for(skeleton["column_seed"],"batch_assignment")).shuffle(ids)
-    batch={a:i//2 for i,a in enumerate(ids)}
-    return {mode:{a:round(latest+(0 if mode=="synchronous" else batch[a]*skeleton["sequential_gap_s"])
-                                 -measured_event_s[a],1) for a in skeleton["members"]}
-            for mode in ("synchronous","sequential")},batch
-
+    ids=sorted(skeleton["members"])
+    seed=seed_for(skeleton["column_seed"],"timing_schedule_v2")
+    rng=random.Random(seed)
+    halfwidth=skeleton.get("timing_jitter_halfwidth_s",3.0)
+    gap_low,gap_high=skeleton.get("sequential_gap_range_s",[40.0,90.0])
+    if not 0<=2*halfwidth<=skeleton["sync_window_s"] or not 40<=gap_low<=gap_high<=90:
+        raise ValueError("Invalid jitter/window/gap configuration")
+    latest=max(measured_event_s.values())+halfwidth+2.0
+    sequential_ids=ids[:]
+    rng.shuffle(sequential_ids)
+    count=rng.randint(2,len(ids))
+    cuts=[0,*sorted(rng.sample(range(1,len(ids)),count-1)),len(ids)]
+    groups=[sequential_ids[a:b] for a,b in zip(cuts,cuts[1:])]
+    gaps=[rng.uniform(gap_low,gap_high) for _ in range(count-1)]
+    centers=[latest]
+    for gap in gaps:
+        centers.append(centers[-1]+gap)
+    plans={}
+    for mode in ("synchronous","sequential"):
+        batches={a:0 for a in ids} if mode=="synchronous" else {a:i for i,g in enumerate(groups) for a in g}
+        nominal=[latest] if mode=="synchronous" else centers
+        jitter={a:rng.uniform(-halfwidth,halfwidth) for a in ids}
+        targets={a:nominal[batches[a]]+jitter[a] for a in ids}
+        delays={a:round(targets[a]-measured_event_s[a],1) for a in ids}
+        # Independent uniforms are preserved in supervision; realizable releases
+        # are quantized once to the common 0.1 s grid (at most 0.05 s error).
+        grid_targets={a:round(measured_event_s[a]+delays[a],1) for a in ids}
+        plans[mode]={"schema_version":"v07_timing_plan_v2","random_seed":seed,
+                     "batch_by_agent":batches,"batch_count":len(nominal),
+                     "batch_sizes":[sum(b==i for b in batches.values()) for i in range(len(nominal))],
+                     "batch_centers_s":nominal,"inter_batch_gaps_s":[] if mode=="synchronous" else gaps,
+                     "jitter_s":jitter,"jitter_halfwidth_s":halfwidth,
+                     "target_event_times_s":targets,"target_event_times_grid_s":grid_targets,
+                     "departure_delays_s":delays,"single_agent_measured_core_times_s":dict(measured_event_s),
+                     "quantization_s":0.1,"maximum_quantization_error_s":0.05,
+                     "basis":"single-agent actual core event on 10 Hz exported truth"}
+        for i in range(len(nominal)):
+            times=[grid_targets[a] for a in ids if batches[a]==i]
+            if max(times)-min(times)>skeleton["sync_window_s"]:
+                raise ValueError("Quantized within-batch target spread exceeds sync window")
+    return plans

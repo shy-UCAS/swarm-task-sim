@@ -49,7 +49,8 @@ def plot_episode(scene,run,labels,path,title):
         ax.annotate(a,xy[-1],xytext=(6,5),textcoords="offset points",fontsize=8)
     fig.colorbar(lc,ax=ax,pad=.02,label="Common simulation time (s)",shrink=.78)
     group=next(iter(labels["task_groups"].values()));coord=group["observed"]["coordination"]
-    ax.set_title(title+"\n"+f"Observed: {coord['classification']} | event range {coord['event_range_s']} s | result {group['result']['status']}",fontsize=11)
+    event_range="unknown" if coord["event_range_s"] is None else f"{coord['event_range_s']:.1f} s"
+    ax.set_title(title+"\n"+f"Observed: {coord['classification']} | event range {event_range} | result {group['result']['status']}",fontsize=11)
     fig.text(.08,.02,"Actual exported truth at 10 Hz; o = initial state, x = final sampled state. Abstract development scene.",fontsize=8)
     fig.tight_layout(rect=(0,.035,1,1));fig.savefig(path,dpi=135);plt.close(fig)
 
@@ -68,9 +69,11 @@ def plot_pair(rows,path,title):
                 ax.hlines(y,0,t,color="#d5dce4",lw=1)
                 ax.scatter(t,y,c="#326c9d",s=50);ax.annotate(f"{t:.1f}s",(t,y),xytext=(6,7),textcoords="offset points",fontsize=9)
             else:
-                ax.text(0,y,"unknown",color="#a34242")
+                ax.text(.03,y,"unknown (not observed)",transform=ax.get_yaxis_transform(),color="#a34242",va="center")
+        ax.set_ylim(-.5,len(ids)-.4)
         ax.set_yticks(range(len(ids)),ids);ax.set_xlabel("Common simulation time (s)")
-        ax.set_title(f"{row['mode']} -> {row['observed_coordination']}\nrange = {row['event_range_s']} s")
+        event_range="unknown" if row["event_range_s"] is None else f"{row['event_range_s']:.1f} s"
+        ax.set_title(f"{row['mode']} -> {row['observed_coordination']}\nrange = {event_range}")
         ax.grid(axis="x",alpha=.2)
     if all_times:
         axes[0].set_xlim(max(0,min(all_times)-30),max(all_times)+35)

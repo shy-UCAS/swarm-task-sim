@@ -3,13 +3,13 @@ from itertools import combinations
 import math
 
 import numpy as np
-import shapely
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
-from scene_v07.geometry import center_of, to_shape
+from scene_v07.geometry import center_of
+from .geometry import geometry_facts, GEOMETRY_VERSION
 from .planning import angular_span, scene_parts
 
-LABEL_VERSION="traj2language.labels/0.7-s2.1"
+LABEL_VERSION="traj2language.labels/0.7-s2.2"
 EVIDENCE_SOURCE="truth.csv:10Hz_half_open_sim_clock"
 
 
@@ -21,12 +21,6 @@ def validate_grid(t_us,p,v,ids):
         raise ValueError("ID/grid/state dimensions disagree")
     if not np.isfinite(p).all() or not np.isfinite(v).all():
         raise ValueError("Nonfinite exported state")
-
-
-def contains(geometry,xy):
-    if geometry["type"]=="Circle":
-        return np.linalg.norm(xy-np.asarray(geometry["center_m"]),axis=-1)<=geometry["radius_m"]
-    return shapely.covers(to_shape(geometry,64),shapely.points(xy))
 
 
 def event(mask,t_us,raw_type):
@@ -86,10 +80,10 @@ def measurable(ok,complete):
     return True if ok else (False if complete else None)
 
 
-def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
+def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_plan=None):
     ids=list(run["agent_ids"])
     t=run["time_us"];p=run["p"];v=run["v"]
-    complete=cutoff_s is None and run["execution_status"]=="completed"
+    complete=cutoff_s is None and run["execution_status"] in ("completed","timeout")
     if cutoff_s is not None:
         take=t<round(cutoff_s*1e6)
         t,p,v=t[take],p[take],v[take]
@@ -100,8 +94,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
     all_events={};per_agent={};core={};coverages={};effective_masks={}
     obstacle_inside=np.zeros((len(t),len(ids)),bool)
     for obstacle in (e for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"):
-        obstacle_inside|=contains(obstacle["geometry"],p[:,:,:2])
-    world_inside=contains(scene["world"]["geometry"],p[:,:,:2])
+        obstacle_inside|=geometry_facts(obstacle["geometry"],p[:,:,:2])["inside"]
+    world_inside=geometry_facts(scene["world"]["geometry"],p[:,:,:2])["inside"]
     minimum=None;closest=None;by_agent_min={a:None for a in ids}
     for a,b in combinations(sorted(ids),2):
         distance=np.linalg.norm(p[:,by_id[a]]-p[:,by_id[b]],axis=1)
@@ -110,15 +104,15 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
             minimum,closest=d,{"agents":[a,b],"t_s":float(t[k]/1e6),"frame_index":k}
         for member in (a,b):
             by_agent_min[member]=d if by_agent_min[member] is None else min(d,by_agent_min[member])
+    facility_facts={}
     for fi,f in enumerate(facilities):
         _,zones=scene_parts(scene,f["id"])
-        for layer,level in (("warning",1),("alert",2),("protected",3)):
-            inside=contains(zones[layer]["geometry"],p[:,:,:2])
-            levels[:,:,fi]=np.where(inside,level,levels[:,:,fi])
+        offsets={layer:zones[layer]["offset_m"] for layer in ("protected","alert","warning")}
+        facts=geometry_facts(f["geometry"],p[:,:,:2],layer_offsets=offsets)
+        facility_facts[f["id"]]=facts
+        levels[:,:,fi]=facts["layer"]
     target_fi=next(i for i,f in enumerate(facilities) if f["id"]==skeleton["target_id"])
-    _,zones=scene_parts(scene,skeleton["target_id"])
-    target_shape=to_shape(zones["protected"]["geometry"],64)
-    center=np.array(center_of(next(f for f in facilities if f["id"]==skeleton["target_id"])["geometry"]))
+    center=np.array(center_of(facilities[target_fi]["geometry"]))
     grid=None
     if skeleton["base_intent"]=="reconnaissance":
         polygon=Polygon(skeleton["survey"]["vertices_m"])
@@ -126,7 +120,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
         step=skeleton["survey"]["grid_spacing_m"]
         xx,yy=np.meshgrid(np.arange(x0+step/2,x1,step),np.arange(y0+step/2,y1,step))
         grid=np.c_[xx.ravel(),yy.ravel()]
-        grid=grid[shapely.covers(polygon,shapely.points(grid))]
+        grid=grid[geometry_facts({"type":"Polygon","vertices_m":skeleton["survey"]["vertices_m"]},grid)["inside"]]
     phases=np.zeros((len(t),len(ids)),np.int8)
     azimuths=[]
     for a in sorted(ids):
@@ -141,7 +135,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
         if skeleton["base_intent"]=="penetration":
             core[a]=event(levels[:,i,target_fi]==3,t,"enter_protected_zone")
             inside=levels[:,i,target_fi]==3
-            depth=float(np.max(shapely.distance(shapely.points(xy[inside]),target_shape.boundary))) if inside.any() else 0.
+            depth=float(facility_facts[skeleton["target_id"]]["protected_depth_m"][:,i].max())
             if core[a]["frame_index"] is not None:
                 point=xy[core[a]["frame_index"]]-center
                 azimuth=math.degrees(math.atan2(point[1],point[0]))%360
@@ -153,8 +147,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
             role_conditions={"entered_protected":measurable(inside.any(),complete),
                              "required_depth":measurable(depth>=skeleton["required_intrusion_depth_m"],complete)}
         else:
-            strip=Polygon(ref["scan_vertices_m"])
-            effective=shapely.covers(strip,shapely.points(xy))&(speed>=skeleton["survey"]["effective_speed_min_m_s"])
+            strip={"type":"Polygon","vertices_m":ref["scan_vertices_m"]}
+            effective=geometry_facts(strip,xy)["inside"]&(speed>=skeleton["survey"]["effective_speed_min_m_s"])
             effective&=(levels[:,i,target_fi]==1)&~obstacle_inside[:,i]
             effective_masks[a]=effective
             core[a]=event(effective,t,"scan_start")
@@ -182,9 +176,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
         end_distance=np.linalg.norm(p[:,i]-ref["endpoint_enu_m"],axis=1)
         dwell=(end_distance<=skeleton["terminal_radius_m"])&(speed<=skeleton["terminal_speed_m_s"])
         hold=longest_hold(dwell)
-        conditions={**role_conditions,"own_endpoint_hold":measurable(hold>=skeleton["terminal_hold_s"],complete),
-                    "hard_constraints_clear":not bool(obstacle_inside[:,i].any()),"inside_world":bool(world_inside[:,i].all()),
-                    "separation_clear":by_agent_min[a] is None or by_agent_min[a]>=skeleton["planning_min_separation_m"]-1e-8}
+        conditions={**role_conditions,"own_endpoint_hold":measurable(hold>=skeleton["terminal_hold_s"],complete)}
         outcome=observed_conditions_result(conditions,complete)
         phases[:,i]=np.where(speed>.5,1,0)
         if core[a]["frame_index"] is not None:
@@ -194,11 +186,14 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
         phases[dwell,i]=4
         per_agent[a]={"assigned":{"intent":skeleton["base_intent"],"role":skeleton["role"],
                                   "target":skeleton["target_id"],"task_group":skeleton["group_id"],
-                                  "execution_method":skeleton["execution_method"],"planned_coordination":mode},
+                                  "execution_method":skeleton["execution_method"],"planned_coordination":mode,
+                                  "timing":None if timing_plan is None else {key:timing_plan[key][a] for key in ("target_event_times_s","target_event_times_grid_s","jitter_s","departure_delays_s","batch_by_agent")}},
                       "observed":{"behaviors":behavior,"regions_by_facility":region_facts,
                                   "core_event":core[a],"contribution":contribution,
                                   "endpoint_min_distance_m":float(end_distance.min()),"endpoint_hold_s":hold,
-                                  "minimum_separation_m":by_agent_min[a],"batch_index":None},
+                                  "minimum_separation_m":by_agent_min[a],"batch_index":None,
+                                  "hard_obstacle_sample_count":int(obstacle_inside[:,i].sum()),
+                                  "outside_world_sample_count":int((~world_inside[:,i]).sum())},
                       "result":{"status":outcome,"conditions":{k:(bool(v) if v is not None else None) for k,v in conditions.items()}}}
     coord=coordination(core,skeleton["sync_window_s"],skeleton["batch_split_gap_s"])
     for batch in coord["batches"]:
@@ -213,13 +208,14 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
                 "covered_grid_point_count":int(covered.sum()),"coverage_fraction":float(covered.mean()),
                 "required_fraction":skeleton["survey"]["required_group_coverage"]}
     statuses=[v["result"]["status"] for v in per_agent.values()]
-    conditions={"member_contributions_complete":False if "failure" in statuses else (None if "unknown" in statuses else True),
-                "coordination_matches_assignment":None if coord["classification"]=="unknown" else coord["classification"]==mode}
+    conditions={"member_contributions_complete":False if "failure" in statuses else (None if "unknown" in statuses else True)}
+    timing_diagnostics={"coordination_matches_assignment":None if coord["classification"]=="unknown" else coord["classification"]==mode,
+                        "batch_members_match_assignment":None}
     if planned_batches is not None and coord["classification"] not in ("unknown", "not_applicable"):
         observed_partition={frozenset(b["members"]) for b in coord["batches"]}
         expected_partition={frozenset(a for a,b in planned_batches.items() if b==index)
                             for index in set(planned_batches.values())}
-        conditions["batch_members_match_assignment"]=observed_partition==expected_partition
+        timing_diagnostics["batch_members_match_assignment"]=observed_partition==expected_partition
     if shared:
         conditions["shared_coverage"]=measurable(shared["coverage_fraction"]>=shared["required_fraction"],complete)
     if skeleton["base_intent"]=="penetration":
@@ -229,17 +225,18 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
                              if r["warning"]["entered_observed"]})
     group={"assigned":{"members":sorted(ids),"role":skeleton["role"],"target":skeleton["target_id"],
                        "intent":skeleton["base_intent"],"planned_coordination":mode,
-                       "planned_batches":planned_batches or {}},
-           "observed":{"members":sorted(ids),"coordination":coord,"shared_coverage":shared,
+                       "planned_batches":planned_batches or {},"timing":timing_plan},
+           "observed":{"members":sorted(ids),"coordination":coord,"timing_diagnostics":timing_diagnostics,"shared_coverage":shared,
                        "approach_span_deg":angular_span(azimuths) if len(azimuths)==len(ids) else None,
                        "members_with_known_core_event":sorted(a for a,e in core.items() if e["t_s"] is not None),
                        "behaviors":sorted({b for a in per_agent.values() for b in a["observed"]["behaviors"]})},
            "result":result}
     labels={"schema_version":LABEL_VERSION,"evidence":{"source":EVIDENCE_SOURCE,"last_observed_s":float(t[-1]/1e6),
-                "frame_count":len(t),"complete_observation":complete,"future_events_used":False},
+                "frame_count":len(t),"complete_observation":complete,"future_events_used":False,
+                "geometry_version":GEOMETRY_VERSION},
             "agents":per_agent,"task_groups":{skeleton["group_id"]:group},
             "cluster":{"assigned":{"intent":skeleton["base_intent"],"target_set":[skeleton["target_id"]],
-                                   "task_groups":[skeleton["group_id"]],"planned_coordination":mode},
+                                   "task_groups":[skeleton["group_id"]],"planned_coordination":mode,"timing_by_group":{skeleton["group_id"]:timing_plan}},
                        "observed":{"related_facilities":observed_targets,
                                    "primary_target":skeleton["target_id"] if len(core)==len(ids) and all(e["t_s"] is not None for e in core.values()) else None,
                                    "group_coordination":[{"group_id":skeleton["group_id"],**coord}],
@@ -249,6 +246,12 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None):
                             "facility_ids":[f["id"] for f in facilities],
                             "region_codes":{"0":"outside","1":"warning","2":"alert","3":"protected"},
                             "phase_codes":{"0":"low_speed","1":"approach_motion","2":"after_core_start","3":"withdrawal","4":"at_own_endpoint"}}}
+    generation_error=minimum is not None and minimum<2.0
+    labels["generation_quality"]={"status":"generation_error" if generation_error else "valid",
+        "retained":not generation_error,"exclusion_reasons":["minimum_separation_below_2m"] if generation_error else [],
+        "minimum_separation_m":minimum,"separation_error_threshold_m":2.0,
+        "separation_affects_task_result":False,"hard_obstacle_sample_count":int(obstacle_inside.sum()),
+        "outside_world_sample_count":int((~world_inside).sum())}
     frame={"time_us":t,"agent_ids":np.array(ids),"facility_ids":np.array([f["id"] for f in facilities]),
            "region_all_facilities":levels,"region_assigned_target":levels[:,:,target_fi],
            "phase":phases,"inside_hard_obstacle":obstacle_inside}
