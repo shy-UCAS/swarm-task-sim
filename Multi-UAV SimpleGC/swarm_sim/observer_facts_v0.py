@@ -455,8 +455,11 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
         raise ValueError("observer facts require dual-channel phase windows")
     channels = phase_windows["channels"]
     fast = manifest.get("protocol_version") == "fast_dynamics_v1"
-    traces = {"truth": _traces(root / ("support_truth.csv" if fast else "truth.csv"), agents),
-              "observation": _traces(root / ("support_observations.csv" if fast else "observations.csv"), agents)}
+    # Visible facts use the exported observation grid for both backends. Dense
+    # integration support is reserved for physical/semantic validation, whose
+    # separate contract includes sub-frame events and the actual endpoint.
+    traces = {"truth": _traces(root / "truth.csv", agents),
+              "observation": _traces(root / "observations.csv", agents)}
     region = _region(task)
     metrics = labels["mission_metrics"]
     if set(metrics) != {"truth", "observation"}:
@@ -496,7 +499,7 @@ def extract_observer_facts(episode_root: Path, dataset_manifest_sha256: str) -> 
                      V06_FACTS_VERSION if protocol_version == "v0.6" else FACTS_VERSION)
     if fast:
         versions.update(time_base="sim_clock", simulation_backend="fast_dynamics",
-                        evidence_sampling="internal-step support including actual endpoint",
+                        evidence_sampling="exported 10 Hz half-open grid",
                         observation_dependency="ideal observer derived from plant; no independent sensor")
     elif protocol_version == "v0.6.1":
         versions.update(time_base="sim_source", sim_speedup=manifest["sim_speedup"],

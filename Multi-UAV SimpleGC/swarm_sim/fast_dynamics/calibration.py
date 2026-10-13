@@ -356,11 +356,13 @@ def pair_lateral(left, right):
                 method="horizontal normal difference on same phase/agent/ordered leg/lap; 0.5 m arc grid; no time warping for timing/separation")
 
 
-def summarize_motion(scene, traces, channels, labels, semantic, duration, *, quality_eligible, source):
+def summarize_motion(scene, traces, channels, labels, semantic, duration, *, quality_eligible, source,
+                     fact_traces=None):
     from ..observer_facts_v0 import _channel_facts, _region
     agents = sorted(traces["truth"])
     task = scene["task_spec"]
-    slots = {channel: _channel_facts(traces[channel], channels[channel], task, _region(task),
+    fact_traces = traces if fact_traces is None else fact_traces
+    slots = {channel: _channel_facts(fact_traces[channel], channels[channel], task, _region(task),
                 dict(duration_s=duration), labels["mission_metrics"][channel], agents)["observed_pattern"]
              for channel in ("truth", "observation")}
     routes = route_diagnostics(scene, traces["truth"], channels["truth"])
@@ -449,8 +451,13 @@ def fast_summary(run, mission_id):
     quality = read_json(analysis / "quality.json")
     traces = {channel: read_positions(analysis / filename, manifest["agent_ids"])[0]
               for channel, filename in (("truth", "support_truth.csv"), ("observation", "support_observations.csv"))}
+    # Keep dense physics diagnostics, but classify exactly the public 10 Hz
+    # streams used by extract_observer_facts, never the integration-step grid.
+    fact_traces = {channel: read_positions(analysis / filename, manifest["agent_ids"])[0]
+                   for channel, filename in (("truth", "truth.csv"), ("observation", "observations.csv"))}
     summary = summarize_motion(scene, traces, windows["channels"], labels, semantic, manifest["end_us"] / 1e6,
                 quality_eligible=manifest["episode_quality_eligible"],
+                fact_traces=fact_traces,
                 source=dict(batch="fast_default_uncalibrated", run_id=manifest["run_id"], analysis=str(analysis)))
     summary.update(status="COMPLETE", mission_id=mission_id, numerical=quality["numerical"],
                    input_task_sha256=read_json(analysis / "source.json")["input_sha256"])

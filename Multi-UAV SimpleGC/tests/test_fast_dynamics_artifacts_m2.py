@@ -170,6 +170,34 @@ class M2PublicChainTests(unittest.TestCase):
         self.assertFalse(manifest["episode_quality_eligible"])
         self.assertEqual(manifest["frames"], 1)
 
+    def test_visible_facts_and_calibration_use_public_grid_not_dense_support(self):
+        from swarm_sim import observer_facts_v0 as facts_module
+        from swarm_sim.fast_dynamics.calibration import fast_summary
+
+        run, _ = self.write()
+        dataset = self.root / "dataset"
+        build_dataset([run], dataset)
+        episode = dataset / "episodes" / "m2"
+        # This real export has both streams: ensure the test can distinguish
+        # their cadence, then check the actual classifier inputs, not a flag.
+        agents = json.loads((episode / "manifest.json").read_text(encoding="utf-8"))["agent_ids"]
+        public = {channel: facts_module._traces(episode / name, agents)
+                  for channel, name in (("truth", "truth.csv"), ("observation", "observations.csv"))}
+        support = facts_module._traces(episode / "support_truth.csv", agents)
+        self.assertGreater(len(support[agents[0]]), len(public["truth"][agents[0]]))
+        times = [t for t, _ in public["truth"][agents[0]]]
+        for i, t in enumerate(times):
+            self.assertAlmostEqual(t, i / 10., places=9)
+        with patch.object(facts_module, "_channel_facts", wraps=facts_module._channel_facts) as classify:
+            facts = facts_module.extract_observer_facts(episode, file_hash(dataset / "dataset_manifest.json"))
+            self.assertEqual([c.args[0] for c in classify.call_args_list], list(public.values()))
+        self.assertEqual(facts["observed"]["observed_pattern"], "direct_passage")
+        self.assertEqual(facts["provenance"]["versions"]["evidence_sampling"], "exported 10 Hz half-open grid")
+        with patch.object(facts_module, "_channel_facts", wraps=facts_module._channel_facts) as classify:
+            summary = fast_summary(run, "fixture")
+            self.assertEqual([c.args[0] for c in classify.call_args_list], list(public.values()))
+        self.assertEqual(summary["motion_slots"], {"truth": "direct_passage", "observation": "direct_passage"})
+
     def test_rehashed_false_label_is_recomputed_and_rejected(self):
         run, manifest = self.write()
         self.mutate(run, manifest, "labels.json", lambda obj: obj.update(mission_success=False))
