@@ -77,7 +77,7 @@ def _entries(rng, config):
     return result, normals
 
 
-def sample_family(seed, config=None):
+def sample_family_s1(seed, config=None):
     """A candidate is drawn once; invalid geometry is retained, never retried.
 
     Public map and generator-side family state are separate return values. No
@@ -214,3 +214,15 @@ def sample_family(seed, config=None):
                                        "velocity_sigma0_m_s": rng.uniform(.03, .08),
                                        "velocity_slope_m_s_per_km": rng.uniform(.01, .03)}}
     return public, private
+
+
+def sample_family(seed, config=None, *, revision="s1.1", policy=None):
+    """Select the sampling revision; the original S1 remains reproducible."""
+    if revision == "s1":
+        if policy is not None:
+            raise ValueError("S1 does not support S1.1 placement policies")
+        return sample_family_s1(seed, config)
+    if revision != "s1.1":
+        raise ValueError("Unsupported sampling revision")
+    from .sampling_s11 import sample_family_s11
+    return sample_family_s11(seed, config, policy)

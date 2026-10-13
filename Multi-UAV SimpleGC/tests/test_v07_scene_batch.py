@@ -1,12 +1,17 @@
 """External attempt/summary integration checks without plotting imports."""
 from copy import deepcopy
+from functools import partial
 import json
 from pathlib import Path
 import tempfile
 import unittest
 
 from scene_v07 import SceneConfig, canonical_json, sample_family
-from scene_v07.batch import REPOSITORY_ROOT, generate_attempt, new_attempt, select_representatives, summarize
+from scene_v07.sampling import sample_family_s1 as sample_family
+from scene_v07.batch import REPOSITORY_ROOT, generate_attempt as _generate_attempt, new_attempt, select_representatives, summarize
+
+# Bind existing S1 reconstruction fixtures to the original sampling revision.
+generate_attempt = partial(_generate_attempt, sampling_revision="s1")
 
 
 class BatchTests(unittest.TestCase):

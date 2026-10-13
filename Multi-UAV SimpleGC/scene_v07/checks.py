@@ -4,6 +4,7 @@ import math
 from shapely.geometry import LineString, Point
 
 from .contract import SceneConfig, validate_public_scene
+from .diagnostics import route_diagnostics
 from .geometry import VisibilityPlanner, center_of, expand_geometry, polyline_length, radial_boundary, to_shape
 
 
@@ -149,7 +150,8 @@ def check_family(scene, family):
             direct = math.dist(source, destination)
             routes.append({"entry_id": entry["id"], "facility_id": facility["id"], "points_m": path,
                            "direct_length_m": direct, "length_m": polyline_length(path) if path else None,
-                           "detour_ratio": polyline_length(path) / direct if path and direct else None})
+                           "detour_ratio": polyline_length(path) / direct if path and direct else None,
+                           **route_diagnostics(scene, family, planner, source, destination, path)})
     approaches = []
     for facility in facilities:
         center = center_of(facility["geometry"])
@@ -176,6 +178,6 @@ def check_family(scene, family):
                            "by_entry": [{"entry_id": eid, "feasible_mask": values,
                                          "arcs_deg": angle_arcs(values, config.angle_step_deg)}
                                         for eid, values in per_entry.items()]})
-    return {"schema_version": "traj2language.scene_checks/0.7-s1.1", "accepted": not issues,
+    return {"schema_version": "traj2language.scene_checks/0.7-s1.2", "accepted": not issues,
             "issues": issues, "routes": routes, "approaches": approaches,
             "approach_interpretation": "Sampled 5-degree bins by default; entry-to-standoff route plus clear radial inward leg; diagnostic only"}

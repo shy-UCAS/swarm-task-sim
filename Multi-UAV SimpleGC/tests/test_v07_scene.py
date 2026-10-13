@@ -12,6 +12,7 @@ import unittest
 from shapely.geometry import LineString, Point, Polygon
 
 from scene_v07 import SceneConfig, canonical_json, check_family, family_seed, sample_family, validate_public_scene
+from scene_v07.sampling import sample_family_s1 as sample_family
 from scene_v07.checks import angle_arcs, max_span
 from scene_v07.contract import schema_path
 from scene_v07.geometry import VisibilityPlanner, expand_geometry, polyline_length, to_shape

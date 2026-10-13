@@ -15,6 +15,7 @@ from matplotlib.patches import Polygon as PlotPolygon, Patch
 
 from scene_v07.batch import DEFAULT_OUTPUT_ROOT, generate_attempt
 from scene_v07.contract import SceneConfig
+from scene_v07.sampling_s11 import SamplingPolicy
 from scene_v07.geometry import center_of, expand_geometry, polygon_parts, to_shape
 
 
@@ -69,6 +70,9 @@ def plot_family(scene, family, checks, path, index):
     for route in checks["routes"]:
         if route["points_m"]:
             points = route["points_m"]
+            if route.get("straight_blocked_by_obstacle"):
+                ax.plot([points[0][0],points[-1][0]],[points[0][1],points[-1][1]],
+                        color="#c75a59",linestyle=":",linewidth=1,alpha=.7,zorder=4)
             ax.plot([p[0] for p in points], [p[1] for p in points],
                     color=facility_colors[route["facility_id"]], linewidth=1.7, alpha=.85, zorder=9)
     for approach in checks["approaches"]:
@@ -95,7 +99,7 @@ def plot_family(scene, family, checks, path, index):
     ax.annotate("N", xy=(.95, .96), xytext=(.95, .86), xycoords="axes fraction",
                 ha="center", weight="bold", arrowprops={"arrowstyle": "->", "color": "#182638"})
     accepted = checks["accepted"]
-    figure.text(.07, .95, f"Traj2Language v0.7 / S1   |   candidate {index:03d}   |   {'ACCEPTED' if accepted else 'REJECTED'}",
+    figure.text(.07, .95, f"Traj2Language v0.7 / {family.get('sampling_revision', 's1').upper()}   |   candidate {index:03d}   |   {'ACCEPTED' if accepted else 'REJECTED'}",
                 fontsize=16, weight="bold", color="#186344" if accepted else "#a33740")
     legend = [Patch(facecolor="#24578c", label="Facility contour"),
               Patch(facecolor="#e9edf5", edgecolor="#24578c", label="Warning (outer)"),
@@ -107,18 +111,22 @@ def plot_family(scene, family, checks, path, index):
               Patch(facecolor="#62cbd7", label="Entry zone"),
               Line2D([], [], marker="^", color="#783c9c", linestyle="none", label="Initial UAV"),
               Line2D([], [], color="#24578c", label="Example shortest route"),
+              Line2D([], [], color="#c75a59",linestyle=":",label="Blocked direct line"),
               Line2D([], [], color="#228f64", linewidth=3, label="Feasible approach bins")]
     panel.legend(handles=legend, loc="upper left", frameon=False, fontsize=8.5, handlelength=2)
     ratios = [r["detour_ratio"] for r in checks["routes"] if r["detour_ratio"] is not None]
-    details = [f"Layout: {family['layout']}", f"Facilities: {len(facilities)}",
+    details = [f"Layout: {family['layout']}", f"Map: {family['config']['map_side_m']/1000:.0f} km", f"Facilities: {len(facilities)}",
                f"UAVs: {family['vehicle_count']}", f"Speed: {family['cruise_speed_m_s']:.2f} m/s",
                f"Height: {family['task_altitude_m']:.1f} m", f"Routes: {len(ratios)}/{len(checks['routes'])}",
-               f"Max detour ratio: {max(ratios, default=0):.3f}", "", "Approach span (diagnostic):"]
+               f"Max detour ratio: {max(ratios, default=0):.3f}",
+               f"Raw direct blocked: {sum(r.get('straight_blocked_by_obstacle',False) for r in checks['routes'])}/{len(checks['routes'])}",
+               f"Max lateral: {max((r.get('max_lateral_deviation_m') or 0 for r in checks['routes']),default=0):.1f} m",
+               "", "Approach span (diagnostic):"]
     details.extend(f"F{a['facility_id'].split('_')[-1]}: {a['available_span_deg']} deg" for a in checks["approaches"])
     details += ["", "Checks:"]
     codes = sorted({i["code"] for i in checks["issues"]})
     details.extend(codes if codes else ["all geometry/access gates pass"])
-    panel.text(0, .61, "\n".join(details), va="top", fontsize=8.0, linespacing=1.4,
+    panel.text(0, .59, "\n".join(details), va="top", fontsize=8.0, linespacing=1.4,
                color="#243447", wrap=True)
     figure.text(.07, .035, f"Family seed: {family['sampling_seed']}   |   5 deg sampled angular bins, all entries + clear inward leg",
                 fontsize=9, color="#607080")
@@ -137,12 +145,15 @@ def main():
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--attempt-name")
     parser.add_argument("--family-seed", type=int, help="Reconstruct one family; use --candidates 1")
+    parser.add_argument("--sampling-revision", choices=["s1","s1.1"],default="s1.1")
+    parser.add_argument("--obstacle-attempts",type=int,default=48)
     args = parser.parse_args()
     def progress(done, total, record):
         if done == 1 or done % 15 == 0 or done == total:
             print(f"{done}/{total}: {'accepted' if record['accepted'] else 'rejected'}; seed={record['sampling_seed']}", flush=True)
     summary = generate_attempt(args.candidates, args.seed, args.output_root, args.attempt_name,
-                               SceneConfig(), plot_family, progress, args.family_seed)
+                               SceneConfig(), plot_family, progress, args.family_seed, args.sampling_revision,
+                               SamplingPolicy(obstacle_attempts=args.obstacle_attempts) if args.sampling_revision=="s1.1" else None)
     print(f"Output: {summary['attempt_directory']}")
     print(f"Accepted: {summary['accepted_count']}/{summary['candidate_count']}; rejection rate {summary['rejection_rate']:.2%}")
     print(f"Timing (s): {summary['timing_s']}")

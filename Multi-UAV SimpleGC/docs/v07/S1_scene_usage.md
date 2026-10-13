@@ -1,5 +1,8 @@
 # v0.7 S1 场景接口与本地使用
 
+> 本文记录原 S1。当前默认抽样为 S1.1，见 [S11_scene_usage.md](S11_scene_usage.md)。
+> 重建原 S1 时显式选择 `--sampling-revision s1`。
+
 本实现只覆盖 `v07_spec_r4a1.md` 第 14 节 S1。所有文件为新增，不接入
 fastsim、旧规划器、判定器或 SITL；本轮不运行 M3 清单或全量回归。
 
@@ -14,7 +17,7 @@ S1 独立依赖见 `scene_v07/requirements.txt`，测试补充依赖见
 
 ```powershell
 conda run -n llm --no-capture-output python -B -m unittest discover -s tests -p 'test_v07_scene*.py' -v
-conda run -n llm --no-capture-output python -B scripts/sample_v07_scenes.py --candidates 300 --seed 2026101307
+conda run -n llm --no-capture-output python -B scripts/sample_v07_scenes.py --candidates 300 --seed 2026101307 --sampling-revision s1
 ```
 
 输出默认到仓库外 `SwarmData/v07_scene/attempt_<UTC时间>_<随机后缀>/`。
@@ -24,10 +27,10 @@ conda run -n llm --no-capture-output python -B scripts/sample_v07_scenes.py --ca
 按单个 family 的种子重建（新的 attempt，不覆盖原图）：
 
 ```powershell
-conda run -n llm --no-capture-output python -B scripts/sample_v07_scenes.py --candidates 1 --family-seed 17230448913791479827
+conda run -n llm --no-capture-output python -B scripts/sample_v07_scenes.py --candidates 1 --family-seed 17230448913791479827 --sampling-revision s1
 ```
 
-程序接口为 `sample_family(seed, SceneConfig(...))`。原始配置保存在
+原 S1 程序接口为 `sample_family(seed, SceneConfig(...), revision="s1")`。原始配置保存在
 `family_initial.json`，重建须使用相同配置、生成器版本与几何库版本。
 默认 CLI 使用本轮默认配置；自定义配置用程序接口重建。
 family 子种子由主种子和候选序号的 SHA256 独立派生，与执行顺序无关。
