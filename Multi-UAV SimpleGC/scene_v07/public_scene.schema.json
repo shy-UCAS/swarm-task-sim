@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:traj2language:public-scene:0.7-s1.1",
+  "title": "Traj2Language S1 public vector map (no generator metadata)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "coordinate_system", "units", "world", "entry_zones", "entities"],
+  "properties": {
+    "schema_version": {"const": "traj2language.public_scene/0.7-s1.1"},
+    "coordinate_system": {"const": "ENU"},
+    "units": {"const": {"length": "m", "angle": "rad", "speed": "m/s", "acceleration": "m/s^2"}},
+    "world": {"$ref": "#/$defs/area_record"},
+    "entry_zones": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/area_record"}},
+    "entities": {"type": "array", "minItems": 6, "maxItems": 18, "items": {"oneOf": [
+      {"$ref": "#/$defs/facility"}, {"$ref": "#/$defs/zone"},
+      {"$ref": "#/$defs/obstacle"}, {"$ref": "#/$defs/radar"}
+    ]}}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "point": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+    "vertices": {"description": "Open convex contour; the closing edge is implicit.", "type": "array", "minItems": 3, "items": {"$ref": "#/$defs/point"}},
+    "circle": {"type": "object", "additionalProperties": false, "required": ["type", "center_m", "radius_m"], "properties": {
+      "type": {"const": "Circle"}, "center_m": {"$ref": "#/$defs/point"}, "radius_m": {"type": "number", "exclusiveMinimum": 0}
+    }},
+    "polygon": {"type": "object", "additionalProperties": false, "required": ["type", "vertices_m"], "properties": {
+      "type": {"const": "Polygon"}, "vertices_m": {"$ref": "#/$defs/vertices"}
+    }},
+    "buffered_polygon": {"description": "Exact Euclidean distance-to-contour <= buffer_m, including rounded corners.", "type": "object", "additionalProperties": false, "required": ["type", "vertices_m", "buffer_m"], "properties": {
+      "type": {"const": "BufferedPolygon"}, "vertices_m": {"$ref": "#/$defs/vertices"}, "buffer_m": {"type": "number", "exclusiveMinimum": 0}
+    }},
+    "point_geometry": {"type": "object", "additionalProperties": false, "required": ["type", "position_m"], "properties": {
+      "type": {"const": "Point"}, "position_m": {"$ref": "#/$defs/point"}
+    }},
+    "area_geometry": {"oneOf": [{"$ref": "#/$defs/circle"}, {"$ref": "#/$defs/polygon"}]},
+    "zone_geometry": {"oneOf": [{"$ref": "#/$defs/circle"}, {"$ref": "#/$defs/buffered_polygon"}]},
+    "area_record": {"type": "object", "additionalProperties": false, "required": ["id", "geometry"], "properties": {
+      "id": {"$ref": "#/$defs/id"}, "geometry": {"$ref": "#/$defs/polygon"}
+    }},
+    "facility": {"type": "object", "additionalProperties": false, "required": ["id", "type", "geometry"], "properties": {
+      "id": {"$ref": "#/$defs/id"}, "type": {"const": "facility"}, "geometry": {"$ref": "#/$defs/area_geometry"}
+    }},
+    "obstacle": {"type": "object", "additionalProperties": false, "required": ["id", "type", "geometry"], "properties": {
+      "id": {"$ref": "#/$defs/id"}, "type": {"const": "hard_constraint_obstacle"}, "geometry": {"$ref": "#/$defs/area_geometry"}
+    }},
+    "radar": {"type": "object", "additionalProperties": false, "required": ["id", "type", "geometry"], "properties": {
+      "id": {"$ref": "#/$defs/id"}, "type": {"const": "radar"}, "geometry": {"$ref": "#/$defs/point_geometry"}
+    }},
+    "zone": {"type": "object", "additionalProperties": false, "required": ["id", "type", "geometry", "facility_id", "layer", "offset_m"], "properties": {
+      "id": {"$ref": "#/$defs/id"}, "type": {"const": "protection_zone"}, "geometry": {"$ref": "#/$defs/zone_geometry"},
+      "facility_id": {"$ref": "#/$defs/id"}, "layer": {"enum": ["protected", "alert", "warning"]}, "offset_m": {"type": "number", "exclusiveMinimum": 0}
+    }}
+  }
+}
