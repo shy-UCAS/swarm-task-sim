@@ -2,7 +2,7 @@
 import copy
 import unittest
 
-from scripts.tune_fast_dynamics_m3 import configured, config_values, rank, select_subset, tiers
+from scripts.tune_fast_dynamics_m3 import configured, config_values, rank, select_subset, tiers, classify_evaluation
 from swarm_sim.fast_dynamics.contracts import M2Config
 
 
@@ -19,6 +19,27 @@ def pair(name="m", family="f", pattern="parallel_strips", flight="equal_strip_la
 
 
 class SearchGateTests(unittest.TestCase):
+    def test_rejected_candidate_does_not_stop_but_contract_error_does(self):
+        bad=pair();bad["candidate_quality"]=False
+        self.assertEqual(classify_evaluation([dict(status="COMPLETE",paired=bad)],1)["status"],"REJECTED")
+        self.assertEqual(classify_evaluation([dict(status="COMPLETE",paired=pair())],1)["status"],"ELIGIBLE")
+        self.assertEqual(classify_evaluation([dict(status="P0_STOP")],1)["status"],"P0_STOP")
+
+    def test_condition_metrics_are_reported_without_an_extra_rejection_rule(self):
+        row=pair();row["condition_pairs"]["truth"]["coverage"]["agree"]=False
+        self.assertTrue(tiers([row],1)["hard"]["passed"])
+        self.assertEqual(tiers([row],1)["aggregate"]["conditions"]["truth"]["coverage"]["disagree"],1)
+
+    def test_new_ranking_uses_total_then_observe_then_turn(self):
+        values=config_values(M2Config().to_dict())
+        def score(total,observe,turn):
+            row=pair();row.update(duration_relative_error=total,
+                phase_duration_relative_error={"p01_observe":observe},turn_minimum_speed_m_s=[1.,1.+turn])
+            return rank(dict(tiers=tiers([row],1)),values)
+        self.assertLess(score(.03,.9,10.),score(.04,.01,.01))
+        self.assertLess(score(.03,.05,10.),score(.03,.06,.01))
+        self.assertLess(score(.03,.05,.2),score(.03,.05,.4))
+
     def test_quality_cannot_drop_a_timeout_from_the_denominator(self):
         rows=[pair("a"),pair("b")]
         rows[1].update(candidate_status="timeout", candidate_quality=False)

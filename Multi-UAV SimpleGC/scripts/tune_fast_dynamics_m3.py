@@ -48,7 +48,6 @@ def tiers(pairs,expected):
  check("cohort_count",int(len(pairs)==expected),1)
  for k in ("success","observation_success"):check(k,agg[k]["all_task_rate"],.995)
  for c in ("truth","observation"):
-  for name,data in agg["conditions"][c].items():check(c+".condition."+name,data["all_task_rate"],.995)
   data=agg["motion_reference_known"][c];check(c+".motion",data["all_task_rate"],.98)
   for pattern in sorted({r["flight_pattern"] for r in pairs}):
    subset=[r for r in pairs if r["flight_pattern"]==pattern]
@@ -63,37 +62,25 @@ def tiers(pairs,expected):
  return dict(hard=dict(passed=all(r["passed"] is not False for r in checks),checks=checks),
              targets=targets,diagnostics_only=True,aggregate=agg)
 
+def target_rank(evaluation):
+ a=evaluation["tiers"]["aggregate"]
+ def value(x):return float("inf") if x is None else x
+ return (value(a["duration_absolute_relative_error"]["task"]["median"]),
+         value(a["phase_absolute_relative_error"].get("p01_observe",{}).get("task",{}).get("median")))
+
 def rank(evaluation,values):
- t=evaluation["tiers"]; a=t["aggregate"]
- hard=sum(r["passed"] is False for r in t["hard"]["checks"])
- exceed=sum(max(0,v/l-1) if v is not None else 1e6 for r in t["targets"] for v,l in zip(r["values"],r["maximum_allowed"]))
- timing=sum(v/l if v is not None else 1e6 for r in t["targets"] for v,l in zip(r["values"],r["maximum_allowed"]))
- # Diagnostics are a final secondary preference, never a freeze gate.
+ a=evaluation["tiers"]["aggregate"]
  turn=a["turn_minimum_speed_m_s"]["absolute_difference"]["task"]["median"]
- lateral=a["lateral_task_p95_m"]["task"]["median"]
- diagnostic=(turn/.3 if turn is not None else 0)+(lateral/.5 if lateral is not None else 0)
  default=config_values(M2Config().to_dict())
  distance=sum(((v-d)/(hi-lo))**2 for v,d,(_,_,lo,hi) in zip(values,default,PARAMETERS))
- return (hard,exceed,timing,diagnostic,distance,*values)
+ return (not evaluation["tiers"]["hard"]["passed"],*target_rank(evaluation),
+         float("inf") if turn is None else turn,distance,*values)
 
-def categorical_signature(analysis):
- """Measurement values are not categorical labels. Coverage cell counts are."""
- labels=read_json(analysis/"labels.json");semantics=read_json(analysis/"semantic_validation.json")
- counts={}
- def visit(x,path=""):
-  if isinstance(x,dict):
-   for k,v in x.items():
-    if k in ("cells","covered_cells","repeated_cells","nx","ny") and isinstance(v,int):counts[path+"."+k]=v
-    visit(v,path+"."+k)
-  elif isinstance(x,list):
-   for i,v in enumerate(x):visit(v,f"{path}[{i}]")
- visit(labels.get("mission_metrics",{}))
- return dict(labels={k:v for k,v in labels.items() if k!="mission_metrics" and k!="observed_behaviors"},
-   behavior_statuses=[(b.get("name"),b.get("status"),b.get("agent_ids")) for b in labels.get("observed_behaviors",[])],
-   conditions=semantics["condition_results"],coverage_counts=counts,
-   quality=read_json(analysis/"quality.json")["episode_quality_eligible"],
-   phase_count=len(read_json(analysis/"compiled_scene.json")["phases"]),
-   event_kinds=sorted({e["event"] for e in read_json(analysis/"events.json")["events"]}))
+def classify_evaluation(rows,expected):
+ """A rejected configuration does not stop the search; a contract P0 does."""
+ if any(r["status"]=="P0_STOP" for r in rows):return dict(status="P0_STOP",rows=rows)
+ result=tiers([r["paired"] for r in rows],expected)
+ return dict(status="ELIGIBLE" if result["hard"]["passed"] else "REJECTED",rows=rows,tiers=result)
 
 def measurement_changes(a,b,path=""):
  if type(a)!=type(b):return [dict(field=path,before=a,after=b)]
@@ -121,11 +108,9 @@ def candidate_job(job):
   pair.update(intent=original["intent"],flight_pattern=original["flight_pattern"])
   save(dest/"fast.json",fast);save(dest/"paired.json",pair)
   save(dest/"measurement_changes.json",measurement_changes(read_json(base/"run/analysis/labels.json"),read_json(dest/"run/analysis/labels.json")))
-  invariant=categorical_signature(base/"run/analysis")==categorical_signature(dest/"run/analysis")
-  outcome=dict(status="COMPLETE" if invariant else "HARD_GATE_STOP",mission_id=name,paired=pair,
-               invariant_match=invariant,elapsed_wall_s=time.perf_counter()-start)
-  if not invariant:
-   save(dest/"invariant_difference.json",dict(before=categorical_signature(base/"run/analysis"),after=categorical_signature(dest/"run/analysis")))
+  # write_episode validates labels against the executed physical trajectory.
+  # Measurement changes under different parameters are expected and recorded.
+  outcome=dict(status="COMPLETE",mission_id=name,paired=pair,elapsed_wall_s=time.perf_counter()-start)
  except Exception as exc:
   outcome=dict(status="P0_STOP",mission_id=name,error=repr(exc),traceback=traceback.format_exc())
  save(dest/"outcome.json",outcome)
@@ -140,82 +125,98 @@ def evaluate(names,baseline,output,config,workers):
   for future in as_completed(futures):
    if future.cancelled():continue
    row=future.result();results.append(row);results.sort(key=lambda x:x["mission_id"])
-   if row["status"]!="COMPLETE":
+   if row["status"]=="P0_STOP":
     stop=True
     for f in futures:f.cancel()
    save(output/"progress.json",dict(rows=results,stopped=stop))
    print(json.dumps(dict(config=output.name,done=len(results),total=len(names),mission=row["mission_id"],status=row["status"])),flush=True)
- if stop:return dict(status="HARD_GATE_STOP",rows=results)
- return dict(status="COMPLETE",rows=results,tiers=tiers([r["paired"] for r in results],len(names)))
+ return classify_evaluation(results,len(names))
 
 def main(argv=None):
  parser=argparse.ArgumentParser(description=__doc__)
  parser.add_argument("--split",type=Path,required=True);parser.add_argument("--baseline",type=Path,required=True)
  parser.add_argument("--output",type=Path,required=True);parser.add_argument("--workers",type=int,default=4)
+ parser.add_argument("--resume",type=Path,required=True,help="prior search evidence; reuse only complete configurations 001-004")
  args=parser.parse_args(argv)
  if args.workers not in range(1,5):parser.error("workers must be 1..4")
  if sha256(args.split)!=SPLIT_SHA:parser.error("immutable r2 split hash mismatch")
- split=read_json(args.split); allowed={r["mission_id"] for r in tuning_tasks(split)}
- report=read_json(args.baseline/"baseline.json")
- names=sorted(r["mission_id"] for r in report["rows"])
+ split=read_json(args.split);allowed={r["mission_id"] for r in tuning_tasks(split)}
+ report=read_json(args.baseline/"baseline.json");names=sorted(r["mission_id"] for r in report["rows"])
  if len(names)!=282 or set(names)-allowed or any(r["status"]!="COMPLETE" for r in report["rows"]):parser.error("require complete repaired 282-task baseline")
  pairs=[read_json(args.baseline/name/"paired.json") for name in names]
- out=assert_new_attempt_path(args.output,resolve_output_root()["root"],kind="M3 tuning")
- out.mkdir();assert_created_within(out,resolve_output_root()["root"])
  subset=select_subset(pairs,split["groups"]["tuning"])
+ previous=read_json(args.resume/"registration.json")
+ if previous["subset"]!=subset or previous["split_sha256"]!=SPLIT_SHA:parser.error("cannot change the registered subset")
+ out=assert_new_attempt_path(args.output,resolve_output_root()["root"],kind="M3 tuning continuation")
+ out.mkdir();assert_created_within(out,resolve_output_root()["root"])
  registration=dict(split_sha256=SPLIT_SHA,subset=subset,parameters=PARAMETERS,max_configurations=25,
-   method="one finite-difference pair per coordinate, then bounded coordinate descent with range/4 steps; halve steps after no improvement, stop below range/16 or at 25 unique configs",
-   rank="hard failure count; normalized target exceedance; normalized total/phase timing error; turn/lateral diagnostics; normalized distance from default; parameter tuple",
-   hard_and_targets=tiers(pairs,282),internal_holdout_used=False)
+  rule_revision="20261013_user_candidate_rejection_v2",previous_search=str(args.resume),
+  method=previous["method"],rank="eligible first; total absolute relative duration median; observe absolute relative duration median; turn minimum speed absolute difference median; normalized default distance; parameter tuple",
+  target_improvement="lexicographic improvement in (total duration median, observe duration median); all p95/max targets reported, not additional gates",
+  measurement_changes_are_not_gates=True,conditions_reported_not_extra_rejection_gate=True,
+  internal_holdout_used=False,config_005_policy="rerun all 70, never rank its historical partial results")
  save(out/"registration.json",registration)
- if not registration["hard_and_targets"]["hard"]["passed"]:
-  save(out/"STOP.json",dict(reason="repaired baseline hard gate",tiers=registration["hard_and_targets"]));return 2
  default=config_values(M2Config().to_dict());cache={}
+ default_full=dict(id="config_000",values=default,tiers=tiers(pairs,282),source=str(args.baseline))
+ save(out/"default_full_evaluation.json",default_full)
+ if not default_full["tiers"]["hard"]["passed"]:raise ValueError("P0: approved repaired default baseline no longer passes")
  subset_pairs=[r for r in pairs if r["mission_id"] in subset["mission_ids"]]
- cache[default]=dict(id="config_000",values=default,status="COMPLETE",tiers=tiers(subset_pairs,len(subset_pairs)),source="repaired default baseline")
+ cache[default]=dict(id="config_000",values=default,status="ELIGIBLE",tiers=tiers(subset_pairs,len(subset_pairs)),source=str(args.baseline))
  save(out/"config_000.json",cache[default])
+ for cid in ("config_001","config_002","config_003","config_004"):
+  old=read_json(args.resume/cid/"evaluation.json")
+  if old["status"]!="COMPLETE" or sorted(r["mission_id"] for r in old["rows"])!=subset["mission_ids"]:raise ValueError("P0: incomplete carry-forward cohort")
+  values=tuple(old["values"])
+  if config_values(read_json(args.resume/cid/"config.json"))!=values:raise ValueError("P0: carry-forward configuration mismatch")
+  row=classify_evaluation(old["rows"],len(subset_pairs));row.update(id=cid,values=values,source=str(args.resume/cid))
+  cache[values]=row;save(out/(cid+"_reused.json"),row)
+ save(out/"search_history.json",list(cache.values()))
  def trial(values):
   values=tuple(round(v,12) for v in values)
   if values in cache:return cache[values]
+  if len(cache)>=25:raise ValueError("configuration budget exhausted")
   cid=f"config_{len(cache):03d}"
   row=evaluate(subset["mission_ids"],args.baseline,out/cid,configured(values),args.workers)
-  row.update(id=cid,values=values)
-  save(out/cid/"evaluation.json",row);cache[values]=row
-  if row["status"]!="COMPLETE":
-   save(out/"STOP.json",dict(reason="candidate invariant or execution gate",config=cid));raise RuntimeError("candidate gate stop; retain all results")
-  if not row["tiers"]["hard"]["passed"]:
-   save(out/"STOP.json",dict(reason="candidate hard gate",config=cid,tiers=row["tiers"]));raise RuntimeError("candidate hard gate stop")
+  row.update(id=cid,values=values);save(out/cid/"evaluation.json",row);cache[values]=row
   save(out/"search_history.json",list(cache.values()))
+  if row["status"]=="P0_STOP":
+   save(out/"STOP.json",dict(reason="P0 candidate contract/trajectory-label failure",config=cid));raise RuntimeError("P0 stop; retain evidence")
+  print(json.dumps(dict(config=cid,classification=row["status"],rank=rank(row,values))),flush=True)
   return row
  steps=[(hi-lo)/4 for _,_,lo,hi in PARAMETERS]
  for i,(_,_,lo,hi) in enumerate(PARAMETERS):
   for sign in (-1,1):
-   candidate=list(default);candidate[i]=min(hi,max(lo,default[i]+sign*steps[i]))
-   trial(candidate)
+   candidate=list(default);candidate[i]=min(hi,max(lo,default[i]+sign*steps[i]));trial(candidate)
  while len(cache)<25:
   best=min(cache,key=lambda v:rank(cache[v],v));improved=False
   for i,(_,_,lo,hi) in enumerate(PARAMETERS):
    for sign in (-1,1):
-    candidate=list(best);candidate[i]=min(hi,max(lo,best[i]+sign*steps[i]))
     if len(cache)>=25:break
-    trial(candidate)
+    candidate=list(best);candidate[i]=min(hi,max(lo,best[i]+sign*steps[i]));trial(candidate)
    winner=min(cache,key=lambda v:rank(cache[v],v))
    if rank(cache[winner],winner)<rank(cache[best],best):best=winner;improved=True
   if not improved:
    steps=[s/2 for s in steps]
    if all(s<(hi-lo)/16 for s,(_,_,lo,hi) in zip(steps,PARAMETERS)):break
- top=sorted(cache,key=lambda v:rank(cache[v],v))[:3]; finals=[]
+ top=sorted((v for v in cache if cache[v]["status"]=="ELIGIBLE"),key=lambda v:rank(cache[v],v))[:3]
  save(out/"top_three.json",[cache[v]["id"] for v in top])
+ finals=[]
  for values in top:
-  cid=cache[values]["id"];evaluation=evaluate(names,args.baseline,out/(cid+"_full"),configured(values),args.workers)
+  cid=cache[values]["id"]
+  evaluation=evaluate(names,args.baseline,out/(cid+"_full"),configured(values),args.workers)
   evaluation.update(id=cid,values=values);save(out/(cid+"_full")/"evaluation.json",evaluation);finals.append(evaluation)
-  if evaluation["status"]!="COMPLETE" or not evaluation["tiers"]["hard"]["passed"]:
-   save(out/"STOP.json",dict(reason="full-cohort hard gate",config=cid));return 2
- winner=min(finals,key=lambda e:rank(e,e["values"]))
+  if evaluation["status"]=="P0_STOP":
+   save(out/"STOP.json",dict(reason="P0 full cohort",config=cid));return 2
+ eligible=[r for r in finals if r["status"]=="ELIGIBLE"]
+ better=[r for r in eligible if target_rank(r)<target_rank(default_full)]
+ winner=min(better,key=lambda e:rank(e,e["values"])) if better else default_full
  configpath=out/"frozen_m3_v1.json";save(configpath,configured(winner["values"]))
- save(out/"freeze_record.json",dict(status="FROZEN",split_sha256=SPLIT_SHA,config_path=str(configpath),config_sha256=sha256(configpath),
-  candidate=winner["id"],eligible_tasks=282,tiers=winner["tiers"],searched_configurations=len(cache),top_three=[r["id"] for r in finals],
-  internal_holdout_used=False,method="user approved bounded coordinate search; no post-freeze tuning"))
+ record=dict(status="FROZEN",schema_version=1,split_sha256=SPLIT_SHA,config_path=str(configpath),config_sha256=sha256(configpath),
+  candidate=winner["id"],eligible_tasks=282,tiers=winner["tiers"],searched_configurations=len(cache),
+  top_three=[r["id"] for r in finals],full_cohort_results=[dict(id=r["id"],status=r["status"],tiers=r["tiers"]) for r in finals],
+  internal_holdout_used=False,default_fallback=not better,reason="best eligible target-improving candidate" if better else "no eligible full-cohort target improvement; default frozen",
+  method="user revised elimination and ranking; no holdout used")
+ save(out/"freeze_record.json",record)
  print(json.dumps(dict(status="FROZEN",candidate=winner["id"],config=configured(winner["values"]))),flush=True)
  return 0
 

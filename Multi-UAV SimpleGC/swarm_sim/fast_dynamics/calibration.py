@@ -78,9 +78,32 @@ def tuning_tasks(split):
     return [row for row in split["tasks"] if row["family_id"] in tuning and row["group"] == "tuning"]
 
 
+def evaluation_tasks(split, *, group="tuning", freeze_record=None):
+    """Internal references become accessible only after a recorded hard-pass freeze."""
+    tuning = tuning_tasks(split)  # Also rejects M2-02B and overlapping sources.
+    if group == "tuning":
+        return tuning
+    if group != "internal_holdout" or freeze_record is None:
+        raise ValueError("internal holdout requires frozen parameters")
+    record = read_json(freeze_record)
+    if (record.get("status") != "FROZEN" or record.get("eligible_tasks") != 282
+            or record.get("split_sha256") != "b7e33d09e3f6f15deb6ce9f98f90b74b6253c1bc5b0625c75eee1d16592a2e46"
+            or record.get("tiers", {}).get("hard", {}).get("passed") is not True
+            or sha256(record["config_path"]) != record["config_sha256"]):
+        raise ValueError("invalid parameter freeze record")
+    holdout = set(split["groups"]["internal_holdout"])
+    if holdout & (set(split["groups"]["tuning"]) | set(split["groups"]["development_reference"])):
+        raise ValueError("internal holdout overlaps other groups")
+    return [r for r in split["tasks"] if r["family_id"] in holdout and r["group"] == group]
+
+
 def final_tuning_attempts(split, batch):
-    """Filter ledger rows by tuning identity before examining their results."""
-    allowed = {(r["family_id"], r["mission_id"]): r for r in tuning_tasks(split)}
+    return final_attempts(split, batch)
+
+
+def final_attempts(split, batch, *, group="tuning", freeze_record=None):
+    """Filter ledger rows by allowed identity before examining their results."""
+    allowed = {(r["family_id"], r["mission_id"]): r for r in evaluation_tasks(split, group=group, freeze_record=freeze_record)}
     batch = Path(batch).resolve()
     plan = read_json(batch / "plan.json")
     identity = {(r["family_id"], r["mission_id"]): r for r in plan["tasks"]}
@@ -374,11 +397,11 @@ def summarize_motion(scene, traces, channels, labels, semantic, duration, *, qua
                 routes=routes, truth_separation=minimum_separation(traces["truth"], scene["max_gap_s"]))
 
 
-def reference_summary(row, split, batch):
+def reference_summary(row, split, batch, *, group="tuning", freeze_record=None):
     """Read only the selected tuning attempt, preserving all historical files."""
     from ..tasks import compile_task
     from ..time_contract import CommonTimeAxis
-    allowed = {(r["family_id"], r["mission_id"]) for r in tuning_tasks(split)}
+    allowed = {(r["family_id"], r["mission_id"]) for r in evaluation_tasks(split, group=group, freeze_record=freeze_record)}
     task, attempt = row["task"], row["attempt"]
     if (task["family_id"], task["mission_id"]) not in allowed or row["status"] != "ELIGIBLE":
         raise ValueError("only eligible tuning references may be opened")
