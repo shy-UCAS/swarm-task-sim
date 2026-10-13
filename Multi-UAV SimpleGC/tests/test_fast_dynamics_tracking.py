@@ -1,6 +1,8 @@
 """Actual plant/controller tests; expected node visits use independent geometry."""
 import unittest
 import copy
+import json
+from pathlib import Path
 
 import numpy as np
 
@@ -46,6 +48,29 @@ def fly(points, step_us=20_000, speed=3., initial=None, limit_s=300.):
 
 
 class ContinuousRouteTests(unittest.TestCase):
+    def test_original_patrol_0070_completes_every_ordered_waypoint(self):
+        from swarm_sim.fast_dynamics.mission_executor import run_mission
+        from swarm_sim.fast_dynamics.contracts import M2Config
+
+        # Original r2 tuning input, byte-for-byte, not a simplified surrogate.
+        task = json.loads((Path(__file__).parent / "fixtures/fast_dynamics/patrol_0070_v00.json").read_text(encoding="utf-8"))
+        result = run_mission(task, M2Config())
+        self.assertEqual(task["execution"]["timeout_s"], 1200.)
+        self.assertEqual(M2Config().execution.max_duration_s, 600.)
+        self.assertEqual(result.status, "complete", result.diagnostics["route_tracking"])
+        self.assertLess(result.end_us, 600_000_000)
+        witnesses = result.diagnostics["route_tracking"]["p01_patrol"]["uav_01"]["witnesses"]
+        self.assertEqual([w["node_index"] for w in witnesses], list(range(11)))
+        self.assertLess(witnesses[5]["t_us"], witnesses[6]["t_us"])
+        # Check the retained physical state, independently of the witness flag.
+        # This original lap-entry point must be visited before the next corner.
+        index = np.flatnonzero(result.support_time_us == witnesses[5]["t_us"])
+        self.assertEqual(len(index), 1)
+        actual = result.support_positions[index[0], result.agent_ids.index("uav_01"), :2]
+        self.assertLessEqual(np.linalg.norm(actual - [-13.964461992904116, 14.810776314516424]), .02054)
+        for phase in result.diagnostics["route_tracking"].values():
+            self.assertTrue(all(t["route_complete"] for t in phase.values()))
+
     def assert_flight(self, points, **kwargs):
         result = fly(points, **kwargs)
         tracker, engine, positions, acceleration, jerk, _ = result

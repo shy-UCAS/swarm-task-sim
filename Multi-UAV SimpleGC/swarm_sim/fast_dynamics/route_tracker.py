@@ -185,6 +185,7 @@ class RouteTracker:
         self.events = []
         self.primitives = []
         self.gates = np.array([.5])
+        self.short_continuations = frozenset()
         self._build()
 
     def __deepcopy__(self, memo):
@@ -204,6 +205,13 @@ class RouteTracker:
         if np.any(lengths <= 0):
             raise ValueError("zero-length raw EN legs must be cleaned by the task compiler")
         directions = np.diff(self.points[:, :2], axis=0)/lengths[:, None]
+        # A collinear node immediately after a tiny leg has a much smaller
+        # witness disk than the tracking tube. Crossing its normal plane is
+        # insufficient: the residual lateral error from the preceding bend
+        # may miss that disk and otherwise consume the next lap's witness.
+        self.short_continuations = frozenset(i for i in range(1, len(self.points)-1)
+            if min(lengths[i-1], lengths[i]) < self.reference.tracking_tube_m
+            and float(directions[i-1] @ directions[i]) >= 1.-1e-14)
         self.gates = np.array([min(.5, .2*min(lengths[max(0, i-1):min(len(lengths), i+1)]))
                                for i in range(len(self.points))])
         bends, stops = {}, set()
@@ -282,6 +290,11 @@ class RouteTracker:
             return self._endpoint(p, self.points[0])
         primitive = self.primitives[self.primitive_index]
         projected, error = primitive.project(p[:2])
+        if (primitive.node_index in self.short_continuations
+                and self.next_node <= primitive.node_index and projected >= primitive.length):
+            # Acquire the real original node before continuing. This changes
+            # only the reference; p/v/a still evolve through the same plant.
+            return self._endpoint(p, self.points[primitive.node_index])
         if primitive.stop and (projected >= primitive.length-self.gates[primitive.node_index] or self.stop_since_us is not None):
             return self._endpoint(p, self.points[primitive.node_index])
         if error > self.reference.tracking_tube_m:
@@ -392,7 +405,21 @@ class RouteTracker:
                     roots.append(duration)
                 good = [t for t in roots if np.linalg.norm(segment.at(min(segment.end_us, segment.start_us+int(round(t*1e6)))).p[agent_index, :2]-primitive.end)
                         <= self.reference.tracking_tube_m]
+                if (primitive.node_index in self.short_continuations
+                        and self.next_node > primitive.node_index):
+                    # Acquisition may enter the tiny disk from beyond the
+                    # endpoint plane. That already-crossed plane cannot yield
+                    # a second forward root; the actual ordered witness plus
+                    # its location on the forward side completes this leg.
+                    tick = max(segment.start_us, self.witnesses[primitive.node_index]["t_us"])
+                    if tick <= segment.end_us:
+                        delta = segment.at(tick).p[agent_index, :2]-primitive.end
+                        if float(delta @ tangent) >= 0 and np.linalg.norm(delta) <= self.reference.tracking_tube_m:
+                            good.append((tick-segment.start_us)/1e6)
                 if not good:
+                    break
+                if (primitive.node_index in self.short_continuations
+                        and self.next_node <= primitive.node_index):
                     break
                 progress_after = min(good)
             self.primitive_index += 1
