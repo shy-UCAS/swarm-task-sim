@@ -88,19 +88,30 @@ def group_truncations(scene, skeleton, run, labels):
     for gid, group in skeleton["group_skeletons"].items():
         observed = [labels["agents"][a]["observed"] for a in group["members"]]
         starts = [a["core_event"]["t_s"] for a in observed]
-        ends = ([float(run["time_us"][-1] / 1e6)] * len(observed) if group["role"] == "intrusion" else
-                [a["work_end_s"] for a in observed])
+        ends = [a['work_end_s'] for a in observed]
+        if group['role'] == 'intrusion':
+            ends=[]
+            for a,core in zip(group['members'],starts):
+                column=run['agent_ids'].index(a)
+                hold=(np.linalg.norm(run['p'][:,column]-group['references'][a]['endpoint_enu_m'],axis=1)<=group['terminal_radius_m'])
+                hold&=np.linalg.norm(run['v'][:,column],axis=1)<=group['terminal_speed_m_s']
+                hold&=False if core is None else run['time_us']/1e6>=core
+                needed=round(group['terminal_hold_s']*10)+1
+                windows=np.convolve(hold.astype(int),np.ones(needed,dtype=int),mode='valid') if len(hold)>=needed else np.array([])
+                hits=np.flatnonzero(windows==needed)
+                ends.append(None if not len(hits) else float(run['time_us'][int(hits[0])+needed-1]/1e6))
         if None in starts + ends:
             checks[gid] = {"status": "not_run", "reason": "work interval not observed"}
         else:
             cutoff = round((min(starts) + max(ends)) / 2, 1)
             checks[gid] = truncation_check(group_evaluator, scene, group, run, cutoff)
+            checks[gid]['measured_work_interval_s']=[min(starts),max(ends)]
             if checks[gid]["status"] == "FAIL":
                 raise P0ContractError(f"Half-work prefix claims group success: {gid}")
     return checks
 
 
-def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode, out, setup_s):
+def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode, out, setup_s, *, extra_metrics=None):
     started = time.perf_counter()
     labels, frame = measure(scene, skeleton, run, mode, timing_plan=plan)
     dest = out / descriptor["skeleton_id"] / mode
@@ -139,6 +150,12 @@ def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode,
            "audit": audit, "truncation": truncation, "event_times_s": events,
            "simulation_wall_s": run["wall_s"], "amortized_skeleton_setup_s": setup_s / 2,
            "episode_postprocess_wall_s": time.perf_counter() - started}
+    if extra_metrics:
+        row.update(extra_metrics)
+    if skeleton.get('abort_observation'):
+        main=labels['task_groups'][skeleton['main_group_id']]
+        row['abort_observation_valid']=main['result']['conditions']['abort_group_withdrawal_observed'] is True
+        row['main_group_observed_coordination']=main['observed']['coordination']['classification']
     save_json(dest / "metrics.json", row)
     print(json.dumps({"stage": "episode_complete", **{k: row[k] for k in ("episode_id", "state", "task_result", "coordination_matches", "minimum_separation_m")}}, ensure_ascii=False), flush=True)
     return row

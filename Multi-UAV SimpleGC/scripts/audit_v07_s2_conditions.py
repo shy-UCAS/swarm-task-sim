@@ -67,6 +67,7 @@ def audit_conditions(root, *, data=None):
     complete=bool(labels['evidence']['complete_observation'])
     errors=[];facts={};coverage={};core_frames={};work_ends={};statuses=[]
     mon_masks={};mon_angles={};coverage_masks=[]
+    abort_member_conditions=[]
     region_diff=target_diff=0
     with (np.load(root/'frame_labels.npz',allow_pickle=False) if data is None else nullcontext(data['frame'])) as frame:
         if frame['agent_ids'].tolist()!=ids or not np.array_equal(frame['time_us'],t):
@@ -211,6 +212,17 @@ def audit_conditions(root, *, data=None):
             condition('scan_lane_evidence',_positive(done,complete),'ordered_lane_endpoint_times_s','scan_pattern_observed')
             condition('no_alert_entry',not bool((levels[:,i]>=2).any()),'all_facility_zone_membership')
         else: raise ValueError(f'No independent conditions for {kind}')
+        if task.get('abort_observation'):
+            from scripts.audit_v07_abort_facts import independent_abort
+            abort_facts,abort_conditions=independent_abort(t,p[:,i],signed[:,i],levels[:,i,target],
+                ref['endpoint_enu_m'],task['terminal_radius_m'],complete)
+            metrics['abort_observation']=abort_facts
+            abort_member_conditions.extend(abort_conditions.values())
+            for name,value in abort_conditions.items():
+                condition(name,value,'independent alert/protected membership','observed minimum-contour turn',
+                          'post-turn warning exit','post-exit endpoint arrival')
+            compare(a,'abort_behavior','approached_then_withdrew' in ob['behaviors'],abort_facts['approached_then_withdrew'])
+            end=abort_facts['warning_exit_after_turn_s']
         core_frames[a]=core;work_ends[a]=end
         compare(a,'core_event_s',ob['core_event']['t_s'],None if core is None else float(seconds[core]))
         compare(a,'core_event_frame',ob['core_event']['frame_index'],core)
@@ -222,7 +234,7 @@ def audit_conditions(root, *, data=None):
         arrival=_first((end_distance<=task['terminal_radius_m'])&after)
         hold=_longest((end_distance<=task['terminal_radius_m'])&(speed<=task['terminal_speed_m_s'])&after)
         compare(a,'endpoint_hold_s',ob['endpoint_hold_s'],hold)
-        if kind!='intrusion' and ref.get('retreat_required'):
+        if (kind!='intrusion' or task.get('abort_observation')) and ref.get('retreat_required'):
             compare(a,'retreat_point_arrival',ob['retreat_event']['t_s'],None if arrival is None else float(seconds[arrival]))
             condition('reached_retreat_point',_positive(arrival is not None,complete),'work_end_s','retreat_point_arrival')
         condition('own_endpoint_hold',_positive(hold>=task['terminal_hold_s'],complete),'work_end_s','endpoint_hold_s')
@@ -243,6 +255,11 @@ def audit_conditions(root, *, data=None):
     group=next(iter(labels['task_groups'].values()))
     group_checks={'member_contributions_complete':False if 'failure' in statuses else None if 'unknown' in statuses else True}
     group_basis={'member_contributions_complete':['independent per-agent conditions/status']}
+    if task.get('abort_observation'):
+        aborted=False if False in abort_member_conditions else None if None in abort_member_conditions else True
+        group_checks['abort_group_withdrawal_observed']=aborted
+        group_basis['abort_group_withdrawal_observed']=['all independently recomputed member abort predicates']
+        compare(None,'abort_group_behavior','approached_then_withdrew' in group['observed']['behaviors'],aborted is True)
     if task.get('approach_mode')=='multi_direction':
         headings={a:_approach_heading_deg(xy[:,ids.index(a)],core_frames[a]) for a in ids}
         span=_heading_span_deg(list(headings.values()))

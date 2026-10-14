@@ -93,6 +93,22 @@ class GroupEvidenceTests(unittest.TestCase):
 
 
 class GroupTimingTests(unittest.TestCase):
+    def test_intrusion_half_work_cutoff_uses_own_measured_hold_completion(self):
+        from unittest.mock import patch
+        from scripts.run_v07_s2_episode_batch import group_truncations
+        constants={'terminal_radius_m':1.,'terminal_speed_m_s':.15,'terminal_hold_s':2.}
+        group={**constants,'role':'intrusion','members':['a','b'],
+               'references':{'a':{'endpoint_enu_m':[0.,0.,100.]},'b':{'endpoint_enu_m':[100.,0.,100.]}}}
+        t=np.arange(1001,dtype=np.int64)*100000
+        p=np.zeros((len(t),2,3));p[:,:,2]=100.;p[:,1,0]=100.;p[:100,:,1]=5.
+        v=np.zeros_like(p);v[:100,:,0]=1.
+        run={'agent_ids':['a','b'],'time_us':t,'p':p,'v':v}
+        labels={'agents':{a:{'observed':{'core_event':{'t_s':8.},'work_end_s':8.}} for a in ['a','b']}}
+        with patch('scripts.run_v07_s2_episode_batch.truncation_check',return_value={'status':'PASS'}) as callback:
+            checks=group_truncations({}, {'group_skeletons':{'g':group}},run,labels)
+        self.assertEqual(checks['g']['measured_work_interval_s'],[8.,12.])
+        self.assertEqual(callback.call_args.args[-1],10.)
+
     def test_offsets_shift_each_group_without_changing_its_batches(self):
         _, root, _ = fixture()
         measured = {"g1": {"a": 30., "b": 40.}, "g2": {"c": 50., "d": 60.}}

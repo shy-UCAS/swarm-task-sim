@@ -440,13 +440,23 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         if expansion:
             approach_headings_deg[a]=approach_heading_deg(xy,core[a]["frame_index"])
 
-        if expansion and kind=="intrusion":
+        if expansion and kind=="intrusion" and not skeleton.get('abort_observation'):
             work_end=core[a]["t_s"]
+        if skeleton.get('abort_observation'):
+            from .expansion.abort_measurement import observed_abort
+            abort_facts,abort_conditions=observed_abort(t,p[:,i],
+                facility_facts[skeleton['target_id']]['signed_distance_m'][:,i],levels[:,i,target_fi],
+                np.asarray(ref['endpoint_enu_m']),skeleton['terminal_radius_m'],complete)
+            contribution['abort_observation']=abort_facts
+            role_conditions.update(abort_conditions)
+            work_end=abort_facts['warning_exit_after_turn_s']
+            if abort_facts['approached_then_withdrew']:
+                behavior.append('approached_then_withdrew')
         work_ends[a]=work_end
         end_distance=np.linalg.norm(p[:,i]-ref["endpoint_enu_m"],axis=1)
         dwell=(end_distance<=skeleton["terminal_radius_m"])&(speed<=skeleton["terminal_speed_m_s"])
         retreat_event=None
-        if kind!="intrusion" and ref.get("retreat_required",False):
+        if (kind!="intrusion" or skeleton.get('abort_observation')) and ref.get("retreat_required",False):
             after_work=np.zeros(len(t),bool) if work_end is None else t/1e6>=work_end
             retreat_event=event((end_distance<=skeleton["terminal_radius_m"])&after_work,t,"retreat_point_arrival")
             retreat_event.pop("role_core_event")
@@ -470,7 +480,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             phases[core[a]["frame_index"]:,i]=2
         if kind=="area_search" and contribution["scan_pattern_observed"]:
             phases[t/1e6>contribution["ordered_lane_endpoint_times_s"][-1],i]=3
-        elif kind in ("transit","feint","close_observation") and work_end is not None:
+        elif (kind in ("transit","feint","close_observation") or skeleton.get('abort_observation')) and work_end is not None:
             phases[t/1e6>=work_end,i]=3
         phases[dwell,i]=4
         per_agent[a]={"assigned":{"intent":skeleton["base_intent"],"role":skeleton["role"],
@@ -521,6 +531,9 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         if skeleton.get("approach_mode")=="multi_direction":
             span=heading_span_deg([approach_headings_deg.get(a) for a in sorted(ids)])
             conditions["multi_direction_span"]=measurable(span is not None and span>=90,complete)
+    if skeleton.get('abort_observation'):
+        abort_checks=[v for value in per_agent.values() for k,v in value['result']['conditions'].items() if k.startswith('abort_')]
+        conditions['abort_group_withdrawal_observed']=False if False in abort_checks else None if None in abort_checks else True
     revisit=None
     if kind=="monitoring":
         known_starts=[e["t_s"] for e in core.values()]
@@ -565,6 +578,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
            "result":result}
     if kind=="monitoring":
         group["observed"]["shared_revisit"]=revisit
+    if skeleton.get('abort_observation') and conditions['abort_group_withdrawal_observed'] is not True:
+        group['observed']['behaviors']=[b for b in group['observed']['behaviors'] if b!='approached_then_withdrew']
     if expansion:
         span_val=heading_span_deg([approach_headings_deg.get(a) for a in sorted(ids)])
         group["assigned"].update(execution_method=skeleton["execution_method"],approach_mode=skeleton["approach_mode"])

@@ -23,12 +23,18 @@ def frozen_config():
     return M2Config.from_dict(json.loads(raw.decode("utf-8-sig")))
 
 
-def execute(skeleton, delays_s, *, only_agent=None, time_budget=None):
+def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_switch=None):
     started=time.perf_counter()
     cfg=frozen_config()
     ids=[only_agent] if only_agent else list(skeleton["agent_ids"])
     states={s["agent_id"]:s for s in skeleton["initial_states"]}
     routes=[np.array(skeleton["references"][a]["points_enu_m"]) for a in ids]
+    if route_switch is not None:
+        if only_agent is not None or route_switch['time_us'] % 100000 or route_switch['time_us'] <= 0:
+            raise ValueError('A route switch requires a positive full-episode 10 Hz boundary')
+        if set(route_switch['initial_routes_by_agent']) != set(ids) or not set(route_switch['routes_by_agent']) <= set(ids):
+            raise ValueError('Route switch changed physical identities')
+        routes=[np.asarray(route_switch['initial_routes_by_agent'][a],float) for a in ids]
     initial=PlantState(*[np.array([states[a][key] for a in ids]) for key in
                         ("position_enu_m","velocity_enu_m_s","acceleration_enu_m_s2")])
     engine=SynchronousEngine(cfg,initial)
@@ -43,7 +49,19 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None):
     hold_counts=np.zeros(len(ids),int)
     cursor=cycle_end=0
     status="timeout"
+    switched=False
     while engine.time_us<limit:
+        if route_switch is not None and not switched and engine.time_us==route_switch['time_us']:
+            for a,points in route_switch['routes_by_agent'].items():
+                i=ids.index(a);route=np.asarray(points,float)
+                if np.linalg.norm(route[0]-engine.state.p[i])>1e-6:
+                    from .expansion.contracts import P0ContractError
+                    raise P0ContractError('Observed abort branch state differs from referenced replay')
+                trackers[i]=RouteTracker(route,skeleton['cruise_speed_m_s'],cfg.vehicle_profile,cfg.controller,
+                                         cfg.reference,cfg.engine.step_us)
+                end_points[i]=route[-1]
+                hold_counts[i]=0
+            switched=True
         if engine.time_us==cycle_end:
             cycle_end=min(limit,cycle_end+cfg.engine.step_us)
         future=release[(release>engine.time_us)&(release<cycle_end)]
@@ -79,12 +97,15 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None):
             status="completed"
             break
     samples=engine.samples
-    return {"agent_ids":ids,"time_us":np.array([s.t_us for s in samples],dtype=np.int64),
+    result={"agent_ids":ids,"time_us":np.array([s.t_us for s in samples],dtype=np.int64),
             "p":np.array([s.p for s in samples]),"v":np.array([s.v for s in samples]),
             "a":np.array([s.a for s in samples]),"end_us":engine.time_us,
             "execution_status":status,"wall_s":time.perf_counter()-started,
             "release_s":{a:float(release[i]/1e6) for i,a in enumerate(ids)},
             "config_sha256":FROZEN_SHA256,"time_budget":budget}
+    if route_switch is not None:
+        result['route_switch_applied']=switched
+    return result
 
 
 def completion_budget(skeleton, delays_s, measured_completion_s=None):
