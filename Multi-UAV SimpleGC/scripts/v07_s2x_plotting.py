@@ -21,7 +21,16 @@ def plot_role_episode(scene, run, labels, skeleton, path, title):
         ax.scatter(*xy[0], color="#42376e", marker="o", s=16)
         ref = skeleton["references"][a]
         ax.scatter(*ref["endpoint_enu_m"][:2], marker="*", s=70, facecolors="none", edgecolors="#ac4868",
-                   label="Retreat point (plan)" if j == 0 else None)
+                   label="Own endpoint (plan)" if j == 0 else None)
+        planned=np.asarray(ref["points_enu_m"])[:,:2]
+        ax.plot(planned[:,0],planned[:,1],ls="--",lw=.6,color="#7c7c7c",alpha=.5,
+                label="Planned route" if j==0 else None)
+        station=(ref.get("observation_point_enu_m") or ref.get("planned_depth_point_enu_m")
+                 or ref.get("planned_orbit_entry_enu_m")
+                 or (ref["endpoint_enu_m"] if skeleton["role"]=="intrusion" else None))
+        if station is not None:
+            ax.scatter(*station[:2],marker="D",s=36,facecolors="none",edgecolors="#236bb2",
+                       label="Independent work station (plan)" if j==0 else None)
         chord = ref.get("planned_chord")
         if chord:
             ax.plot(*np.array([chord["entry_m"], chord["exit_m"]]).T, ls=":", lw=.8, color="#994982",
@@ -39,7 +48,7 @@ def plot_role_episode(scene, run, labels, skeleton, path, title):
     span = group["observed"]["approach_span_deg"]
     event_range = "unknown" if coord["event_range_s"] is None else f"{coord['event_range_s']:.1f} s"
     ax.set_title(title + "\n" + f"Observed: {coord['classification']} | event range {event_range} | "
-                 f"entry span {'n/a' if span is None else f'{span:.0f} deg'} | result {group['result']['status']}", fontsize=10)
+                 f"approach span {'n/a' if span is None else f'{span:.0f} deg'} | result {group['result']['status']}", fontsize=10)
     ax.legend(loc="lower left", fontsize=7)
     fig.text(.08, .02, "Actual exported truth at 10 Hz; o = initial state. Abstract synthetic scene.", fontsize=8)
     fig.tight_layout(rect=(0, .035, 1, 1)); fig.savefig(path, dpi=135); plt.close(fig)

@@ -7,6 +7,7 @@ only inside task_v07.labels.measure, for single flights and paired runs alike.
 """
 from copy import deepcopy
 from itertools import combinations
+import re
 
 import numpy as np
 
@@ -47,7 +48,10 @@ def forbidden_zone_ids(scene, layers):
 
 
 def role_parameters(descriptor, group):
-    return {"family": descriptor["family_conditions"], "cruise_speed_m_s": descriptor["cruise_speed_m_s"],
+    match=re.search(r"_ext_(\d+)",descriptor["skeleton_id"])
+    slot=descriptor.get("geometry_slot",int(match.group(1)) if match else 0)
+    return {"geometry_slot":slot, "column_seed":descriptor["column_seed"],
+            "geometry_seed":seed_for(descriptor["family_conditions"]["sampling_seed"],f"geometry-slot:{slot}"),"family": descriptor["family_conditions"], "cruise_speed_m_s": descriptor["cruise_speed_m_s"],
             "task_altitude_m": descriptor["task_altitude_m"],
             "approach_mode": descriptor["common_draw"]["approach_mode"],
             "planning_seed": seed_for(descriptor["role_seed"], f"route:{group['group_id']}")}
@@ -114,13 +118,31 @@ def precheck(scene, skeleton, bundle, policy):
     failures += [f"retreat:{a}" for a, r in report["retreat_points"].items() if not r["valid"]]
     if report["endpoint_spacing"] is not None and not report["endpoint_spacing"]["valid"]:
         failures.append("intrusion_endpoint_spacing")
+    if "exclusion_policy" in skeleton:
+        report["semantic_polylines"]={}
+        for a in members:
+            semantic=check_polyline(scene,bundle.waypoints_by_agent[a],
+                forbidden_regions=forbidden_zone_ids(scene,policy[a]),margin_m=0.)
+            report["semantic_polylines"][a]=semantic
+            failures += [f"semantic_polyline:{a}:{issue['code']}" for issue in semantic["issues"]]
     report["failures"] = failures
     report["status"] = "PASS" if not failures else "REJECT"
     return report
 
 
 def plan_group(scene, descriptor, group, planner):
-    validate_family_conditions(descriptor, descriptor["family_conditions"])
+    if descriptor.get("diagnostic_only") is True:
+        source=descriptor["diagnostic_source_descriptor"]
+        validate_family_conditions(source,descriptor["family_conditions"])
+        primary=next(g for g in source["task_groups"] if source["main_unit_id"] in g["source_units"])
+        if (primary["role"]!="intrusion" or descriptor["task_groups"]!=[primary]
+            or descriptor["agent_ids"]!=[a for a in source["agent_ids"] if a in primary["members"]]
+            or descriptor["source_skeleton_id"]!=source["skeleton_id"]
+            or descriptor["skeleton_id"]!=source["skeleton_id"]+"_diag_main_intrusion"
+            or any(descriptor[k]!=source[k] for k in ("family_id","map_id","cruise_speed_m_s","task_altitude_m","common_draw","column_seed","family_conditions"))):
+            raise P0ContractError("Diagnostic changed source group/family/column conditions")
+    else:
+        validate_family_conditions(descriptor, descriptor["family_conditions"])
     params = role_parameters(descriptor, group)
     try:
         bundle, template = planner.plan_with_template(scene, group, params)
@@ -139,6 +161,9 @@ def plan_group(scene, descriptor, group, planner):
     altitudes = {round(p[2], 9) for r in bundle.waypoints_by_agent.values() for p in r}
     if altitudes != {round(descriptor["task_altitude_m"], 9)}:
         raise P0ContractError("Planner changed the family task altitude")
+    if descriptor.get("diagnostic_only") is True:
+        skeleton.update(diagnostic_only=True,source_skeleton_id=descriptor["source_skeleton_id"],
+                        diagnostic_scope="source main task group only")
     report = precheck(scene, skeleton, bundle, policy)
     return skeleton, bundle, report
 
@@ -152,6 +177,10 @@ def single_agent_timing(scene, skeleton):
         measured[a] = raw["agents"][a]["observed"]["core_event"]["t_s"]
         finished[a] = float(run["time_us"][-1] / 1e6) if run["execution_status"] == "completed" else None
         runs[a] = run
+        if str(skeleton.get("planning_version","")).startswith("v07_s2x_formation"):
+            import json
+            print(json.dumps({"skeleton":skeleton["skeleton_id"],"stage":"single_calibration",
+                              "agent":a,"core_s":measured[a],"finish_s":finished[a]},ensure_ascii=False),flush=True)
     return measured, finished, runs
 
 

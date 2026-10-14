@@ -76,6 +76,9 @@ def cross_negation(templates, episodes, evaluators):
     Evidence role overlap is not base-intent exclusivity. Missing callbacks/runs
     are NOT counted as verified negative results.
     """
+    templates = [t for t in templates if not t.get("diagnostic_only", False)
+                 and not (t.get("parameters") or {}).get("diagnostic_only", False)]
+    episodes = [e for e in episodes if not e.get("diagnostic_only", False)]
     rows = []
     for template in sorted(templates, key=lambda x: x["template_id"]):
         for episode in sorted(episodes, key=lambda x: x["episode_id"]):

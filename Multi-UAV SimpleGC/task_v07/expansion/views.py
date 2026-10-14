@@ -29,6 +29,7 @@ def _paired(rows):
 
 
 def make_views(records, seed=0):
+    records = [r for r in records if not r.get("diagnostic_only", False)]
     ids = [r["episode_id"] for r in records]
     if len(ids) != len(set(ids)):
         raise P0ContractError("Duplicate episode ID")
@@ -83,6 +84,8 @@ def make_views(records, seed=0):
 
 
 def diagnostic_summary(descriptors, records):
+    descriptors = [d for d in descriptors if not d.get("diagnostic_only", False)]
+    records = [r for r in records if not r.get("diagnostic_only", False)]
     regular = [d for d in descriptors if d["subset"] == "regular"]
     distributions = {}
     for intent in INTENTS:

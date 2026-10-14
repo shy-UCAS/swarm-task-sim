@@ -157,16 +157,12 @@ def _interpolate_route_at_speed(waypoints_3d, speed_m_s, sample_hz=PLANNING_INTE
         return np.tile(pts[0], (3, 1))
     dt = 1.0 / sample_hz
     n_frames = int(np.ceil(total / speed_m_s / dt)) + 3  # +3 for hold
-    result = np.empty((n_frames, 3))
-    cum = np.r_[0.0, np.cumsum(segs)]
-    for k in range(n_frames):
-        d = min(float(k) * dt * speed_m_s, total)
-        idx = int(np.searchsorted(cum, d, side="right")) - 1
-        idx = min(idx, len(pts) - 2)
-        seg_len = segs[idx]
-        frac = (d - cum[idx]) / seg_len if seg_len > 1e-12 else 0.0
-        result[k] = pts[idx] + frac * (pts[idx + 1] - pts[idx])
-    return result
+    cum=np.r_[0.,np.cumsum(segs)]
+    distances=np.minimum(np.arange(n_frames,dtype=float)*dt*speed_m_s,total)
+    indices=np.clip(np.searchsorted(cum,distances,side="right")-1,0,len(pts)-2)
+    fractions=np.divide(distances-cum[indices],segs[indices],out=np.zeros(n_frames),where=segs[indices]>1e-12)
+    return pts[indices]+fractions[:,None]*(pts[indices+1]-pts[indices])
+
 
 
 def planning_layer_interval_check(bundle, timing_plans, speed_m_s,
@@ -203,6 +199,8 @@ def planning_layer_interval_check(bundle, timing_plans, speed_m_s,
         "method": description string.
     """
     results = {}
+    interpolated={a:_interpolate_route_at_speed(points,speed_m_s,sample_hz)
+                  for a,points in bundle.waypoints_by_agent.items()}
     for mode in ("synchronous", "sequential"):
         plan = timing_plans[mode]
         delays = plan["departure_delays_s"]
@@ -212,7 +210,7 @@ def planning_layer_interval_check(bundle, timing_plans, speed_m_s,
         # Interpolate each agent's route at constant speed.
         routes = {}
         for a in agents:
-            routes[a] = _interpolate_route_at_speed(bundle.waypoints_by_agent[a], speed_m_s, sample_hz)
+            routes[a] = interpolated[a]
 
         # Apply departure delays: shift each agent's route in time.
         # Build a common time axis covering all agents.

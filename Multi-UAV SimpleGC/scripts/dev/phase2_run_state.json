@@ -1,0 +1,70 @@
+{
+  "repo": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene",
+  "project": "Multi-UAV SimpleGC",
+  "branch": "v07-scene",
+  "commits": {
+    "wip": "e0ff264",
+    "p0_diagnostics": "6fc4964",
+    "verified_p0_repair": "ac901a3"
+  },
+  "completed": {
+    "saved_truth_relabel": "attempt_s2x_p0_relabel_20261014T115331Z_66ea5323, 8 episodes, independent differences 0",
+    "p0_fixed_regression": "attempt_s2x_regress_20261014T115539Z_7b917ac6, 12 PASS, vertical 8 byte-identical",
+    "corridor_extraction": "both transit skeletons replan waypoint-identical",
+    "corridor_regression": "attempt_s2x_regress_20261014T120612Z_dd8c7cad, 12 PASS",
+    "tests": "98 S2 tests PASS",
+    "planning_smoke": "attempt_s2x_planning_20261014T134535Z_633a7ca4, 6 planning passes + 2 geometry rejects; repaired monitoring nominal spacing 23.203m both modes",
+    "shared_geometry_regression": "attempt_s2x_regress_20261014T125112Z_f3bfc0ea, 12 PASS",
+    "pilot": "attempt_s2x_p1_20261014T125642Z_eaac7ffb: regular 8 success, 2 monitoring revisit failures, 4 geometric rejects; diagnostic 2 success",
+    "process_count_check": "two aa feint/intrusion skeletons, workers 6/1/2, zero differences",
+    "final_regression": "attempt_s2x_regress_20261014T140919Z_cf38770f: 12PASS, 8 labels byte-identical, content0, 272.309s",
+    "monitoring_repair": "attempt_s2x_monitor_repair_20261014T135159Z_bd41c2d9, both SUCCESS, audit zero differences, actual minima sync 23.0926m / seq 9.3187m",
+    "observation_probe": "attempt_s2x_observation_probe_20261014T140628Z_17eb0c05: six vertices, one circuit, actual dwell36.7s vs old216s; fixed24s plan/min19.2s remains",
+    "latest_planning": "attempt_s2x_planning_20261014T140824Z_c334ec44, 6PASS/2 geometry rejects, monitor unchanged",
+    "observation_repair": "attempt_s2x_monitor_repair_20261014T140931Z_725e9733: bothSUCCESS, audit0, dwell36.6–36.8s, actual min22.7136m"
+  },
+  "diagnostic_authorization": {
+    "source": "family_s12_4d13d93f9171c446_ext_004_regular",
+    "id": "family_s12_4d13d93f9171c446_ext_004_regular_diag_main_intrusion",
+    "diagnostic_only": true,
+    "main_group_only": true,
+    "preserve": "members,target,speed,height,all original family initial states,relative original column order",
+    "exclude": "views,success statistics,cross-negation",
+    "full_batch": "retain original multi-group descriptor"
+  },
+  "pilot_skeletons": [
+    "family_s12_4d13d93f9171c446_ext_001_regular",
+    "family_s12_4d13d93f9171c446_ext_002_regular",
+    "family_s12_4d13d93f9171c446_ext_003_regular",
+    "family_s12_4d13d93f9171c446_ext_004_regular_diag_main_intrusion",
+    "family_s12_aa4c66be8e85d64d_ext_001_regular",
+    "family_s12_aa4c66be8e85d64d_ext_002_regular",
+    "family_s12_aa4c66be8e85d64d_ext_003_regular",
+    "family_s12_aa4c66be8e85d64d_ext_004_regular"
+  ],
+  "process_check_skeletons": [
+    "family_s12_aa4c66be8e85d64d_ext_003_regular",
+    "family_s12_aa4c66be8e85d64d_ext_004_regular"
+  ],
+  "next": "WAIT for user confirmation before area search / multi-group / abort / full126 / cross960. Section8 is accepted. All checkpoints local only; do not push.",
+  "planned_rejections": {
+    "4d monitoring": "Finite direction/radius candidate set cannot jointly meet parallel same-direction final approaches and independent closed-orbit entries; not a global infeasibility proof.",
+    "aa observation": "wide corridor offset swallowtail / insufficient turn space within finite candidates"
+  },
+  "planning_passes": "4d observation,4d feint,4d diagnostic intrusion,aa feint,aa intrusion,aa monitoring",
+  "planning_minima": "Final selected actual-delay full-route gates all >=6m; aa monitoring synchronous23.203m / sequential21.708m; actual truth minimum9.318731m. Historical nominal gates are retained in their attempt directories.",
+  "important": "No active runs. Final selected formal set: 7 skeletons / 14 requests = 5 successful pairs + 2 geometry rejected pairs. Authorized diagnostic pair excluded from all indices/statistics/cross-negation. Old failed attempts retained.",
+  "monitoring_diagnosis": {
+    "sync_revisit_s": 110.0,
+    "sequential_revisit_s": 165.6,
+    "limit_s": 74.20319403877336,
+    "audit_differences": 0,
+    "cause": "premature orbit acquisition on phase approach; fixed sequential event offsets bunch the orbit phases; dense chord waypoints slow frozen tracker",
+    "probe": "attempt_s2x_monitor_probe_20261014T134000Z_b9b868fa",
+    "probe_period_s": 488.7674133630988,
+    "prior_period_s": 540.3
+  },
+  "status": "SECTION_8_ACCEPTED_AWAITING_USER",
+  "acceptance_review": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s2x_monitor_repair_20261014T140931Z_725e9733\\acceptance_review.json",
+  "review_figures": "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2x_monitor_repair_20261014T140931Z_725e9733/review_figures/"
+}

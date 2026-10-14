@@ -112,8 +112,12 @@ def half_work_truncation(scene, sk, run, labels):
     starts = [a["observed"]["core_event"]["t_s"] for a in labels["agents"].values()]
     if sk["role"] == "transit":
         ends = [a["observed"]["contribution"]["warning_exit_s"] for a in labels["agents"].values()]
+    elif "exclusion_policy" in sk:
+        ends=[a["observed"]["work_end_s"] for a in labels["agents"].values()]
+        if sk["role"]=="intrusion":
+            ends=[float(run["time_us"][-1]/1e6)]*len(starts)
     else:
-        return {"status": "not_run", "reason": "half-work truncation for legacy roles is covered by the vertical slice"}
+        return {"status":"not_run","reason":"legacy truncation covered by vertical slice"}
     if any(x is None for x in starts + ends):
         return {"status": "not_run", "reason": "work interval not observed"}
     cutoff = round((min(starts) + max(ends)) / 2, 1)
@@ -126,6 +130,8 @@ def half_work_truncation(scene, sk, run, labels):
 
 def failed_rows(descriptor, state, reason, out):
     return [{"episode_id": f"{descriptor['skeleton_id']}_{mode}", "family_id": descriptor["family_id"],
+             "diagnostic_only": descriptor.get("diagnostic_only",False),
+             "source_skeleton_id": descriptor.get("source_skeleton_id"),
              "skeleton_id": descriptor["skeleton_id"], "intent": descriptor["base_intent"], "mode": mode,
              "aborted": descriptor.get("subset") == "aborted", "state": state, "path": None, "reason": reason,
              "quality_valid": None, "audit_passed": None, "task_result": None,
@@ -176,17 +182,8 @@ def run_skeleton_job(payload):
     family = descriptor["family_conditions"]
     interval = planning_layer_interval_check(bundle, plans, family["cruise_speed_m_s"])
     save_json(skroot / "planning_layer_interval.json", interval)
-    # Endpoint spacing check: reject if any two agents' final waypoints (retreat
-    # points or intrusion endpoints) are closer than the warning threshold.  This
-    # catches the degenerate case where the planner assigns identical or nearly
-    # identical endpoints to multiple agents, causing guaranteed collisions at
-    # the endpoint hold regardless of departure timing.
-    if not legacy:
-        ep_check = check_endpoint_spacing(bundle, sk["members"])
-        if ep_check["below_warning"]:
-            return failed_rows(descriptor, "infeasible",
-                               f"planning_interval_too_close:endpoints "
-                               f"{ep_check['minimum_m']}m", out)
+    if not legacy and spec[0] != "vertical_slice_transit" and any(interval[mode]["below_warning"] for mode in ("synchronous","sequential")):
+        return failed_rows(descriptor,"infeasible","planning_interval_too_close:full_route",out)
     save_json(skroot / "timing_calibration.json", {"source": "single-agent independent fastsim execution, exported 10 Hz",
               "core_times_s": measured, "completed_hold_times_s": finished, "timing_plans": plans,
               "single_flight_wall_s": drywall, "geometry_and_single_flights_wall_s": preflight_s,
@@ -212,7 +209,9 @@ def run_skeleton_job(payload):
         group_label = labels["task_groups"][sk["group_id"]]
         coord = group_label["observed"]["coordination"]
         row = {"episode_id": f"{descriptor['skeleton_id']}_{mode}", "family_id": descriptor["family_id"],
-               "skeleton_id": descriptor["skeleton_id"], "intent": descriptor["base_intent"], "mode": mode,
+             "skeleton_id": descriptor["skeleton_id"], "intent": descriptor["base_intent"], "mode": mode,
+               "diagnostic_only": descriptor.get("diagnostic_only",False),
+               "source_skeleton_id": descriptor.get("source_skeleton_id"),
                "aborted": False, "state": "generated" if labels["generation_quality"]["retained"] else "generation_error",
                "path": dest.relative_to(out).as_posix(), "reason": None if labels["generation_quality"]["retained"] else "minimum_separation_below_2m",
                "quality_valid": labels["generation_quality"]["retained"], "audit_passed": audit["independent_status"] == "PASS",
@@ -423,6 +422,21 @@ def descriptor_jobs(infra, skeleton_ids, out):
             if sha(directory / name) != digest:
                 raise P0ContractError(f"Source map changed since descriptor sampling: {directory / name}")
         scenes[row["family_id"]] = read_json(directory / "public_scene.json")
+    # Explicit standalone diagnostic ID maps to the source descriptor in memory only.
+    for requested in skeleton_ids:
+        if requested.endswith("_diag_main_intrusion"):
+            from copy import deepcopy
+            source_id=requested[:-len("_diag_main_intrusion")]
+            source=descriptors[source_id]
+            primary=next(g for g in source["task_groups"] if source["main_unit_id"] in g["source_units"])
+            if primary["role"]!="intrusion":
+                raise P0ContractError("Declared main unit is not an intrusion group")
+            diagnostic=deepcopy(source)
+            diagnostic.update(skeleton_id=requested,diagnostic_only=True,source_skeleton_id=source_id,
+                diagnostic_source_descriptor=deepcopy(source),
+                task_groups=[deepcopy(primary)],
+                agent_ids=[a for a in source["agent_ids"] if a in primary["members"]])
+            descriptors[requested]=diagnostic
     return [{"scene": scenes[descriptors[s]["family_id"]], "descriptor": descriptors[s], "planner": ("role",),
              "out": str(out), "scope": EXPANSION_SCOPE} for s in skeleton_ids]
 
@@ -431,9 +445,9 @@ def pilot(args):
     out = new_attempt("attempt_s2x_p1")
     print(f"OUTPUT {out}", flush=True)
     started = time.perf_counter()
-    save_json(out / "registration.json", {"scope": "S2 expansion phase 1: transit pilot (2 skeletons x 2 timing versions)",
+    save_json(out / "registration.json", {"scope": "S2 role pilot: explicit skeleton list, two real timing versions",
               "descriptor_attempt": str(args.descriptors), "skeleton_ids": list(args.skeletons),
-              "selection": "first single-group transit descriptor in skeleton_id order per approach mode; no feasibility filtering",
+              "selection": "user-requested skeleton IDs; authorized main-group diagnostics have independent IDs and are excluded from views/statistics",
               "workers": args.workers, "process_check_workers": 1, "pipeline_version": PIPELINE_VERSION,
               "config_sha256": FROZEN_SHA256})
     rows = run_jobs(descriptor_jobs(args.descriptors, args.skeletons, out), args.workers)
@@ -441,9 +455,14 @@ def pilot(args):
     check_root = out / "process_check_workers1"
     check_root.mkdir()
     check_started = time.perf_counter()
-    check_rows = run_jobs(descriptor_jobs(args.descriptors, args.skeletons, check_root), 1)
+    check_ids=args.process_check_skeletons or list(args.skeletons)
+    check_rows = run_jobs(descriptor_jobs(args.descriptors, check_ids, check_root), 1)
+    check_two=out/"process_check_workers2"
+    check_two.mkdir()
+    check_rows_two=run_jobs(descriptor_jobs(args.descriptors,check_ids,check_two),2)
+    selected_rows=[row for row in rows if row["skeleton_id"] in check_ids]
     process = []
-    for left, right in zip(rows, check_rows):
+    for left, right in zip(selected_rows, check_rows):
         if left["episode_id"] != right["episode_id"]:
             raise P0ContractError("Process check episode order mismatch")
         if left["path"] is None:
@@ -455,15 +474,26 @@ def pilot(args):
                                      ["truth_10hz.npz", "model_input.npz", "frame_labels.npz"], ["truth.csv", "observations.csv"])
         diffs = [d for d in diffs if d["class"] == "content" and d["path"] != "directory"]
         process.append({"episode": left["episode_id"], "differences": diffs})
-    for skeleton_id in sorted({r["skeleton_id"] for r in rows if r["path"] is not None}):
+    for skeleton_id in sorted({r["skeleton_id"] for r in selected_rows if r["path"] is not None}):
         diffs = compare_episode_dirs(out / skeleton_id, check_root / skeleton_id, ["skeleton.json", "timing_calibration.json"], [], [])
         process.append({"skeleton": skeleton_id, "differences": [d for d in diffs if d["class"] == "content"]})
+    for left,right in zip(check_rows,check_rows_two):
+        if left["episode_id"]!=right["episode_id"]:
+            raise P0ContractError("1/2-process episode order mismatch")
+        if left["path"] is None:
+            differences=[] if (left["reason"],left["state"])==(right["reason"],right["state"]) else ["state_or_reason"]
+        else:
+            differences=compare_episode_dirs(check_root/left["path"],check_two/right["path"],
+                ["labels.json","task.json","prefix_labels.json","truncation_check.json","independent_exact_audit.json","policy_geometry_audit.json"],
+                ["truth_10hz.npz","model_input.npz","frame_labels.npz"],["truth.csv","observations.csv"])
+            differences=[d for d in differences if d["class"]=="content" and d["path"]!="directory"]
+        process.append({"episode":left["episode_id"],"workers":[1,2],"differences":differences})
     process_status = "PASS" if all(not p["differences"] for p in process) else "FAIL"
     save_json(out / "episode_records.json", rows)
     save_json(out / "views.json", make_views([{k: r.get(k) for k in ("episode_id", "family_id", "skeleton_id", "intent", "mode",
               "aborted", "state", "path", "reason", "quality_valid", "audit_passed", "task_result", "condition_digest",
-              "agent_ids", "scene_digest", "coordination_by_group")} for r in rows]))
-    summary = {"status": "completed", "process_count_check": {"status": process_status, "workers": [args.workers, 1],
+              "agent_ids", "scene_digest", "coordination_by_group")} for r in rows if not r.get("diagnostic_only",False)]))
+    summary = {"status": "completed", "process_count_check": {"status": process_status, "workers": [args.workers, 1, 2], "checked_skeleton_ids":check_ids,
                "items": process, "process_check_wall_s": time.perf_counter() - check_started},
                "episodes": rows, "pilot_wall_s": pilot_s, "total_wall_s": time.perf_counter() - started}
     save_json(out / "summary.json", summary)
@@ -486,6 +516,7 @@ def main():
     pil.add_argument("--descriptors", type=Path, default=INFRA_ATTEMPT)
     pil.add_argument("--skeletons", nargs="+", default=list(PILOT_SKELETONS))
     pil.add_argument("--workers", type=int, default=2)
+    pil.add_argument("--process-check-skeletons", nargs="+")
     args = parser.parse_args()
     return regression(args) if args.command == "regression" else pilot(args)
 

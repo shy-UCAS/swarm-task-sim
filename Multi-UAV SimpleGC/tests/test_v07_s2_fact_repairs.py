@@ -65,4 +65,37 @@ class P0FactRepairTests(unittest.TestCase):
         self.assertAlmostEqual(result['observed']['contribution']['lap_count_observed'],2.,places=3)
 
 
+class FullRouteGateTests(unittest.TestCase):
+    def test_crossing_routes_with_distinct_endpoints_never_reach_paired_flight(self):
+        from unittest.mock import patch
+        from pathlib import Path
+        import tempfile
+        from task_v07.expansion.contracts import RouteBundle
+        from test_v07_s2_expansion import PlanningIntervalInterceptTests
+        from scripts.run_v07_s2_expansion import run_skeleton_job
+        descriptor=PlanningIntervalInterceptTests()._make_overlapping_descriptor()
+        agents=descriptor['agent_ids']
+        routes={agents[0]:[[100.,100.,100.],[300.,300.,100.]],
+                agents[1]:[[100.,300.,100.],[300.,100.,100.]],
+                agents[2]:[[100.,500.,100.],[300.,500.,100.]]}
+        bundle=RouteBundle(routes,{a:0. for a in agents})
+        sk={'members':agents,'role':'reconnaissance'}
+        pre={'status':'PASS','policy':{}}
+        plans={mode:{'departure_delays_s':{a:0. for a in agents}}
+               for mode in ('synchronous','sequential')}
+        solo={a:{'wall_s':0.,'time_us':np.array([0,100000]),'p':np.zeros((2,1,3)),
+                 'v':np.zeros((2,1,3)),'agent_ids':[a]} for a in agents}
+        with tempfile.TemporaryDirectory() as temp:
+            payload={'scene':scene(),'descriptor':descriptor,'planner':('role',),
+                     'out':temp,'scope':'test'}
+            with patch('scripts.run_v07_s2_expansion.plan_group',return_value=(sk,bundle,pre)), \
+                 patch('scripts.run_v07_s2_expansion.single_agent_timing',return_value=({a:10. for a in agents},{a:20. for a in agents},solo)), \
+                 patch('scripts.run_v07_s2_expansion.timing_plans',return_value=plans), \
+                 patch('scripts.run_v07_s2_expansion.paired_run') as fly:
+                result=run_skeleton_job(payload)
+            fly.assert_not_called()
+            self.assertTrue(all(row['reason']=='planning_interval_too_close:full_route' for row in result))
+            self.assertTrue(all(row['path'] is None for row in result))
+
+
 if __name__=='__main__': unittest.main()
