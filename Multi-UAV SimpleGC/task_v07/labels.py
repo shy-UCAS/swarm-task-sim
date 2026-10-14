@@ -166,6 +166,9 @@ def _primary_target_from_evidence(facilities, levels, ids, by_id, skeleton):
 
 
 def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_plan=None):
+    if 'group_skeletons' in skeleton:
+        from .expansion.multi_labels import measure_groups
+        return measure_groups(scene,skeleton,run,mode,planned_batches,cutoff_s=cutoff_s,timing_plan=timing_plan)
     ids=list(run["agent_ids"])
     t=run["time_us"];p=run["p"];v=run["v"]
     complete=cutoff_s is None and run["execution_status"] in ("completed","timeout")

@@ -71,12 +71,16 @@ class AreaSearchPlanner:
 
     def plan_with_template(self, scene, group, params):
         from .role_planners import PlanningInfeasible
+        from .candidate_constraints import bearing_allowed
         ctx = Context(scene, group, params)
         base = ctx.rng.uniform(0., 2 * math.pi)
         angles = [base + k * math.pi / 12 for k in range(24)]
         ctx.rng.shuffle(angles)
         candidates, reasons = [], Counter()
         for angle in angles:
+            if not bearing_allowed(angle, params):
+                reasons['same_target_work_area_bearing'] += 1
+                continue
             # The sector remains in the warning annulus. An inward entry needs
             # room for the same >=100m observable final straight as an outward entry.
             for span in (90., 75., 60., 45., 30.):

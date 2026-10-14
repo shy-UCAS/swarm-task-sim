@@ -9,6 +9,7 @@ from task_v07.visibility import ExactVisibilityPlanner
 from .contracts import RouteBundle
 from .formation_corridors import offset_polyline,start_line,shared_reference_corridor
 from .geometry_checks import check_retreat_point,check_polyline
+from .candidate_constraints import bearing_allowed
 
 VERSION='v07_s2x_formation_roles_v1'
 
@@ -135,6 +136,9 @@ class RadialFormationPlanner:
         base=ctx.rng.uniform(0,2*math.pi)
         angles=[base+k*2*math.pi/24 for k in range(24)];ctx.rng.shuffle(angles)
         for angle in angles:
+            if not bearing_allowed(angle,params):
+                reasons['same_target_work_area_bearing']+=1
+                continue
             result,reason=self.attempt(ctx,angle)
             if result is not None:result['angle']=angle
             if result is None:reasons[reason]+=1
@@ -154,10 +158,12 @@ class RadialFormationPlanner:
         # Candidate previews establish constraints and planned route costs.
         # The selected direction alone generates the final shared geometry.
         selection=chosen['template'].get('direction_selection')
-        chosen,failure=self.attempt(ctx,chosen['angle'])
+        selected_angle=chosen['angle']
+        chosen,failure=self.attempt(ctx,selected_angle)
         if chosen is None:raise PlanningInfeasible('geometry_infeasible',failure)
         if selection is not None:chosen['template']['direction_selection']=selection
         chosen['template']['formation_split']={'numeric_slot':ctx.slot,'members':ctx.split,'shared_between_timing_versions':True}
+        chosen['template']['work_area_bearing_deg']=math.degrees(selected_angle)%360
         return RouteBundle(chosen['routes'],{a:0. for a in group['members']}),chosen['template']
 
     def attempt(self,ctx,angle):
@@ -269,7 +275,7 @@ class MonitoringPlanner(RadialFormationPlanner):
     def attempt(self,ctx,angle):
         reasons=defaultdict(int)
         phase_variants=4 if ctx.multi else 1
-        for candidate_index in range(32*phase_variants):
+        for candidate_index in range(ctx.params.get('monitor_radius_start_index',0)*phase_variants,32*phase_variants):
             radius_index,phase_variant=divmod(candidate_index,phase_variants)
             result,reason=self._attempt_radius(ctx,angle,radius_index,phase_variant)
             if result is None:

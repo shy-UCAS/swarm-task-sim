@@ -7,6 +7,7 @@ from pathlib import Path
 from itertools import combinations
 import math
 import hashlib
+from contextlib import nullcontext
 import numpy as np
 
 from scripts.audit_v07_s2_exact import _read, _signed_distance, _inside
@@ -46,10 +47,14 @@ def _equal(left, right):
     return left==right
 
 
-def audit_conditions(root):
+def audit_conditions(root, *, data=None):
     root=Path(root)
-    scene,labels,task=(_read(root/name) for name in ('public_scene.json','labels.json','task.json'))
-    ids,t,p,v=_load_truth(root)
+    if data is None:
+        scene,labels,task=(_read(root/name) for name in ('public_scene.json','labels.json','task.json'))
+        ids,t,p,v=_load_truth(root)
+    else:
+        scene,labels,task=(data[key] for key in ('scene','labels','task'))
+        ids,t,p,v=(data[key] for key in ('ids','t','p','v'))
     seconds=t/1e6;xy=p[:,:,:2]
     facilities=sorted((e for e in scene['entities'] if e['type']=='facility'),key=lambda e:e['id'])
     fids=[e['id'] for e in facilities];target=fids.index(task['target_id'])
@@ -63,7 +68,7 @@ def audit_conditions(root):
     errors=[];facts={};coverage={};core_frames={};work_ends={};statuses=[]
     mon_masks={};mon_angles={};coverage_masks=[]
     region_diff=target_diff=0
-    with np.load(root/'frame_labels.npz',allow_pickle=False) as frame:
+    with (np.load(root/'frame_labels.npz',allow_pickle=False) if data is None else nullcontext(data['frame'])) as frame:
         if frame['agent_ids'].tolist()!=ids or not np.array_equal(frame['time_us'],t):
             raise ValueError('P0: label axes differ from truth')
         stored_ids=frame['facility_ids'].tolist()
@@ -283,7 +288,7 @@ def audit_conditions(root):
         compare(None,'cluster_condition:'+key,labels['cluster']['result']['conditions'].get(key),value)
     compare(None,'group_result.status',group['result']['status'],_outcome(list(group_checks.values()),complete))
     errors+=_check_separation(labels,p,ids)
-    return {'directory':str(root),'status':'PASS' if not (errors or region_diff or target_diff) else 'P0_STOP',
+    result={'directory':str(root),'status':'PASS' if not (errors or region_diff or target_diff) else 'P0_STOP',
             'frames':len(t),'agents':len(ids),'facilities':len(fids),'all_facility_frame_comparisons':int(levels.size),
             'region_difference_count':region_diff,'target_difference_count':target_diff,
             'event_or_metric_difference_count':len(errors),'event_or_metric_witnesses':errors[:50],
@@ -291,3 +296,7 @@ def audit_conditions(root):
             'uncovered_conditions':[e for e in errors if 'uncovered_condition' in e],
             'float_tolerance':TOLERANCE,'method':'analytic circles / GEOS original contours, independent conditions and work-end facts',
             'truth_csv_sha256':hashlib.sha256((root/'truth.csv').read_bytes()).hexdigest()}
+    if data is not None:
+        result['independent_group_status']=_outcome(list(group_checks.values()),complete)
+        result['independent_group_conditions']=group_checks
+    return result

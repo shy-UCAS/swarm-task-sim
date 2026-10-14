@@ -151,6 +151,8 @@ class TransitPlanner:
     def plan_with_template(self, scene, task_group, role_parameters):
         family = role_parameters["family"]
         members = sorted(task_group["members"])
+        from .candidate_constraints import bearing_allowed
+        from .area_search import planned_core_distance
         multi = role_parameters["approach_mode"] == "multi_direction"
         spacing = float(family["lateral_spacing_m"])
         altitude = family["task_altitude_m"]
@@ -166,13 +168,34 @@ class TransitPlanner:
         thetas = [base + k * 2 * math.pi / self.planned["direction_candidates"]
                   for k in range(self.planned["direction_candidates"])]
         rng.shuffle(thetas)
-        reasons = {}
+        reasons, candidates = {}, []
         for theta in thetas:
             for sigma in rng.sample([1.0, -1.0], 2):
                 result, failure = self._attempt(ctx, members, start, states, theta, sigma, multi, spacing, bound)
                 if failure is None:
-                    return self._package(ctx, members, result, altitude, spacing, multi, task_group["target_id"])
+                    first_side = [r["chord"] for r in result["routes"].values() if r["side"] == 0]
+                    midpoint = np.mean([(c["entry"] + c["exit"]) / 2 for c in first_side], axis=0)
+                    bearing = math.atan2(*(midpoint - ctx.center)[::-1])
+                    if not bearing_allowed(bearing, role_parameters):
+                        reasons['same_target_work_area_bearing'] = reasons.get('same_target_work_area_bearing', 0) + 1
+                        continue
+                    bundle, template = self._package(ctx, members, result, altitude, spacing, multi, task_group["target_id"])
+                    template['work_area_bearing_deg'] = math.degrees(bearing) % 360
+                    score = sum(planned_core_distance(np.asarray(r['points']), ctx.warning) for r in result['routes'].values())
+                    candidates.append((score, bundle, template))
+                    if multi:
+                        return bundle, template
+                    continue
                 reasons[failure] = reasons.get(failure, 0) + 1
+        if candidates:
+            minimum = min(c[0] for c in candidates)
+            pool = [c for c in candidates if c[0] <= 1.15 * minimum]
+            score, bundle, template = rng.choice(pool)
+            template['direction_selection'] = {'minimum_approach_length_m': minimum,
+                'selected_approach_length_m': score, 'maximum_ratio': 1.15,
+                'feasible_candidates': len(candidates), 'eligible_candidates': len(pool),
+                'selection_order': 'role constraints -> 115% route-length filter -> private random direction'}
+            return bundle, template
         raise PlanningInfeasible("geometry_infeasible", f"transit chords/lanes: {dict(sorted(reasons.items()))}")
 
     def _chord(self, ctx, direction, normal, h):
