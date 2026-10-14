@@ -113,96 +113,6 @@ def offset_polyline(points, offset, max_turn_deg=150.0, arc_step_deg=30.0):
     return [p for joint in joints for p in joint]
 
 
-def lane_routes(planner, starts, targets, members, spacing_m):
-    """Laterally-offset parallel routes for members sharing one approach corridor.
-
-    Exact-visibility paths for nearby start/target pairs coincide, so agents that
-    fly the same corridor collide in the synchronous timing where every core event
-    is scheduled together.  This takes the first member's route as the reference
-    lane and offsets it laterally for the others, re-joining each member's own
-    start and its own target.  Adjacent lanes are `spacing_m` apart.
-
-    Returns {agent: [K,2] ndarray} or None when an offset lane would reverse or a
-    member has no route at all.
-    """
-    ref = members[0]
-    ref_route = planner.path(starts[ref].tolist(), targets[ref].tolist())
-    if ref_route is None or len(ref_route) < 2:
-        return None
-    ref2d = np.asarray(ref_route, float)
-    n = len(members)
-    out = {}
-    for i, a in enumerate(members):
-        offset = (i - (n - 1) / 2.0) * spacing_m
-        lane = offset_polyline(ref2d, offset)
-        if lane is None:
-            return None
-        pts = [np.asarray(starts[a], float)]
-        pts += [np.asarray(p, float) for p in lane]
-        pts.append(np.asarray(targets[a], float))
-        keep = [pts[0]]
-        for p in pts[1:]:
-            if float(np.linalg.norm(p - keep[-1])) >= 1.0:
-                keep.append(p)
-        if len(keep) < 2:
-            return None
-        out[a] = np.asarray(keep)
-    return out
-
-
-def routes_clear(scene, lane, altitude, margin_m=PLANNING_MARGIN_M):
-    """True when every lane stays clear of hard obstacles and the world margin."""
-    for pts in lane.values():
-        route = [[float(p[0]), float(p[1]), altitude] for p in pts]
-        if not check_polyline(scene, route, forbidden_regions=[], margin_m=margin_m)["valid"]:
-            return False
-    return True
-
-
-def build_lane(scene, planner, starts, targets, members, spacing_m, min_spacing_m, altitude):
-    """Offset lanes at the widest clear spacing, never below min_spacing_m.
-
-    Tries the requested spacing, then 0.75x and 0.5x, returning the first that
-    both offsets cleanly and clears hard obstacles.  None means the map cannot
-    host separated lanes at the required minimum.
-    """
-    for factor in (1.0, 0.75, 0.5):
-        spacing = spacing_m * factor
-        if spacing < min_spacing_m - 1e-9:
-            break
-        lane = lane_routes(planner, starts, targets, members, spacing)
-        if lane is not None and routes_clear(scene, lane, altitude):
-            return lane
-    return None
-
-
-def split_by_side(center, starts, members):
-    """Split members by which side of the target their start position faces.
-
-    One lane may only be shared by members that actually share an approach
-    corridor.  Members entering from opposite sides of the target must not be
-    forced onto one reference route, or the joining legs cross the map (and any
-    obstacle in between).  Returns [(members, mean_angle_rad), ...] with at most
-    two non-empty sides; a degenerate (fully symmetric) spread yields one side.
-    """
-    n = len(members)
-    mean_vec = sum(np.asarray(starts[a], float) - center for a in members) / n
-    norm = float(np.linalg.norm(mean_vec))
-    if norm < 1e-3:
-        return [(sorted(members), 0.0)]
-    primary = mean_vec / norm
-    dots = {a: float(np.dot(np.asarray(starts[a], float) - center, primary)) for a in members}
-    side_a = sorted([a for a in members if dots[a] >= 0], key=lambda a: dots[a])
-    side_b = sorted([a for a in members if dots[a] < 0], key=lambda a: dots[a])
-    if not side_a or not side_b:
-        return [(sorted(members), math.atan2(float(primary[1]), float(primary[0])))]
-    out = []
-    for side in (side_a, side_b):
-        side_mean = sum(np.asarray(starts[a], float) - center for a in side) / len(side)
-        out.append((side, math.atan2(float(side_mean[1]), float(side_mean[0]))))
-    return out
-
-
 class VerticalSliceAdapter:
     """Wraps the unchanged vertical-slice build_skeleton (four-agent penetration/area search).
 
@@ -517,29 +427,6 @@ def select_candidate(candidates, rng, *, key_fn):
     return rng.choice(pool)
 
 
-def _stagger_delays(routes, speed_m_s):
-    """Compute per-agent departure delays that space agents through a shared corridor.
-
-    Each agent departs after the previous one has had time to travel one stagger
-    interval, computed as (mean route length) / speed / n_agents.  This prevents
-    synchronous agents from occupying the same point of a shared approach corridor
-    at the same time.  All delays are relative to the first agent (delay=0).
-    """
-    agents = sorted(routes)
-    n = len(agents)
-    if n <= 1 or speed_m_s <= 0:
-        return {a: 0.0 for a in agents}
-    total_lens = []
-    for a in agents:
-        pts = np.asarray(routes[a], float)
-        total_lens.append(float(np.linalg.norm(np.diff(pts[:, :2], axis=0), axis=1).sum()))
-    mean_len = sum(total_lens) / n
-    interval = mean_len / speed_m_s / n
-    # Snap to the 0.1 s departure-delay grid required by validate_route_bundle.
-    interval_tenths = max(1, round(interval * 10))  # at least 0.1 s per slot
-    return {a: (i * interval_tenths) / 10.0 for i, a in enumerate(agents)}
-
-
 def find_clear_retreat(scene, from_angle, center, warn_r, approach_pl):
     """Return a retreat point near from_angle that clears ALL facility warning zones.
 
@@ -642,7 +529,7 @@ class CloseObservationPlanner:
             return total
 
         # Members entering from opposite sides of the target cannot share a lane.
-        side_groups = split_by_side(center, starts, members)
+        side_groups = [(members, 0.0)] if not multi else [(members[:(n+1)//2], 0.0), (members[(n+1)//2:], math.pi)]
 
         routes, refs = {}, {}
         for side_members, side_dir in side_groups:
@@ -668,12 +555,9 @@ class CloseObservationPlanner:
             if ret is None:
                 raise PlanningInfeasible("geometry_infeasible", "no valid retreat point for close_observation")
             targets = {a: obs_point(ang) for a, ang in zip(side_members, member_angles)}
-            lane = build_lane(scene, approach_pl, starts, targets, side_members,
-                              lane_spacing, min_sep_m, altitude)
-            if lane is None:
-                raise PlanningInfeasible(
-                    "geometry_infeasible",
-                    "no laterally separated observation lanes at the required spacing")
+            lane = {a: approach_pl.path(starts[a].tolist(), targets[a].tolist()) for a in side_members}
+            if any(points is None for points in lane.values()):
+                raise PlanningInfeasible("geometry_infeasible", "observation approach unavailable")
             for a, ang in zip(side_members, member_angles):
                 pt = targets[a]
                 # Per-agent retreat: radiate from each agent's own observation angle so
@@ -795,7 +679,7 @@ class MonitoringPlanner:
                        "retreat_required": True,
                        "retreat_warning_clearance_m": RETREAT_WARNING_CLEARANCE_M}
 
-        bundle = RouteBundle(routes, _stagger_delays(routes, speed))
+        bundle = RouteBundle(routes, {a: 0.0 for a in members})
         template = {"role": "monitoring", "execution_method": "monitoring",
                     "target_id": task_group["target_id"],
                     "monitoring": {"orbit_center_enu_m": center.tolist(),
@@ -913,7 +797,7 @@ class FeintPlanner:
                            "retreat_warning_clearance_m": RETREAT_WARNING_CLEARANCE_M,
                            "planned_feint_angle_deg": math.degrees(angle) % 360}
 
-        bundle = RouteBundle(routes, _stagger_delays(routes, speed))
+        bundle = RouteBundle(routes, {a: 0.0 for a in members})
         template = {"role": "feint", "execution_method": "feint",
                     "target_id": task_group["target_id"],
                     "feint": {"retreat_distance_tolerance_m": 5.0,
