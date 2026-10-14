@@ -14,7 +14,7 @@ import numpy as np
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
 
-from task_v07.execution import execute, departure_delays, CONFIG_PATH, FROZEN_SHA256
+from task_v07.execution import execute, departure_delays, completion_budget, CONFIG_PATH, FROZEN_SHA256
 from task_v07.io import read_json, save_json, write_episode, load_episode, load_pair, sha
 from task_v07.labels import measure
 from task_v07.planning import build_skeleton, seed_for
@@ -124,30 +124,31 @@ def main():
             sk=build_skeleton(scene,family,intent,index,target)
             skroot=out/sk["skeleton_id"];skroot.mkdir()
             save_json(skroot/"skeleton.json",sk)
-            measured={};drywall=0
+            measured={};finished={};drywall=0
             for a in sk["members"]:
                 run=execute(sk,{a:0 for a in sk["members"]},only_agent=a)
                 drywall+=run["wall_s"]
                 raw,_=measure(scene,sk,run,"unassigned_measurement")
                 measured[a]=raw["agents"][a]["observed"]["core_event"]["t_s"]
+                finished[a]=float(run["time_us"][-1]/1e6) if run["execution_status"]=="completed" else None
                 np.savez_compressed(skroot/f"single_agent_{a}.npz",time_us=run["time_us"],p=run["p"],v=run["v"],agent_ids=np.array(run["agent_ids"]))
                 print(f"MEASURE map{map_index} {intent} {a}: {measured[a]} s ({run['wall_s']:.2f}s)",flush=True)
             timing_plans=departure_delays(sk,measured)
             preflight_s=time.perf_counter()-planning_started
             save_json(skroot/"timing_calibration.json",{"source":"single-agent independent fastsim execution, exported 10 Hz",
-                      "core_times_s":measured,"timing_plans":timing_plans,
+                      "core_times_s":measured,"completed_hold_times_s":finished,"timing_plans":timing_plans,
                       "single_flight_wall_s":drywall,"geometry_and_single_flights_wall_s":preflight_s})
             pairrows=[]
             for mode in ("synchronous","sequential"):
                 episode_started=time.perf_counter()
                 plan=timing_plans[mode]
                 batches=plan["batch_by_agent"]
-                run=execute(sk,plan["departure_delays_s"])
+                run=execute(sk,plan["departure_delays_s"],time_budget=completion_budget(sk,plan["departure_delays_s"],finished))
                 labels,frame=measure(scene,sk,run,mode,batches,timing_plan=plan)
                 dest=skroot/mode
                 write_episode(dest,scene,family,sk,run,labels,frame,plan["departure_delays_s"],mode,measured,timing_plan=plan)
                 audit=audit_episode(scene,sk,run,labels,mode,batches,dest,timing_plan=plan)
-                plot_episode(scene,run,labels,dest/"topdown.png",f"Map {map_index} | {intent} | assigned {mode}")
+                plot_episode(scene,run,labels,dest/"topdown.png",f"Map {map_index} | {intent} | assigned {mode}",skeleton=sk)
                 group=next(iter(labels["task_groups"].values()));coord=group["observed"]["coordination"]
                 row={"map_candidate":record["candidate_index"],"facility_count":record["facility_count"],
                      "skeleton_id":sk["skeleton_id"],"intent":intent,"mode":mode,"directory":str(dest),
@@ -155,6 +156,14 @@ def main():
                      "coordination_matches":group["observed"]["timing_diagnostics"]["coordination_matches_assignment"],"event_times_s":coord["event_times_s"],
                      "event_range_s":coord["event_range_s"],"observed_batches":coord["batches"],"timing_plan":plan,
                      "generation_quality":labels["generation_quality"],"minimum_separation_m":labels["cluster"]["observed"]["minimum_separation_m"],
+                     "time_budget":run["time_budget"],
+                     "survey_metrics":None if intent!="reconnaissance" else {
+                         "area_m2":sk["survey"]["area_m2"],"angle_span_deg":sk["survey"]["angle_span_deg"],
+                         "strip_count":sk["survey"]["strip_count"],"footprint_radius_m":sk["survey"]["footprint_radius_m"],
+                         "strip_spacing_m":sk["survey"]["strip_spacing_m"],"grid_spacing_m":sk["survey"]["grid_spacing_m"],
+                         "coverage_fraction":group["observed"]["shared_coverage"]["coverage_fraction"],
+                         "by_agent":{a:{"scan":v["observed"]["contribution"],"retreat_event":v["observed"]["retreat_event"],
+                                        "endpoint_hold_s":v["observed"]["endpoint_hold_s"]} for a,v in labels["agents"].items()}},
                      "task_result":group["result"]["status"],"task_conditions":group["result"]["conditions"],
                      "duration_s":run["end_us"]/1e6,"episode_execution_export_label_plot_audit_s":time.perf_counter()-episode_started,
                      "amortized_skeleton_setup_s":preflight_s/2,"audit":audit}
@@ -190,7 +199,7 @@ def main():
         raise ValueError("P0: final full-frame audit failed")
     save_json(out/"retained_episode_index.json",[r["directory"] for r in rows if r["generation_quality"]["retained"]])
     save_json(out/"excluded_episode_index.json",[r["directory"] for r in rows if not r["generation_quality"]["retained"]])
-    summary={"schema_version":"traj2language.s2_minimal_attempt/0.7-s2.2","directory":str(out),
+    summary={"schema_version":"traj2language.s2_minimal_attempt/0.7-s2.3","directory":str(out),
              "episodes":rows,"pairs":pairs,"episode_count":len(rows),
              "retained_count":sum(r["generation_quality"]["retained"] for r in rows),
              "full_frame_audit_status":full_audit["status"],"region_difference_count":full_audit["region_difference_count"],"total_wall_s":time.perf_counter()-started,
@@ -202,4 +211,3 @@ def main():
 
 if __name__=="__main__":
     main()
-

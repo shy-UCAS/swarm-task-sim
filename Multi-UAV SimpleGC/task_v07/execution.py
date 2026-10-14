@@ -2,6 +2,7 @@
 from copy import deepcopy
 import hashlib
 import json
+import math
 from pathlib import Path
 import time
 
@@ -22,7 +23,7 @@ def frozen_config():
     return M2Config.from_dict(json.loads(raw.decode("utf-8-sig")))
 
 
-def execute(skeleton, delays_s, *, only_agent=None):
+def execute(skeleton, delays_s, *, only_agent=None, time_budget=None):
     started=time.perf_counter()
     cfg=frozen_config()
     ids=[only_agent] if only_agent else list(skeleton["agent_ids"])
@@ -36,7 +37,8 @@ def execute(skeleton, delays_s, *, only_agent=None):
     release=np.array([round((skeleton["initial_settle_s"]+delays_s[a])*1e6) for a in ids],dtype=np.int64)
     if np.any(release<0) or np.any(release%100000):
         raise ValueError("Release delays must lie on the nonnegative 10 Hz grid")
-    limit=round(cfg.execution.max_duration_s*1e6)
+    budget=time_budget or completion_budget(skeleton,delays_s)
+    limit=round(budget["max_duration_s"]*1e6)
     end_points=np.array([r[-1] for r in routes])
     hold_counts=np.zeros(len(ids),int)
     cursor=cycle_end=0
@@ -82,7 +84,34 @@ def execute(skeleton, delays_s, *, only_agent=None):
             "a":np.array([s.a for s in samples]),"end_us":engine.time_us,
             "execution_status":status,"wall_s":time.perf_counter()-started,
             "release_s":{a:float(release[i]/1e6) for i,a in enumerate(ids)},
-            "config_sha256":FROZEN_SHA256}
+            "config_sha256":FROZEN_SHA256,"time_budget":budget}
+
+
+def completion_budget(skeleton, delays_s, measured_completion_s=None):
+    """Episode deadline from per-agent planned completion, plus 120 s or 20%.
+
+    The bootstrap is only a conservative single-flight runtime guard. Schedules
+    use measured 10 Hz core events; paired deadlines use measured 10 Hz finishes.
+    """
+    if measured_completion_s is None:
+        base={}
+        for a,reference in skeleton["references"].items():
+            points=np.asarray(reference["points_enu_m"])
+            length=float(np.linalg.norm(np.diff(points,axis=0),axis=1).sum())
+            base[a]=(skeleton["initial_settle_s"]+2*length/skeleton["cruise_speed_m_s"]
+                     +10*(len(points)-1)+skeleton["terminal_hold_s"])
+        source="conservative bootstrap: settle + 2*route_length/speed + 10s/leg + hold"
+    else:
+        if set(measured_completion_s)!=set(delays_s) or any(t is None for t in measured_completion_s.values()):
+            raise ValueError("Complete single-agent finish measurements required")
+        base=measured_completion_s
+        source="single-agent completed endpoint hold on exported 10 Hz truth"
+    planned={a:float(base[a]+delays_s[a]) for a in delays_s}
+    latest=max(planned.values())
+    margin=max(120.,.2*latest)
+    return {"basis":source,"single_agent_completion_s":dict(base),
+            "planned_completion_times_s":planned,"latest_planned_completion_s":latest,
+            "margin_s":margin,"max_duration_s":math.ceil((latest+margin)*10)/10}
 
 
 def departure_delays(skeleton, measured_event_s):

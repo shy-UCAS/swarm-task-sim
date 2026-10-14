@@ -3,13 +3,13 @@ from itertools import combinations
 import math
 
 import numpy as np
-from shapely.geometry import Polygon
 
 from scene_v07.geometry import center_of
 from .geometry import geometry_facts, GEOMETRY_VERSION
 from .planning import angular_span, scene_parts
+from .survey import survey_grid
 
-LABEL_VERSION="traj2language.labels/0.7-s2.2"
+LABEL_VERSION="traj2language.labels/0.7-s2.3"
 EVIDENCE_SOURCE="truth.csv:10Hz_half_open_sim_clock"
 
 
@@ -115,12 +115,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
     center=np.array(center_of(facilities[target_fi]["geometry"]))
     grid=None
     if skeleton["base_intent"]=="reconnaissance":
-        polygon=Polygon(skeleton["survey"]["vertices_m"])
-        x0,y0,x1,y1=polygon.bounds
-        step=skeleton["survey"]["grid_spacing_m"]
-        xx,yy=np.meshgrid(np.arange(x0+step/2,x1,step),np.arange(y0+step/2,y1,step))
-        grid=np.c_[xx.ravel(),yy.ravel()]
-        grid=grid[geometry_facts({"type":"Polygon","vertices_m":skeleton["survey"]["vertices_m"]},grid)["inside"]]
+        grid=survey_grid(skeleton["survey"])
     phases=np.zeros((len(t),len(ids)),np.int8)
     azimuths=[]
     for a in sorted(ids):
@@ -147,41 +142,60 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             role_conditions={"entered_protected":measurable(inside.any(),complete),
                              "required_depth":measurable(depth>=skeleton["required_intrusion_depth_m"],complete)}
         else:
-            strip={"type":"Polygon","vertices_m":ref["scan_vertices_m"]}
-            effective=geometry_facts(strip,xy)["inside"]&(speed>=skeleton["survey"]["effective_speed_min_m_s"])
-            effective&=(levels[:,i,target_fi]==1)&~obstacle_inside[:,i]
-            effective_masks[a]=effective
-            core[a]=event(effective,t,"scan_start")
-            coverage=np.zeros(len(grid),bool)
-            for chunk in np.array_split(xy[effective],max(1,int(effective.sum())//200)):
-                if len(chunk):
-                    coverage|=np.any(np.linalg.norm(grid[:,None,:]-chunk[None,:,:],axis=2)<=skeleton["survey"]["footprint_radius_m"],axis=1)
-            coverages[a]=coverage
+            strip=ref.get("scan_geometry",{"type":"Polygon","vertices_m":ref.get("scan_vertices_m",[])})
+            expected_visits=len(ref["scan_lane_endpoints_m"])
             cursor=0;visits=[]
             for point in ref["scan_lane_endpoints_m"]:
                 found=np.flatnonzero(np.linalg.norm(xy[cursor:]-point,axis=1)<=skeleton["survey"]["lane_endpoint_radius_m"])
                 if not len(found):
                     break
                 cursor+=int(found[0]);visits.append(float(t[cursor]/1e6))
+            scan_complete=len(visits)==expected_visits
+            effective=geometry_facts(strip,xy)["inside"]&(speed>=skeleton["survey"]["effective_speed_min_m_s"])
+            effective&=(levels[:,i,target_fi]==1)&~obstacle_inside[:,i]
+            if scan_complete:
+                effective &= t/1e6<=visits[-1]
+            effective_masks[a]=effective
+            core[a]=event(effective,t,"scan_start")
+            coverage=np.zeros(len(grid),bool)
+            for chunk in np.array_split(xy[effective],max(1,int(effective.sum())//200)):
+                if len(chunk):
+                    remaining=np.flatnonzero(~coverage)
+                    coverage[remaining]|=np.any(np.linalg.norm(grid[remaining,None,:]-chunk[None,:,:],axis=2)<=skeleton["survey"]["footprint_radius_m"],axis=1)
+            coverages[a]=coverage
             behavior=(["effective_area_observation"] if effective.any() else [])
-            if len(visits)==4:
+            if scan_complete:
                 behavior.append("ordered_lawnmower_scan")
+            scan_end=visits[-1] if scan_complete else None
+            duration=round(scan_end-core[a]["t_s"],6) if scan_end is not None and core[a]["t_s"] is not None else None
             contribution={"covered_group_grid_points":int(coverage.sum()),"group_grid_point_count":len(grid),
-                          "ordered_lane_endpoint_times_s":visits,"scan_pattern_observed":len(visits)==4}
+                          "ordered_lane_endpoint_times_s":visits,"scan_pattern_observed":scan_complete,
+                          "expected_lane_endpoint_count":expected_visits,"planned_strip_count":ref.get("scan_strip_count",expected_visits//2),
+                          "scan_end_s":scan_end,"scan_segment_duration_s":duration,
+                          "effective_observation_duration_s":round(float(effective.sum())/10,6)}
             no_alert=not np.any(levels[:,i,:]>=2)
             role_conditions={"effective_observation":measurable(effective.any(),complete),
-                             "scan_lane_evidence":measurable(len(visits)==4,complete),
+                             "scan_lane_evidence":measurable(scan_complete,complete),
                              "no_alert_entry":bool(no_alert)}
             azimuth=None
         end_distance=np.linalg.norm(p[:,i]-ref["endpoint_enu_m"],axis=1)
         dwell=(end_distance<=skeleton["terminal_radius_m"])&(speed<=skeleton["terminal_speed_m_s"])
+        retreat_event=None
+        if skeleton["base_intent"]=="reconnaissance" and ref.get("retreat_required",False):
+            after_scan=np.zeros(len(t),bool) if scan_end is None else t/1e6>=scan_end
+            retreat_event=event((end_distance<=skeleton["terminal_radius_m"])&after_scan,t,"retreat_point_arrival")
+            retreat_event.pop("role_core_event")
+            retreat_event["planned_warning_clearance_m"]=ref["retreat_warning_clearance_m"]
+            retreat_event["minimum_observed_endpoint_distance_m"]=float(end_distance.min())
+            role_conditions["reached_retreat_point"]=measurable(retreat_event["t_s"] is not None,complete)
+            dwell &= after_scan
         hold=longest_hold(dwell)
         conditions={**role_conditions,"own_endpoint_hold":measurable(hold>=skeleton["terminal_hold_s"],complete)}
         outcome=observed_conditions_result(conditions,complete)
         phases[:,i]=np.where(speed>.5,1,0)
         if core[a]["frame_index"] is not None:
             phases[core[a]["frame_index"]:,i]=2
-        if skeleton["base_intent"]=="reconnaissance" and len(contribution["ordered_lane_endpoint_times_s"])==4:
+        if skeleton["base_intent"]=="reconnaissance" and contribution["scan_pattern_observed"]:
             phases[t/1e6>contribution["ordered_lane_endpoint_times_s"][-1],i]=3
         phases[dwell,i]=4
         per_agent[a]={"assigned":{"intent":skeleton["base_intent"],"role":skeleton["role"],
@@ -189,7 +203,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                                   "execution_method":skeleton["execution_method"],"planned_coordination":mode,
                                   "timing":None if timing_plan is None else {key:timing_plan[key][a] for key in ("target_event_times_s","target_event_times_grid_s","jitter_s","departure_delays_s","batch_by_agent")}},
                       "observed":{"behaviors":behavior,"regions_by_facility":region_facts,
-                                  "core_event":core[a],"contribution":contribution,
+                                  "core_event":core[a],"contribution":contribution,"retreat_event":retreat_event,
                                   "endpoint_min_distance_m":float(end_distance.min()),"endpoint_hold_s":hold,
                                   "minimum_separation_m":by_agent_min[a],"batch_index":None,
                                   "hard_obstacle_sample_count":int(obstacle_inside[:,i].sum()),
@@ -206,7 +220,9 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                 "footprint_radius_m":skeleton["survey"]["footprint_radius_m"],
                 "grid_spacing_m":skeleton["survey"]["grid_spacing_m"],"grid_point_count":len(grid),
                 "covered_grid_point_count":int(covered.sum()),"coverage_fraction":float(covered.mean()),
-                "required_fraction":skeleton["survey"]["required_group_coverage"]}
+                "required_fraction":skeleton["survey"]["required_group_coverage"],
+                "declared_region_area_m2":skeleton["survey"].get("area_m2"),
+                "planned_strip_count":skeleton["survey"].get("strip_count")}
     statuses=[v["result"]["status"] for v in per_agent.values()]
     conditions={"member_contributions_complete":False if "failure" in statuses else (None if "unknown" in statuses else True)}
     timing_diagnostics={"coordination_matches_assignment":None if coord["classification"]=="unknown" else coord["classification"]==mode,
@@ -256,4 +272,3 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
            "region_all_facilities":levels,"region_assigned_target":levels[:,:,target_fi],
            "phase":phases,"inside_hard_obstacle":obstacle_inside}
     return labels,frame
-

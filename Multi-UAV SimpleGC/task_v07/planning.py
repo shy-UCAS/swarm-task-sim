@@ -5,13 +5,13 @@ import math
 import random
 
 import numpy as np
-from shapely.geometry import Polygon
 
 from scene_v07.geometry import center_of
-from .geometry import geometry_facts, radial_boundary_exact
+from .geometry import radial_boundary_exact
 from .visibility import ExactVisibilityPlanner
+from .survey import build_survey
 
-PLANNING_VERSION = "v07_s2_exact_geometry_v2"
+PLANNING_VERSION = "v07_s2_annular_survey_v3"
 MIN_INTRUSION_ENDPOINT_SEPARATION_M = 15.0
 
 
@@ -86,11 +86,11 @@ def build_skeleton(scene, family, intent, index, target_id):
     planner=role_planner(scene,intent=="reconnaissance")
     altitude=family["task_altitude_m"]
     references={}
-    common={"schema_version":"traj2language.skeleton/0.7-s2.2","skeleton_id":f"{family['family_id']}_s2r2_sk{index:02d}",
+    common={"schema_version":"traj2language.skeleton/0.7-s2.3","skeleton_id":f"{family['family_id']}_s2r3_sk{index:02d}",
             "family_id":family["family_id"],"map_id":family["map_id"],"base_intent":intent,
             "target_id":target_id,"group_id":"task_group_01","members":ids,
             "role":"intrusion" if intent=="penetration" else "reconnaissance",
-            "execution_method":"polygon_visit" if intent=="penetration" else "equal_strip_lawnmower",
+            "execution_method":"polygon_visit" if intent=="penetration" else "annular_sector_lawnmower",
             "agent_ids":order,"column_seed":column_seed,"cruise_speed_m_s":family["cruise_speed_m_s"],
             "intrusion_endpoint_min_spacing_m":MIN_INTRUSION_ENDPOINT_SEPARATION_M,"waypoint_min_spacing_m":1.0,
             "tracking_allowance_m":5.0,"obstacle_clearance_m":30.0,"initial_settle_s":20.0,
@@ -136,52 +136,17 @@ def build_skeleton(scene, family, intent, index, target_id):
                            "approach_azimuth_deg":math.degrees(angles[j])%360}
         common["planned_approach_span_deg"]=angular_span([r["approach_azimuth_deg"] for r in references.values()])
     else:
-        # One rectangular observation sector, divided into four equal strips.
-        warning=zones["warning"]["geometry"]
-        alerts=[e["geometry"] for e in scene["entities"] if e.get("layer")=="alert"]
-        obstacle_shapes=[e["geometry"] for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"]
-        world=scene["world"]["geometry"]
-        best=None
-        for deg in range(0,360,15):
-            theta=math.radians(deg); u=np.array([math.cos(theta),math.sin(theta)]); w=np.array([-u[1],u[0]])
-            inner=np.array(radial_boundary_exact(zones["alert"]["geometry"],center,theta))
-            outer=np.array(radial_boundary_exact(zones["warning"]["geometry"],center,theta))
-            middle=(inner+outer)/2
-            polygon=Polygon([middle+x*w+y*u for x,y in [(-120,-90),(120,-90),(120,90),(-120,90)]])
-            vertices=list(polygon.exterior.coords)[:-1]
-            if np.any(geometry_facts(warning,vertices)["signed_distance_m"] > -35) or any(
-                    geometry_facts(a,vertices,footprint=True)["clearance_m"] <= 35 for a in alerts+obstacle_shapes):
-                continue
-            retreat_center=outer+200*u
-            if geometry_facts(world,retreat_center)["signed_distance_m"] > -130:
-                continue
-            # Assign strip identities by initial lateral position, then randomize export columns separately.
-            assignment=sorted(ids,key=lambda a:float((np.array(states[a]["position_enu_m"][:2])-middle)@w))
-            refs={}
-            try:
-                for j,a in enumerate(assignment):
-                    x=-90+j*60
-                    scan=[middle+(x-15)*w+90*u,middle+(x-15)*w-90*u,
-                          middle+(x+15)*w-90*u,middle+(x+15)*w+90*u]
-                    exit_point=retreat_center+x*w
-                    route=joined_path(planner,[states[a]["position_enu_m"][:2],*scan,exit_point])
-                    strip=[(middle+(x+dx)*w+dy*u).tolist() for dx,dy in [(-30,-90),(30,-90),(30,90),(-30,90)]]
-                    refs[a]={"points_enu_m":[[*p,altitude] for p in route],
-                             "endpoint_enu_m":[*exit_point.tolist(),altitude],
-                             "scan_vertices_m":strip,"scan_lane_endpoints_m":[p.tolist() for p in scan],
-                             "scan_axis_enu":u.tolist()}
-            except ValueError:
-                continue
-            score=max(sum(math.dist(a,b) for a,b in zip(r["points_enu_m"],r["points_enu_m"][1:])) for r in refs.values())
-            if best is None or score<best[0]:
-                best=(score,refs,list(map(list,polygon.exterior.coords))[:-1])
-        if best is None:
-            raise ValueError("No legal four-strip survey sector")
-        _,references,vertices=best
-        common["survey"]={"vertices_m":vertices,"model":"ideal_isotropic_horizontal_disk",
-                          "footprint_radius_m":35.0,"grid_spacing_m":10.0,"required_group_coverage":0.90,
-                          "effective_speed_min_m_s":0.5,"lane_endpoint_radius_m":5.0,
-                          "assumptions":"Geometric coverage proxy; no camera, detection or recognition simulation"}
+        common["survey"],references=build_survey(scene,family,facility,zones,planner,joined_path,
+                                                   seed_for(family["sampling_seed"],f"annular_survey:{index}"))
+    common["role_geometry_parameters"]={
+        "basis":"exact facility contour offsets",
+        "planning_margin_m":planner.margin,
+        "warning_band_offset_range_m":[zones["alert"]["offset_m"]+planner.margin,
+                                       zones["warning"]["offset_m"]-planner.margin],
+        "future_roles_not_implemented":{
+            "monitoring_contour_offset_m":(zones["alert"]["offset_m"]+zones["warning"]["offset_m"])/2,
+            "close_observation_offset_range_m":[zones["alert"]["offset_m"]+planner.margin,
+                                                zones["alert"]["offset_m"]+2*planner.margin],
+            "transit_minimum_warning_chord_m":400.0}}
     common["references"]=references
     return common
-

@@ -15,6 +15,27 @@ def _read(path):
     return json.loads(Path(path).read_text(encoding="utf-8-sig"))
 
 
+
+def _signed_distance(g, xy):
+    if g["type"]=="Circle":
+        return np.linalg.norm(xy-np.asarray(g["center_m"]),axis=-1)-g["radius_m"]
+    polygon=Polygon(g["vertices_m"]);points=shapely.points(xy)
+    return np.where(shapely.covers(polygon,points),-shapely.distance(polygon.boundary,points),
+                    shapely.distance(polygon,points))-g.get("buffer_m",0)
+
+
+def _inside(g, xy):
+    if g["type"]!="ContourAnnularSector":
+        return _signed_distance(g,xy)<=0
+    d=_signed_distance(g["base_geometry"],xy)
+    relative=xy-np.asarray(g["center_m"])
+    angle=(np.arctan2(relative[...,1],relative[...,0])-g["start_angle_rad"])%(2*np.pi)
+    result=(d>=g["inner_offset_m"])&(d<=g["outer_offset_m"])&(angle<=g["angle_span_rad"])
+    if "lateral_interval_m" in g:
+        lateral=relative@np.asarray(g["lateral_axis"])
+        result&=(lateral>=g["lateral_interval_m"][0])&(lateral<=g["lateral_interval_m"][1])
+    return result
+
 def audit_episode(root):
     root=Path(root)
     scene=_read(root/"public_scene.json")
@@ -65,7 +86,18 @@ def audit_episode(root):
     target_mismatch=int(np.count_nonzero(expected[:,:,target_j]!=target_stored))
     witnesses=[{"frame_index":int(k),"t_s":float(t[k]/1e6),"agent_id":ids[i],"facility_id":fids[j],
                 "expected":int(expected[k,i,j]),"stored":int(stored[k,i,j])} for k,i,j in mismatch[:20]]
-    event_errors=[]
+    event_errors=[];coverage_by_agent=[]
+    if task["base_intent"]=="reconnaissance":
+        survey=task["survey"]
+        region=survey.get("geometry",{"type":"Polygon","vertices_m":survey.get("vertices_m",[])})
+        if "bounds_m" in survey:
+            x0,y0,x1,y1=survey["bounds_m"]
+        else:
+            points=np.asarray(survey["vertices_m"]);x0,y0=points.min(axis=0);x1,y1=points.max(axis=0)
+        step=survey["grid_spacing_m"]
+        xx,yy=np.meshgrid(np.arange(x0+step/2,x1,step),np.arange(y0+step/2,y1,step))
+        grid=np.c_[xx.ravel(),yy.ravel()];grid=grid[_inside(region,grid)]
+
     for i,a in enumerate(ids):
         actual=labels["agents"][a]["observed"]
         for j,fid in enumerate(fids):
@@ -83,17 +115,67 @@ def audit_episode(root):
             if abs(actual["contribution"]["maximum_protected_depth_m"]-depth)>1e-8:
                 event_errors.append({"agent_id":a,"field":"maximum_protected_depth_m"})
         else:
-            strip=Polygon(task["references"][a]["scan_vertices_m"])
-            valid=shapely.covers(strip,shapely.points(p[:,i,:2]))
+            reference=task["references"][a]
+            strip=reference.get("scan_geometry",{"type":"Polygon","vertices_m":reference.get("scan_vertices_m",[])})
+            xy=p[:,i,:2]
+            valid=_inside(strip,xy)
             valid&=(np.linalg.norm(v[:,i],axis=1)>=task["survey"]["effective_speed_min_m_s"])&(expected[:,i,target_j]==1)
             for obstacle in (e for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"):
-                g=obstacle["geometry"]
-                forbidden=(np.linalg.norm(p[:,i,:2]-g["center_m"],axis=1)<=g["radius_m"]) if g["type"]=="Circle" else shapely.covers(Polygon(g["vertices_m"]),shapely.points(p[:,i,:2]))
-                valid&=~forbidden
+                valid&=~_inside(obstacle["geometry"],xy)
+            cursor=0;visits=[]
+            for point in reference["scan_lane_endpoints_m"]:
+                selected=np.flatnonzero(np.linalg.norm(xy[cursor:]-point,axis=1)<=survey["lane_endpoint_radius_m"])
+                if not len(selected):
+                    break
+                cursor+=int(selected[0]);visits.append(float(t[cursor]/1e6))
+            complete=len(visits)==len(reference["scan_lane_endpoints_m"])
+            end=visits[-1] if complete else None
+            if end is not None:
+                valid &= t/1e6<=end
+            observed=actual["contribution"]
+            if observed["ordered_lane_endpoint_times_s"]!=visits or observed["scan_pattern_observed"]!=complete:
+                event_errors.append({"agent_id":a,"field":"ordered_scan_endpoints"})
+            if "scan_end_s" in observed and observed["scan_end_s"]!=end:
+                event_errors.append({"agent_id":a,"field":"scan_end_s"})
+            selected=np.flatnonzero(valid);first=float(t[selected[0]]/1e6) if len(selected) else None
+            duration=round(end-first,6) if end is not None and first is not None else None
+            if "scan_segment_duration_s" in observed and observed["scan_segment_duration_s"]!=duration:
+                event_errors.append({"agent_id":a,"field":"scan_segment_duration_s"})
+            covered=np.zeros(len(grid),bool)
+            # Independent nearest-point search in grid blocks.
+            if valid.any():
+                samples=xy[valid]
+                for begin in range(0,len(grid),64):
+                    points=grid[begin:begin+64]
+                    covered[begin:begin+64]=(np.sum((points[:,None,:]-samples[None,:,:])**2,axis=2).min(axis=1)
+                                             <=survey["footprint_radius_m"]**2)
+            coverage_by_agent.append(covered)
+            if int(covered.sum())!=observed["covered_group_grid_points"]:
+                event_errors.append({"agent_id":a,"field":"covered_group_grid_points"})
+            if reference.get("retreat_required"):
+                distance=np.linalg.norm(p[:,i]-reference["endpoint_enu_m"],axis=1)
+                after=np.zeros(len(t),bool) if end is None else t/1e6>=end
+                arrivals=np.flatnonzero((distance<=task["terminal_radius_m"])&after)
+                arrival=float(t[arrivals[0]]/1e6) if len(arrivals) else None
+                if actual["retreat_event"]["t_s"]!=arrival:
+                    event_errors.append({"agent_id":a,"field":"retreat_event"})
+                dwell=(distance<=task["terminal_radius_m"])&(np.linalg.norm(v[:,i],axis=1)<=task["terminal_speed_m_s"])&after
+                changes=np.flatnonzero(np.diff(np.r_[False,dwell,False].astype(int)))
+                hold=max([0,*((changes[1::2]-changes[::2]-1)/10).tolist()])
+                if actual["endpoint_hold_s"]!=hold:
+                    event_errors.append({"agent_id":a,"field":"retreat_hold"})
+                required=labels["agents"][a]["result"]["conditions"]["reached_retreat_point"]
+                if required!=(arrival is not None):
+                    event_errors.append({"agent_id":a,"field":"reached_retreat_point"})
         indexes=np.flatnonzero(valid)
         first=float(t[indexes[0]]/1e6) if len(indexes) else None
         if actual["core_event"]["t_s"]!=first:
             event_errors.append({"agent_id":a,"field":"core_event"})
+    if coverage_by_agent:
+        shared=next(iter(labels["task_groups"].values()))["observed"]["shared_coverage"]
+        covered=np.logical_or.reduce(coverage_by_agent)
+        if shared["grid_point_count"]!=len(grid) or shared["covered_grid_point_count"]!=int(covered.sum()):
+            event_errors.append({"field":"shared_coverage"})
     minimum=min(float(np.linalg.norm(p[:,i]-p[:,j],axis=1).min()) for i,j in combinations(range(len(ids)),2))
     if minimum!=labels["cluster"]["observed"]["minimum_separation_m"]:
         event_errors.append({"field":"minimum_separation_m"})

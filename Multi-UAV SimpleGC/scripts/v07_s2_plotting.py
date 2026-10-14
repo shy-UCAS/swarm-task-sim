@@ -30,7 +30,7 @@ def map_axes(ax,scene):
     ax.grid(alpha=.12)
 
 
-def plot_episode(scene,run,labels,path,title):
+def plot_episode(scene,run,labels,path,title,skeleton=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -38,6 +38,20 @@ def plot_episode(scene,run,labels,path,title):
     from matplotlib.colors import Normalize
     fig,ax=plt.subplots(figsize=(9,8))
     map_axes(ax,scene)
+    survey=None if skeleton is None else skeleton.get("survey")
+    if survey is not None and "geometry" in survey:
+        from matplotlib.patches import Polygon as PlotPolygon
+        from task_v07.geometry import offset_geometry,radial_points_exact
+        sector=survey["geometry"];center=sector["center_m"]
+        angles=np.linspace(sector["start_angle_rad"],sector["start_angle_rad"]+sector["angle_span_rad"],200)
+        inner=radial_points_exact(offset_geometry(sector["base_geometry"],sector["inner_offset_m"]),center,angles)
+        outer=radial_points_exact(offset_geometry(sector["base_geometry"],sector["outer_offset_m"]),center,angles)
+        ax.add_patch(PlotPolygon(np.concatenate((outer,inner[::-1])),facecolor="#d997ca",edgecolor="#994982",
+                                alpha=.32,lw=1.4,label="Declared survey sector"))
+        for j,(a,ref) in enumerate(sorted(skeleton["references"].items())):
+            ax.scatter(*ref["endpoint_enu_m"][:2],marker="*",s=85,facecolors="none",edgecolors="#ac4868",
+                       label="Withdrawal point (plan)" if j==0 else None)
+        ax.legend(loc="lower left",fontsize=8)
     norm=Normalize(0,run["time_us"][-1]/1e6)
     for i,a in enumerate(run["agent_ids"]):
         xy=run["p"][:,i,:2]
@@ -46,12 +60,17 @@ def plot_episode(scene,run,labels,path,title):
         lc.set_array(run["time_us"][:-1]/1e6);ax.add_collection(lc)
         ax.scatter(*xy[0],color="#42376e",marker="o",s=18)
         ax.scatter(*xy[-1],color="#e7bd42",marker="x",s=36)
-        ax.annotate(a,xy[-1],xytext=(6,5),textcoords="offset points",fontsize=8)
+        offsets=[(10,14),(10,-18),(-52,18),(-52,-20)]
+        offset=offsets[sorted(run["agent_ids"]).index(a)%len(offsets)]
+        ax.annotate(a,xy[-1],xytext=offset,textcoords="offset points",fontsize=8,
+                    arrowprops={"arrowstyle":"-","color":"#687683","lw":.6})
     fig.colorbar(lc,ax=ax,pad=.02,label="Common simulation time (s)",shrink=.78)
     group=next(iter(labels["task_groups"].values()));coord=group["observed"]["coordination"]
     event_range="unknown" if coord["event_range_s"] is None else f"{coord['event_range_s']:.1f} s"
     ax.set_title(title+"\n"+f"Observed: {coord['classification']} | event range {event_range} | result {group['result']['status']}",fontsize=11)
     fig.text(.08,.02,"Actual exported truth at 10 Hz; o = initial state, x = final sampled state. Abstract development scene.",fontsize=8)
+    if survey is not None and "area_m2" in survey:
+        ax.set_title(ax.get_title()+f"\nSurvey {survey['area_m2']/1e6:.3f} km2 | {survey['angle_span_deg']:.1f} deg | {survey['strip_count']} strips",fontsize=10)
     fig.tight_layout(rect=(0,.035,1,1));fig.savefig(path,dpi=135);plt.close(fig)
 
 
@@ -79,4 +98,3 @@ def plot_pair(rows,path,title):
         axes[0].set_xlim(max(0,min(all_times)-30),max(all_times)+35)
     fig.suptitle(title+" | start core operation, measured from 10 Hz truth")
     fig.tight_layout();fig.savefig(path,dpi=135);plt.close(fig)
-
