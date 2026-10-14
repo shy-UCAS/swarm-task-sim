@@ -177,6 +177,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
     facilities=sorted([e for e in scene["entities"] if e["type"]=="facility"],key=lambda e:e["id"])
     levels=np.zeros((len(t),len(ids),len(facilities)),np.int8)
     all_events={};per_agent={};core={};coverages={};effective_masks={}
+    monitoring_masks={};monitoring_angles={};work_ends={}
     obstacle_inside=np.zeros((len(t),len(ids)),bool)
     for obstacle in (e for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"):
         obstacle_inside|=geometry_facts(obstacle["geometry"],p[:,:,:2])["inside"]
@@ -279,16 +280,12 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             inside_obs=dist_to_obs<=obs_radius
             core[a]=event(inside_obs,t,"observation_point_arrival")
             obs_enter=core[a]["frame_index"]
-            # Dwell at observation point (continuous stay).
-            obs_exit_frame=None
-            if obs_enter is not None:
-                outside_after=np.flatnonzero(~inside_obs[obs_enter:])
-                obs_exit_frame=obs_enter+int(outside_after[0]) if len(outside_after) else None
-            dwell_time=0.0
-            if obs_enter is not None:
-                obs_end_frame=obs_exit_frame if obs_exit_frame is not None else len(t)
-                dwell_time=round((obs_end_frame-obs_enter)/10.,6)
-            work_end=float(t[obs_exit_frame]/1e6) if obs_exit_frame is not None else None
+            # Only the observed last in-radius frame defines work completion.
+            hits=np.flatnonzero(inside_obs)
+            obs_last=int(hits[-1]) if len(hits) else None
+            work_end=(float(t[obs_last]/1e6) if obs_last is not None and obs_last<len(t)-1 else None)
+            dwell_time=longest_hold(inside_obs)
+            obs_exit_frame=None if work_end is None else obs_last+1
             in_alert=np.any(levels[:,i,target_fi]>=2)
             settled_obs=obs_exit_frame is not None or complete
             behavior=(["close_observation_point_reached"] if obs_enter is not None else [])
@@ -319,7 +316,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             along_orbit=np.abs(np.degrees(np.arccos(np.abs(cos_angle))))<=45.0
             moving=speed>=min_speed
             # Core event: first 5-second run of on_orbit & along_orbit & moving.
-            min_frames=max(1,int(rules.get("min_loop_duration_s",5.0)*10))
+            min_frames=max(1,int(math.ceil(rules.get("min_loop_duration_s",5.0)*10))+1)
             valid_frame=on_orbit&along_orbit&moving
             core_frame=None
             run_len=0
@@ -336,9 +333,14 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             d_angles=np.diff(angles);d_angles=(d_angles+math.pi)%(2*math.pi)-math.pi
             lap_count=round(abs(float(d_angles[valid_frame[1:]].sum()))/(2*math.pi),3)
             planned_laps=rules.get("planned_laps",1.0)
-            in_band=(levels[:,i,target_fi]>=1)&(levels[:,i,target_fi]<=2)
+            in_band=levels[:,i,target_fi]==1
             out_of_band=valid_frame&~in_band
-            settled_mon=complete
+            hits=np.flatnonzero(valid_frame)
+            last_valid=int(hits[-1]) if len(hits) else None
+            work_end=(float(t[last_valid]/1e6) if last_valid is not None and last_valid<len(t)-1 else None)
+            monitoring_masks[a]=valid_frame
+            monitoring_angles[a]=angles
+            settled_mon=work_end is not None or complete
             behavior=(["orbit_started"] if core_frame is not None else [])
             if lap_count>=0.9*planned_laps:
                 behavior.append("planned_laps_completed")
@@ -356,34 +358,27 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             first=core[a]["frame_index"]
             # Maximum penetration depth in alert band (not protected).
             in_alert_only=(levels[:,i,target_fi]==2)
-            depth_vals=facility_facts[skeleton["target_id"]]["protected_depth_m"][:,i]
+            contour_distance=facility_facts[skeleton["target_id"]]["signed_distance_m"][:,i]
             alert_offset=next(e["offset_m"] for e in scene["entities"] if e.get("facility_id")==skeleton["target_id"] and e.get("layer")=="alert")
-            if in_alert_only.any():
-                max_depth_in_band=float(np.maximum(alert_offset-(-depth_vals+alert_offset),0)[in_alert_only].max())
-            else:
-                max_depth_in_band=0.0
+            max_depth_in_band=(float(np.maximum(alert_offset-contour_distance,0)[in_alert_only].max())
+                               if in_alert_only.any() else 0.0)
             entered_protected=bool((levels[:,i,target_fi]>=3).any())
-            # Turnaway check: distance to facility centre after core event.
-            dist_to_center=np.linalg.norm(xy-center,axis=1)
-            # Find minimum distance frame after core event.
-            turnaway_s=None;retreat_ok=None
+            # Retreat monotonicity uses exact contour distance, after the deepest frame.
+            turnaway_s=None;retreat_ok=None;turnaway_frame=None
+            maximum_retreat_drop_m=None;retreat_descending_fraction=None
             if first is not None:
-                after_core=dist_to_center[first:]
-                min_idx=int(np.argmin(after_core));turnaway_frame=first+min_idx
+                turnaway_frame=first+int(np.argmin(contour_distance[first:]))
                 turnaway_s=float(t[turnaway_frame]/1e6)
-                # Check total distance increase from turnaway to leaving warning zone.
-                outside_warning=np.flatnonzero(levels[:,i,target_fi]==0)
-                leave_frame=int(outside_warning[outside_warning>first][0]) if len(outside_warning[outside_warning>first]) else None
+                outside=np.flatnonzero((levels[:,i,target_fi]==0)&(np.arange(len(t))>turnaway_frame))
+                leave_frame=int(outside[0]) if len(outside) else None
                 if leave_frame is not None:
-                    window=dist_to_center[turnaway_frame:leave_frame+1]
-                    hist_max=np.maximum.accumulate(window)
-                    drops=hist_max-window
-                    drop_frames=int((drops>rules.get("retreat_distance_tolerance_m",5.0)).sum())
-                    drop_frac=drop_frames/max(1,len(window)-1)
-                    retreat_ok=bool(drop_frac<=rules.get("retreat_drop_fraction_max",0.10))
+                    window=contour_distance[turnaway_frame:leave_frame+1]
+                    deficits=np.maximum.accumulate(window)-window
+                    maximum_retreat_drop_m=float(deficits.max())
+                    retreat_descending_fraction=float(np.count_nonzero(np.diff(window)<0)/max(1,len(window)-1))
+                    retreat_ok=bool(maximum_retreat_drop_m<=rules.get("retreat_distance_tolerance_m",5.0)
+                                    and retreat_descending_fraction<=rules.get("retreat_drop_fraction_max",0.10))
                     work_end=float(t[leave_frame]/1e6)
-                else:
-                    retreat_ok=None
             alert_band_thickness=alert_offset-next(e["offset_m"] for e in scene["entities"] if e.get("facility_id")==skeleton["target_id"] and e.get("layer")=="protected")
             depth_frac=max_depth_in_band/alert_band_thickness if alert_band_thickness>0 else 0.0
             settled_feint=(work_end is not None) or complete
@@ -391,6 +386,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             contribution={"alert_entry_s":core[a]["t_s"],"max_depth_in_alert_m":round(max_depth_in_band,3),
                           "depth_fraction_in_alert_band":round(depth_frac,3),
                           "turnaway_s":turnaway_s,"retreat_ok":retreat_ok,
+                          "turnaway_frame":turnaway_frame,"maximum_retreat_drop_m":maximum_retreat_drop_m,
+                          "retreat_descending_fraction":retreat_descending_fraction,
                           "entered_protected":entered_protected,
                           "retreat_tolerance_m":rules.get("retreat_distance_tolerance_m",5.0),
                           "retreat_drop_fraction_max":rules.get("retreat_drop_fraction_max",0.10)}
@@ -440,10 +437,13 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         if expansion:
             approach_headings_deg[a]=approach_heading_deg(xy,core[a]["frame_index"])
 
+        if expansion and kind=="intrusion":
+            work_end=core[a]["t_s"]
+        work_ends[a]=work_end
         end_distance=np.linalg.norm(p[:,i]-ref["endpoint_enu_m"],axis=1)
         dwell=(end_distance<=skeleton["terminal_radius_m"])&(speed<=skeleton["terminal_speed_m_s"])
         retreat_event=None
-        if kind not in ("intrusion","feint") and ref.get("retreat_required",False):
+        if kind!="intrusion" and ref.get("retreat_required",False):
             after_work=np.zeros(len(t),bool) if work_end is None else t/1e6>=work_end
             retreat_event=event((end_distance<=skeleton["terminal_radius_m"])&after_work,t,"retreat_point_arrival")
             retreat_event.pop("role_core_event")
@@ -457,6 +457,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             for fid,layer in skeleton["exclusion_policy"][a].items():
                 forbidden|=levels[:,i,[f["id"] for f in facilities].index(fid)]>=_LAYER_CODES[layer]
             role_conditions["exclusion_policy_respected"]=bounded(forbidden.any(),complete)
+        if expansion:
+            dwell &= np.zeros(len(t),bool) if work_end is None else t/1e6>=work_end
         hold=longest_hold(dwell)
         conditions={**role_conditions,"own_endpoint_hold":measurable(hold>=skeleton["terminal_hold_s"],complete)}
         outcome=observed_conditions_result(conditions,complete)
@@ -479,6 +481,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                                   "hard_obstacle_sample_count":int(obstacle_inside[:,i].sum()),
                                   "outside_world_sample_count":int((~world_inside[:,i]).sum())},
                       "result":{"status":outcome,"conditions":{k:(bool(v) if v is not None else None) for k,v in conditions.items()}}}
+        if expansion:
+            per_agent[a]["observed"]["work_end_s"]=work_end
     coord=coordination(core,skeleton["sync_window_s"],skeleton["batch_split_gap_s"])
     for batch in coord["batches"]:
         for a in batch["members"]:
@@ -514,6 +518,30 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         if skeleton.get("approach_mode")=="multi_direction":
             span=heading_span_deg([approach_headings_deg.get(a) for a in sorted(ids)])
             conditions["multi_direction_span"]=measurable(span is not None and span>=90,complete)
+    revisit=None
+    if kind=="monitoring":
+        known_starts=[e["t_s"] for e in core.values()]
+        known_ends=list(work_ends.values())
+        if all(v is not None for v in known_starts+known_ends):
+            lo=max(known_starts);hi=min(known_ends)
+            if hi>lo:
+                angles_by_agent=monitoring_angles
+                longest=0.0
+                # First entry into each 10-degree angular bin is a revisit witness.
+                for sector in range(36):
+                    visits=[]
+                    for a in sorted(ids):
+                        bins=np.floor((angles_by_agent[a]%(2*math.pi))*36/(2*math.pi)).astype(int)
+                        mask=monitoring_masks[a]&(bins==sector)&(t/1e6>=lo)&(t/1e6<=hi)
+                        starts=np.flatnonzero(mask&~np.r_[False,mask[:-1]])
+                        visits.extend(float(t[k]/1e6) for k in starts)
+                    gaps=np.diff([lo,*sorted(visits),hi])
+                    longest=max(longest,float(gaps.max()) if len(gaps) else 0.0)
+                perimeter=2*math.pi*skeleton["monitoring"]["orbit_radius_m"]
+                allowed=1.5*perimeter/(len(ids)*skeleton["cruise_speed_m_s"])
+                revisit={"window_s":[lo,hi],"maximum_interval_s":longest,
+                         "allowed_interval_s":allowed,"sector_count":36}
+        conditions["shared_revisit"]=measurable(revisit is not None and revisit["maximum_interval_s"]<=revisit["allowed_interval_s"],complete)
     result={"status":observed_conditions_result(conditions,complete),"conditions":conditions}
     observed_targets=sorted({fid for a in per_agent.values() for fid,r in a["observed"]["regions_by_facility"].items()
                              if r["warning"]["entered_observed"]})
@@ -532,6 +560,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                        "members_with_known_core_event":sorted(a for a,e in core.items() if e["t_s"] is not None),
                        "behaviors":sorted({b for a in per_agent.values() for b in a["observed"]["behaviors"]})},
            "result":result}
+    if kind=="monitoring":
+        group["observed"]["shared_revisit"]=revisit
     if expansion:
         span_val=heading_span_deg([approach_headings_deg.get(a) for a in sorted(ids)])
         group["assigned"].update(execution_method=skeleton["execution_method"],approach_mode=skeleton["approach_mode"])

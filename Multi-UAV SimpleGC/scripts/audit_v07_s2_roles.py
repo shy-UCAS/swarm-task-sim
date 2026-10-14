@@ -537,17 +537,5 @@ def audit_intrusion_episode(root):
 # ---------------------------------------------------------------------------
 
 def audit_role_episode(root):
-    task = _read(Path(root) / "task.json")
-    role = task.get("role")
-    em = task.get("execution_method", "")
-    if role == "transit":
-        return audit_transit_episode(root)
-    if role == "reconnaissance" and em == "close_observation":
-        return audit_close_observation_episode(root)
-    if role == "monitoring":
-        return audit_monitoring_episode(root)
-    if role == "feint":
-        return audit_feint_episode(root)
-    if role == "intrusion":
-        return audit_intrusion_episode(root)
-    raise ValueError(f"No independent role audit implemented for role={role!r} execution_method={em!r}")
+    from scripts.audit_v07_s2_conditions import audit_conditions
+    return audit_conditions(root)

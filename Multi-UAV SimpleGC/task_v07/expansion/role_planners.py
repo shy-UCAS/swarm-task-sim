@@ -121,12 +121,15 @@ class VerticalSliceAdapter:
     """
     legacy_vertical_slice = True
 
-    def __init__(self, intent, index):
+    def __init__(self, intent, index, *, recorded_template=None):
         self.intent, self.index = intent, index
+        self.recorded_template = deepcopy(recorded_template)
+        self.legacy_vertical_slice = recorded_template is None
 
     def plan_with_template(self, scene, task_group, role_parameters):
         family = role_parameters["family"]
-        skeleton = build_skeleton(scene, family, self.intent, self.index, task_group["target_id"])
+        skeleton = (deepcopy(self.recorded_template) if self.recorded_template is not None else
+                    build_skeleton(scene, family, self.intent, self.index, task_group["target_id"]))
         if sorted(skeleton["members"]) != sorted(task_group["members"]):
             raise ValueError("Vertical-slice skeleton members differ from the task group")
         bundle = RouteBundle({a: deepcopy(skeleton["references"][a]["points_enu_m"]) for a in task_group["members"]},

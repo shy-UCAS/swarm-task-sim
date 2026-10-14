@@ -39,6 +39,7 @@ from scripts.v07_s2x_plotting import plot_role_episode
 
 DEFAULT_DATA = PROJECT.parent.parent / "SwarmData" / "v07_dataset"
 REFERENCE_SLICE = DEFAULT_DATA / "attempt_20261014T014017Z_15a6bf38"
+REFERENCE_TRANSIT = DEFAULT_DATA / "attempt_s2x_p1_20261014T063446Z_5f0ab712"
 INFRA_ATTEMPT = DEFAULT_DATA / "attempt_s2infra_20261014T023604Z_d2566191"
 EXPANSION_SCOPE = "S2 expansion development data; fastsim M3 frozen config, 4–10 m/s synthetic extrapolation, no SITL qualification"
 PILOT_SKELETONS = ("family_s12_4d13d93f9171c446_ext_000_regular", "family_s12_aa4c66be8e85d64d_ext_000_regular")
@@ -139,7 +140,12 @@ def run_skeleton_job(payload):
     if len(descriptor["task_groups"]) != 1:
         return failed_rows(descriptor, "infeasible", "multi_group_not_in_phase_1", out)
     group = descriptor["task_groups"][0]
-    planner = VerticalSliceAdapter(*spec[1:]) if spec[0] == "vertical_slice" else planner_for(group["role"], group["execution_method"])
+    if spec[0] == "vertical_slice":
+        planner = VerticalSliceAdapter(*spec[1:])
+    elif spec[0] == "vertical_slice_transit":
+        planner = VerticalSliceAdapter("transit", 0, recorded_template=read_json(spec[1]))
+    else:
+        planner = planner_for(group["role"], group["execution_method"])
     legacy = getattr(planner, "legacy_vertical_slice", False)
     skroot = out / descriptor["skeleton_id"]
     skroot.mkdir()
@@ -329,7 +335,14 @@ def regression(args):
             jobs.append({"scene": scene, "descriptor": vertical_request(scene, family, intent, index, target),
                          "planner": ("vertical_slice", intent, index), "out": str(out), "scope": None,
                          "enforce_precheck": False})
-    save_json(out / "registration.json", {"scope": "S2 expansion phase 1: vertical-slice regression through the new pipeline",
+    transit_reference = Path(args.transit_reference)
+    transit_jobs = descriptor_jobs(INFRA_ATTEMPT, PILOT_SKELETONS, out)
+    for job in transit_jobs:
+        template = transit_reference / job["descriptor"]["skeleton_id"] / "skeleton.json"
+        job.update(planner=("vertical_slice_transit", str(template)), enforce_precheck=False)
+    jobs.extend(transit_jobs)
+    save_json(out / "registration.json", {"scope": "fixed 12-episode regression: original vertical adapter and recorded phase-1 transit adapter",
+              "transit_reference_attempt": str(transit_reference),
               "reference_attempt": str(reference), "scene_attempt": registration["scene_attempt"],
               "candidates": registration["candidates"], "workers": args.workers, "pipeline_version": PIPELINE_VERSION,
               "config_sha256": FROZEN_SHA256})
@@ -341,12 +354,26 @@ def regression(args):
         return 1
     comparisons = []
     for row in rows:
-        ref_dir = reference / row["skeleton_id"] / row["mode"]; new_dir = out / row["path"]
+        transit = row["intent"] == "transit"
+        baseline = transit_reference if transit else reference
+        ref_dir = baseline / row["skeleton_id"] / row["mode"]; new_dir = out / row["path"]
+        files = ["labels.json", "prefix_labels.json", "task.json", "source.json", "manifest.json", "public_scene.json"]
+        if not transit:
+            files.append("independent_exact_audit.json")
         diffs = compare_episode_dirs(ref_dir, new_dir,
-                                     ["labels.json", "prefix_labels.json", "task.json", "source.json", "manifest.json",
-                                      "public_scene.json", "independent_exact_audit.json"],
+                                     files,
                                      ["truth_10hz.npz", "model_input.npz", "frame_labels.npz"],
                                      ["truth.csv", "observations.csv"])
+        expected = []
+        if transit:
+            for diff in diffs:
+                if diff["file"] in ("labels.json","prefix_labels.json") and diff["path"].endswith(".work_end_s"):
+                    diff["class"] = "expected:observed_work_end_added"
+                elif diff["file"] == "manifest.json" and diff["path"] in (
+                        "artifact_sha256.labels.json", "artifact_sha256.prefix_labels.json"):
+                    diff["class"] = "metadata:hash_of_expected_label_change"
+            expected = [diff for diff in diffs if diff["class"].startswith("expected:")]
+        # Original vertical audit receipt remains part of strict regression.
         diffs = [d for d in diffs if not (d["file"] == "independent_exact_audit.json" and d["path"] == "directory")] + \
                 [{"file": "independent_exact_audit.json", "path": "directory", "class": "metadata:path"}]
         checks = read_json(out / row["skeleton_id"] / "planning_checks.json")
@@ -354,7 +381,10 @@ def regression(args):
                  for a, r in checks["retreat_points"].items() if not r["valid"]}
         comparisons.append({"episode": f"{row['skeleton_id']}/{row['mode']}", "differences": diffs,
                             "content_differences": sum(d["class"] == "content" for d in diffs),
-                            "labels_json_identical": not any(d["file"] == "labels.json" for d in diffs),
+                            "labels_json_identical": (ref_dir/"labels.json").read_bytes() == (new_dir/"labels.json").read_bytes(),
+                            "baseline_kind": "transit" if transit else "vertical_slice",
+                            "expected_label_changes": expected,
+                            "independent_audit_status": read_json(new_dir/"independent_exact_audit.json")["status"],
                             "rule5_retreat_point_check": {
                                 "applies": bool(checks["retreat_points"]), "violations": rule5,
                                 "status": "not_applicable" if not checks["retreat_points"] else "VIOLATION" if rule5 else "PASS",
@@ -362,12 +392,13 @@ def regression(args):
                                          "retreat point was checked only against the target warning zone.") if rule5 else None}})
     skeletons = []
     for skeleton_id in sorted({r["skeleton_id"] for r in rows}):
-        diffs = compare_episode_dirs(reference / skeleton_id, out / skeleton_id, ["skeleton.json", "timing_calibration.json"],
-                                     [p.name for p in sorted((reference / skeleton_id).glob("single_agent_*.npz"))], [])
+        baseline = transit_reference if skeleton_id in PILOT_SKELETONS else reference
+        diffs = compare_episode_dirs(baseline / skeleton_id, out / skeleton_id, ["skeleton.json", "timing_calibration.json"],
+                                     [p.name for p in sorted((baseline / skeleton_id).glob("single_agent_*.npz"))], [])
         skeletons.append({"skeleton_id": skeleton_id, "differences": diffs,
                           "content_differences": sum(d["class"] == "content" for d in diffs)})
     content = sum(c["content_differences"] for c in comparisons) + sum(s["content_differences"] for s in skeletons)
-    summary = {"status": "PASS" if content == 0 and len(comparisons) == 8 else "FAIL", "episodes": len(comparisons),
+    summary = {"status": "PASS" if content == 0 and len(comparisons) == 12 else "FAIL", "episodes": len(comparisons),
                "labels_identical": sum(c["labels_json_identical"] for c in comparisons),
                "content_difference_count": content,
                "planning_checks_recorded_not_enforced": {s: read_json(out / s / "planning_checks.json")["failures"]
@@ -450,6 +481,7 @@ def main():
     reg = sub.add_parser("regression")
     reg.add_argument("--reference", type=Path, default=REFERENCE_SLICE)
     reg.add_argument("--workers", type=int, default=2)
+    reg.add_argument("--transit-reference", type=Path, default=REFERENCE_TRANSIT)
     pil = sub.add_parser("pilot")
     pil.add_argument("--descriptors", type=Path, default=INFRA_ATTEMPT)
     pil.add_argument("--skeletons", nargs="+", default=list(PILOT_SKELETONS))
