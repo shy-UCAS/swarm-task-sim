@@ -26,7 +26,7 @@ from task_v07.labels import measure
 from task_v07.planning import seed_for
 from task_v07.expansion.contracts import P0ContractError, condition_digest, permute_input, validate_model_input
 from task_v07.expansion.evaluation import truncation_check
-from task_v07.expansion.geometry_checks import exact_frame_geometry
+from task_v07.expansion.geometry_checks import exact_frame_geometry, planning_layer_interval_check, check_endpoint_spacing
 from task_v07.expansion.pipeline import plan_group, single_agent_timing, paired_run, timing_plans, PIPELINE_VERSION
 from task_v07.expansion.role_evaluation import group_evaluator
 from task_v07.expansion.role_planners import PlanningInfeasible, VerticalSliceAdapter, planner_for
@@ -167,10 +167,24 @@ def run_skeleton_job(payload):
         return failed_rows(descriptor, "infeasible", reason, out)
     plans = timing_plans(sk, measured)
     preflight_s = time.perf_counter() - started
+    family = descriptor["family_conditions"]
+    interval = planning_layer_interval_check(bundle, plans, family["cruise_speed_m_s"])
+    save_json(skroot / "planning_layer_interval.json", interval)
+    # Endpoint spacing check: reject if any two agents' final waypoints (retreat
+    # points or intrusion endpoints) are closer than the warning threshold.  This
+    # catches the degenerate case where the planner assigns identical or nearly
+    # identical endpoints to multiple agents, causing guaranteed collisions at
+    # the endpoint hold regardless of departure timing.
+    if not legacy:
+        ep_check = check_endpoint_spacing(bundle, sk["members"])
+        if ep_check["below_warning"]:
+            return failed_rows(descriptor, "infeasible",
+                               f"planning_interval_too_close:endpoints "
+                               f"{ep_check['minimum_m']}m", out)
     save_json(skroot / "timing_calibration.json", {"source": "single-agent independent fastsim execution, exported 10 Hz",
               "core_times_s": measured, "completed_hold_times_s": finished, "timing_plans": plans,
-              "single_flight_wall_s": drywall, "geometry_and_single_flights_wall_s": preflight_s})
-    family = descriptor["family_conditions"]
+              "single_flight_wall_s": drywall, "geometry_and_single_flights_wall_s": preflight_s,
+              "planning_layer_interval": interval})
     rows = []
     for mode in ("synchronous", "sequential"):
         episode_started = time.perf_counter()
@@ -260,6 +274,8 @@ def classify(path):
         return "metadata:hash_of_file_with_wall_clock"
     if leaf in ("scope",):
         return "metadata:text"
+    if path == "planning_layer_interval":
+        return "metadata:planning_diagnostic"
     return "content"
 
 
@@ -408,7 +424,7 @@ def pilot(args):
                                      ["truth_10hz.npz", "model_input.npz", "frame_labels.npz"], ["truth.csv", "observations.csv"])
         diffs = [d for d in diffs if d["class"] == "content" and d["path"] != "directory"]
         process.append({"episode": left["episode_id"], "differences": diffs})
-    for skeleton_id in sorted({r["skeleton_id"] for r in rows}):
+    for skeleton_id in sorted({r["skeleton_id"] for r in rows if r["path"] is not None}):
         diffs = compare_episode_dirs(out / skeleton_id, check_root / skeleton_id, ["skeleton.json", "timing_calibration.json"], [], [])
         process.append({"skeleton": skeleton_id, "differences": [d for d in diffs if d["class"] == "content"]})
     process_status = "PASS" if all(not p["differences"] for p in process) else "FAIL"

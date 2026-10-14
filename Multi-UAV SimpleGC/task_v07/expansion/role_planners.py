@@ -16,7 +16,7 @@ from task_v07.geometry import geometry_facts, offset_geometry
 from task_v07.planning import build_skeleton, clean_route, role_planner, angular_span
 from task_v07.visibility import ExactVisibilityPlanner
 from .contracts import RouteBundle
-from .geometry_checks import check_retreat_point
+from .geometry_checks import check_retreat_point, check_polyline
 
 PLANNING_MARGIN_M = 35.0          # 30 m obstacle clearance + 5 m M3 tracking allowance
 RETREAT_WARNING_CLEARANCE_M = 210.0  # >=200 m requirement plus 10 m planning margin
@@ -111,6 +111,96 @@ def offset_polyline(points, offset, max_turn_deg=150.0, arc_step_deg=30.0):
         if float(leg @ u[i]) < 1.0:
             return None
     return [p for joint in joints for p in joint]
+
+
+def lane_routes(planner, starts, targets, members, spacing_m):
+    """Laterally-offset parallel routes for members sharing one approach corridor.
+
+    Exact-visibility paths for nearby start/target pairs coincide, so agents that
+    fly the same corridor collide in the synchronous timing where every core event
+    is scheduled together.  This takes the first member's route as the reference
+    lane and offsets it laterally for the others, re-joining each member's own
+    start and its own target.  Adjacent lanes are `spacing_m` apart.
+
+    Returns {agent: [K,2] ndarray} or None when an offset lane would reverse or a
+    member has no route at all.
+    """
+    ref = members[0]
+    ref_route = planner.path(starts[ref].tolist(), targets[ref].tolist())
+    if ref_route is None or len(ref_route) < 2:
+        return None
+    ref2d = np.asarray(ref_route, float)
+    n = len(members)
+    out = {}
+    for i, a in enumerate(members):
+        offset = (i - (n - 1) / 2.0) * spacing_m
+        lane = offset_polyline(ref2d, offset)
+        if lane is None:
+            return None
+        pts = [np.asarray(starts[a], float)]
+        pts += [np.asarray(p, float) for p in lane]
+        pts.append(np.asarray(targets[a], float))
+        keep = [pts[0]]
+        for p in pts[1:]:
+            if float(np.linalg.norm(p - keep[-1])) >= 1.0:
+                keep.append(p)
+        if len(keep) < 2:
+            return None
+        out[a] = np.asarray(keep)
+    return out
+
+
+def routes_clear(scene, lane, altitude, margin_m=PLANNING_MARGIN_M):
+    """True when every lane stays clear of hard obstacles and the world margin."""
+    for pts in lane.values():
+        route = [[float(p[0]), float(p[1]), altitude] for p in pts]
+        if not check_polyline(scene, route, forbidden_regions=[], margin_m=margin_m)["valid"]:
+            return False
+    return True
+
+
+def build_lane(scene, planner, starts, targets, members, spacing_m, min_spacing_m, altitude):
+    """Offset lanes at the widest clear spacing, never below min_spacing_m.
+
+    Tries the requested spacing, then 0.75x and 0.5x, returning the first that
+    both offsets cleanly and clears hard obstacles.  None means the map cannot
+    host separated lanes at the required minimum.
+    """
+    for factor in (1.0, 0.75, 0.5):
+        spacing = spacing_m * factor
+        if spacing < min_spacing_m - 1e-9:
+            break
+        lane = lane_routes(planner, starts, targets, members, spacing)
+        if lane is not None and routes_clear(scene, lane, altitude):
+            return lane
+    return None
+
+
+def split_by_side(center, starts, members):
+    """Split members by which side of the target their start position faces.
+
+    One lane may only be shared by members that actually share an approach
+    corridor.  Members entering from opposite sides of the target must not be
+    forced onto one reference route, or the joining legs cross the map (and any
+    obstacle in between).  Returns [(members, mean_angle_rad), ...] with at most
+    two non-empty sides; a degenerate (fully symmetric) spread yields one side.
+    """
+    n = len(members)
+    mean_vec = sum(np.asarray(starts[a], float) - center for a in members) / n
+    norm = float(np.linalg.norm(mean_vec))
+    if norm < 1e-3:
+        return [(sorted(members), 0.0)]
+    primary = mean_vec / norm
+    dots = {a: float(np.dot(np.asarray(starts[a], float) - center, primary)) for a in members}
+    side_a = sorted([a for a in members if dots[a] >= 0], key=lambda a: dots[a])
+    side_b = sorted([a for a in members if dots[a] < 0], key=lambda a: dots[a])
+    if not side_a or not side_b:
+        return [(sorted(members), math.atan2(float(primary[1]), float(primary[0])))]
+    out = []
+    for side in (side_a, side_b):
+        side_mean = sum(np.asarray(starts[a], float) - center for a in side) / len(side)
+        out.append((side, math.atan2(float(side_mean[1]), float(side_mean[0]))))
+    return out
 
 
 class VerticalSliceAdapter:
@@ -392,7 +482,610 @@ class TransitPlanner:
         return bundle, template
 
 
-PLANNERS = {("transit", "transit"): TransitPlanner}
+
+PLANNERS = {
+    ("transit", "transit"): TransitPlanner,
+    ("intrusion", "polygon_visit"): None,  # filled below
+    ("reconnaissance", "close_observation"): None,
+    ("monitoring", "monitoring"): None,
+    ("feint", "feint"): None,
+    ("reconnaissance", "area_search"): None,
+}
+
+
+# ---------------------------------------------------------------------------
+# Shared helpers for candidate-based planners with 115% approach selection
+# ---------------------------------------------------------------------------
+
+def approach_route_length(waypoints, core_waypoint_index):
+    """Sum of segment lengths from start up to and including core_waypoint_index."""
+    pts = np.asarray(waypoints, float)
+    if core_waypoint_index <= 0 or len(pts) < 2:
+        return 0.0
+    end = min(core_waypoint_index, len(pts) - 1)
+    return float(np.sum(np.linalg.norm(np.diff(pts[:end + 1], axis=0), axis=1)))
+
+
+def select_candidate(candidates, rng, *, key_fn):
+    """From a list of scored candidates, keep those within 115% of the minimum
+    key_fn value, then pick uniformly using rng.  Returns None if empty."""
+    if not candidates:
+        return None
+    scores = [key_fn(c) for c in candidates]
+    threshold = min(scores) * 1.15
+    pool = [c for c, s in zip(candidates, scores) if s <= threshold]
+    return rng.choice(pool)
+
+
+def _stagger_delays(routes, speed_m_s):
+    """Compute per-agent departure delays that space agents through a shared corridor.
+
+    Each agent departs after the previous one has had time to travel one stagger
+    interval, computed as (mean route length) / speed / n_agents.  This prevents
+    synchronous agents from occupying the same point of a shared approach corridor
+    at the same time.  All delays are relative to the first agent (delay=0).
+    """
+    agents = sorted(routes)
+    n = len(agents)
+    if n <= 1 or speed_m_s <= 0:
+        return {a: 0.0 for a in agents}
+    total_lens = []
+    for a in agents:
+        pts = np.asarray(routes[a], float)
+        total_lens.append(float(np.linalg.norm(np.diff(pts[:, :2], axis=0), axis=1).sum()))
+    mean_len = sum(total_lens) / n
+    interval = mean_len / speed_m_s / n
+    # Snap to the 0.1 s departure-delay grid required by validate_route_bundle.
+    interval_tenths = max(1, round(interval * 10))  # at least 0.1 s per slot
+    return {a: (i * interval_tenths) / 10.0 for i, a in enumerate(agents)}
+
+
+def find_clear_retreat(scene, from_angle, center, warn_r, approach_pl):
+    """Return a retreat point near from_angle that clears ALL facility warning zones.
+
+    Scans 36 directions centred on from_angle (interleaved ±step increments) and four
+    candidate distances; calls check_retreat_point, which enforces >=200 m clearance
+    from every facility warning zone, not just the target facility.  Returns None only
+    when no candidate passes.
+    """
+    n = 36
+    step = 2 * math.pi / n
+    offsets = [0] + [v for k in range(1, n // 2 + 1) for v in (k * step, -k * step)]
+    distances = [warn_r + d for d in (220, 300, 400, 500)]
+    for off in offsets:
+        direction = np.array([math.cos(from_angle + off), math.sin(from_angle + off)])
+        for dist in distances:
+            candidate = center + dist * direction
+            if (float(geometry_facts(scene["world"]["geometry"], candidate)["signed_distance_m"])
+                    <= -PLANNING_MARGIN_M
+                    and check_retreat_point(scene, candidate.tolist())["valid"]):
+                return candidate
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Close-observation planner
+# ---------------------------------------------------------------------------
+
+class CloseObservationPlanner:
+    """Fly to individual observation points on the alert-zone outer edge and dwell.
+
+    Each member is assigned its own observation point, spread around a chosen base
+    angle so that adjacent points are at least PLANNING_MARGIN_M apart on the alert
+    boundary.  Retreat goes radially outward past the warning boundary.
+    """
+    legacy_vertical_slice = False
+
+    def plan(self, scene, task_group, role_parameters):
+        return self.plan_with_template(scene, task_group, role_parameters)[0]
+
+    def plan_with_template(self, scene, task_group, role_parameters):
+        from task_v07.geometry import radial_points_exact
+        family = role_parameters["family"]
+        members = sorted(task_group["members"])
+        n = len(members)
+        multi = role_parameters["approach_mode"] == "multi_direction"
+        altitude = family["task_altitude_m"]
+        speed = family.get("cruise_speed_m_s", 5.0)
+        states = {s["agent_id"]: s for s in family["initial_states"]}
+        starts = {a: np.array(states[a]["position_enu_m"][:2], float) for a in members}
+        rng = random.Random(role_parameters["planning_seed"])
+
+        facility, zones = zones_of(scene, task_group["target_id"])
+        center = np.array(center_of(facility["geometry"]))
+        obs_radius = 30.0
+        alert_r = zones["alert"]["offset_m"]
+        warn_r = zones["warning"]["offset_m"]
+
+        # Minimum angular separation between adjacent observation points so that
+        # neighbouring agents on the alert boundary are at least 6 m apart.
+        min_sep_m = max(6.0, 15.0 if speed > 7.0 else 6.0)
+        # Arc length = r * dθ  →  dθ = min_sep_m / alert_r
+        min_arc = min_sep_m / max(alert_r, 1.0)
+        # Lane spacing for the shared approach corridor: at least the required
+        # inter-agent minimum, preferably the family lateral spacing.
+        lane_spacing = max(min_sep_m, float(family.get("lateral_spacing_m", min_sep_m)))
+
+        approach_pl = role_planner(scene, survey=False)
+
+        def obs_point(angle):
+            # Place the observation point just outside the alert boundary so the
+            # agent never enters the alert zone.  Offset by obs_radius outward so
+            # the obs_radius circle sits tangent to the alert boundary.
+            alert_boundary = radial_points_exact(zones["alert"]["geometry"], center, [angle])[0]
+            direction = alert_boundary - center
+            dist = float(np.linalg.norm(direction))
+            if dist < 1e-9:
+                return alert_boundary
+            return center + (dist + obs_radius) * direction / dist
+
+        n_candidates = 36
+        base = rng.uniform(0, 2 * math.pi)
+        base_angles = [base + k * 2 * math.pi / n_candidates for k in range(n_candidates)]
+        rng.shuffle(base_angles)
+
+        def score_base(base_angle, group_members):
+            """Score a base angle: generate per-member angles spread around it."""
+            m = len(group_members)
+            # Centre the spread symmetrically around base_angle.
+            offsets = [(i - (m - 1) / 2.0) * min_arc for i in range(m)]
+            angles = [base_angle + off for off in offsets]
+            ret = find_clear_retreat(scene, base_angle, center, warn_r, approach_pl)
+            if ret is None:
+                return None
+            total = 0.0
+            for a, ang in zip(group_members, angles):
+                route = approach_pl.path(starts[a].tolist(), obs_point(ang).tolist())
+                if route is None:
+                    return None
+                total += approach_route_length(route, len(route) - 1)
+            return total
+
+        # Members entering from opposite sides of the target cannot share a lane.
+        side_groups = split_by_side(center, starts, members)
+
+        routes, refs = {}, {}
+        for side_members, side_dir in side_groups:
+            m = len(side_members)
+            if multi and len(side_groups) > 1:
+                # Keep each side inside its own half-plane so the two approach
+                # directions stay about 180 deg apart.
+                ang_list = [a for a in base_angles
+                            if abs((a - side_dir + math.pi) % (2 * math.pi) - math.pi) <= math.pi / 2]
+                if not ang_list:
+                    ang_list = base_angles
+            else:
+                ang_list = base_angles
+            cands = [(a, score_base(a, side_members)) for a in ang_list]
+            cands = [(a, s) for a, s in cands if s is not None]
+            chosen = select_candidate(cands, rng, key_fn=lambda x: x[1])
+            if chosen is None:
+                raise PlanningInfeasible("geometry_infeasible", "no reachable observation angle")
+            base_angle = chosen[0]
+            offsets = [(i - (m - 1) / 2.0) * min_arc for i in range(m)]
+            member_angles = [base_angle + off for off in offsets]
+            ret = find_clear_retreat(scene, base_angle, center, warn_r, approach_pl)
+            if ret is None:
+                raise PlanningInfeasible("geometry_infeasible", "no valid retreat point for close_observation")
+            targets = {a: obs_point(ang) for a, ang in zip(side_members, member_angles)}
+            lane = build_lane(scene, approach_pl, starts, targets, side_members,
+                              lane_spacing, min_sep_m, altitude)
+            if lane is None:
+                raise PlanningInfeasible(
+                    "geometry_infeasible",
+                    "no laterally separated observation lanes at the required spacing")
+            for a, ang in zip(side_members, member_angles):
+                pt = targets[a]
+                # Per-agent retreat: radiate from each agent's own observation angle so
+                # agents don't converge on a shared endpoint and collide at the hold.
+                agent_ret = find_clear_retreat(scene, ang, center, warn_r, approach_pl)
+                if agent_ret is None:
+                    agent_ret = ret  # fall back to group retreat if individual fails
+                full = [[*p, altitude] for p in lane[a]] + [[*agent_ret.tolist(), altitude]]
+                routes[a] = full
+                refs[a] = {"endpoint_enu_m": [*agent_ret.tolist(), altitude],
+                           "observation_point_enu_m": [*pt.tolist(), altitude],
+                           "retreat_required": True,
+                           "retreat_warning_clearance_m": RETREAT_WARNING_CLEARANCE_M}
+
+        bundle = RouteBundle(routes, {a: 0.0 for a in members})
+        template = {"role": "reconnaissance", "execution_method": "close_observation",
+                    "target_id": task_group["target_id"],
+                    "close_observation": {"observation_radius_m": obs_radius,
+                                          "minimum_dwell_s": 20.0,
+                                          "approach_mode": role_parameters["approach_mode"]},
+                    "references": refs}
+        return bundle, template
+
+
+# ---------------------------------------------------------------------------
+# Monitoring (orbit) planner
+# ---------------------------------------------------------------------------
+
+class MonitoringPlanner:
+    """Circular orbit in the alert band; each member enters at a distinct phase offset.
+
+    The first member's entry angle is chosen by the 115% approach-length criterion
+    among 36 candidates.  Subsequent members are spread evenly around the orbit
+    (2π * i / n offset from the chosen angle) so no two members share an entry
+    point, keeping inter-agent separation above the planning threshold.
+    """
+    legacy_vertical_slice = False
+
+    def plan(self, scene, task_group, role_parameters):
+        return self.plan_with_template(scene, task_group, role_parameters)[0]
+
+    def plan_with_template(self, scene, task_group, role_parameters):
+        family = role_parameters["family"]
+        members = sorted(task_group["members"])
+        n = len(members)
+        altitude = family["task_altitude_m"]
+        states = {s["agent_id"]: s for s in family["initial_states"]}
+        starts = {a: np.array(states[a]["position_enu_m"][:2], float) for a in members}
+        rng = random.Random(role_parameters["planning_seed"])
+
+        facility, zones = zones_of(scene, task_group["target_id"])
+        center = np.array(center_of(facility["geometry"]))
+        protected_off = zones["protected"]["offset_m"] if "protected" in zones else 0.0
+        alert_off = zones["alert"]["offset_m"]
+        orbit_radius = protected_off + (alert_off - protected_off) * 0.6
+
+        approach_pl = role_planner(scene, survey=False)
+
+        def entry_point(angle):
+            return center + orbit_radius * np.array([math.cos(angle), math.sin(angle)])
+
+        n_candidates = 36
+        base = rng.uniform(0, 2 * math.pi)
+        angles = [base + k * 2 * math.pi / n_candidates for k in range(n_candidates)]
+        rng.shuffle(angles)
+
+        def score_angle(angle):
+            # Score using the first member only; others enter at evenly spaced offsets.
+            pt = entry_point(angle)
+            total = 0.0
+            for i, a in enumerate(members):
+                member_angle = angle + 2 * math.pi * i / n
+                route = approach_pl.path(starts[a].tolist(), entry_point(member_angle).tolist())
+                if route is None:
+                    return None
+                total += approach_route_length(route, len(route) - 1)
+            return total
+
+        cands = [(a, score_angle(a)) for a in angles]
+        cands = [(a, s) for a, s in cands if s is not None]
+        chosen = select_candidate(cands, rng, key_fn=lambda x: x[1])
+        if chosen is None:
+            raise PlanningInfeasible("geometry_infeasible", "no reachable orbit entry angle")
+        chosen_angle = chosen[0]
+
+        orbit_steps = max(16, int(2 * math.pi * orbit_radius / 30))
+        speed = max(family["cruise_speed_m_s"], 1.0)
+        # Cap at 1 lap to guarantee agents reach the retreat point within the time budget.
+        # More laps are not needed to satisfy the started_orbit / completed_laps conditions.
+        planned_laps = 1
+
+        ret = find_clear_retreat(scene, chosen_angle, center, zones["warning"]["offset_m"],
+                                 approach_pl)
+        if ret is None:
+            raise PlanningInfeasible("geometry_infeasible", "no valid retreat point for monitoring")
+
+        routes, refs = {}, {}
+        for i, a in enumerate(members):
+            member_entry_angle = chosen_angle + 2 * math.pi * i / n
+            orbit_pts = [center + orbit_radius * np.array([
+                math.cos(member_entry_angle + k * 2 * math.pi / orbit_steps),
+                math.sin(member_entry_angle + k * 2 * math.pi / orbit_steps)])
+                for k in range(orbit_steps + 1)]
+            approach = approach_pl.path(starts[a].tolist(), orbit_pts[0].tolist())
+            if approach is None:
+                raise PlanningInfeasible("geometry_infeasible", f"no orbit approach for {a}")
+            all_pts = [[*p, altitude] for p in approach]
+            for _ in range(planned_laps):
+                all_pts.extend([[*p.tolist(), altitude] for p in orbit_pts[1:]])
+            # Per-agent retreat: each member retreats from their own orbit angle so
+            # agents don't pile onto a shared endpoint during the endpoint hold.
+            agent_ret = find_clear_retreat(scene, member_entry_angle, center,
+                                           zones["warning"]["offset_m"], approach_pl)
+            if agent_ret is None:
+                agent_ret = ret  # fall back to group retreat
+            all_pts.append([*agent_ret.tolist(), altitude])
+            routes[a] = all_pts
+            refs[a] = {"endpoint_enu_m": [*agent_ret.tolist(), altitude],
+                       "retreat_required": True,
+                       "retreat_warning_clearance_m": RETREAT_WARNING_CLEARANCE_M}
+
+        bundle = RouteBundle(routes, _stagger_delays(routes, speed))
+        template = {"role": "monitoring", "execution_method": "monitoring",
+                    "target_id": task_group["target_id"],
+                    "monitoring": {"orbit_center_enu_m": center.tolist(),
+                                   "orbit_radius_m": float(orbit_radius),
+                                   "track_tolerance_m": 30.0,
+                                   "effective_speed_min_m_s": 0.5,
+                                   "min_loop_duration_s": 5.0,
+                                   "planned_laps": float(planned_laps),
+                                   "approach_mode": role_parameters["approach_mode"]},
+                    "references": refs}
+        return bundle, template
+
+
+# ---------------------------------------------------------------------------
+# Feint planner
+# ---------------------------------------------------------------------------
+
+class FeintPlanner:
+    """Per-member independent feint angle, each with their own deepest point and turnaway.
+
+    The base angle for each side is chosen by the 115% approach-length criterion.
+    Members are then spread around that base angle with arc spacing sufficient to
+    keep adjacent feint points >= 6 m apart (or >= 15 m at speed > 7 m/s).
+    """
+    legacy_vertical_slice = False
+
+    def plan(self, scene, task_group, role_parameters):
+        return self.plan_with_template(scene, task_group, role_parameters)[0]
+
+    def plan_with_template(self, scene, task_group, role_parameters):
+        family = role_parameters["family"]
+        members = sorted(task_group["members"])
+        multi = role_parameters["approach_mode"] == "multi_direction"
+        altitude = family["task_altitude_m"]
+        speed = family.get("cruise_speed_m_s", 5.0)
+        states = {s["agent_id"]: s for s in family["initial_states"]}
+        starts = {a: np.array(states[a]["position_enu_m"][:2], float) for a in members}
+        rng = random.Random(role_parameters["planning_seed"])
+
+        facility, zones = zones_of(scene, task_group["target_id"])
+        center = np.array(center_of(facility["geometry"]))
+        protected_off = zones["protected"]["offset_m"] if "protected" in zones else 0.0
+        alert_off = zones["alert"]["offset_m"]
+        # Push the feint point deep into the alert band (65% depth from alert outer edge)
+        # so the tracker definitely penetrates enough frames inside the alert-only zone.
+        feint_r = protected_off + (alert_off - protected_off) * 0.35
+        warn_r = zones["warning"]["offset_m"]
+
+        # Angular spacing so that neighbouring feint points are at least min_sep_m apart.
+        min_sep_m = max(6.0, 15.0 if speed > 7.0 else 6.0)
+        min_arc = min_sep_m / max(feint_r, 1.0)
+
+        approach_pl = role_planner(scene, survey=False)
+
+        def feint_point(angle):
+            return center + feint_r * np.array([math.cos(angle), math.sin(angle)])
+
+        n_candidates = 36
+        base = rng.uniform(0, 2 * math.pi)
+        base_angles = [base + k * 2 * math.pi / n_candidates for k in range(n_candidates)]
+        rng.shuffle(base_angles)
+
+        if not multi:
+            angle_groups = [(base_angles, members)]
+        else:
+            half = len(members) // 2
+            angle_groups = [
+                (base_angles, members[:half]),
+                ([a + math.pi for a in base_angles], members[half:]),
+            ]
+
+        routes, refs = {}, {}
+        for ang_list, group_members in angle_groups:
+            m = len(group_members)
+
+            def score_base(base_angle):
+                offsets = [(i - (m - 1) / 2.0) * min_arc for i in range(m)]
+                ret = find_clear_retreat(scene, base_angle, center, warn_r, approach_pl)
+                if ret is None:
+                    return None
+                total = 0.0
+                for i, a in enumerate(group_members):
+                    ang = base_angle + offsets[i]
+                    route = approach_pl.path(starts[a].tolist(), feint_point(ang).tolist())
+                    if route is None:
+                        return None
+                    total += approach_route_length(route, len(route) - 1)
+                return total
+
+            cands = [(a, score_base(a)) for a in ang_list]
+            cands = [(a, s) for a, s in cands if s is not None]
+            chosen = select_candidate(cands, rng, key_fn=lambda x: x[1])
+            if chosen is None:
+                raise PlanningInfeasible("geometry_infeasible", "no reachable feint angle")
+            base_angle = chosen[0]
+            offsets = [(i - (m - 1) / 2.0) * min_arc for i in range(m)]
+            ret = find_clear_retreat(scene, base_angle, center, warn_r, approach_pl)
+            if ret is None:
+                raise PlanningInfeasible("geometry_infeasible", "no valid retreat point for feint")
+            for i, a in enumerate(group_members):
+                angle = base_angle + offsets[i]
+                pt = feint_point(angle)
+                route = approach_pl.path(starts[a].tolist(), pt.tolist())
+                if route is None:
+                    raise PlanningInfeasible("geometry_infeasible", f"no feint approach for {a}")
+                # Per-agent retreat: each member retreats from their own feint angle so
+                # agents don't pile onto a shared endpoint during the endpoint hold.
+                agent_ret = find_clear_retreat(scene, angle, center, warn_r, approach_pl)
+                if agent_ret is None:
+                    agent_ret = ret  # fall back to group retreat
+                full = [[*p, altitude] for p in route] + [[*agent_ret.tolist(), altitude]]
+                routes[a] = full
+                refs[a] = {"endpoint_enu_m": [*agent_ret.tolist(), altitude],
+                           "retreat_required": True,
+                           "retreat_warning_clearance_m": RETREAT_WARNING_CLEARANCE_M,
+                           "planned_feint_angle_deg": math.degrees(angle) % 360}
+
+        bundle = RouteBundle(routes, _stagger_delays(routes, speed))
+        template = {"role": "feint", "execution_method": "feint",
+                    "target_id": task_group["target_id"],
+                    "feint": {"retreat_distance_tolerance_m": 5.0,
+                              "retreat_drop_fraction_max": 0.10,
+                              "approach_mode": role_parameters["approach_mode"]},
+                    "references": refs}
+        return bundle, template
+
+
+# ---------------------------------------------------------------------------
+# Generalized intrusion planner
+# ---------------------------------------------------------------------------
+
+class IntrusionPlanner:
+    """Radial approach to per-member distinct endpoints inside the protected zone.
+
+    Uses a planner that only avoids hard obstacles (not alert/protected zones),
+    so the approach can pass through the alert band en route to the protected zone.
+    Endpoint angles chosen by 115% approach-length criterion with >= 15 m spacing.
+
+    Multi-direction: members are split by which half of the circle their starting
+    position faces (dot product with the primary-side direction), so each physical
+    side genuinely approaches from its own direction and the last-100-m heading span
+    reaches >= 90 deg.
+    """
+    legacy_vertical_slice = False
+
+    def plan(self, scene, task_group, role_parameters):
+        return self.plan_with_template(scene, task_group, role_parameters)[0]
+
+    def plan_with_template(self, scene, task_group, role_parameters):
+        family = role_parameters["family"]
+        members = sorted(task_group["members"])
+        multi = role_parameters["approach_mode"] == "multi_direction"
+        altitude = family["task_altitude_m"]
+        states = {s["agent_id"]: s for s in family["initial_states"]}
+        starts = {a: np.array(states[a]["position_enu_m"][:2], float) for a in members}
+        rng = random.Random(role_parameters["planning_seed"])
+        min_spacing = 15.0
+
+        facility, zones = zones_of(scene, task_group["target_id"])
+        center = np.array(center_of(facility["geometry"]))
+        prot_off = zones["protected"]["offset_m"] if "protected" in zones else 0.0
+        depth_target = max(20.0, min(prot_off * 0.4, 60.0))
+
+        planner = role_planner(scene, survey=False)
+
+        def endpoint(angle):
+            r = max(0.0, prot_off - depth_target)
+            return center + r * np.array([math.cos(angle), math.sin(angle)])
+
+        n = len(members)
+        n_cand = max(72, n * 18)
+
+        if multi and n >= 2:
+            # Assign members to sides based on their starting position relative to the
+            # target center, not by sorted order.  This ensures each side contains
+            # members that genuinely approach from that direction, so the last-100-m
+            # heading span reaches >= 90 deg.
+            #
+            # Primary axis: mean direction from center to all start positions.
+            mean_vec = sum(starts[a] - center for a in members) / n
+            if np.linalg.norm(mean_vec) < 1e-3:
+                # Degenerate case: starts are symmetric; fall back to sorted split.
+                primary = np.array([1.0, 0.0])
+            else:
+                primary = mean_vec / np.linalg.norm(mean_vec)
+
+            # Dot product with primary gives sign: positive = same side as mean,
+            # negative = opposite side.
+            dots = {a: float(np.dot(starts[a] - center, primary)) for a in members}
+            side_a = sorted([a for a in members if dots[a] >= 0], key=lambda a: dots[a])
+            side_b = sorted([a for a in members if dots[a] < 0], key=lambda a: dots[a])
+
+            # Balance: if one side is empty (all starts on the same side), split evenly.
+            if not side_a or not side_b:
+                sorted_by_dot = sorted(members, key=lambda a: dots[a])
+                half = math.ceil(n / 2)
+                side_a, side_b = sorted_by_dot[:half], sorted_by_dot[half:]
+
+            # Side A approaches from the primary direction angle, side B from the opposite.
+            primary_angle = math.atan2(float(primary[1]), float(primary[0]))
+            base = rng.uniform(0, 2 * math.pi)
+            angle_sets = [
+                [primary_angle + k * math.pi / max(1, len(side_a)) for k in range(n_cand // 2)],
+                [primary_angle + math.pi + k * math.pi / max(1, len(side_b))
+                 for k in range(n_cand // 2)],
+            ]
+            angle_sets = [[base + a for a in s] for s in angle_sets]
+            member_groups = [side_a, side_b]
+        else:
+            base = rng.uniform(0, 2 * math.pi)
+            angle_sets = [[base + k * 2 * math.pi / n_cand for k in range(n_cand)]]
+            member_groups = [members]
+
+        all_endpoints = {}
+        for angles, group_members in zip(angle_sets, member_groups):
+            scored = []
+            for angle in angles:
+                total = 0.0
+                for a in group_members:
+                    ep = endpoint(angle)
+                    route = planner.path(starts[a].tolist(), ep.tolist())
+                    if route is None:
+                        total = None
+                        break
+                    total += approach_route_length(route, len(route) - 1)
+                if total is not None:
+                    scored.append((angle, total))
+            if not scored:
+                raise PlanningInfeasible("geometry_infeasible", "no reachable intrusion angle")
+            min_score = min(s for _, s in scored) * 1.15
+            pool = [a for a, s in scored if s <= min_score]
+            rng.shuffle(pool)
+            chosen_angles = _pick_spread_angles(pool, len(group_members), min_spacing,
+                                                center, endpoint)
+            if chosen_angles is None:
+                raise PlanningInfeasible("geometry_infeasible",
+                                         "cannot satisfy intrusion endpoint spacing")
+            for a, angle in zip(group_members, chosen_angles):
+                all_endpoints[a] = endpoint(angle)
+
+        routes, refs = {}, {}
+        for a in members:
+            ep = all_endpoints[a]
+            route = planner.path(starts[a].tolist(), ep.tolist())
+            if route is None:
+                raise PlanningInfeasible("geometry_infeasible", f"no intrusion route for {a}")
+            routes[a] = [[*p, altitude] for p in route]
+            refs[a] = {"endpoint_enu_m": [*ep.tolist(), altitude]}
+
+        bundle = RouteBundle(routes, {a: 0.0 for a in members})
+        template = {"role": "intrusion", "execution_method": task_group["execution_method"],
+                    "target_id": task_group["target_id"],
+                    "required_intrusion_depth_m": depth_target,
+                    "intrusion_endpoint_min_spacing_m": min_spacing,
+                    "references": refs}
+        return bundle, template
+
+
+def _pick_spread_angles(pool, n, min_spacing_m, center, endpoint_fn):
+    """Greedily pick n angles from pool such that all endpoints are >= min_spacing_m apart."""
+    if n == 0:
+        return []
+    for first in pool:
+        chosen = [first]
+        candidates = [a for a in pool if a != first]
+        for _ in range(n - 1):
+            for a in candidates:
+                ep = endpoint_fn(a)
+                if all(float(np.linalg.norm(ep - endpoint_fn(c))) >= min_spacing_m for c in chosen):
+                    chosen.append(a)
+                    break
+            else:
+                break
+        if len(chosen) == n:
+            return chosen
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Fill the PLANNERS registry
+# ---------------------------------------------------------------------------
+
+PLANNERS = {
+    ("transit", "transit"): TransitPlanner,
+    ("intrusion", "polygon_visit"): IntrusionPlanner,
+    ("intrusion", "intrusion"): IntrusionPlanner,     # descriptor execution_method
+    ("reconnaissance", "close_observation"): CloseObservationPlanner,
+    ("monitoring", "monitoring"): MonitoringPlanner,
+    ("feint", "feint"): FeintPlanner,
+}
 
 
 def planner_for(role, execution_method):
@@ -400,3 +1093,4 @@ def planner_for(role, execution_method):
         return PLANNERS[(role, execution_method)]()
     except KeyError:
         raise PlanningInfeasible("planner_not_implemented", f"{role}/{execution_method}") from None
+

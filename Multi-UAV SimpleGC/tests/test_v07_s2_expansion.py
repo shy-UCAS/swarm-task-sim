@@ -10,7 +10,7 @@ from task_v07.labels import measure, role_kind
 from task_v07.visibility import ExactVisibilityPlanner
 from task_v07.expansion.contracts import validate_route_bundle
 from task_v07.expansion.evaluation import truncation_check
-from task_v07.expansion.geometry_checks import check_polyline, check_retreat_point
+from task_v07.expansion.geometry_checks import check_polyline, check_retreat_point, check_endpoint_spacing
 from task_v07.expansion.pipeline import exclusion_policy, forbidden_zone_ids, COMMON_CONSTANTS
 from task_v07.expansion.role_evaluation import group_evaluator
 from task_v07.expansion.role_planners import TransitPlanner, PlanningInfeasible, offset_polyline
@@ -84,7 +84,7 @@ class TransitCriterionTests(unittest.TestCase):
         self.assertEqual(role_kind({"base_intent": "reconnaissance", "role": "reconnaissance",
                                     "execution_method": "equal_strip_lawnmower"}), "area_search")
         with self.assertRaises(ValueError):
-            role_kind({"base_intent": "monitoring", "role": "monitoring"})
+            role_kind({"base_intent": "patrol", "role": "patrol"})
 
     def test_two_sided_crossing_succeeds_with_measured_facts(self):
         sk, run = run_for({"a": (450, 1), "b": (-450, -1)})
@@ -97,7 +97,7 @@ class TransitCriterionTests(unittest.TestCase):
         self.assertEqual(labels["agents"]["a"]["observed"]["core_event"]["raw_event_type"], "enter_warning_zone")
         self.assertGreaterEqual(group["observed"]["approach_span_deg"], 170)
         self.assertTrue(group["result"]["conditions"]["multi_direction_span"])
-        self.assertEqual(labels["schema_version"], "traj2language.labels/0.7-s2x.1")
+        self.assertEqual(labels["schema_version"], "traj2language.labels/0.7-s2x.2")
         self.assertTrue((frame["phase"][-1] == 4).all())
 
     def test_small_entry_exit_azimuth_difference_fails(self):
@@ -247,6 +247,85 @@ class GeometryToleranceTests(unittest.TestCase):
         self.assertTrue(check_retreat_point(s, boundary)["valid"])
         inside = CENTER + (np.linalg.norm(boundary - CENTER) - 1e-3) * (boundary - CENTER) / np.linalg.norm(boundary - CENTER)
         self.assertFalse(check_retreat_point(s, inside)["valid"])
+
+
+class PlanningIntervalInterceptTests(unittest.TestCase):
+    """Verify the planning-layer interval gate fires before simulation."""
+
+    def _make_overlapping_descriptor(self):
+        """Descriptor whose planner sends all agents to the exact same waypoints."""
+        agents = ["uav_01", "uav_02", "uav_03"]
+        states = [{"agent_id": a, "position_enu_m": [200.0 + i * 5, 200.0, 100.0],
+                   "velocity_enu_m_s": [0, 0, 0], "acceleration_enu_m_s2": [0, 0, 0]}
+                  for i, a in enumerate(agents)]
+        family = {
+            "family_id": "test_family",
+            "sampling_seed": 1,
+            "task_altitude_m": 100.0,
+            "lateral_spacing_m": 20.0,
+            "cruise_speed_m_s": 5.0,
+            "initial_states": states,
+        }
+        return {
+            "schema_version": "traj2language.s2x_vertical_request/0.7.1",
+            "skeleton_id": "test_overlap_sk00",
+            "family_id": "test_family",
+            "map_id": "test_map",
+            "base_intent": "reconnaissance",
+            "subset": "regular",
+            "cruise_speed_m_s": 5.0,
+            "task_altitude_m": 100.0,
+            "role_seed": 42,
+            "common_draw": {"approach_mode": "same_direction"},
+            "task_groups": [{"group_id": "g", "target_id": "f",
+                             "role": "reconnaissance",
+                             "execution_method": "close_observation",
+                             "members": agents}],
+            "family_conditions": family,
+            "agent_ids": agents,
+            "column_seed": 42,
+            **COMMON_CONSTANTS,
+        }
+
+    def test_overlapping_routes_intercepted_before_simulation(self):
+        """A bundle where all agents share identical endpoints must be flagged
+        by check_endpoint_spacing before any single-agent timing run."""
+        from task_v07.expansion.contracts import RouteBundle
+
+        agents = ["uav_01", "uav_02", "uav_03"]
+        shared_route = [[200.0, 200.0, 100.0],
+                        [2000.0, 2000.0, 100.0],
+                        [3500.0, 2000.0, 100.0]]
+        routes = {a: shared_route for a in agents}
+        bundle = RouteBundle(routes, {a: 0.0 for a in agents})
+        result = check_endpoint_spacing(bundle, agents)
+        self.assertTrue(result["below_warning"],
+                        f"Expected below_warning=True for identical endpoints, got {result}")
+        self.assertAlmostEqual(result["minimum_m"], 0.0, places=3)
+
+    def test_spread_close_observation_points_have_minimum_separation(self):
+        """After the fix, close-observation agents must be at least 6 m apart
+        at their individual observation points."""
+        from task_v07.expansion.role_planners import CloseObservationPlanner
+        s = scene()
+        agents = [f"uav_{i+1:02d}" for i in range(4)]
+        states = [{"agent_id": a,
+                   "position_enu_m": [200.0 + i * 30, 200.0, 100.0],
+                   "velocity_enu_m_s": [0, 0, 0], "acceleration_enu_m_s2": [0, 0, 0]}
+                  for i, a in enumerate(agents)]
+        group = {"group_id": "g", "target_id": "f", "role": "reconnaissance",
+                 "execution_method": "close_observation", "members": agents}
+        params = {"family": {"task_altitude_m": 100.0, "lateral_spacing_m": 20.0,
+                              "cruise_speed_m_s": 5.0, "initial_states": states},
+                  "approach_mode": "same_direction", "planning_seed": 7}
+        bundle, template = CloseObservationPlanner().plan_with_template(s, group, params)
+        obs_pts = [np.array(template["references"][a]["observation_point_enu_m"][:2])
+                   for a in agents]
+        for i in range(len(obs_pts)):
+            for j in range(i + 1, len(obs_pts)):
+                dist = float(np.linalg.norm(obs_pts[i] - obs_pts[j]))
+                self.assertGreaterEqual(dist, 6.0,
+                    f"obs points {agents[i]}/{agents[j]} only {dist:.2f} m apart")
 
 
 if __name__ == "__main__":

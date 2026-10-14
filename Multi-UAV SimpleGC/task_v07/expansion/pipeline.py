@@ -14,7 +14,7 @@ from task_v07.execution import execute, departure_delays, completion_budget
 from task_v07.labels import measure
 from task_v07.planning import seed_for
 from .contracts import P0ContractError, validate_route_bundle, validate_family_conditions
-from .geometry_checks import check_polyline, check_retreat_point
+from .geometry_checks import check_polyline, check_retreat_point, planning_layer_interval_check
 from .role_planners import PlanningInfeasible
 
 PIPELINE_VERSION = "traj2language.s2x_pipeline/0.7.1"
@@ -85,14 +85,21 @@ def assemble_skeleton(descriptor, group, bundle, template, legacy):
 
 
 def precheck(scene, skeleton, bundle, policy):
-    """Planning-layer checks before any flight; returns a report, never repairs routes."""
+    """Planning-layer checks before any flight; returns a report, never repairs routes.
+
+    The 35 m polyline clearance is enforced only against hard_constraint_obstacle
+    entities (independent limit regions, etc.).  Protection zones are semantic
+    regions whose labeling criteria are checked at label time; requiring 35 m
+    clearance from them here would make roles that intentionally enter those zones
+    (close_observation, monitoring, feint, intrusion) always reject.
+    """
     members = skeleton["members"]
     report = {"route_bundle": "PASS", "polylines": {}, "retreat_points": {}, "endpoint_spacing": None,
               "policy": policy}
     validate_route_bundle(bundle, members)
     for a in members:
         report["polylines"][a] = check_polyline(scene, bundle.waypoints_by_agent[a],
-                                                forbidden_regions=forbidden_zone_ids(scene, policy[a]),
+                                                forbidden_regions=[],   # protection zones checked at label time
                                                 margin_m=35.0)
     if skeleton["role"] != "intrusion":
         for a in members:
