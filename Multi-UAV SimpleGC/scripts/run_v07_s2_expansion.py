@@ -43,6 +43,14 @@ REFERENCE_TRANSIT = DEFAULT_DATA / "attempt_s2x_p1_20261014T063446Z_5f0ab712"
 INFRA_ATTEMPT = DEFAULT_DATA / "attempt_s2infra_20261014T023604Z_d2566191"
 EXPANSION_SCOPE = "S2 expansion development data; fastsim M3 frozen config, 4–10 m/s synthetic extrapolation, no SITL qualification"
 PILOT_SKELETONS = ("family_s12_4d13d93f9171c446_ext_000_regular", "family_s12_aa4c66be8e85d64d_ext_000_regular")
+# Accepted formal pairs only. Preserve each pair's final independent evidence.
+REFERENCE_ROLES = {
+    "family_s12_4d13d93f9171c446_ext_001_regular": DEFAULT_DATA / "attempt_s2x_monitor_repair_20261014T140931Z_725e9733",
+    "family_s12_aa4c66be8e85d64d_ext_002_regular": DEFAULT_DATA / "attempt_s2x_monitor_repair_20261014T135159Z_bd41c2d9",
+    "family_s12_4d13d93f9171c446_ext_003_regular": DEFAULT_DATA / "attempt_s2x_p1_20261014T125642Z_eaac7ffb",
+    "family_s12_aa4c66be8e85d64d_ext_003_regular": DEFAULT_DATA / "attempt_s2x_p1_20261014T125642Z_eaac7ffb",
+    "family_s12_aa4c66be8e85d64d_ext_004_regular": DEFAULT_DATA / "attempt_s2x_p1_20261014T125642Z_eaac7ffb",
+}
 WALL_KEYS = {"simulation_wall_s", "single_flight_wall_s", "geometry_and_single_flights_wall_s", "wall_s"}
 
 
@@ -148,8 +156,8 @@ def run_skeleton_job(payload):
     group = descriptor["task_groups"][0]
     if spec[0] == "vertical_slice":
         planner = VerticalSliceAdapter(*spec[1:])
-    elif spec[0] == "vertical_slice_transit":
-        planner = VerticalSliceAdapter("transit", 0, recorded_template=read_json(spec[1]))
+    elif spec[0] in ("vertical_slice_transit", "vertical_slice_recorded"):
+        planner = VerticalSliceAdapter(group["role"], 0, recorded_template=read_json(spec[1]))
     else:
         planner = planner_for(group["role"], group["execution_method"])
     legacy = getattr(planner, "legacy_vertical_slice", False)
@@ -182,7 +190,7 @@ def run_skeleton_job(payload):
     family = descriptor["family_conditions"]
     interval = planning_layer_interval_check(bundle, plans, family["cruise_speed_m_s"])
     save_json(skroot / "planning_layer_interval.json", interval)
-    if not legacy and spec[0] != "vertical_slice_transit" and any(interval[mode]["below_warning"] for mode in ("synchronous","sequential")):
+    if not legacy and spec[0] not in ("vertical_slice_transit", "vertical_slice_recorded") and any(interval[mode]["below_warning"] for mode in ("synchronous","sequential")):
         return failed_rows(descriptor,"infeasible","planning_interval_too_close:full_route",out)
     save_json(skroot / "timing_calibration.json", {"source": "single-agent independent fastsim execution, exported 10 Hz",
               "core_times_s": measured, "completed_hold_times_s": finished, "timing_plans": plans,
@@ -340,7 +348,17 @@ def regression(args):
         template = transit_reference / job["descriptor"]["skeleton_id"] / "skeleton.json"
         job.update(planner=("vertical_slice_transit", str(template)), enforce_precheck=False)
     jobs.extend(transit_jobs)
-    save_json(out / "registration.json", {"scope": "fixed 12-episode regression: original vertical adapter and recorded phase-1 transit adapter",
+    role_jobs = descriptor_jobs(INFRA_ATTEMPT, REFERENCE_ROLES, out)
+    for job in role_jobs:
+        sid = job["descriptor"]["skeleton_id"]
+        template = REFERENCE_ROLES[sid] / sid / "skeleton.json"
+        job.update(planner=("vertical_slice_recorded", str(template)), enforce_precheck=False)
+    jobs.extend(role_jobs)
+    baselines = {job["descriptor"]["skeleton_id"]: (
+        REFERENCE_ROLES[job["descriptor"]["skeleton_id"]] if job["descriptor"]["skeleton_id"] in REFERENCE_ROLES
+        else transit_reference if job["descriptor"]["skeleton_id"] in PILOT_SKELETONS else reference) for job in jobs}
+    save_json(out / "registration.json", {"scope": "fixed 22-episode regression: vertical 8, transit 4, accepted formal role 10; original/recorded adapters only",
+              "role_reference_attempts": {sid: str(path) for sid, path in REFERENCE_ROLES.items()},
               "transit_reference_attempt": str(transit_reference),
               "reference_attempt": str(reference), "scene_attempt": registration["scene_attempt"],
               "candidates": registration["candidates"], "workers": args.workers, "pipeline_version": PIPELINE_VERSION,
@@ -354,7 +372,7 @@ def regression(args):
     comparisons = []
     for row in rows:
         transit = row["intent"] == "transit"
-        baseline = transit_reference if transit else reference
+        baseline = baselines[row["skeleton_id"]]
         ref_dir = baseline / row["skeleton_id"] / row["mode"]; new_dir = out / row["path"]
         files = ["labels.json", "prefix_labels.json", "task.json", "source.json", "manifest.json", "public_scene.json"]
         if not transit:
@@ -381,7 +399,7 @@ def regression(args):
         comparisons.append({"episode": f"{row['skeleton_id']}/{row['mode']}", "differences": diffs,
                             "content_differences": sum(d["class"] == "content" for d in diffs),
                             "labels_json_identical": (ref_dir/"labels.json").read_bytes() == (new_dir/"labels.json").read_bytes(),
-                            "baseline_kind": "transit" if transit else "vertical_slice",
+                            "baseline_kind": "new_roles" if row["skeleton_id"] in REFERENCE_ROLES else "transit" if transit else "vertical_slice",
                             "expected_label_changes": expected,
                             "independent_audit_status": read_json(new_dir/"independent_exact_audit.json")["status"],
                             "rule5_retreat_point_check": {
@@ -391,13 +409,16 @@ def regression(args):
                                          "retreat point was checked only against the target warning zone.") if rule5 else None}})
     skeletons = []
     for skeleton_id in sorted({r["skeleton_id"] for r in rows}):
-        baseline = transit_reference if skeleton_id in PILOT_SKELETONS else reference
+        baseline = baselines[skeleton_id]
         diffs = compare_episode_dirs(baseline / skeleton_id, out / skeleton_id, ["skeleton.json", "timing_calibration.json"],
                                      [p.name for p in sorted((baseline / skeleton_id).glob("single_agent_*.npz"))], [])
         skeletons.append({"skeleton_id": skeleton_id, "differences": diffs,
                           "content_differences": sum(d["class"] == "content" for d in diffs)})
     content = sum(c["content_differences"] for c in comparisons) + sum(s["content_differences"] for s in skeletons)
-    summary = {"status": "PASS" if content == 0 and len(comparisons) == 12 else "FAIL", "episodes": len(comparisons),
+    vertical_identical = all(c["labels_json_identical"] for c in comparisons if c["baseline_kind"] == "vertical_slice")
+    summary = {"status": "PASS" if content == 0 and len(comparisons) == 22 and vertical_identical else "FAIL", "episodes": len(comparisons),
+               "baseline_counts": {kind: sum(c["baseline_kind"] == kind for c in comparisons)
+                                   for kind in ("vertical_slice", "transit", "new_roles")},
                "labels_identical": sum(c["labels_json_identical"] for c in comparisons),
                "content_difference_count": content,
                "planning_checks_recorded_not_enforced": {s: read_json(out / s / "planning_checks.json")["failures"]
