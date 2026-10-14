@@ -7,6 +7,9 @@ from task_v07.geometry import geometry_facts, GEOMETRY_VERSION
 from task_v07.labels import validate_grid
 from .contracts import P0ContractError
 
+# Exact-tangent planner edges and boundary placements compute to within ~1e-13 m.
+NUMERICAL_TOLERANCE_M = 1e-6
+
 
 def facility_axes(scene):
     facilities = sorted((e for e in scene["entities"] if e["type"] == "facility"), key=lambda e: e["id"])
@@ -71,7 +74,11 @@ def exact_frame_geometry(scene, run, targets=None, forbidden_layers=None):
 
 
 def check_polyline(scene, points_enu_m, *, forbidden_regions=(), margin_m=35.0):
-    """Validate supplied segments; does not construct, improve or reroute them."""
+    """Validate supplied segments; does not construct, improve or reroute them.
+
+    Planner edges are exactly tangent to the inflated constraints, so a margin
+    is met within NUMERICAL_TOLERANCE_M; zero-margin contact is still rejected.
+    """
     points = np.asarray(points_enu_m, dtype=float)
     if points.ndim != 2 or points.shape[1] != 3 or len(points) < 2 or not np.isfinite(points).all():
         raise ValueError("Expected finite [K>=2,3] route")
@@ -84,14 +91,14 @@ def check_polyline(scene, points_enu_m, *, forbidden_regions=(), margin_m=35.0):
     for i, (a, b) in enumerate(zip(points, points[1:])):
         if np.linalg.norm(b - a) < 1.0:
             issues.append({"segment": i, "code": "sub_metre_waypoint"})
-        if np.any(geometry_facts(scene["world"]["geometry"], np.array([a[:2], b[:2]]))["signed_distance_m"] > -margin_m):
+        if np.any(geometry_facts(scene["world"]["geometry"], np.array([a[:2], b[:2]]))["signed_distance_m"] > -margin_m + NUMERICAL_TOLERANCE_M):
             issues.append({"segment": i, "code": "world_margin"})
         for entity in constraints:
             d = geometry_facts(entity["geometry"], np.array([a[:2], b[:2]]), footprint=True)["clearance_m"]
-            if d <= 0 or d < margin_m:
+            if d <= 0 or d < margin_m - NUMERICAL_TOLERANCE_M:
                 issues.append({"segment": i, "code": "constraint_clearance", "entity_id": entity["id"],
                                "clearance_m": d})
-    return {"valid": not issues, "issues": issues}
+    return {"valid": not issues, "issues": issues, "numerical_tolerance_m": NUMERICAL_TOLERANCE_M}
 
 
 def check_retreat_point(scene, xy, warning_clearance_m=200.0, obstacle_margin_m=35.0):
@@ -103,7 +110,8 @@ def check_retreat_point(scene, xy, warning_clearance_m=200.0, obstacle_margin_m=
             minimum = warning_clearance_m if e.get("layer") == "warning" else obstacle_margin_m
             distance = float(geometry_facts(e["geometry"], xy)["signed_distance_m"])
             clearances[e["id"]] = {"clearance_m": distance, "required_m": minimum,
-                                   "valid": distance > 0 and distance >= minimum}
+                                   "valid": distance > 0 and distance >= minimum - NUMERICAL_TOLERANCE_M}
     world = float(geometry_facts(scene["world"]["geometry"], xy)["signed_distance_m"])
-    return {"valid": world <= -obstacle_margin_m and all(c["valid"] for c in clearances.values()),
-            "world_inward_clearance_m": -world, "clearances": clearances}
+    return {"valid": world <= -obstacle_margin_m + NUMERICAL_TOLERANCE_M and all(c["valid"] for c in clearances.values()),
+            "world_inward_clearance_m": -world, "clearances": clearances,
+            "numerical_tolerance_m": NUMERICAL_TOLERANCE_M}

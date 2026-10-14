@@ -50,7 +50,10 @@ def observations(scene,family,skeleton,run):
     return p,v
 
 
-def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measurement,timing_plan=None):
+MINIMAL_SLICE_SCOPE="S2 minimal development slice; 4–10 m/s synthetic extrapolation, no SITL qualification"
+
+
+def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measurement,timing_plan=None,scope=MINIMAL_SLICE_SCOPE):
     root=Path(root);root.mkdir(exist_ok=False)
     validate_public_scene(scene)
     obs_p,obs_v=observations(scene,family,skeleton,run)
@@ -71,7 +74,7 @@ def write_episode(root,scene,family,skeleton,run,labels,frame,delays,mode,measur
              "single_agent_measured_core_times_s":measurement,"sampling_rate_hz":10,
              "high_frequency_semantic_evidence_used":False,"execution_status":run["execution_status"],
              "simulation_wall_s":run["wall_s"],"end_us":run["end_us"],"execution_time_budget":run.get("time_budget"),
-             "scope":"S2 minimal development slice; 4–10 m/s synthetic extrapolation, no SITL qualification"})
+             "scope":scope})
     artifacts={p.name:sha(p) for p in root.iterdir() if p.is_file()}
     save_json(root/"manifest.json",{"protocol_version":"swarm_defense_v07a","source":"fastsim",
              "simulation_backend":"fast_dynamics","agent_ids":run["agent_ids"],"end_us":run["end_us"],

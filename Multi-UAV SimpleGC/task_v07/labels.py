@@ -10,7 +10,32 @@ from .planning import angular_span, scene_parts
 from .survey import survey_grid
 
 LABEL_VERSION="traj2language.labels/0.7-s2.3"
+# Expansion task groups (explicit exclusion policy, new roles) use a new schema.
+EXPANSION_LABEL_VERSION="traj2language.labels/0.7-s2x.1"
 EVIDENCE_SOURCE="truth.csv:10Hz_half_open_sim_clock"
+_LAYER_CODES={"warning":1,"alert":2,"protected":3}
+
+
+def role_kind(skeleton):
+    """Criterion branch of one task group; vertical-slice skeletons map unchanged."""
+    role=skeleton.get("role",{"penetration":"intrusion","reconnaissance":"reconnaissance"}.get(skeleton["base_intent"]))
+    if role=="intrusion":
+        return "intrusion"
+    if role=="reconnaissance" and skeleton.get("execution_method")!="close_observation":
+        # All historical strip methods (annular/equal-strip lawnmower, area_search).
+        return "area_search"
+    if role=="transit":
+        return "transit"
+    raise ValueError(f"No evidence criterion implemented for role {role!r}")
+
+
+def azimuth_deg(offset):
+    return math.degrees(math.atan2(offset[1],offset[0]))%360
+
+
+def bounded(violated,settled):
+    """Absence condition: an observed violation is final, absence needs settled evidence."""
+    return False if violated else (True if settled else None)
 
 
 def validate_grid(t_us,p,v,ids):
@@ -113,8 +138,9 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         levels[:,:,fi]=facts["layer"]
     target_fi=next(i for i,f in enumerate(facilities) if f["id"]==skeleton["target_id"])
     center=np.array(center_of(facilities[target_fi]["geometry"]))
+    kind=role_kind(skeleton)
     grid=None
-    if skeleton["base_intent"]=="reconnaissance":
+    if kind=="area_search":
         grid=survey_grid(skeleton["survey"])
     phases=np.zeros((len(t),len(ids)),np.int8)
     azimuths=[]
@@ -127,7 +153,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                 ev=event(levels[:,i,fi]>=level,t,f"enter_{name}_zone")
                 region_facts[f["id"]][name]={"entered_observed":ev["t_s"] is not None,
                                               "first_entry_s":ev["t_s"],"sample_count":int(np.sum(levels[:,i,fi]>=level))}
-        if skeleton["base_intent"]=="penetration":
+        work_end=None
+        if kind=="intrusion":
             core[a]=event(levels[:,i,target_fi]==3,t,"enter_protected_zone")
             inside=levels[:,i,target_fi]==3
             depth=float(facility_facts[skeleton["target_id"]]["protected_depth_m"][:,i].max())
@@ -141,6 +168,47 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             contribution={"maximum_protected_depth_m":depth,"entry_azimuth_deg":azimuth}
             role_conditions={"entered_protected":measurable(inside.any(),complete),
                              "required_depth":measurable(depth>=skeleton["required_intrusion_depth_m"],complete)}
+        elif kind=="transit":
+            # One continuous visit of the target warning region (closed boundary).
+            criteria=skeleton["transit"]
+            inside=levels[:,i,target_fi]>=1
+            core[a]=event(inside,t,"enter_warning_zone")
+            first=core[a]["frame_index"];last=None
+            if first is not None:
+                outside=np.flatnonzero(~inside[first:])
+                last=first+int(outside[0])-1 if len(outside) else None
+            visit=np.zeros(len(t),bool)
+            if first is not None:
+                visit[first:len(t) if last is None else last+1]=True
+            moving=speed>=criteria["low_speed_threshold_m_s"]
+            low_hold=longest_hold(visit&~moving)
+            heading=np.arctan2(v[:,i,1],v[:,i,0])
+            step=visit[1:]&visit[:-1]&moving[1:]&moving[:-1]
+            turn=np.abs((np.diff(heading)+math.pi)%(2*math.pi)-math.pi)
+            cumulative=round(float(np.degrees(turn[step].sum())),6)
+            azimuth=exit_azimuth=chord=difference=None
+            if first is not None:
+                azimuth=round(azimuth_deg(xy[first]-center),6)
+                azimuths.append(azimuth)
+            if last is not None:
+                exit_azimuth=round(azimuth_deg(xy[last]-center),6)
+                chord=round(float(np.linalg.norm(xy[last]-xy[first])),6)
+                difference=round(abs((exit_azimuth-azimuth+180)%360-180),6)
+                work_end=float(t[last+1]/1e6)
+            settled=last is not None or complete
+            behavior=(["crossed_warning_zone"] if last is not None else
+                      ["entered_warning_zone"] if first is not None else [])
+            contribution={"warning_entry_s":core[a]["t_s"],"warning_exit_s":work_end,
+                          "warning_last_inside_frame":last,"warning_visit_duration_s":None if last is None else round((last-first)/10,6),
+                          "chord_length_m":chord,"entry_azimuth_deg":azimuth,"exit_azimuth_deg":exit_azimuth,
+                          "entry_exit_azimuth_difference_deg":difference,
+                          "longest_low_speed_in_warning_s":low_hold,"cumulative_turn_in_warning_deg":cumulative}
+            role_conditions={"entered_warning":measurable(first is not None,complete),
+                             "exited_warning":measurable(last is not None,complete),
+                             "chord_length":measurable(chord is not None and chord>=criteria["minimum_chord_m"],complete),
+                             "entry_exit_azimuth_difference":measurable(difference is not None and difference>=criteria["minimum_azimuth_difference_deg"],complete),
+                             "no_stop_in_warning":bounded(low_hold>criteria["maximum_low_speed_s"],settled),
+                             "no_loop_in_warning":bounded(cumulative>=criteria["maximum_cumulative_turn_deg"],settled)}
         else:
             strip=ref.get("scan_geometry",{"type":"Polygon","vertices_m":ref.get("scan_vertices_m",[])})
             expected_visits=len(ref["scan_lane_endpoints_m"])
@@ -178,25 +246,34 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                              "scan_lane_evidence":measurable(scan_complete,complete),
                              "no_alert_entry":bool(no_alert)}
             azimuth=None
+            work_end=scan_end
         end_distance=np.linalg.norm(p[:,i]-ref["endpoint_enu_m"],axis=1)
         dwell=(end_distance<=skeleton["terminal_radius_m"])&(speed<=skeleton["terminal_speed_m_s"])
         retreat_event=None
-        if skeleton["base_intent"]=="reconnaissance" and ref.get("retreat_required",False):
-            after_scan=np.zeros(len(t),bool) if scan_end is None else t/1e6>=scan_end
-            retreat_event=event((end_distance<=skeleton["terminal_radius_m"])&after_scan,t,"retreat_point_arrival")
+        if kind!="intrusion" and ref.get("retreat_required",False):
+            after_work=np.zeros(len(t),bool) if work_end is None else t/1e6>=work_end
+            retreat_event=event((end_distance<=skeleton["terminal_radius_m"])&after_work,t,"retreat_point_arrival")
             retreat_event.pop("role_core_event")
             retreat_event["planned_warning_clearance_m"]=ref["retreat_warning_clearance_m"]
             retreat_event["minimum_observed_endpoint_distance_m"]=float(end_distance.min())
             role_conditions["reached_retreat_point"]=measurable(retreat_event["t_s"] is not None,complete)
-            dwell &= after_scan
+            dwell &= after_work
+        if "exclusion_policy" in skeleton:
+            # Explicit private per-ID policy: the named layer and every inner layer are forbidden.
+            forbidden=np.zeros(len(t),bool)
+            for fid,layer in skeleton["exclusion_policy"][a].items():
+                forbidden|=levels[:,i,[f["id"] for f in facilities].index(fid)]>=_LAYER_CODES[layer]
+            role_conditions["exclusion_policy_respected"]=bounded(forbidden.any(),complete)
         hold=longest_hold(dwell)
         conditions={**role_conditions,"own_endpoint_hold":measurable(hold>=skeleton["terminal_hold_s"],complete)}
         outcome=observed_conditions_result(conditions,complete)
         phases[:,i]=np.where(speed>.5,1,0)
         if core[a]["frame_index"] is not None:
             phases[core[a]["frame_index"]:,i]=2
-        if skeleton["base_intent"]=="reconnaissance" and contribution["scan_pattern_observed"]:
+        if kind=="area_search" and contribution["scan_pattern_observed"]:
             phases[t/1e6>contribution["ordered_lane_endpoint_times_s"][-1],i]=3
+        elif kind=="transit" and work_end is not None:
+            phases[t/1e6>=work_end,i]=3
         phases[dwell,i]=4
         per_agent[a]={"assigned":{"intent":skeleton["base_intent"],"role":skeleton["role"],
                                   "target":skeleton["target_id"],"task_group":skeleton["group_id"],
@@ -234,7 +311,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         timing_diagnostics["batch_members_match_assignment"]=observed_partition==expected_partition
     if shared:
         conditions["shared_coverage"]=measurable(shared["coverage_fraction"]>=shared["required_fraction"],complete)
-    if skeleton["base_intent"]=="penetration":
+    # Vertical-slice intrusion skeletons carry no approach field and were always multi-direction.
+    if skeleton.get("approach_mode","multi_direction" if kind=="intrusion" else None)=="multi_direction":
         conditions["multi_direction_span"]=measurable(len(azimuths)==len(ids) and angular_span(azimuths)>=90,complete)
     result={"status":observed_conditions_result(conditions,complete),"conditions":conditions}
     observed_targets=sorted({fid for a in per_agent.values() for fid,r in a["observed"]["regions_by_facility"].items()
@@ -247,7 +325,13 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
                        "members_with_known_core_event":sorted(a for a,e in core.items() if e["t_s"] is not None),
                        "behaviors":sorted({b for a in per_agent.values() for b in a["observed"]["behaviors"]})},
            "result":result}
-    labels={"schema_version":LABEL_VERSION,"evidence":{"source":EVIDENCE_SOURCE,"last_observed_s":float(t[-1]/1e6),
+    expansion="exclusion_policy" in skeleton
+    if expansion:
+        group["assigned"].update(execution_method=skeleton["execution_method"],approach_mode=skeleton["approach_mode"])
+        # Unified multi-direction measure: entry azimuth into the work area about its centre.
+        group["observed"].update(work_area_center_m=center.tolist(),
+                                 entry_azimuths_deg={a:per_agent[a]["observed"]["contribution"].get("entry_azimuth_deg") for a in sorted(ids)})
+    labels={"schema_version":EXPANSION_LABEL_VERSION if expansion else LABEL_VERSION,"evidence":{"source":EVIDENCE_SOURCE,"last_observed_s":float(t[-1]/1e6),
                 "frame_count":len(t),"complete_observation":complete,"future_events_used":False,
                 "geometry_version":GEOMETRY_VERSION},
             "agents":per_agent,"task_groups":{skeleton["group_id"]:group},
