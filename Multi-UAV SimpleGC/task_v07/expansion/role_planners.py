@@ -415,12 +415,14 @@ def find_clear_retreat(scene, from_angle, center, warn_r, approach_pl):
 # ---------------------------------------------------------------------------
 
 from .formation_role_planners import (CloseObservationPlanner, MonitoringPlanner, FeintPlanner, IntrusionPlanner)
+from .area_search import AreaSearchPlanner
 
 PLANNERS = {
     ("transit", "transit"): TransitPlanner,
     ("intrusion", "polygon_visit"): IntrusionPlanner,
     ("intrusion", "intrusion"): IntrusionPlanner,     # descriptor execution_method
     ("reconnaissance", "close_observation"): CloseObservationPlanner,
+    ("reconnaissance", "area_search"): AreaSearchPlanner,
     ("monitoring", "monitoring"): MonitoringPlanner,
     ("feint", "feint"): FeintPlanner,
 }
