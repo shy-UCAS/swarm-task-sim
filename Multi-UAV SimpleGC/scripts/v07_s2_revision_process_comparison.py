@@ -31,7 +31,7 @@ def compare_process_counts(attempt,records):
         save_json(root/'episode_records.json',rows)
     differences=[];generated_pairs=0;planning_only=[]
     names=('candidate_pool.json','candidate_search.json','skeleton.json','timing_calibration.json',
-           'planning_checks.json','planning_layer_interval.json','geometry_history.json','planning_rejection.json')
+           'planning_checks.json','planning_layer_interval.json','solo_overlay_interval.json','geometry_history.json','planning_rejection.json')
     for sid in selected:
         left,right=[root/sid for root in roots]
         existing=[]
@@ -50,7 +50,7 @@ def compare_process_counts(attempt,records):
             generated_pairs+=1
             diffs=compare_episode_dirs(roots[0]/rows[0]['path'],roots[1]/rows[1]['path'],
                 ['task.json','labels.json','prefix_labels.json','source.json','manifest.json','public_scene.json',
-                 'independent_exact_audit.json','policy_geometry_audit.json','truncation_check.json'],
+                 'independent_exact_audit.json','policy_geometry_audit.json','truncation_check.json','solo_overlay_comparison.json'],
                 ['truth_10hz.npz','model_input.npz','frame_labels.npz'],['truth.csv','observations.csv'])
             for d in diffs:
                 if d['file']=='independent_exact_audit.json' and d['path'].split('.')[-1]=='directory':d['class']='metadata:path'

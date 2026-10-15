@@ -19,6 +19,8 @@ from task_v07.expansion.contracts import P0ContractError, condition_digest, vali
 from task_v07.expansion.episode_pipeline import plan_episode, calibrate_episode, episode_interval_check
 from task_v07.expansion.role_planners import PlanningInfeasible
 from task_v07.expansion.geometry_checks import exact_frame_geometry
+from task_v07.expansion.solo_spacing import load_saved_solos, solo_interval_check, prediction_error
+from task_v07.expansion.search_diagnostics import rejection
 from task_v07.expansion.evaluation import truncation_check
 from task_v07.expansion.role_evaluation import group_evaluator
 from task_v07.execution import execute, completion_budget, FROZEN_SHA256
@@ -169,6 +171,8 @@ def run_episode_job(payload):
     started = time.perf_counter()
     pool, search = episode_candidate_pool(scene, descriptor)
     search["actual_single_agent_calibration_rounds"] = 0
+    search["solo_overlay_rejections"] = 0
+    search["additional_overlay_rejections"] = 0
     save_json(skroot / "candidate_pool.json", search)
     history = []
     if not pool:
@@ -185,6 +189,7 @@ def run_episode_job(payload):
         attempt = skroot / f"geometry_{variant:02d}"
         attempt.mkdir()
         sk, bundle, pre = candidate["skeleton"], candidate["bundle"], candidate["checks"]
+        overlay = None
         try:
             save_json(attempt / "skeleton.json", sk)
             save_json(attempt / "planning_checks.json", pre)
@@ -207,8 +212,20 @@ def run_episode_job(payload):
             if any(interval[mode]["below_warning"] for mode in ("synchronous", "sequential")):
                 raise PlanningInfeasible("planning_spacing_rejection",
                     f"whole episode actual-delay constant-speed estimate below {interval['warning_threshold_m']:g}m")
+            saved_solo = load_saved_solos(attempt, sk["agent_ids"])
+            overlay = solo_interval_check(saved_solo, plans)
+            save_json(attempt / "solo_overlay_interval.json", overlay)
+            if any(overlay[mode]["below_warning"] for mode in ("synchronous", "sequential")):
+                search["solo_overlay_rejections"] += 1
+                search["additional_overlay_rejections"] += 1
+                raise PlanningInfeasible("planning_spacing_rejection",
+                    "saved solo 10 Hz whole-episode overlay below 10m after original nominal screen passed")
         except PlanningInfeasible as exc:
             item = {"geometry_variant": variant, "candidate_index": candidate["index"], "category": exc.category, "detail": exc.detail}
+            evidence = [] if overlay is None else [
+                {"constraint":"solo_overlay_minimum_separation", "mode":mode, "threshold_m":10., **overlay[mode]}
+                for mode in ("synchronous","sequential") if overlay[mode]["below_warning"]]
+            item["search_rejection"] = rejection(exc.detail, scope="calibrated_combination_prediction", evidence=evidence)
             history.append(item)
             save_json(attempt / "planning_rejection.json", item)
             print(json.dumps({"stage": "geometry_rejected", "skeleton": descriptor["skeleton_id"], **item}, ensure_ascii=False), flush=True)
@@ -217,19 +234,27 @@ def run_episode_job(payload):
         save_json(skroot / "planning_checks.json", pre)
         save_json(skroot / "timing_calibration.json", calibration)
         save_json(skroot / "planning_layer_interval.json", interval)
+        save_json(skroot / "solo_overlay_interval.json", overlay)
         save_json(skroot / "geometry_history.json", history)
         save_json(skroot / "candidate_search.json", search)
         setup_s = time.perf_counter() - started
         rows = []
         for mode, plan in plans.items():
             run = execute(sk, plan["departure_delays_s"], time_budget=completion_budget(sk, plan["departure_delays_s"], finished))
+            prediction = prediction_error(saved_solo, plan, run, overlay[mode])
             rows.append(write_result(scene, descriptor, sk, bundle, run, plan, measured, mode, out, setup_s,
                 extra_metrics={"geometry_candidate_budget": search["candidate_budget"],
                                "geometry_candidates_attempted": search["attempted_candidates"],
                                "single_agent_calibration_rounds": search["actual_single_agent_calibration_rounds"],
-                               "selected_candidate_index": candidate["index"]}))
+                               "selected_candidate_index": candidate["index"],
+                               "solo_overlay_rejections": search["solo_overlay_rejections"],
+                               "additional_overlay_rejections": search["additional_overlay_rejections"],
+                               "solo_overlay_prediction_error": prediction}))
+            save_json(skroot / mode / "solo_overlay_comparison.json", prediction)
         load_pair(*(skroot / mode for mode in ("synchronous", "sequential")))
         return rows
+    search["calibration_termination"] = rejection(
+        "eligible combinations or five-round solo calibration budget exhausted", scope="single_agent_calibration", exhausted=True)
     save_json(skroot / "candidate_search.json", search)
     save_json(skroot / "planning_rejection.json", {"history": history, "candidate_budget": search["candidate_budget"],
         "calibration_rounds": search["actual_single_agent_calibration_rounds"], "maximum_calibration_rounds": MAX_CALIBRATION_ROUNDS,
