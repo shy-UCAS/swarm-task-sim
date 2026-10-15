@@ -20,9 +20,13 @@ def outcome(checks):
     return "failure" if False in checks.values() else "unknown" if None in checks.values() else "success"
 
 
-def independently_measure(scene, task, run, complete):
+def independently_measure(scene, task, run, complete, *, detector_cache=None):
     cfg = configuration()
     ids, t, p, v = (run[key] for key in ("agent_ids", "time_us", "p", "v"))
+    cache = {} if detector_cache is None else detector_cache
+    def cached(key, compute):
+        if key not in cache: cache[key] = compute()
+        return cache[key]
     fids = sorted(e["id"] for e in scene["entities"] if e["type"] == "facility")
     levels = _build_levels(scene, p[:, :, :2], fids)
     blocked = np.zeros(p.shape[:2], bool)
@@ -46,8 +50,9 @@ def independently_measure(scene, task, run, complete):
             hit = np.flatnonzero(layer >= 1); selected = np.zeros(len(t), bool)
             if len(hit): selected[hit[0]:hit[-1] + 1] = True
             first_warning = int(hit[0]) if len(hit) else None
-            dwell = independent_dwell(xy, t, selected)
-            revisit = independent_revisit(xy, v[:, i], t, layer, selected, center)
+            identity = (id(p), id(v), id(t), template["target_id"], a)
+            dwell = cached((identity, "work_dwell"), lambda: independent_dwell(xy, t, selected))
+            revisit = cached((identity, "revisit"), lambda: independent_revisit(xy, v[:, i], t, layer, selected, center))
             evidence = {"dwell": dwell, "revisit": revisit, "minimum_contour_distance_m": float(distance[:, i].min()),
                         "minimum_contour_distance_frame": int(np.argmin(distance[:, i])), "dwell_total_duration_s": dwell["total_duration_s"]}
             def first(mask):
@@ -65,7 +70,7 @@ def independently_measure(scene, task, run, complete):
                 evidence.update(covered_group_grid_points=int(footprint["covered_mask"].sum()), group_grid_point_count=footprint["grid_point_count"],
                     effective_observation_duration_s=float(footprint["effective_mask"].sum()) / 10)
             elif kind == "close_observation":
-                obs = independent_dwell(xy, t, layer == 1); evidence["observation_dwell"] = obs
+                obs = cached((identity, "band_dwell"), lambda: independent_dwell(xy, t, layer == 1)); evidence["observation_dwell"] = obs
                 core, confirm, raw = obs["frame_index"], obs["confirm_frame_index"], "observation_point_arrival"
                 checks = {"observation_dwell": positive(obs["detected"], complete), "no_revisit": negative(revisit["detected"], complete)}
             elif kind == "monitoring":

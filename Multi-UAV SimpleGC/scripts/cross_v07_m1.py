@@ -17,6 +17,7 @@ def role_kind(group):
 def cross_group(scene, group, run, *, source_success=True):
     source = role_kind(group)
     rows = []
+    cache = {}
     for destination in KINDS:
         if destination == source: continue
         expectation = "not_required" if (source, destination) in NON_REQUIRED else "not_applicable" if (source, destination) in NOT_APPLICABLE else "no"
@@ -33,18 +34,18 @@ def cross_group(scene, group, run, *, source_success=True):
             # Monitoring -> search is excluded by its observed revisit regardless
             # of any possible declared search region. Never fabricate a region.
             if source == "monitoring":
-                original = independently_measure(scene, group, run, True)
+                original = independently_measure(scene, group, run, True, detector_cache=cache)
                 excluded = all(a["contribution"]["revisit"]["detected"] for a in original["agents"].values())
                 rows.append({**row, "verdict": "no" if excluded else "unknown", "status": "PASS" if excluded else "INCOMPLETE", "reason": "observed patrol revisit violates search negative predicate"})
             else:
-                original = independently_measure(scene, group, run, True)
+                original = independently_measure(scene, group, run, True, detector_cache=cache)
                 # Successful feint/intrusion already witnesses an alert entry,
                 # which every reconnaissance role forbids.
                 excluded = source in ("feint", "intrusion") and all(
                     a["core_event"]["t_s"] is not None for a in original["agents"].values())
                 rows.append({**row, "verdict": "no" if excluded else "not_applicable", "status": "PASS" if excluded else "not_applicable", "reason": "target alert/protected entry excludes reconnaissance"})
             continue
-        expected = independently_measure(scene, template, run, True)
+        expected = independently_measure(scene, template, run, True, detector_cache=cache)
         status = expected["groups"][template["group_id"]]["result"]["status"]
         verdict = {"success": "yes", "failure": "no", "unknown": "unknown"}[status]
         rows.append({**row, "verdict": verdict, "status": "FAIL" if expectation == "no" and verdict == "yes" else "PASS",
