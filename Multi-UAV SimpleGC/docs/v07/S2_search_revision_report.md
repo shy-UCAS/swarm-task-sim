@@ -2,6 +2,10 @@
 
 日期：2026-10-15（America/Los_Angeles）；worktree `Simulation-v07scene`，分支 `v07-scene`。
 
+**状态：已在快速检查 B 触发停止条件后停机。** 第 1–5 步实施与 S2 测试完成，最后一次 164/164 PASS；最终快速 A 为 32/60 规划可行，10 个意图×逼近方式组合均非零。快速 B 已保存 11 条通过审计的联合轨迹，4 个完整成功配对、2 个确定失败组合、4 个中止未完成组合。第 6/7 步与全量运行未启动，中止请求不计为任务失败。
+
+停止直接原因是多向佯动 5 轮预算耗尽。另一已审计失败揭示了剩余缺口：佯攻计划作业点深度约 0.50，但完整规划路径最大深入比例约 0.881，候选预检尚未覆盖原角色判据中的整航线最大深度。叠加预检在小试新增拒绝 2 个组合；11 条已审计轨迹的最小间距预测最大绝对误差为 0.066845 m。详细证据、未执行项与 11 张图件见下文。
+
 ## 范围与执行登记
 
 基线生成器提交 `f3498bb`；上一轮离线诊断原为未提交文件，本轮先保存为 `b794772`。此前复制的图件汇总目录保持原样。
@@ -143,3 +147,119 @@ S2 单元测试 164/164 PASS（19.152 s），覆盖真实延迟平移、出发�
 第 5 步停止条件触发：False。
 
 第 4/5 步的 32 份选中规划骨架 SHA256 逐一相同；第 5 步新增预检未改变纯规划结果。
+
+## 快速检查 B：停止报告
+
+证据 `F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s2_search_quick_b_20261015T090658Z_5ac915b5`；停止收据 `FAST_B_STOP.json`。
+多向佯动 4d13/ext_008 在第 5 轮后没有完整成功配对，触发用户指定的快速 B 停止条件。仅终止已核实的本批主进程及其 8 个子进程，在途请求按中止记录；没有继续第 6/7 步。
+
+登记 10 个组合、20 个请求；完成审计的联合轨迹 11 条；完整成功配对 4 个，确定失败组合 2 个，中止未完成组合 4 个。中止项不计任务失败；本次部分结果不能当作全 20 请求的无删失成功率。
+
+| 意图 | 方式 | 骨架 | 组数 | 结果 | 已完成/已启动测时轮数 | 叠加新增拒绝组合 |
+|---|---|---|---:|---|---:|---:|
+| 过境 | same_direction | family_s12_5024cb2ccea653ae_ext_000_regular | 2 | 完整成功配对 | 1/1 | 0 |
+| 过境 | multi_direction | family_s12_f2adfbfae12fbbad_ext_000_regular | 1 | 完整成功配对 | 2/2 | 0 |
+| 侦察 | same_direction | family_s12_4d13d93f9171c446_ext_001_regular | 1 | 完整成功配对 | 3/3 | 1 |
+| 侦察 | multi_direction | family_s12_4d13d93f9171c446_ext_006_regular | 2 | 中止未完成 | 2/3 | 0 |
+| 游弋监视 | same_direction | family_s12_5024cb2ccea653ae_ext_002_regular | 2 | 中止未完成 | 0/1 | 0 |
+| 游弋监视 | multi_direction | family_s12_4d13d93f9171c446_ext_007_regular | 2 | 中止未完成 | 1/2 | 0 |
+| 佯动 | same_direction | family_s12_4d13d93f9171c446_ext_003_regular | 1 | 完整成功配对 | 1/1 | 0 |
+| 佯动 | multi_direction | family_s12_4d13d93f9171c446_ext_008_regular | 2 | 确定失败 | 5/5 | 0 |
+| 突防 | same_direction | family_s12_4d13d93f9171c446_ext_004_regular | 2 | 中止未完成 | 2/2 | 1 |
+| 突防 | multi_direction | family_s12_4d13d93f9171c446_ext_009_regular | 3 | 确定失败 | 3/3 | 0 |
+
+### 触发停止与其他已确认失败
+
+多向佯动：前 4 轮为实际延迟恒速间距预筛拒绝；第 5 轮单机核心事件/完成停留未观测。最终性质是 5 轮搜索预算耗尽，没有整体几何无解证明。
+多向突防 4d13/ext_009 的两版已完成且任务失败：佯攻组 task_group_02 的 uav_01/uav_05 实测最大深入比例均为 0.881，违反原范围 \(0.3\leq d\leq0.7\)。标签与独立审计一致，保持失败结论。
+
+- family_s12_4d13d93f9171c446_ext_009_regular / uav_01：计划作业点深入比例 0.495712，保存的完整规划折线按不超过 1 m 步长取样，最大深入比例约 0.880949。
+- family_s12_4d13d93f9171c446_ext_009_regular / uav_05：计划作业点深入比例 0.508911，保存的完整规划折线按不超过 1 m 步长取样，最大深入比例约 0.880949。
+
+上述对照只读取已有折线，没有新增仿真；说明检查计划作业点深度不能替代检查完整航线的最大深入程度。本轮不修改角色判据或作业参数。
+
+### 叠加预检与实测误差
+
+本次小试完成 20 轮单机测时，新增拦截 2 个原预筛已通过的组合。被拦截组合没有联合实测，不能据此统计误报率。
+在 11 条已审计联合轨迹上，最小间距预测绝对误差：均值 0.009841 m，最大 0.066845 m；最大逐机位置误差 0.763671 m；10 m 分类一致 11/11。
+
+| 骨架/时序 | 预测最小间距/m | 实测最小间距/m | 预测减实测/m |
+|---|---:|---:|---:|
+| family_s12_5024cb2ccea653ae_ext_000_regular/synchronous | 11.135036 | 11.135053 | -0.000017 |
+| family_s12_5024cb2ccea653ae_ext_000_regular/sequential | 11.135044 | 11.135044 | -0.000000 |
+| family_s12_f2adfbfae12fbbad_ext_000_regular/synchronous | 21.105821 | 21.105708 | +0.000113 |
+| family_s12_f2adfbfae12fbbad_ext_000_regular/sequential | 17.864776 | 17.865722 | -0.000946 |
+| family_s12_4d13d93f9171c446_ext_001_regular/synchronous | 22.742156 | 22.713635 | +0.028521 |
+| family_s12_4d13d93f9171c446_ext_001_regular/sequential | 19.103084 | 19.101729 | +0.001354 |
+| family_s12_4d13d93f9171c446_ext_003_regular/synchronous | 21.708419 | 21.708162 | +0.000258 |
+| family_s12_4d13d93f9171c446_ext_003_regular/sequential | 21.228795 | 21.228834 | -0.000039 |
+| family_s12_4d13d93f9171c446_ext_004_regular/synchronous | 13.782713 | 13.789399 | -0.006686 |
+| family_s12_4d13d93f9171c446_ext_009_regular/synchronous | 17.776523 | 17.779997 | -0.003474 |
+| family_s12_4d13d93f9171c446_ext_009_regular/sequential | 22.780480 | 22.713635 | +0.066845 |
+
+### 全量统计的三轮对照
+
+本轮全量未启动；小试和规划结果不填入全量分母。
+
+| 项目 | 修订前 | 上一轮 | 本轮全量 |
+|---|---:|---:|---|
+| 常规骨架 | 60 | 60 | 未运行 |
+| 常规请求 | 120 | 120 | 未运行 |
+| 生成常规轨迹 | 68 | 34 | 未运行 |
+| 质量与审计通过的常规轨迹 | 64 | 33 | 未运行 |
+| 完整成功配对 | 31 | 16 | 未运行 |
+| 保留轨迹中的任务失败 | 0 | 0 | 未运行 |
+| 生成质量错误 | 4 | 1 | 未运行 |
+| 规划拒绝请求 | 52 | 86 | 未运行 |
+| 中止请求 | 6 | 6 | 未运行 |
+
+### 未执行项与边界
+
+- 第 6 步三阶段参数分布统计未执行；提出候选和可选候选的原始取值已在候选池中留存，但尚无本轮全量最终保留骨架。
+- 第 7 步 22 条固定模板回放、全部测试、冻结后全量 120+6 请求、960 项交叉否定与 1/2 进程比较均未执行。
+- 任务 I 后的时长捷径检查及每类召回率、平衡准确率未执行。监视时长、圈数、半径范围及角色参数保持原要求。
+- 本轮各实施步骤的 S2 测试均通过，最后一次为 164/164。已完成审计的输出未发现 P0；未完成的请求不据此宣称审计通过。
+- 外层兼容状态仍有 geometry_infeasible / planning_spacing_rejection 等名称；本轮三类原因以 search_rejection、group_terminations 和 calibration_termination 的作用域及见证为准。
+
+## 快速检查 A 的组合耗时明细
+
+各单元格为“可行/登记；累计工作进程秒”。累计耗时包含成功与失败骨架，不能当作并行墙钟时间。
+
+| 意图 | 逼近方式 | 第 2 步 | 第 3 步 | 第 4 步 | 第 5 步 |
+|---|---|---:|---:|---:|---:|
+| 过境 | same_direction | 3/5；65.85 s | 3/5；73.46 s | 3/5；154.65 s | 3/5；157.48 s |
+| 过境 | multi_direction | 1/7；123.33 s | 1/7；164.52 s | 1/7；217.73 s | 1/7；220.01 s |
+| 侦察 | same_direction | 3/5；196.56 s | 3/5；215.02 s | 3/5；298.85 s | 3/5；303.15 s |
+| 侦察 | multi_direction | 3/7；650.39 s | 3/7；683.99 s | 4/7；732.22 s | 4/7；729.03 s |
+| 游弋监视 | same_direction | 4/5；2195.63 s | 3/5；2072.57 s | 4/5；2516.85 s | 4/5；2557.43 s |
+| 游弋监视 | multi_direction | 4/7；983.34 s | 4/7；1499.61 s | 5/7；1552.24 s | 5/7；1621.18 s |
+| 佯动 | same_direction | 2/5；166.85 s | 2/5；196.79 s | 2/5；250.06 s | 2/5；254.69 s |
+| 佯动 | multi_direction | 3/7；120.61 s | 3/7；203.90 s | 4/7；234.02 s | 4/7；238.38 s |
+| 突防 | same_direction | 2/5；135.98 s | 2/5；151.48 s | 2/5；244.10 s | 2/5；246.07 s |
+| 突防 | multi_direction | 3/7；152.79 s | 3/7；233.06 s | 4/7；361.82 s | 4/7；362.60 s |
+
+## 本轮图件
+
+规划图仅表示规划可行；实测图使用导出的 10 Hz 轨迹，图题保留实际成功/失败结果。
+
+![planning_coverage.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/planning_coverage.png>)
+
+![planning_wall_time.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/planning_wall_time.png>)
+
+![solo_overlay_prediction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/solo_overlay_prediction.png>)
+
+![quick_b_reconnaissance_same_direction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_reconnaissance_same_direction.png>)
+
+![quick_b_feint_same_direction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_feint_same_direction.png>)
+
+![quick_b_penetration_same_direction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_penetration_same_direction.png>)
+
+![quick_b_penetration_multi_direction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_penetration_multi_direction.png>)
+
+![quick_b_transit_same_direction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_transit_same_direction.png>)
+
+![quick_b_transit_multi_direction.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_transit_multi_direction.png>)
+
+![quick_b_timing_1.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_timing_1.png>)
+
+![quick_b_timing_2.png](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v07scene/Multi-UAV SimpleGC/docs/v07/S2_search_revision_assets/quick_b_timing_2.png>)
