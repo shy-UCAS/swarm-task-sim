@@ -7,6 +7,12 @@ from .detectors import coverage, dwell, revisit, runs, work_mask
 from .geometry import geometry_facts, GEOMETRY_VERSION
 
 
+def approach_classification(span, criteria=None):
+    rules = (criteria or load_criteria())["approach"]
+    return ("unknown" if span is None else "same_direction" if span <= rules["same_max_deg"]
+            else "multi_direction" if span >= rules["multi_min_deg"] else "intermediate")
+
+
 def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff_s=None, timing_plan=None):
     from .labels import (role_kind, validate_grid, event, measurable, bounded,
                          observed_conditions_result, coordination, approach_heading_deg,
@@ -193,6 +199,10 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
                  "behaviors": sorted({b for a in agents.values() for b in a["observed"]["behaviors"]})},
              "result": {"status": observed_conditions_result(group_checks, complete), "conditions": group_checks}}
     related = sorted(fid for j, fid in enumerate(fids) if (levels[:, :, j] >= 1).any())
+    group["observed"]["approach_classification"] = approach_classification(group["observed"]["approach_span_deg"], cfg)
+    group["observed"]["approach_span_definition"] = (
+        "max pairwise angle among per-member displacement headings over exactly "
+        f"{cfg['approach']['heading_distance_m']:g} m before first entry into assigned task-group target warning zone")
     if kind == "monitoring":
         group["observed"]["shared_revisit"] = group_revisit_diagnostic(skeleton, t / 1e6, patrol_masks, patrol_angles)
     threshold = cfg["quality"]["min_separation_error_m"]
