@@ -52,6 +52,7 @@ def plan_abort(scene, source_descriptor, source_task, source_run, abort_descript
     stamp = int(source_run['time_us'][frame])
     registered = next(g for g in source_descriptor['task_groups'] if g['group_id'] == gid)
     context = Context(scene, {**registered, 'role': 'feint'}, role_parameters(source_descriptor, registered))
+    context.retreat_warning_minimum_m=group.get('retreat_warning_minimum_m',200.)
     branch_routes, merged_routes = {}, {}
     chosen_ends = []
     for a in group['members']:
@@ -74,13 +75,13 @@ def plan_abort(scene, source_descriptor, source_task, source_run, abort_descript
         points = clean_route(departure, context.planner())
         route = [[*p, task['task_altitude_m']] for p in points]
         route[0] = position.tolist()
-        if not check_retreat_point(scene, endpoint)['valid'] or not check_polyline(scene, route, margin_m=35.)['valid']:
+        if not check_retreat_point(scene, endpoint,warning_clearance_m=context.retreat_warning_minimum_m)['valid'] or not check_polyline(scene, route, margin_m=35.)['valid']:
             raise PlanningInfeasible('geometry_infeasible', f'Abort retreat clearance: {a}')
         branch_routes[a] = route
         merged_routes[a] = prefix_route(task['references'][a]['points_enu_m'], position) + route[1:]
         chosen_ends.append(endpoint)
         ref = group['references'][a]
-        ref.update(points_enu_m=merged_routes[a], endpoint_enu_m=route[-1], retreat_required=True, retreat_warning_clearance_m=200.)
+        ref.update(points_enu_m=merged_routes[a], endpoint_enu_m=route[-1], retreat_required=True, retreat_warning_clearance_m=context.retreat_warning_minimum_m)
         task['references'][a] = deepcopy(ref)
         group['exclusion_policy'][a][group['target_id']] = 'protected'
         task['exclusion_policy'][a][group['target_id']] = 'protected'

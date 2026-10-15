@@ -6,6 +6,7 @@
 
 - 这是防御方意图识别的抽象合成轨迹研究，改动服务于样本分布与标签口径；不改 fastsim、冻结配置、竖切行为或 SITL。
 - **监视时长只测量，不是修改目标。** 任务 I 后仅用仿真时长预测意图的捷径检查只作诊断；不为缩短时长改变圈数、原允许环线半径范围或任何角色参数。任务 C 的半径在原允许连续范围内随机抽样。
+- 用户在任务 B 回归期间补充任务 C：固定作业参数在指定区间内用骨架私有流抽样；已有区间抽样保留。包括佯攻 35%–65% 深度及每机 ±3%、突击 25 m 至当前布局可行最大深度减 10 m、观察点外侧 40–65 m/驻留 25–55 s/等概率悬停或盘旋、监视 2/3 圈与顺逆向、搜索面积/张角/重叠率、可行过境弦位置、每骨架 35–70 m 接近绕障余量。此时尚未进入 G，全部并入 C；这是参数区间化，角色判据不变，也不以缩短监视时长为目的。最终报告分别记录候选抽样与保留样本的取值分布。
 - 编队形态及走廊宽度规则保持；语义条件不放松。规划间距改为 10 m 不改变实测小于 2 m 的生成错误判据。
 - 每个任务本地提交，不推送；仅标签与实测矛盾、模型输入泄漏、现有功能损坏或意图相关公共抽样/速度变化触发 P0 提前停止。失败、低产率和目标未达如实报告。
 
@@ -134,12 +135,12 @@
 
 | 冻结骨架/时序 | 类型 | 旧跨度° → 新跨度° | 多向条件 | 组结果 | 集群结果 |
 |---|---|---|---|---|---|
-| `family_s12_4d13d93f9171c446_ext_000_regular/sequential` | transit | 0.000000000 → 0.000000000 | 未知 → 未知 | success → success | success → success |
-| `family_s12_4d13d93f9171c446_ext_000_regular/synchronous` | transit | 0.000000000 → 0.000000000 | 未知 → 未知 | success → success | success → success |
-| `family_s12_4d13d93f9171c446_ext_001_regular/sequential` | new_roles | 0.000000000 → 21.786117641 | 未知 → 未知 | success → success | success → success |
-| `family_s12_4d13d93f9171c446_ext_001_regular/synchronous` | new_roles | 0.000000000 → 21.831215555 | 未知 → 未知 | success → success | success → success |
-| `family_s12_4d13d93f9171c446_ext_003_regular/sequential` | new_roles | 0.000000000 → 59.052891831 | 未知 → 未知 | success → success | success → success |
-| `family_s12_4d13d93f9171c446_ext_003_regular/synchronous` | new_roles | 0.000000000 → 59.053363655 | 未知 → 未知 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_000_regular/sequential` | transit | 0.000000000 → 0.000000000 | 不适用 → 不适用 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_000_regular/synchronous` | transit | 0.000000000 → 0.000000000 | 不适用 → 不适用 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_001_regular/sequential` | new_roles | 0.000000000 → 21.786117641 | 不适用 → 不适用 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_001_regular/synchronous` | new_roles | 0.000000000 → 21.831215555 | 不适用 → 不适用 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_003_regular/sequential` | new_roles | 0.000000000 → 59.052891831 | 不适用 → 不适用 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_003_regular/synchronous` | new_roles | 0.000000000 → 59.053363655 | 不适用 → 不适用 | success → success | success → success |
 | `family_s12_aa4c66be8e85d64d_ext_000_regular/sequential` | transit | 180.000000000 → 180.000000000 | True → True | success → success | success → success |
 | `family_s12_aa4c66be8e85d64d_ext_000_regular/synchronous` | transit | 180.000000000 → 180.000000000 | True → True | success → success | success → success |
 | `family_s12_aa4c66be8e85d64d_ext_002_regular/sequential` | new_roles | 179.274159527 → 168.049454824 | True → True | success → success | success → success |
@@ -149,8 +150,17 @@
 | `family_s12_aa4c66be8e85d64d_ext_004_regular/sequential` | new_roles | 180.000000000 → 179.999979952 | True → True | success → success | success → success |
 | `family_s12_aa4c66be8e85d64d_ext_004_regular/synchronous` | new_roles | 180.000000000 → 179.999982278 | True → True | success → success | success → success |
 
-新角色冻结模板按旧核心事件口径生成，因此新多向条件及其组/集群结果可以变为失败；这是真实轨迹按新定义重算的预期变化，不是标签矛盾或 P0。完整轨迹数组、模型输入、帧级标签、角色事实、任务模板与校时证据继续严格比较。
+本次新角色 10 条完整结果均仍为成功；部分前缀已观测到预警进入，所以多向条件从未知变为真。新角色冻结模板按旧核心事件口径生成，因此新多向条件及其组/集群结果即使变为失败也属于预期；这是真实轨迹按新定义重算的预期变化，不是标签矛盾或 P0。完整轨迹数组、模型输入、帧级标签、角色事实、任务模板与校时证据继续严格比较。
 
 过境核心事件本来就是进入预警区，测量位置没有改变；其数值末位变化来自把旧“跨过 100 m 的整帧起点”改为精确插值起点，定义文字也同步更新。
 
 [逐机航向、定义、全量字段差异和哈希清单](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2x_regress_20261015T032231Z_960ffbf5/warning_entry_transition_inventory.json>)；[完整固定回归比较](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2x_regress_20261015T032231Z_960ffbf5/regression_comparison.json>)。
+
+## 任务 B：扩展撤离距离参数化
+
+扩展规划器显式传入所有预警区外缘至少 100 m 的撤离要求，覆盖径向角色、监视、区域搜索、过境和中止分支。几何检查和旧调用默认仍为 200 m；冻结回归模板不重写。限制区与世界边界的 35 m 硬余量不变。独立审计继续读取模板所声明的撤离要求并从实际轨迹核对。
+
+- S2 测试 **129/129 PASS**，20.036 s；新增边界测试覆盖 100 m、旧默认 200 m、其他设施预警区和 35 m 限制区余量。
+- 固定回归 **22/22 PASS**，1106.325 s，8 进程；22 份标签逐字节一致，内容差异 0。
+- 证据：[任务 B 回归比较](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2x_regress_20261015T034229Z_28f81419/regression_comparison.json>)。
+- 同时修正报告换行与“同向不适用多向条件”的显示，不改任何判据。

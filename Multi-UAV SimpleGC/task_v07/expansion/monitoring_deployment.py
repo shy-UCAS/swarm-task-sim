@@ -74,11 +74,12 @@ def monitoring_candidate(ctx, angle, radius, phase_variant=0):
         total += core_path_length(ctx, points, {}, 'monitoring', core_index)
         routes[agent] = [[*p.tolist(), ctx.altitude] for p in points]
         refs[agent] = {'endpoint_enu_m': [*retreat.tolist(), ctx.altitude], 'retreat_required': True,
-                       'retreat_warning_clearance_m': 210., 'planned_orbit_entry_enu_m': [*entry.tolist(), ctx.altitude],
+                       'retreat_warning_clearance_m': ctx.retreat_warning_minimum_m, 'planned_orbit_entry_enu_m': [*entry.tolist(), ctx.altitude],
                        'planned_orbit_phase_rad': phi, 'orbit_tangent_lead_enu_m': [*target.tolist(), ctx.altitude],
                        'formation_lane': ingress['references'][agent]}
     template = {'role': 'monitoring', 'execution_method': 'monitoring', 'target_id': ctx.group['target_id'],
                 'planning_version': VERSION, 'references': refs, 'formation': {'blocks': ingress['blocks']},
+                'retreat_warning_minimum_m': ctx.retreat_warning_minimum_m,
                 'phase_geometry_estimate': phase_diagnostic,
                 'monitoring': {'orbit_center_enu_m': ctx.center.tolist(), 'orbit_radius_m': radius,
                                'track_tolerance_m': 30., 'effective_speed_min_m_s': .5, 'min_loop_duration_s': 5.,

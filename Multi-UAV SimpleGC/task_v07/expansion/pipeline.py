@@ -50,7 +50,7 @@ def forbidden_zone_ids(scene, layers):
 def role_parameters(descriptor, group):
     match=re.search(r"_ext_(\d+)",descriptor["skeleton_id"])
     slot=descriptor.get("geometry_slot",int(match.group(1)) if match else 0)
-    return {"geometry_slot":slot, "column_seed":descriptor["column_seed"],
+    return {"geometry_slot":slot, "column_seed":descriptor["column_seed"], "retreat_warning_minimum_m":100.,
             "geometry_seed":seed_for(descriptor["family_conditions"]["sampling_seed"],f"geometry-slot:{slot}"),"family": descriptor["family_conditions"], "cruise_speed_m_s": descriptor["cruise_speed_m_s"],
             "task_altitude_m": descriptor["task_altitude_m"],
             "approach_mode": descriptor["common_draw"]["approach_mode"],
@@ -107,7 +107,8 @@ def precheck(scene, skeleton, bundle, policy):
                                                 margin_m=35.0)
     if skeleton["role"] != "intrusion":
         for a in members:
-            report["retreat_points"][a] = check_retreat_point(scene, skeleton["references"][a]["endpoint_enu_m"][:2])
+            report["retreat_points"][a] = check_retreat_point(scene, skeleton["references"][a]["endpoint_enu_m"][:2],
+                warning_clearance_m=skeleton.get("retreat_warning_minimum_m", 200.))
     else:
         ends = [np.array(skeleton["references"][a]["endpoint_enu_m"]) for a in members]
         spacing = min(float(np.linalg.norm(x - y)) for x, y in combinations(ends, 2))

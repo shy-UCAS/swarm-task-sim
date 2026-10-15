@@ -157,7 +157,7 @@ def main():
     report = args.report.read_text(encoding='utf-8')
     if marker in report:
         raise ValueError('This stage is already recorded; do not silently replace it')
-    args.report.write_text(report+'\n'+marker+'\n'+render(data, args.output.resolve(), args.stage), encoding='utf-8')
+    args.report.write_text(report+'\n'+marker+'\n'+render(data, args.output.resolve(), args.stage), encoding='utf-8', newline='\n')
     print(json.dumps({'successful_pairs': sum(s['success'] for s in data['skeletons']),
                       'zero_success_cells': len(data['zero_success_combinations']),
                       'matrix_denominators': {k: sum(c['registered'] for c in v) for k, v in data['matrices'].items()}}, ensure_ascii=False))

@@ -107,8 +107,9 @@ class VerticalSliceAdapter:
 class _Context:
     """Per-group exact geometry and lazily built planners (cached by margin)."""
 
-    def __init__(self, scene, target):
+    def __init__(self, scene, target, retreat_warning_minimum_m=200.):
         self.scene = scene
+        self.retreat_warning_minimum_m = float(retreat_warning_minimum_m)
         self.facility, self.zones = zones_of(scene, target)
         self.center = np.array(center_of(self.facility["geometry"]))
         self.warning = self.zones["warning"]["geometry"]
@@ -158,7 +159,7 @@ class TransitPlanner:
         altitude = family["task_altitude_m"]
         states = {s["agent_id"]: s for s in family["initial_states"]}
         start = {a: np.array(states[a]["position_enu_m"][:2], float) for a in members}
-        ctx = _Context(scene, task_group["target_id"])
+        ctx = _Context(scene, task_group["target_id"], role_parameters.get("retreat_warning_minimum_m",200.))
         geometry = ctx.facility["geometry"]
         extent = (geometry["radius_m"] if geometry["type"] == "Circle" else
                   float(np.linalg.norm(np.array(geometry["vertices_m"]) - ctx.center, axis=1).max()))
@@ -319,8 +320,8 @@ class TransitPlanner:
             if lane[-1] is None or float((lane[-1] - lane[-2]) @ direction) < c["length"]:
                 return None, "lane_run_out_unavailable"
             exit_point = lane[-1]
-            retreat = ray_point_at_clearance(ctx.warning, exit_point, direction, RETREAT_WARNING_CLEARANCE_M)
-            if not (check_retreat_point(ctx.scene, retreat)["valid"] and ctx.chord_planner.free(retreat.tolist())):
+            retreat = ray_point_at_clearance(ctx.warning, exit_point, direction, ctx.retreat_warning_minimum_m+10.)
+            if not (check_retreat_point(ctx.scene, retreat,warning_clearance_m=ctx.retreat_warning_minimum_m)["valid"] and ctx.chord_planner.free(retreat.tolist())):
                 return None, "retreat_point_invalid"
             raw = [start[a], *lane, retreat]
             chord_leg = len(raw) - 3            # segment lane[-2] -> lane[-1]
@@ -348,7 +349,7 @@ class TransitPlanner:
             entries[a] = c["entry_az"]
             references[a] = {
                 "endpoint_enu_m": [*np.asarray(r["retreat"]).tolist(), altitude],
-                "retreat_required": True, "retreat_warning_clearance_m": RETREAT_WARNING_CLEARANCE_M,
+                "retreat_required": True, "retreat_warning_clearance_m": ctx.retreat_warning_minimum_m+10.,
                 "planned_entry_azimuth_deg": c["entry_az"],
                 "planned_chord": {"entry_m": c["entry"].tolist(), "exit_m": c["exit"].tolist(),
                                   "chord_length_m": c["length"], "entry_azimuth_deg": c["entry_az"],
@@ -358,7 +359,7 @@ class TransitPlanner:
                 "formation_lane": {"entry_id": r["entry_id"], "lane_offset_m": r["lane_offset_m"]}}
         bundle = RouteBundle({a: [[*p, altitude] for p in routes[a]["points"]] for a in members}, {a: 0.0 for a in members})
         template = {"role": "transit", "execution_method": "transit", "target_id": target,
-                    "planning_version": TRANSIT_VERSION,
+                    "planning_version": TRANSIT_VERSION, "retreat_warning_minimum_m": ctx.retreat_warning_minimum_m,
                     "transit": {**self.criteria, "planning": dict(self.planned), "lateral_spacing_m": spacing,
                                 "side_count": 2 if multi else 1},
                     "approach_geometry": {"work_area": "target_warning_zone",
@@ -407,7 +408,7 @@ def select_candidate(candidates, rng, *, key_fn):
     return rng.choice(pool)
 
 
-def find_clear_retreat(scene, from_angle, center, warn_r, approach_pl):
+def find_clear_retreat(scene, from_angle, center, warn_r, approach_pl, *, warning_clearance_m=200.):
     """Return a retreat point near from_angle that clears ALL facility warning zones.
 
     Scans 36 directions centred on from_angle (interleaved ±step increments) and four
@@ -418,14 +419,14 @@ def find_clear_retreat(scene, from_angle, center, warn_r, approach_pl):
     n = 36
     step = 2 * math.pi / n
     offsets = [0] + [v for k in range(1, n // 2 + 1) for v in (k * step, -k * step)]
-    distances = [warn_r + d for d in (220, 300, 400, 500)]
+    distances = [warn_r + warning_clearance_m + d for d in (20, 100, 200, 300)]
     for off in offsets:
         direction = np.array([math.cos(from_angle + off), math.sin(from_angle + off)])
         for dist in distances:
             candidate = center + dist * direction
             if (float(geometry_facts(scene["world"]["geometry"], candidate)["signed_distance_m"])
                     <= -PLANNING_MARGIN_M
-                    and check_retreat_point(scene, candidate.tolist())["valid"]):
+                    and check_retreat_point(scene, candidate.tolist(),warning_clearance_m=warning_clearance_m)["valid"]):
                 return candidate
     return None
 

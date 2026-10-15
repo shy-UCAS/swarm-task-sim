@@ -43,6 +43,7 @@ class Context:
         from .role_planners import zones_of
         self.scene,self.group,self.params=scene,group,params
         self.family=params['family'];self.role=group['role']
+        self.retreat_warning_minimum_m=float(params.get('retreat_warning_minimum_m',200.))
         self.facility,self.zones=zones_of(scene,group['target_id'])
         self.geometry=self.facility['geometry'];self.center=np.asarray(center_of(self.geometry))
         self.states={s['agent_id']:s for s in self.family['initial_states']}
@@ -91,7 +92,7 @@ class Context:
     def retreat(self,point,outward):
         for distance in np.arange(100.,3500.,25.):
             q=np.asarray(point)+distance*outward
-            if (check_retreat_point(self.scene,q)['valid'] and
+            if (check_retreat_point(self.scene,q,warning_clearance_m=self.retreat_warning_minimum_m)['valid'] and
                 (self.planner().visible(point.tolist(),q.tolist()) if self.role=='feint' else
                  self.planner().path(point.tolist(),q.tolist()) is not None)):
                 return q
@@ -228,7 +229,7 @@ class RadialFormationPlanner:
                         if end is None:return None,'all-warning-exterior_retreat_unavailable'
                         departure=ctx.planner().path(points[-1].tolist(),end.tolist())
                         if departure is None:return None,'retreat_route_unavailable'
-                        points.extend(np.asarray(p) for p in departure[1:]);ref['retreat_warning_clearance_m']=210.
+                        points.extend(np.asarray(p) for p in departure[1:]);ref['retreat_warning_clearance_m']=ctx.retreat_warning_minimum_m
                     else:end=station
                     try:points=[np.asarray(p) for p in clean_route([p.tolist() for p in points],ctx.planner())]
                     except ValueError:return None,'lane_full_route_invalid'
@@ -244,6 +245,7 @@ class RadialFormationPlanner:
         if minimum<(15. if ctx.speed>7 else 6.):return None,'independent_endpoint_spacing'
         template={'role':ctx.role,'execution_method':ctx.group['execution_method'],'target_id':ctx.group['target_id'],
                   'planning_version':VERSION,'references':refs,'formation':{'blocks':blocks},
+                  'retreat_warning_minimum_m':ctx.retreat_warning_minimum_m,
                   'planning_minimum_endpoint_spacing_m':minimum}
         if self.kind=='close_observation':
             template['close_observation']={'observation_radius_m':30.,'planned_dwell_s':24.,'minimum_dwell_s':19.2,

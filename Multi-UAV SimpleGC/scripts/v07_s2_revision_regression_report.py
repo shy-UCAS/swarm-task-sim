@@ -32,7 +32,7 @@ def render(attempt, baseline):
         def transition(a, b):
             return f'{value(a)} → {value(b)}'
         spans = transition(left['observed']['approach_span_deg'], right['observed']['approach_span_deg'])
-        conditions = transition(left['result']['conditions'].get('multi_direction_span'), right['result']['conditions'].get('multi_direction_span'))
+        conditions = transition(left['result']['conditions'].get('multi_direction_span', '不适用'), right['result']['conditions'].get('multi_direction_span', '不适用'))
         result = transition(left['result']['status'], right['result']['status'])
         cluster = transition(old['cluster']['result']['status'], new['cluster']['result']['status'])
         lines.append(f"| `{episode}` | {comparison['baseline_kind']} | {spans} | {conditions} | {result} | {cluster} |")
@@ -57,7 +57,7 @@ def main():
     parser.add_argument('--report', required=True, type=Path)
     args = parser.parse_args()
     text = render(args.attempt, args.baseline)
-    args.report.write_text(args.report.read_text(encoding='utf-8')+'\n'+text, encoding='utf-8')
+    args.report.write_text(args.report.read_text(encoding='utf-8')+'\n'+text, encoding='utf-8', newline='\n')
     print('Task A expected-difference inventory written')
 
 

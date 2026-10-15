@@ -206,7 +206,7 @@ class AreaSearchPlanner:
             refs[a] = {"scan_geometry": strip, "scan_lane_endpoints_m": [p.tolist() for p in scan],
                        "scan_axis_enu": velocity.tolist(), "scan_strip_count": len(indices),
                        "scan_leg_count": len(scan) // 2, "assigned_scan_length_m": sum(lengths[i] for i in indices),
-                       "retreat_required": True, "retreat_warning_clearance_m": 210.}
+                       "retreat_required": True, "retreat_warning_clearance_m": ctx.retreat_warning_minimum_m}
         ingress, reason = warning_ingress(ctx, angle)
         if reason:
             return None, reason
@@ -226,7 +226,8 @@ class AreaSearchPlanner:
             theta = math.atan2(*(scan[-1] - center)[::-1])
             retreat = None
             for shift in [0., *[sign * step * .05 for step in range(1, 7) for sign in (1, -1)]]:
-                point = find_clear_retreat(ctx.scene, theta + shift, center, bound + 35., ctx.planner())
+                point = find_clear_retreat(ctx.scene, theta + shift, center, bound + 35., ctx.planner(),
+                                           warning_clearance_m=ctx.retreat_warning_minimum_m)
                 if point is not None and all(np.linalg.norm(point - prior) >= 35. for prior in retreats):
                     retreat = point
                     break
@@ -265,6 +266,7 @@ class AreaSearchPlanner:
                   "assumptions": "Geometric coverage proxy; no camera, detection or recognition simulation"}
         return {"routes": routes, "length": total, "template": {"role": "reconnaissance", "execution_method": "area_search",
                 "planning_version": "v07_s2x_area_search_v1", "survey": survey, "references": refs,
+                "retreat_warning_minimum_m": ctx.retreat_warning_minimum_m,
                 "formation": {'blocks': ingress['blocks']},
                 "planned_approach_headings_deg": headings, "planned_approach_span_deg": spread,
                 "work_area_bearing_deg": math.degrees(angle) % 360}}, None
