@@ -198,6 +198,9 @@ def _load_truth(root):
 # Complete role condition audits.
 
 def audit_role_episode(root):
+    if _read(Path(root) / "labels.json").get("evidence", {}).get("criteria_version") == "criteria/0.7-r1":
+        from scripts.audit_v07_m1 import audit_episode
+        return audit_episode(root)
     from scripts.audit_v07_s2_conditions import audit_conditions
     return audit_conditions(root)
 

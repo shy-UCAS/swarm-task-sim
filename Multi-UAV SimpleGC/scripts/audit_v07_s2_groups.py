@@ -30,6 +30,9 @@ def independent_coordination(events, window, gap):
 def audit_groups(root):
     root = Path(root)
     task, scene, labels = (_read(root / name) for name in ("task.json", "public_scene.json", "labels.json"))
+    if labels.get("evidence", {}).get("criteria_version") == "criteria/0.7-r1":
+        from scripts.audit_v07_m1 import audit_episode
+        return audit_episode(root)
     ids, t, p, v = _load_truth(root)
     with np.load(root / "frame_labels.npz", allow_pickle=False) as loaded:
         stored = {key: loaded[key].copy() for key in loaded.files}

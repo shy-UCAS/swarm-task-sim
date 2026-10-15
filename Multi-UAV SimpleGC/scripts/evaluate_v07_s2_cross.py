@@ -57,6 +57,11 @@ def corresponding_groups(template, trajectory):
 
 def cross_report(attempt):
     attempt = Path(attempt)
+    # New labels use role-level exclusions, not the obsolete universal 960-cell gate.
+    first_label = next(attempt.glob("**/labels.json"), None)
+    if first_label is not None and read_json(first_label).get("evidence", {}).get("criteria_version") == "criteria/0.7-r1":
+        from scripts.cross_v07_m1 import criteria_cross_report
+        return criteria_cross_report(attempt)
     descriptors = [d for d in read_json(INFRA_ATTEMPT / "private_skeleton_descriptors.json")
                    if d["subset"] == "regular" and not d.get("diagnostic_only", False)]
     records = {r["episode_id"]: r for r in read_json(attempt / "episode_records.json")
@@ -134,7 +139,7 @@ def main():
     args = parser.parse_args()
     report = cross_report(args.attempt)
     save_json(args.attempt / "cross_negation.json", report)
-    print({key: report[key] for key in ("expected_items", "counts", "status", "affirmative_group_count")})
+    print({key: report.get(key) for key in ("expected_items", "counts", "status", "affirmative_group_count")})
 
 
 if __name__ == "__main__":

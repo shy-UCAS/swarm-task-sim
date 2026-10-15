@@ -40,6 +40,9 @@ def audit_episode(root):
     root=Path(root)
     scene=_read(root/"public_scene.json")
     labels=_read(root/"labels.json")
+    if labels.get("evidence", {}).get("criteria_version") == "criteria/0.7-r1":
+        from scripts.audit_v07_m1 import audit_episode as criteria_audit
+        return criteria_audit(root)
     task=_read(root/"task.json")
     with np.load(root/"truth_10hz.npz",allow_pickle=False) as data:
         ids=data["agent_ids"].tolist();t=data["time_us"];p=data["p"];v=data["v"]

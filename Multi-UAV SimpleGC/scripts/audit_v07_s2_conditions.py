@@ -49,6 +49,12 @@ def _equal(left, right):
 
 def audit_conditions(root, *, data=None):
     root=Path(root)
+    saved = _read(root / 'labels.json') if data is None else data['labels']
+    if saved.get('evidence', {}).get('criteria_version') == 'criteria/0.7-r1':
+        from scripts.audit_v07_m1 import audit_episode, audit_data
+        if data is None: return audit_episode(root)
+        return audit_data(data['scene'], data['task'],
+            dict(agent_ids=data['ids'], time_us=data['t'], p=data['p'], v=data['v']), saved, data['frame'])
     if data is None:
         scene,labels,task=(_read(root/name) for name in ('public_scene.json','labels.json','task.json'))
         ids,t,p,v=_load_truth(root)
