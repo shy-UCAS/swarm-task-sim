@@ -158,7 +158,9 @@ def audit_data(scene, task, run, labels, frame):
         if isinstance(wanted, dict):
             if not isinstance(actual, dict):
                 errors.append({"field": path, "label": actual, "independent": wanted}); return
-            for key, value in wanted.items(): compare(path + "." + key, actual.get(key), value)
+            for key, value in wanted.items():
+                if key not in actual: errors.append({"field": path + "." + key, "error": "missing field"})
+                else: compare(path + "." + key, actual[key], value)
         elif not _equal(actual, wanted): errors.append({"field": path, "label": actual, "independent": wanted})
     for a, wanted in expected["agents"].items():
         ob = labels["agents"][a]["observed"]

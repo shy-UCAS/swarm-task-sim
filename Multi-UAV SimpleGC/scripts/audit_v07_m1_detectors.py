@@ -56,6 +56,8 @@ def independent_revisit(points, velocities, ticks, layers, selected, center):
     for i, key in zip(candidates, cell_index): spatial.setdefault(tuple(key), []).append(int(i))
     spatial = {key: np.asarray(value) for key, value in spatial.items()}
     time_floor = 2 * (rule["min_departure_m"] - rule["radius_m"]) / max(speeds) * 1e6
+    relative = points - center
+    unwrapped = np.unwrap(np.arctan2(relative[:, 1], relative[:, 0]))
     for end, cell in zip(candidates, cell_index):
         neighbours = [spatial[(x, y)] for x in range(cell[0] - 1, cell[0] + 2) for y in range(cell[1] - 1, cell[1] + 2) if (x, y) in spatial]
         earlier = np.concatenate(neighbours)
@@ -65,6 +67,7 @@ def independent_revisit(points, velocities, ticks, layers, selected, center):
             cosine = np.dot(velocities[begin, :2] / ground[begin], velocities[end, :2] / ground[end])
             angle = float(np.degrees(np.arccos(np.clip(cosine, -1, 1))))
             if rule["parallel_max_deg"] < angle < rule["antiparallel_min_deg"]: continue
+            if np.degrees(np.ptp(unwrapped[begin:end + 1])) < rule["min_azimuth_coverage_deg"]: continue
             segment = points[begin:end + 1]
             departure = float(np.sqrt(np.max(np.sum((segment - points[begin]) ** 2, axis=1))))
             if departure < rule["min_departure_m"]: continue
