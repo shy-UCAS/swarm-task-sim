@@ -157,6 +157,7 @@ class ContinuousTransit(TransitPlanner):
 def draw_role(ctx, candidate_index):
     """Exactly one outer candidate; all subordinate draws use its private stream."""
     ctx.last_failure_evidence = []
+    ctx.local_search_trace = None
     ctx.rng = random.Random(seed_for(ctx.params.get('geometry_seed', ctx.params['planning_seed']),
                                     f'continuous-candidate:{candidate_index}'))
     ctx.continuous_candidate = True
@@ -194,9 +195,8 @@ def draw_role(ctx, candidate_index):
             from .search_diagnostics import ring_evidence
             ctx.last_failure_evidence = ring_evidence(ctx, samples)
             return None, 'closed_orbit_cannot_clear_exact_restrictions_and_alert_policy', draw
-        phases = random_phase_candidate(ctx, radius)
-        draw['orbit_phases_rad'] = phases['phases']
-        result, reason = monitoring_candidate(ctx, angle, radius, phase_diagnostic=phases)
+        from .monitoring_search import local_monitoring
+        result, reason = local_monitoring(ctx, angle, radius, draw)
     elif ctx.group['execution_method'] == 'area_search':
         span, area = ctx.rng.uniform(30., 90.), ctx.rng.uniform(200000., 600000.)
         ctx.strip_overlap_fraction = ctx.rng.uniform(.15, .30)

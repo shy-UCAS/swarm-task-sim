@@ -8,7 +8,7 @@ from .warning_approach import warning_ingress, deploy_inside_warning
 from .monitoring_phases import shared_phase_candidates
 
 
-def monitoring_candidate(ctx, angle, radius, phase_variant=0, *, phase_diagnostic=None):
+def monitoring_candidate(ctx, angle, radius, phase_variant=0, *, phase_diagnostic=None, ingress_override=None):
     from .formation_role_planners import core_path_length, VERSION
     role_planner = ctx.planner()
     if phase_diagnostic is None:
@@ -22,9 +22,13 @@ def monitoring_candidate(ctx, angle, radius, phase_variant=0, *, phase_diagnosti
     phases = {a: getattr(ctx,'work_angle',angle) + value for a, value in phase_diagnostic['phases'].items()}
     if not hasattr(ctx, '_warning_ingresses'):
         ctx._warning_ingresses = {}
-    if angle not in ctx._warning_ingresses:
+    if ingress_override is not None:
+        ingress,reason=ingress_override,None
+    elif angle not in ctx._warning_ingresses:
         ctx._warning_ingresses[angle] = warning_ingress(ctx, angle)
-    ingress, reason = ctx._warning_ingresses[angle]
+        ingress,reason=ctx._warning_ingresses[angle]
+    else:
+        ingress,reason=ctx._warning_ingresses[angle]
     if reason:
         return None, reason
     laps = 2 + (seed_for(ctx.family.get('sampling_seed', 0), f'monitoring-laps-slot:{ctx.slot}') % 2)
@@ -34,7 +38,11 @@ def monitoring_candidate(ctx, angle, radius, phase_variant=0, *, phase_diagnosti
         {'type': 'hard_constraint_obstacle', 'geometry': g} for g in role_planner.obstacles]}
     deployment_scene['entities'].append({'type': 'hard_constraint_obstacle', 'geometry': {
         'type': 'Circle', 'center_m': ctx.center.tolist(), 'radius_m': radius+40.}})
-    deployment = ExactVisibilityPlanner(deployment_scene, 0.)
+    # Continuous local rotations share the same radius and exact obstacles.
+    cache=getattr(ctx,'_deployment_planners',{})
+    if not hasattr(ctx,'_deployment_planners'):ctx._deployment_planners=cache
+    if radius not in cache:cache[radius]=ExactVisibilityPlanner(deployment_scene,0.)
+    deployment=cache[radius]
     tangent_length = math.sqrt((radius+50.)**2-radius**2)
     routes, refs, total = {}, {}, 0.
     for agent in sorted(ctx.group['members']):
@@ -56,7 +64,10 @@ def monitoring_candidate(ctx, angle, radius, phase_variant=0, *, phase_diagnosti
         if role_planner.visible(points[-1].tolist(), exit_lead.tolist()):
             points.append(exit_lead)
         retreat = None
-        for delta in (0., math.pi/6, -math.pi/6, math.pi/3, -math.pi/3, math.pi/2, -math.pi/2, math.pi):
+        if ingress_override is not None:
+            from .monitoring_search import local_retreat
+            retreat,departure=local_retreat(ctx,points[-1],phi,deployment)
+        for delta in (() if ingress_override is not None else (0., math.pi/6, -math.pi/6, math.pi/3, -math.pi/3, math.pi/2, -math.pi/2, math.pi)):
             retreat = ctx.retreat(points[-1], np.array([math.cos(phi+delta), math.sin(phi+delta)]))
             if retreat is not None and deployment.path(points[-1].tolist(), retreat.tolist()) is not None:
                 break

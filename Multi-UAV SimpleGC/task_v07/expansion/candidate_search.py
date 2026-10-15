@@ -72,6 +72,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
         cost_by_group = {}
         rejected = None
         failure_evidence = None
+        local_searches = {}
         for group in order:
             gid = group['group_id']
             ctx = contexts[gid]
@@ -80,6 +81,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
             result, reason, draw = draw_role(ctx, index)
             group_wall[gid] += time.perf_counter()-started
             draws[gid] = draw
+            if getattr(ctx,'local_search_trace',None):local_searches[gid]=ctx.local_search_trace
             if result is None:
                 failure_evidence = getattr(ctx, 'last_failure_evidence', [])
                 rejected = ('geometry:'+gid, reason)
@@ -107,7 +109,11 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
         if rejected:
             stage, reason = rejected
             reasons[reason] += 1
-            records.append(_candidate_record(index, stage, reason, draws, failure_evidence))
+            record=_candidate_record(index, stage, reason, draws, failure_evidence)
+            record['local_searches']=local_searches
+            if reason.endswith('_search_budget_exhausted'):
+                record['rejection']=rejection(reason,scope='local_component_search',exhausted=True)
+            records.append(record)
             continue
         skeleton, bundle = assemble_episode(descriptor, groups, bundles, index)
         nominal = {gid: {a: COMMON_CONSTANTS['initial_settle_s']+distance/skeleton['cruise_speed_m_s']
@@ -120,6 +126,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
             reasons[reason] += 1
             record = _candidate_record(index, 'nominal_spacing', reason, draws)
             record['interval'] = interval
+            record['local_searches']=local_searches
             records.append(record)
             continue
         checks = {**checks, 'nominal_whole_episode_interval': interval}
@@ -127,6 +134,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
                            'skeleton': skeleton, 'bundle': bundle, 'checks': checks})
         record = _candidate_record(index, 'feasible', None, draws)
         record.update(approach_length_m=cost, approach_length_by_group_m=cost_by_group)
+        record['local_searches']=local_searches
         records.append(record)
     rng = random.Random(seed_for(descriptor['role_seed'], 'continuous-feasible-pool-order'))
     eligible, selection = choose_eligible(candidates, descriptor['common_draw']['approach_mode'] == 'same_direction', rng)
