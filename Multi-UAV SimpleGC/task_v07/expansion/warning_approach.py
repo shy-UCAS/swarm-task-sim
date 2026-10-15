@@ -11,6 +11,13 @@ from task_v07.planning import clean_route
 from .formation_corridors import offset_polyline, shared_reference_corridor, start_line
 
 
+def collection_point_valid(ctx,point,margin):
+    """A collection point may overlap other warnings, never any alert/protected zone."""
+    if float(geometry_facts(ctx.zones['warning']['geometry'],point)['signed_distance_m'])<=0:return False
+    if any(float(geometry_facts(e['geometry'],point)['signed_distance_m'])<=0 for e in ctx.scene['entities'] if e.get('layer') in ('alert','protected')):return False
+    return ctx.planner(margin).free(np.asarray(point).tolist())
+
+
 def warning_ingress(ctx, angle, spacing_m=None):
     from .formation_role_planners import contour_point
     approaches, references, blocks = {}, {}, []
@@ -48,13 +55,26 @@ def warning_ingress(ctx, angle, spacing_m=None):
             exterior = ctx.planner(margin, warnings=True)
             origin = ctx.center + hcenter * normal
             lead = None
+            collection_point = None
             if hasattr(ctx,'collection_clearance_m'):
-                point=contour_point(ctx.geometry,ctx.center,outward,
-                    ctx.zones['warning']['offset_m']+ctx.collection_clearance_m+half,-hcenter)
-                if point is not None and exterior.free(point.tolist()):
-                    lead=point
+                if ctx.params.get('target_warning_only'):
+                    point=contour_point(ctx.geometry,ctx.center,outward,
+                        ctx.zones['warning']['offset_m']+ctx.collection_clearance_m,-hcenter)
+                    if point is None or not collection_point_valid(ctx,point,margin):
+                        return None,'random_warning_collection_unavailable'
+                    collection_point=point
+                    # The sampled collection point is on the final straight.
+                    # An earlier alignment point preserves the observed 100m
+                    # heading even when collection clearance is only 50m.
+                    lead=contour_point(ctx.geometry,ctx.center,outward,
+                        ctx.zones['warning']['offset_m']+max(ctx.collection_clearance_m,150.+half),-hcenter)
+                    if lead is None or not exterior.free(lead.tolist()):
+                        return None,'warning_alignment_point_unavailable'
                 else:
-                    return None,'random_warning_collection_unavailable'
+                    point=contour_point(ctx.geometry,ctx.center,outward,
+                        ctx.zones['warning']['offset_m']+ctx.collection_clearance_m+half,-hcenter)
+                    if point is not None and exterior.free(point.tolist()):lead=point
+                    else:return None,'random_warning_collection_unavailable'
             # Keep at least 150m of straight motion outside the warning boundary
             # before entry. The final measured 100m cannot include a prior turn.
             for distance in ([] if lead is not None else np.arange(200., 3500., 25.)):
@@ -65,6 +85,7 @@ def warning_ingress(ctx, angle, spacing_m=None):
                     break
             if lead is None:
                 return None, 'warning_collection_unavailable'
+            if collection_point is None:collection_point=lead
             tail = contour_point(ctx.geometry, ctx.center, outward,
                                  ctx.zones['warning']['offset_m'] - 50., -hcenter)
             if tail is None:
@@ -101,9 +122,10 @@ def warning_ingress(ctx, angle, spacing_m=None):
                 approaches[agent] = [np.asarray(p) for p in points]
                 references[agent] = {'side': side, 'lane_offset_m': offsets[agent],
                     'warning_gate_enu_m': [*end.tolist(), ctx.altitude],
-                    'collection_point_enu_m': [*lead.tolist(), ctx.altitude]}
+                    'collection_point_enu_m': [*collection_point.tolist(), ctx.altitude]}
             blocks.append({'side': side, 'members': sorted(agents), 'half_width_m': half,
-                           'shared_route_margin_m': margin, 'collection_point_enu_m': [*lead.tolist(), ctx.altitude]})
+                           'shared_route_margin_m': margin, 'collection_point_enu_m': [*collection_point.tolist(), ctx.altitude],
+                           'alignment_point_enu_m': [*lead.tolist(), ctx.altitude]})
     return {'routes': approaches, 'references': references, 'blocks': blocks}, None
 
 

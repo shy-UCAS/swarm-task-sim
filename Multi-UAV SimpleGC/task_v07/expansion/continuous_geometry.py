@@ -85,6 +85,18 @@ def projection_support(geometry, center, direction):
 
 
 class ContinuousTransit(TransitPlanner):
+    def _block(self,ctx,agents,chords,start,direction,normal,side,entry_id):
+        # Collection lies on the same straight as the earlier alignment point;
+        # retain the original width-dependent alignment geometry.
+        offset=float(np.mean([c['offset'] for c in chords]))
+        origin=ctx.center+offset*normal
+        collection=ray_point_at_clearance(ctx.warning,origin,-direction,ctx.collection_clearance_m)
+        if not ctx.chord_planner.free(collection.tolist()):
+            return None,'random_warning_collection_unavailable'
+        block,reason=super()._block(ctx,agents,chords,start,direction,normal,side,entry_id)
+        if block is not None:block['collection_point_enu_m']=[*collection.tolist(),ctx.task_altitude_m]
+        return block,reason
+
     def _point_on_line(self, ctx, origin, direction, clearance, sign, planner):
         if sign < 0:
             clearance = max(clearance, ctx.collection_clearance_m)
@@ -118,7 +130,8 @@ class ContinuousTransit(TransitPlanner):
         if transit is None:
             transit = _Context(ctx.scene, ctx.group['target_id'], ctx.retreat_warning_minimum_m)
             ctx._transit_context = transit
-        transit.collection_clearance_m = ctx.collection_clearance_m+(len(ctx.group['members'])-1)*ctx.family['lateral_spacing_m']/2
+        transit.collection_clearance_m = ctx.collection_clearance_m
+        transit.task_altitude_m = ctx.altitude
         transit.approach_clearance_m = ctx.approach_clearance_m
         relative = getattr(ctx, 'relative_bearings_rad', [i*math.pi for i in range(len(ctx.split))])
         routes, blocks = {}, []
@@ -164,7 +177,7 @@ def draw_role(ctx, candidate_index):
     ctx.approach_clearance_m = float(ctx.params.get('approach_clearance_m', 35.))
     angle = ctx.rng.uniform(0., 2*math.pi)
     ctx.work_angle = ctx.rng.uniform(0., 2*math.pi)
-    ctx.collection_clearance_m = ctx.rng.uniform(150., 650.)
+    ctx.collection_clearance_m = ctx.rng.uniform(*ctx.params.get('collection_range_m',(150.,650.)))
     ctx.station_lateral_shift_m = ctx.rng.uniform(-1., 1.)*ctx.family['lateral_spacing_m']
     draw = {'index': candidate_index, 'entry_rotation_rad': angle, 'work_rotation_rad': ctx.work_angle,
             'collection_clearance_m': ctx.collection_clearance_m, 'station_lateral_shift_m': ctx.station_lateral_shift_m,

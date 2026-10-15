@@ -53,7 +53,7 @@ REFERENCE_ROLES = {
     "family_s12_aa4c66be8e85d64d_ext_003_regular": DEFAULT_DATA / "attempt_s2x_p1_20261014T125642Z_eaac7ffb",
     "family_s12_aa4c66be8e85d64d_ext_004_regular": DEFAULT_DATA / "attempt_s2x_p1_20261014T125642Z_eaac7ffb",
 }
-WALL_KEYS = {"simulation_wall_s", "single_flight_wall_s", "geometry_and_single_flights_wall_s", "wall_s"}
+WALL_KEYS = {"simulation_wall_s", "single_flight_wall_s", "geometry_and_single_flights_wall_s", "wall_s", "geometry_wall_s"}
 
 
 def new_attempt(prefix):

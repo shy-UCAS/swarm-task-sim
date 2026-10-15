@@ -77,7 +77,7 @@ class Context:
                 forbidden=next((pad for e,pad in self.forbidden if e['id']==entity['id']),None)
                 if entity['type']=='hard_constraint_obstacle':
                     entity['geometry']=offset_geometry(entity['geometry'],float(math.ceil(margin)))
-                elif warnings and entity.get('layer')=='warning':
+                elif warnings and entity.get('layer')=='warning' and (not self.params.get('target_warning_only') or entity['facility_id']==self.group['target_id']):
                     entity['type']='hard_constraint_obstacle'
                     entity['geometry']=offset_geometry(entity['geometry'],float(math.ceil(margin)))
                 elif forbidden is not None:

@@ -6,6 +6,47 @@ from task_v07.expansion.search_diagnostics import rejection, summarize
 
 
 class SearchEvidenceTests(unittest.TestCase):
+    def context(self,extra_facility=False):
+        from test_v07_s2_expansion import scene
+        from task_v07.expansion.formation_role_planners import Context
+        source=scene()
+        if extra_facility:
+            source['entities'].append({'id':'other','type':'facility','geometry':{'type':'Circle','center_m':[3400.,2000.],'radius_m':20.}})
+            for layer,radius in [('warning',800.),('alert',250.),('protected',100.)]:
+                source['entities'].append({'id':'other_'+layer,'type':'protection_zone','facility_id':'other','layer':layer,
+                    'offset_m':radius-20.,'geometry':{'type':'Circle','center_m':[3400.,2000.],'radius_m':radius}})
+        ids=['a','b','c']
+        family={'sampling_seed':41,'cruise_speed_m_s':5.,'task_altitude_m':100.,'lateral_spacing_m':20.,
+                'initial_states':[{'agent_id':a,'position_enu_m':[60.,1980.+20*i,100.]} for i,a in enumerate(ids)]}
+        return Context(source,{'role':'monitoring','target_id':'f','members':ids},
+                       {'family':family,'approach_mode':'same_direction','planning_seed':10,'geometry_slot':0,'target_warning_only':True})
+
+    def test_collection_may_overlap_other_warning_but_not_alert(self):
+        from task_v07.expansion.warning_approach import collection_point_valid
+        ctx=self.context(True)
+        self.assertTrue(collection_point_valid(ctx,[2800.,2000.],35.))
+        self.assertTrue(ctx.planner(35.,warnings=True).free([2800.,2000.]))
+        self.assertFalse(collection_point_valid(ctx,[3200.,2000.],35.))
+        self.assertFalse(collection_point_valid(ctx,[2500.,2000.],35.))
+
+    def test_near_collection_keeps_exact_clearance_and_hundred_metre_heading(self):
+        import math,numpy as np
+        from task_v07.expansion.warning_approach import warning_ingress
+        from task_v07.expansion.area_search import planned_core_distance,heading_before_distance
+        from task_v07.geometry import geometry_facts
+        from task_v07.labels import heading_span_deg
+        ctx=self.context();ctx.collection_clearance_m=50.
+        ingress,reason=warning_ingress(ctx,math.pi)
+        self.assertIsNotNone(ingress,reason)
+        for block in ingress['blocks']:
+            self.assertAlmostEqual(float(geometry_facts(ctx.zones['warning']['geometry'],block['collection_point_enu_m'][:2])['signed_distance_m']),50.)
+            self.assertEqual(block['shared_route_margin_m'],35.+1.5*block['half_width_m']+2.)
+        headings=[]
+        for path in ingress['routes'].values():
+            path=np.asarray(path);distance=planned_core_distance(path,ctx.zones['warning']['geometry'])
+            headings.append(heading_before_distance(path,distance))
+        self.assertLess(heading_span_deg(headings),1e-8)
+
     def test_six_registered_phase_counterexamples_pass_original_two_mode_gate(self):
         from task_v07.expansion.monitoring_phases import shared_phase_candidates
         rows=json.loads(Path(__file__).with_name('s2_monitoring_phase_witnesses.json').read_text())
