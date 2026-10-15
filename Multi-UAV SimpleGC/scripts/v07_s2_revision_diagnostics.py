@@ -89,6 +89,17 @@ def collect(attempt):
                 raise ValueError(f'Saved rejection and record disagree: {path}')
             reasons.update(reasons_from_detail(entry['detail']))
             evidence.append({'path': str(path), 'sha256': sha(path), 'saved': saved})
+        search_path = attempt / sid / 'candidate_search.json'
+        if rejection and search_path.exists():
+            search = read(search_path)
+            # Empty pools already quote these counts in geometry_00; avoid
+            # double counting. Calibration failures are a separate later stage.
+            if not search.get('actual_single_agent_calibration_rounds', 0):
+                reasons.clear()
+            reasons.update(search['rejection_reasons'])
+            evidence.append({'path': str(search_path), 'sha256': sha(search_path),
+                             'scope': 'geometry/nominal-spacing/115-percent candidate rejection counts',
+                             'attempted_candidates': search['attempted_candidates']})
         skeletons.append({'skeleton_id': sid, 'family_id': descriptor['family_id'],
                           'intent': descriptor['base_intent'], **dimensions(descriptor, facilities),
                           'success': success, 'failure_category': category,
