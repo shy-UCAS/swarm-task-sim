@@ -270,10 +270,17 @@ class RadialFormationPlanner:
         endpoints=np.array([refs[a]['endpoint_enu_m'] for a in members])
         minimum=min(float(np.linalg.norm(endpoints[i]-endpoints[j])) for i,j in __import__('itertools').combinations(range(len(members)),2))
         if minimum<(15. if ctx.speed>7 else 6.):return None,'independent_endpoint_spacing'
+        work_spacing={}
+        if operation and self.kind in ('close_observation','feint'):
+            from .operation_parameters import work_point_spacing
+            work_spacing=work_point_spacing(refs,self.kind,ctx.speed)
+            for name,check in work_spacing.items():
+                if not check['valid']:return None,'independent_'+name+'_spacing'
         template={'role':ctx.role,'execution_method':ctx.group['execution_method'],'target_id':ctx.group['target_id'],
                   'planning_version':VERSION,'references':refs,'formation':{'blocks':blocks},
                   'retreat_warning_minimum_m':ctx.retreat_warning_minimum_m,
                   'planning_minimum_endpoint_spacing_m':minimum}
+        if operation:template['planning_work_point_spacing']=work_spacing
         if self.kind=='close_observation':
             planned_dwell=operation.get('planned_observation_dwell_s',24.)
             template['close_observation']={'observation_radius_m':30.,'planned_dwell_s':planned_dwell,'minimum_dwell_s':planned_dwell*4/5,

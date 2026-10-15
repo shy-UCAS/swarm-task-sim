@@ -91,7 +91,7 @@ class ContinuousTransit(TransitPlanner):
         point = ray_point_at_clearance(ctx.warning, origin, sign*direction, clearance)
         return point if planner is None or planner.free(point.tolist()) else None
 
-    def offsets(self, ctx, direction, normal, sigma, count, spacing, rng):
+    def offsets(self, ctx, direction, normal, sigma, count, spacing, position_fraction):
         # Exact support bounds, followed by the existing chord predicates.
         # Bisection finds a bound; the actual block offset is a continuous draw.
         axis = sigma*normal
@@ -109,7 +109,7 @@ class ContinuousTransit(TransitPlanner):
         width = (count-1)*spacing
         if lower-low < width:
             return None
-        first = rng.uniform(low, lower-width)
+        first = low+position_fraction*(lower-width-low)
         chords = [self._chord(ctx, direction, normal, sigma*(first+i*spacing)) for i in range(count)]
         return None if any(c is None for c in chords) else sorted(chords, key=lambda c: c['offset'])
 
@@ -127,7 +127,8 @@ class ContinuousTransit(TransitPlanner):
             # Public relative angles are preserved; the private global angle rotates all stocks.
             direction = np.array([math.cos(angle+relative[side]), math.sin(angle+relative[side])])
             normal = np.array([-direction[1], direction[0]])
-            chords = self.offsets(transit, direction, normal, sigma, len(members), ctx.family['lateral_spacing_m'], ctx.rng)
+            chords = self.offsets(transit, direction, normal, sigma, len(members), ctx.family['lateral_spacing_m'],
+                                  ctx.transit_chord_position_fraction)
             if chords is None:
                 return None, 'continuous_parallel_chord_block_unavailable'
             subgroups = defaultdict(list)
@@ -167,6 +168,10 @@ def draw_role(ctx, candidate_index):
             'collection_clearance_m': ctx.collection_clearance_m, 'station_lateral_shift_m': ctx.station_lateral_shift_m,
             'approach_obstacle_clearance_m': ctx.approach_clearance_m}
     if ctx.role == 'transit':
+        # One private position draw per group; each stock maps that common
+        # quantile into its own angle-dependent feasible chord interval.
+        ctx.transit_chord_position_fraction = ctx.rng.random()
+        draw['transit_chord_position_fraction'] = ctx.transit_chord_position_fraction
         result, reason = ContinuousTransit().draw(ctx, angle)
     elif ctx.role == 'monitoring':
         from .monitoring_deployment import monitoring_candidate

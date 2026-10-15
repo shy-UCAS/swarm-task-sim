@@ -52,6 +52,7 @@ def role_parameters(descriptor, group):
     slot=descriptor.get("geometry_slot",int(match.group(1)) if match else 0)
     return {"geometry_slot":slot, "column_seed":descriptor["column_seed"], "retreat_warning_minimum_m":100.,
             "candidate_budget":200,
+            "planning_interval_warning_m":10.,
             "common_slot":descriptor["common_draw"].get("slot"),
             "geometry_seed":seed_for(descriptor["role_seed"],f"continuous-geometry:{group['group_id']}"),
             "approach_clearance_m":__import__('random').Random(seed_for(descriptor["role_seed"],"approach-clearance")).uniform(35.,70.),

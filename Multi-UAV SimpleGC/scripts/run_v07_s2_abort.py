@@ -75,7 +75,8 @@ def run_abort_job(payload):
         save_json(root / 'skeleton.json', task)
         save_json(root / 'abort_pairing.json', registration)
         if intervals['synchronous']['below_warning']:
-            raise PlanningInfeasible('planning_spacing_rejection', 'Abort full-route constant-speed estimate below 6m; referenced prefix and delays are immutable')
+            raise PlanningInfeasible('planning_spacing_rejection',
+                f"Abort full-route constant-speed estimate below {intervals['warning_threshold_m']:g}m; referenced prefix and delays are immutable")
     except PlanningInfeasible as exc:
         row = unavailable(requested, source_record, exc.category)
         row['rejection_detail'] = exc.detail

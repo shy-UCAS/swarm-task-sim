@@ -7,6 +7,20 @@ from task_v07.geometry import geometry_facts
 from .formation_corridors import start_line
 
 
+def work_point_spacing(references, kind, speed):
+    """Existing role geometry limits, independent of later retreat endpoints."""
+    from itertools import combinations
+    fields = {'observation_point': ('observation_point_enu_m', 6.)} if kind == 'close_observation' else {
+        'depth_point': ('planned_depth_point_enu_m', 15. if speed > 7. else 6.),
+        'turn_point': ('planned_turn_point_enu_m', 15. if speed > 7. else 6.)}
+    report = {}
+    for name, (field, required) in fields.items():
+        points = [np.asarray(ref[field], float) for ref in references.values()]
+        minimum = min(float(np.linalg.norm(a-b)) for a,b in combinations(points, 2))
+        report[name] = {'minimum_m': minimum, 'required_m': required, 'valid': minimum >= required}
+    return report
+
+
 def station_layouts(ctx, angle, spacing):
     """The existing entry-block offsets and width rule, without placing stations."""
     relative = getattr(ctx, 'relative_bearings_rad', [i*math.pi for i in range(len(ctx.split))])

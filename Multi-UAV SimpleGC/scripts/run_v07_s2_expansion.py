@@ -190,7 +190,9 @@ def run_skeleton_job(payload):
     plans = timing_plans(sk, measured)
     preflight_s = time.perf_counter() - started
     family = descriptor["family_conditions"]
-    interval = planning_layer_interval_check(bundle, plans, family["cruise_speed_m_s"])
+    interval = planning_layer_interval_check(bundle, plans, family["cruise_speed_m_s"],
+        warning_m=sk.get("planning_interval_warning_m",6.),
+        dwells_by_agent={a:r['intermediate_dwell'] for a,r in sk.get('references',{}).items() if 'intermediate_dwell' in r})
     save_json(skroot / "planning_layer_interval.json", interval)
     if not legacy and spec[0] not in ("vertical_slice_transit", "vertical_slice_recorded") and any(interval[mode]["below_warning"] for mode in ("synchronous","sequential")):
         return failed_rows(descriptor,"infeasible","planning_interval_too_close:full_route",out)

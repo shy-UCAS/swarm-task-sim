@@ -43,6 +43,36 @@ class ContinuousRevisionTests(unittest.TestCase):
             self.assertAlmostEqual(np.linalg.norm(np.diff(points,axis=0),axis=1).sum()/6.,seconds)
             self.assertTrue(np.all(np.linalg.norm(points-center,axis=1)<30.))
 
+    def test_work_point_spacing_cannot_be_satisfied_by_far_retreat_endpoints(self):
+        from task_v07.expansion.operation_parameters import work_point_spacing
+        references={a:{'endpoint_enu_m':end,'observation_point_enu_m':point,
+                       'planned_depth_point_enu_m':point,'planned_turn_point_enu_m':point}
+                    for a,end,point in [('a',[0.,0.,100.],[10.,10.,100.]),
+                                        ('b',[1000.,0.,100.],[15.9,10.,100.])]}
+        self.assertFalse(work_point_spacing(references,'close_observation',5.)['observation_point']['valid'])
+        references['b']['observation_point_enu_m']=[16.,10.,100.]
+        self.assertTrue(work_point_spacing(references,'close_observation',8.)['observation_point']['valid'])
+        references['b']['planned_depth_point_enu_m']=[24.9,10.,100.]
+        references['b']['planned_turn_point_enu_m']=[25.,10.,100.]
+        report=work_point_spacing(references,'feint',8.)
+        self.assertFalse(report['depth_point']['valid'])
+        self.assertTrue(report['turn_point']['valid'])
+
+    def test_one_group_transit_quantile_maps_into_each_feasible_chord_interval(self):
+        from task_v07.expansion.continuous_geometry import ContinuousTransit
+        from task_v07.expansion.role_planners import _Context
+        from test_v07_s2_expansion import scene
+        planner=ContinuousTransit();ctx=_Context(scene(),'f',100.)
+        for theta in (.3,2.1):
+            direction=np.array([math.cos(theta),math.sin(theta)])
+            normal=np.array([-direction[1],direction[0]])
+            blocks=[planner.offsets(ctx,direction,normal,1.,2,20.,q) for q in (0.,.25,1.)]
+            self.assertTrue(all(block is not None for block in blocks))
+            self.assertAlmostEqual(blocks[1][0]['offset'],.75*blocks[0][0]['offset']+.25*blocks[2][0]['offset'])
+            for block in blocks:
+                self.assertAlmostEqual(block[1]['offset']-block[0]['offset'],20.)
+                self.assertTrue(all(c['length']>=430. and c['difference']>=95. for c in block))
+
     def test_115_percent_filter_then_seeded_order(self):
         pool=[{'cost':v,'index':i} for i,v in enumerate((100,114.9,115,115.1,200))]
         selected,report=choose_eligible(pool,True,random.Random(8))

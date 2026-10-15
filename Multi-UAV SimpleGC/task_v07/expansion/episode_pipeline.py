@@ -46,6 +46,7 @@ def assemble_episode(descriptor, groups, bundles, variant=0):
                 "main_unit_id": descriptor["main_unit_id"],
                 "main_group_id": next((g["group_id"] for g in descriptor["task_groups"] if descriptor["main_unit_id"] in g["source_units"]), None),
                 "approach_mode": descriptor["common_draw"]["approach_mode"], "common_slot": descriptor["common_draw"]["slot"]}
+    skeleton["planning_interval_warning_m"]=max(g.get("planning_interval_warning_m",6.) for g in groups.values())
     return skeleton, RouteBundle(paths, {a: 0. for a in ids})
 
 
@@ -98,6 +99,7 @@ def episode_interval_check(skeleton, bundle, plans):
         plan["departure_delays_s"] = {a: value + skeleton["initial_settle_s"]
                                       for a, value in plan["departure_delays_s"].items()}
     report = planning_layer_interval_check(bundle, gate_plans, skeleton["cruise_speed_m_s"],
+        warning_m=skeleton.get("planning_interval_warning_m",6.),
         dwells_by_agent={a:r['intermediate_dwell'] for a,r in skeleton.get('references',{}).items() if 'intermediate_dwell' in r})
     report["scope"] = "all agents across all groups, entire episode, both timing versions"
     report["includes_registered_group_offsets"] = True
