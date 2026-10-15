@@ -15,7 +15,7 @@ from scripts.run_v07_s2_expansion import INFRA_ATTEMPT, descriptor_jobs, new_att
 from scripts.run_v07_s2_episode_batch import run_jobs
 from scripts.run_v07_s2_abort import run_aborts
 from scripts.v07_s2_final_reporting import final_views, final_statistics, write_tables
-from scripts.v07_s2_process_comparison import compare_process_counts
+from scripts.v07_s2_revision_process_comparison import compare_process_counts
 
 
 def abort_jobs(regular_jobs, descriptors, records, out):
