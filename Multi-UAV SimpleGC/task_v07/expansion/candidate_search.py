@@ -2,6 +2,7 @@
 from collections import Counter
 from copy import deepcopy
 import random
+import time
 
 from task_v07.planning import seed_for
 from .contracts import RouteBundle, P0ContractError
@@ -11,6 +12,7 @@ from .pipeline import plan_group, role_parameters, COMMON_CONSTANTS, timing_plan
 from .candidate_constraints import bearing_allowed
 from .geometry_checks import planning_layer_interval_check
 from .role_planners import PlanningInfeasible
+from .search_diagnostics import rejection, summarize
 
 CANDIDATE_BUDGET = 200
 MAX_CALIBRATION_ROUNDS = 5
@@ -47,8 +49,9 @@ def choose_eligible(candidates, same_direction, rng):
                       'selection_order': 'all geometry -> nominal whole-route separation -> same-direction 115% -> private random order -> at most 5 actual calibration rounds'}
 
 
-def _candidate_record(index, stage, reason, draws):
-    return {'candidate_index': index, 'stage': stage, 'reason': reason, 'draws_by_group': draws}
+def _candidate_record(index, stage, reason, draws, evidence=None):
+    return {'candidate_index': index, 'stage': stage, 'reason': reason, 'draws_by_group': draws,
+            'rejection': rejection(reason, evidence=evidence) if reason else None}
 
 
 def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
@@ -62,18 +65,23 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
     contexts = {g['group_id']: Context(scene, g, role_parameters(descriptor, g)) for g in order}
     candidates, records, reasons = [], [], Counter()
     group_attempts = Counter()
+    group_wall = {g['group_id']:0. for g in order}
     for index in range(budget):
         groups, bundles, checks, bearings, draws = {}, {}, {}, {}, {}
         cost = 0.
         cost_by_group = {}
         rejected = None
+        failure_evidence = None
         for group in order:
             gid = group['group_id']
             ctx = contexts[gid]
             group_attempts[gid] += 1
+            started = time.perf_counter()
             result, reason, draw = draw_role(ctx, index)
+            group_wall[gid] += time.perf_counter()-started
             draws[gid] = draw
             if result is None:
+                failure_evidence = getattr(ctx, 'last_failure_evidence', [])
                 rejected = ('geometry:'+gid, reason)
                 break
             angle = result['template']['work_area_bearing_deg']
@@ -99,7 +107,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
         if rejected:
             stage, reason = rejected
             reasons[reason] += 1
-            records.append(_candidate_record(index, stage, reason, draws))
+            records.append(_candidate_record(index, stage, reason, draws, failure_evidence))
             continue
         skeleton, bundle = assemble_episode(descriptor, groups, bundles, index)
         nominal = {gid: {a: COMMON_CONSTANTS['initial_settle_s']+distance/skeleton['cruise_speed_m_s']
@@ -126,6 +134,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
     for record in records:
         if record['stage'] == 'feasible' and record['candidate_index'] not in eligible_ids:
             record.update(stage='same_direction_115_percent', reason='task_group_approach_length_exceeds_115_percent')
+            record['rejection'] = rejection(record['reason'])
             reasons[record['reason']] += 1
     for item in eligible:
         item['skeleton']['candidate_selection'] = {**selection, 'candidate_index': item['index'],
@@ -133,6 +142,9 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
                                                    'selected_approach_length_by_group_m': item['cost_by_group']}
     report = {'candidate_budget': budget, 'attempted_candidates': len(records),
               'group_attempt_counts': dict(group_attempts), 'rejection_reasons': dict(reasons),
+              'group_search_metrics': {gid:{'attempts':group_attempts[gid], 'geometry_wall_s':group_wall[gid]} for gid in group_wall},
+              'rejection_class_counts': summarize(records),
+              'termination': rejection('no_eligible_candidate_in_registered_budget', scope='skeleton_search', exhausted=True) if not eligible else None,
               'selection': selection, 'eligible_candidate_order': [c['index'] for c in eligible],
               'max_single_agent_calibration_rounds': MAX_CALIBRATION_ROUNDS,
               'solo_flights_run': 0, 'candidates': records}

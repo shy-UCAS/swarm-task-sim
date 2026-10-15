@@ -156,6 +156,7 @@ class ContinuousTransit(TransitPlanner):
 
 def draw_role(ctx, candidate_index):
     """Exactly one outer candidate; all subordinate draws use its private stream."""
+    ctx.last_failure_evidence = []
     ctx.rng = random.Random(seed_for(ctx.params.get('geometry_seed', ctx.params['planning_seed']),
                                     f'continuous-candidate:{candidate_index}'))
     ctx.continuous_candidate = True
@@ -180,6 +181,7 @@ def draw_role(ctx, candidate_index):
         low = extent+ctx.zones['alert']['offset_m']+10.
         high = extent+ctx.zones['warning']['offset_m']-35.
         if high <= low:
+            ctx.last_failure_evidence = [{'constraint':'original_orbit_radius_interval','lower_m':low,'upper_m':high}]
             return None, 'empty_original_orbit_radius_range', draw
         radius = ctx.rng.uniform(low, high)
         draw['orbit_radius_m'] = radius
@@ -189,6 +191,8 @@ def draw_role(ctx, candidate_index):
         samples = ctx.center+radius*np.c_[np.cos(np.linspace(0, 2*math.pi, 129)), np.sin(np.linspace(0, 2*math.pi, 129))]
         distances = geometry_facts(geometry, samples)['signed_distance_m']
         if np.any(distances <= ctx.zones['alert']['offset_m']+5.) or np.any(distances >= ctx.zones['warning']['offset_m']-5.) or not ctx.route_valid(samples):
+            from .search_diagnostics import ring_evidence
+            ctx.last_failure_evidence = ring_evidence(ctx, samples)
             return None, 'closed_orbit_cannot_clear_exact_restrictions_and_alert_policy', draw
         phases = random_phase_candidate(ctx, radius)
         draw['orbit_phases_rad'] = phases['phases']
