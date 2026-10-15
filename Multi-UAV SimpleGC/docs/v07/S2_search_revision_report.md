@@ -121,3 +121,25 @@ S2 单元测试 164/164 PASS（19.152 s），覆盖真实延迟平移、出发�
 ### 已存 0.689 m 样本的提前拦截验证
 
 证据 `F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s2_search_overlay_witness_20261015T084451Z_ffc26da3`；新仿真 0。8412/ext_001 递次版本原预筛通过，新叠加预测 0.689434415 m，存档实测 0.689364238 m，预测误差 +0.000070177 m；10 m 预检将整对提前拒绝。源轨迹与时间计划哈希验证未变。
+
+## 第 5 步后快速检查 A
+
+证据 `F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s2_search_step5_planning_20261015T084510Z_f58b31c5`；源提交 `d2befc1c067a6ba36a86a9ed6523da9f6bf8c84e`，另保存所有规划源码 SHA256。
+纯规划可行 32/60；墙钟 1242.805 s；仿真 0。历史列为实测完整成功配对，本轮列为规划可行。
+
+| 意图 | 逼近方式 | 修订前实测 | 上一轮实测 | 本轮规划 |
+|---|---|---:|---:|---:|
+| 过境 | same_direction | 3/5 | 3/5 | 3/5 |
+| 过境 | multi_direction | 5/7 | 1/7 | 1/7 |
+| 侦察 | same_direction | 2/5 | 2/5 | 3/5 |
+| 侦察 | multi_direction | 2/7 | 3/7 | 4/7 |
+| 游弋监视 | same_direction | 0/5 | 0/5 | 4/5 |
+| 游弋监视 | multi_direction | 3/7 | 0/7 | 5/7 |
+| 佯动 | same_direction | 4/5 | 1/5 | 2/5 |
+| 佯动 | multi_direction | 4/7 | 3/7 | 4/7 |
+| 突防 | same_direction | 3/5 | 1/5 | 2/5 |
+| 突防 | multi_direction | 5/7 | 2/7 | 4/7 |
+
+第 5 步停止条件触发：False。
+
+第 4/5 步的 32 份选中规划骨架 SHA256 逐一相同；第 5 步新增预检未改变纯规划结果。
