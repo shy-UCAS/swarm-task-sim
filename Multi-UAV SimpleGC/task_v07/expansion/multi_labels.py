@@ -78,7 +78,15 @@ def measure_groups(scene, skeleton, run, mode, planned_batches=None, *, cutoff_s
                               "event_intervals_s": intervals, "observed_relation": relation,
                               "interpretation": "event order only; no cross-role coordination or causal claim"})
     statuses = [group["result"]["status"] for group in groups.values()]
-    conditions = {"all_task_groups_complete": False if "failure" in statuses else None if "unknown" in statuses else True,
+    all_groups = False if "failure" in statuses else None if "unknown" in statuses else True
+    primary_success = all_groups
+    if assigned_intent == "penetration":
+        main = skeleton.get("main_group_id")
+        if main not in groups or templates[main]["role"] != "intrusion":
+            raise P0ContractError("Penetration requires its declared primary intrusion group")
+        status = groups[main]["result"]["status"]
+        primary_success = True if status == "success" else False if status == "failure" else None
+    conditions = {"primary_task_success" if assigned_intent == "penetration" else "all_task_groups_complete": primary_success,
                   "assigned_role_composition_matches": assigned_intent == skeleton["base_intent"]}
     complete = prototype["evidence"]["complete_observation"]
     quality = deepcopy(prototype["generation_quality"])
@@ -97,6 +105,7 @@ def measure_groups(scene, skeleton, run, mode, planned_batches=None, *, cutoff_s
                             "protected_facilities_entered_by_intrusion_groups": entered,
                             "group_coordination": [{"group_id": g, **groups[g]["observed"]["coordination"]} for g in sorted(groups)],
                             "between_group_timing": relationships, "minimum_separation_m": minimum, "closest_pair": closest},
-                          "result": {"status": observed_conditions_result(conditions, complete), "conditions": conditions}},
+                          "result": {"status": observed_conditions_result(conditions, complete), "conditions": conditions,
+                                     "primary_task_success": primary_success, "all_groups_complete": all_groups}},
               "frame_labels": {**prototype["frame_labels"], "agent_ids": ids}, "generation_quality": quality}
     return labels, frame

@@ -226,4 +226,7 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
     frame = {"time_us": t, "agent_ids": np.array(ids), "facility_ids": np.array(fids),
              "region_all_facilities": levels, "region_assigned_target": levels[:, :, target],
              "phase": phases, "inside_hard_obstacle": obstacle}
+    status = group["result"]["status"]
+    success = True if status == "success" else False if status == "failure" else None
+    labels["cluster"]["result"].update(primary_task_success=success, all_groups_complete=success)
     return labels, frame
