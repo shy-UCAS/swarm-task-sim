@@ -115,7 +115,7 @@ def measurable(ok,complete):
 
 
 def approach_heading_deg(xy, core_frame, distance_m=APPROACH_HEADING_DISTANCE_M):
-    """Mean heading over the last `distance_m` of trajectory before core_frame.
+    """Displacement heading over exactly `distance_m` before the selected frame.
 
     Returns None if core_frame is None or there is insufficient path to measure.
     Works on 2-D XY positions at 10 Hz.
@@ -124,16 +124,17 @@ def approach_heading_deg(xy, core_frame, distance_m=APPROACH_HEADING_DISTANCE_M)
         return None
     # Walk backwards from core_frame accumulating path length.
     end=min(core_frame,len(xy)-1)
-    cum=0.0;start=end
+    cum=0.0;start_point=None
     for k in range(end,0,-1):
         step=float(np.linalg.norm(xy[k]-xy[k-1]))
+        if step>0 and cum+step>=distance_m:
+            start_point=xy[k]-(distance_m-cum)/step*(xy[k]-xy[k-1])
+            break
         cum+=step
-        if cum>=distance_m:
-            start=k-1;break
-    if start==end:
+    if start_point is None:
         return None
     # Heading of vector from first to last point in that window.
-    delta=xy[end]-xy[start]
+    delta=xy[end]-start_point
     if np.linalg.norm(delta)<1e-9:
         return None
     return float(np.degrees(np.arctan2(delta[1],delta[0]))%360)
@@ -146,7 +147,7 @@ def heading_span_deg(headings):
     Uses the circular distance: min(|a-b|, 360-|a-b|).
     """
     valid=[h for h in headings if h is not None]
-    if len(valid)<2:
+    if len(valid)<2 or len(valid)!=len(headings):
         return None
     return float(max(min(abs(a-b),360-abs(a-b)) for a,b in combinations(valid,2)))
 
@@ -208,7 +209,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         grid=survey_grid(skeleton["survey"])
     phases=np.zeros((len(t),len(ids)),np.int8)
     # For vertical-slice intrusion: legacy azimuth tracking (entry point relative to facility centre).
-    # For expansion skeletons: approach heading tracking (last 100 m before core event).
+    # Expansion approach is measured before first entry into the target warning zone.
     expansion="exclusion_policy" in skeleton
     legacy_azimuths=[]         # vertical-slice intrusion only
     approach_headings_deg={}   # expansion skeletons only
@@ -438,7 +439,8 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
 
         # Approach heading (expansion skeletons only; vertical-slice uses legacy azimuth path).
         if expansion:
-            approach_headings_deg[a]=approach_heading_deg(xy,core[a]["frame_index"])
+            warning_entry=event(levels[:,i,target_fi]>=1,t,"enter_warning_zone")
+            approach_headings_deg[a]=approach_heading_deg(xy,warning_entry["frame_index"])
 
         if expansion and kind=="intrusion" and not skeleton.get('abort_observation'):
             work_end=core[a]["t_s"]
@@ -523,7 +525,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
         conditions["shared_coverage"]=measurable(shared["coverage_fraction"]>=shared["required_fraction"],complete)
     # Multi-direction span condition.
     # Vertical-slice intrusion: legacy azimuth-based angular_span (unchanged for regression).
-    # Expansion skeletons: new "last 100 m approach heading" span.
+    # Expansion skeletons: last 100m before first target-warning entry.
     if not expansion:
         if skeleton.get("approach_mode","multi_direction" if kind=="intrusion" else None)=="multi_direction":
             conditions["multi_direction_span"]=measurable(len(legacy_azimuths)==len(ids) and angular_span(legacy_azimuths)>=90,complete)
@@ -587,7 +589,7 @@ def measure(scene,skeleton,run,mode,planned_batches=None,*,cutoff_s=None,timing_
             work_area_center_m=center.tolist(),
             approach_headings_deg={a:approach_headings_deg.get(a) for a in sorted(ids)},
             approach_span_deg=span_val,
-            approach_span_definition=f"max pairwise angle among per-member mean headings over last {APPROACH_HEADING_DISTANCE_M:.0f} m before core event")
+            approach_span_definition=f"max pairwise angle among per-member displacement headings over exactly {APPROACH_HEADING_DISTANCE_M:.0f} m before first entry into assigned task-group target warning zone")
     else:
         # Vertical-slice: legacy approach_span_deg from entry azimuths about facility centre.
         group["observed"]["approach_span_deg"]=(angular_span(legacy_azimuths) if len(legacy_azimuths)==len(ids) else None)

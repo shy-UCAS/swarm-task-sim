@@ -260,15 +260,19 @@ def audit_conditions(root, *, data=None):
         group_checks['abort_group_withdrawal_observed']=aborted
         group_basis['abort_group_withdrawal_observed']=['all independently recomputed member abort predicates']
         compare(None,'abort_group_behavior','approached_then_withdrew' in group['observed']['behaviors'],aborted is True)
+    warning_frames={}
+    for i,a in enumerate(ids):
+        hits=np.flatnonzero(levels[:,i,fids.index(task['target_id'])]>=1)
+        warning_frames[a]=int(hits[0]) if len(hits) else None
+    headings={a:_approach_heading_deg(xy[:,ids.index(a)],warning_frames[a]) for a in ids}
     if task.get('approach_mode')=='multi_direction':
-        headings={a:_approach_heading_deg(xy[:,ids.index(a)],core_frames[a]) for a in ids}
         span=_heading_span_deg(list(headings.values()))
         group_checks['multi_direction_span']=_positive(span is not None and span>=90.,complete)
-        group_basis['multi_direction_span']=['independent core frames','last 100m headings','maximum pairwise angle']
+        group_basis['multi_direction_span']=['independent first target-warning entry frames','exact 100m path backtrack with interpolation','maximum pairwise displacement-heading angle; any missing member makes span unknown']
     if 'exclusion_policy' in task:
         for a in ids:
-            compare(a,'approach_heading_deg',group['observed']['approach_headings_deg'][a],_approach_heading_deg(xy[:,ids.index(a)],core_frames[a]))
-        compare(None,'approach_span_deg',group['observed']['approach_span_deg'],_heading_span_deg([_approach_heading_deg(xy[:,ids.index(a)],core_frames[a]) for a in ids]))
+            compare(a,'approach_heading_deg',group['observed']['approach_headings_deg'][a],headings[a])
+        compare(None,'approach_span_deg',group['observed']['approach_span_deg'],_heading_span_deg(list(headings.values())))
     if coverage_masks:
         covered=np.logical_or.reduce(coverage_masks)
         fraction=float(covered.mean())

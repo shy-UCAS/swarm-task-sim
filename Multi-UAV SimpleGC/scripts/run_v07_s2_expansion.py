@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import random
+import re
 import sys
 import time
 import uuid
@@ -40,6 +41,7 @@ from scripts.v07_s2x_plotting import plot_role_episode
 DEFAULT_DATA = PROJECT.parent.parent / "SwarmData" / "v07_dataset"
 REFERENCE_SLICE = DEFAULT_DATA / "attempt_20261014T014017Z_15a6bf38"
 REFERENCE_TRANSIT = DEFAULT_DATA / "attempt_s2x_p1_20261014T063446Z_5f0ab712"
+REVISION_REFERENCE = DEFAULT_DATA / "attempt_s2x_regress_20261015T032231Z_960ffbf5"
 INFRA_ATTEMPT = DEFAULT_DATA / "attempt_s2infra_20261014T023604Z_d2566191"
 EXPANSION_SCOPE = "S2 expansion development data; fastsim M3 frozen config, 4–10 m/s synthetic extrapolation, no SITL qualification"
 PILOT_SKELETONS = ("family_s12_4d13d93f9171c446_ext_000_regular", "family_s12_aa4c66be8e85d64d_ext_000_regular")
@@ -306,6 +308,30 @@ def compare_episode_dirs(reference, new, files_json, files_npz, files_csv):
     return rows
 
 
+def classify_warning_entry_transition(diffs):
+    """One-time, explicit semantic migration; never waive trajectories or role facts."""
+    for label in ("labels.json", "prefix_labels.json"):
+        label_diffs = [d for d in diffs if d["file"] == label]
+        changed_conditions = {d["path"].rsplit(".conditions.", 1)[0]
+                              for d in label_diffs if d["path"].endswith(".conditions.multi_direction_span")}
+        for diff in label_diffs:
+            path = diff["path"]
+            measurement = re.fullmatch(r"task_groups\.[^.]+\.observed\.(approach_span_deg|approach_span_definition|approach_headings_deg\.[^.]+)", path)
+            condition = re.fullmatch(r"(task_groups\.[^.]+|cluster)\.result\.conditions\.multi_direction_span", path)
+            derived_status = path.endswith(".status") and path[:-len(".status")] in changed_conditions
+            if measurement or condition or derived_status:
+                diff["class"] = "expected:warning_entry_definition"
+        if label_diffs and all(d["class"] != "content" for d in label_diffs):
+            for diff in diffs:
+                if diff["file"] == "manifest.json" and diff["path"] == f"artifact_sha256.{label}":
+                    diff["class"] = "metadata:hash_of_expected_label_change"
+    for diff in diffs:
+        if (diff["file"] == "independent_exact_audit.json" and
+                re.fullmatch(r"condition_audit_map\.task_group\.multi_direction_span(?:\[\d+\])?", diff["path"])):
+            diff["class"] = "expected:independent_warning_entry_basis"
+    return [d for d in diffs if d["class"].startswith("expected:")]
+
+
 def vertical_request(scene, family, intent, index, target):
     """Request record for one vertical-slice skeleton, as an expansion descriptor."""
     ids = sorted(s["agent_id"] for s in family["initial_states"])
@@ -342,7 +368,9 @@ def regression(args):
             jobs.append({"scene": scene, "descriptor": vertical_request(scene, family, intent, index, target),
                          "planner": ("vertical_slice", intent, index), "out": str(out), "scope": None,
                          "enforce_precheck": False})
-    transit_reference = Path(args.transit_reference)
+    expanded_reference = getattr(args, "expanded_reference", None)
+    transit_reference = Path(expanded_reference or args.transit_reference)
+    role_references = {sid: Path(expanded_reference) if expanded_reference else path for sid, path in REFERENCE_ROLES.items()}
     transit_jobs = descriptor_jobs(INFRA_ATTEMPT, PILOT_SKELETONS, out)
     for job in transit_jobs:
         template = transit_reference / job["descriptor"]["skeleton_id"] / "skeleton.json"
@@ -351,14 +379,15 @@ def regression(args):
     role_jobs = descriptor_jobs(INFRA_ATTEMPT, REFERENCE_ROLES, out)
     for job in role_jobs:
         sid = job["descriptor"]["skeleton_id"]
-        template = REFERENCE_ROLES[sid] / sid / "skeleton.json"
+        template = role_references[sid] / sid / "skeleton.json"
         job.update(planner=("vertical_slice_recorded", str(template)), enforce_precheck=False)
     jobs.extend(role_jobs)
     baselines = {job["descriptor"]["skeleton_id"]: (
-        REFERENCE_ROLES[job["descriptor"]["skeleton_id"]] if job["descriptor"]["skeleton_id"] in REFERENCE_ROLES
+        role_references[job["descriptor"]["skeleton_id"]] if job["descriptor"]["skeleton_id"] in REFERENCE_ROLES
         else transit_reference if job["descriptor"]["skeleton_id"] in PILOT_SKELETONS else reference) for job in jobs}
     save_json(out / "registration.json", {"scope": "fixed 22-episode regression: vertical 8, transit 4, accepted formal role 10; original/recorded adapters only",
-              "role_reference_attempts": {sid: str(path) for sid, path in REFERENCE_ROLES.items()},
+              "role_reference_attempts": {sid: str(path) for sid, path in role_references.items()},
+              "warning_entry_transition": bool(getattr(args, "warning_entry_revision", False)),
               "transit_reference_attempt": str(transit_reference),
               "reference_attempt": str(reference), "scene_attempt": registration["scene_attempt"],
               "candidates": registration["candidates"], "workers": args.workers, "pipeline_version": PIPELINE_VERSION,
@@ -375,7 +404,7 @@ def regression(args):
         baseline = baselines[row["skeleton_id"]]
         ref_dir = baseline / row["skeleton_id"] / row["mode"]; new_dir = out / row["path"]
         files = ["labels.json", "prefix_labels.json", "task.json", "source.json", "manifest.json", "public_scene.json"]
-        if not transit:
+        if not transit or expanded_reference:
             files.append("independent_exact_audit.json")
         diffs = compare_episode_dirs(ref_dir, new_dir,
                                      files,
@@ -390,6 +419,8 @@ def regression(args):
                         "artifact_sha256.labels.json", "artifact_sha256.prefix_labels.json"):
                     diff["class"] = "metadata:hash_of_expected_label_change"
             expected = [diff for diff in diffs if diff["class"].startswith("expected:")]
+        if getattr(args, "warning_entry_revision", False) and row["skeleton_id"] in {*REFERENCE_ROLES, *PILOT_SKELETONS}:
+            expected = classify_warning_entry_transition(diffs)
         # Original vertical audit receipt remains part of strict regression.
         diffs = [d for d in diffs if not (d["file"] == "independent_exact_audit.json" and d["path"] == "directory")] + \
                 [{"file": "independent_exact_audit.json", "path": "directory", "class": "metadata:path"}]
@@ -533,6 +564,9 @@ def main():
     reg.add_argument("--reference", type=Path, default=REFERENCE_SLICE)
     reg.add_argument("--workers", type=int, default=2)
     reg.add_argument("--transit-reference", type=Path, default=REFERENCE_TRANSIT)
+    reg.add_argument("--expanded-reference", type=Path, default=REVISION_REFERENCE)
+    reg.add_argument("--warning-entry-revision", action="store_true",
+                     help="One-time task A transition: enumerate only authorized measurement-derived differences")
     pil = sub.add_parser("pilot")
     pil.add_argument("--descriptors", type=Path, default=INFRA_ATTEMPT)
     pil.add_argument("--skeletons", nargs="+", default=list(PILOT_SKELETONS))

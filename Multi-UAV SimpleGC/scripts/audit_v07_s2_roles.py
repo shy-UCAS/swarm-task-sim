@@ -65,17 +65,16 @@ def _approach_heading_deg(xy, core_frame, distance_m=APPROACH_HEADING_DISTANCE_M
     if core_frame is None or core_frame < 1:
         return None
     end = min(core_frame, len(xy) - 1)
-    cum = 0.0
-    start = end
-    for k in range(end, 0, -1):
-        step = float(np.linalg.norm(xy[k] - xy[k - 1]))
-        cum += step
-        if cum >= distance_m:
-            start = k - 1
-            break
-    if start == end:
+    points = np.asarray(xy[:end+1], float)
+    lengths = np.linalg.norm(np.diff(points, axis=0), axis=1)
+    backward = np.cumsum(lengths[::-1])
+    if not len(backward) or backward[-1] < distance_m:
         return None
-    delta = xy[end] - xy[start]
+    offset = int(np.searchsorted(backward, distance_m, side="left"))
+    segment = end - 1 - offset
+    previous = 0. if offset == 0 else float(backward[offset-1])
+    start = points[segment+1] + ((distance_m-previous)/lengths[segment]) * (points[segment]-points[segment+1])
+    delta = points[-1] - start
     if np.linalg.norm(delta) < 1e-9:
         return None
     return float(np.degrees(math.atan2(float(delta[1]), float(delta[0]))) % 360)
@@ -84,10 +83,10 @@ def _approach_heading_deg(xy, core_frame, distance_m=APPROACH_HEADING_DISTANCE_M
 def _heading_span_deg(headings):
     """Max pairwise circular angular difference among headings (degrees [0,360)).
 
-    Returns None when fewer than 2 valid headings are present.
+    Returns None when any member heading is missing or there are fewer than two.
     """
     valid = [h for h in headings if h is not None]
-    if len(valid) < 2:
+    if len(valid) < 2 or len(valid) != len(headings):
         return None
     return float(max(min(abs(a - b), 360 - abs(a - b)) for a, b in combinations(valid, 2)))
 

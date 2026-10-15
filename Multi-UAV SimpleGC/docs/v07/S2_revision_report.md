@@ -25,7 +25,7 @@
 
 任务 1 的组规模按每个骨架**最大任务组成员数**分档；已有离线报告按“含某规模组”跨档计数，不能直接复制为本轮矩阵。
 
-尚未开始修订生成与测量代码；尚无修订后的样本、成功率或验收结论。
+各任务实际完成证据依次记录在下文；修订后的正式样本和成功率以任务 H 的全量 attempt 为准。
 
 <!-- revision-matrices:修订前 -->
 ## 修订前：四维骨架成功率
@@ -122,3 +122,35 @@
 - 游弋监视 × 最大任务组成员数=4–6：0/2；最终类别 `{"geometry_infeasible": 2}`；主要原因：`same_direction_parallel_phase_entries_do_not_fit` × 288；`closed_orbit_cannot_clear_exact_restrictions_and_alert_policy` × 120；`whole episode actual-delay constant-speed estimate below 6m` × 1。
 
 [逐骨架证据与来源哈希](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2_revision_before_20261015T032100Z/diagnostics.json>)。
+
+## 任务 A：预警进入口径与新回归基准
+
+扩展骨架逐机定位本任务组目标预警区的首次进入帧，在 10 Hz 路径上精确回溯 100 m 并在线段内插值，取回溯起点到进入帧的位移航向。任一成员缺证据则组跨度未知；多向阈值仍为 90°，同向只作诊断。角色核心事件与成功条件不变。
+
+同向通过同侧编队走廊进入，多向分股进入；随后用既有可见图在目标预警区内展开，保留禁入政策、35 m 限制区余量及走廊宽度规则。监视保持同一环线、同一绕行方向和原圈数/半径范围，时序仍按原第一圈核心事件的单机实测计算。
+
+126 项测试通过；固定回归 22/22 PASS，未解释内容差异 0，1093.778 s。竖切 8 条逐字节一致。
+旧比较基准：`F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s2x_regress_20261015T025544Z_e1874339`；本轮新扩展角色/过境回归基准：`F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s2x_regress_20261015T032231Z_960ffbf5`。
+
+| 冻结骨架/时序 | 类型 | 旧跨度° → 新跨度° | 多向条件 | 组结果 | 集群结果 |
+|---|---|---|---|---|---|
+| `family_s12_4d13d93f9171c446_ext_000_regular/sequential` | transit | 0.000000000 → 0.000000000 | 未知 → 未知 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_000_regular/synchronous` | transit | 0.000000000 → 0.000000000 | 未知 → 未知 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_001_regular/sequential` | new_roles | 0.000000000 → 21.786117641 | 未知 → 未知 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_001_regular/synchronous` | new_roles | 0.000000000 → 21.831215555 | 未知 → 未知 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_003_regular/sequential` | new_roles | 0.000000000 → 59.052891831 | 未知 → 未知 | success → success | success → success |
+| `family_s12_4d13d93f9171c446_ext_003_regular/synchronous` | new_roles | 0.000000000 → 59.053363655 | 未知 → 未知 | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_000_regular/sequential` | transit | 180.000000000 → 180.000000000 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_000_regular/synchronous` | transit | 180.000000000 → 180.000000000 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_002_regular/sequential` | new_roles | 179.274159527 → 168.049454824 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_002_regular/synchronous` | new_roles | 179.273939916 → 168.049454823 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_003_regular/sequential` | new_roles | 180.000000000 → 179.999999976 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_003_regular/synchronous` | new_roles | 180.000000000 → 179.999999976 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_004_regular/sequential` | new_roles | 180.000000000 → 179.999979952 | True → True | success → success | success → success |
+| `family_s12_aa4c66be8e85d64d_ext_004_regular/synchronous` | new_roles | 180.000000000 → 179.999982278 | True → True | success → success | success → success |
+
+新角色冻结模板按旧核心事件口径生成，因此新多向条件及其组/集群结果可以变为失败；这是真实轨迹按新定义重算的预期变化，不是标签矛盾或 P0。完整轨迹数组、模型输入、帧级标签、角色事实、任务模板与校时证据继续严格比较。
+
+过境核心事件本来就是进入预警区，测量位置没有改变；其数值末位变化来自把旧“跨过 100 m 的整帧起点”改为精确插值起点，定义文字也同步更新。
+
+[逐机航向、定义、全量字段差异和哈希清单](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2x_regress_20261015T032231Z_960ffbf5/warning_entry_transition_inventory.json>)；[完整固定回归比较](<F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData/v07_dataset/attempt_s2x_regress_20261015T032231Z_960ffbf5/regression_comparison.json>)。

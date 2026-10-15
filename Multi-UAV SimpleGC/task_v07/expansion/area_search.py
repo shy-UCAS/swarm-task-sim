@@ -121,6 +121,7 @@ class AreaSearchPlanner:
 
     def candidate(self, ctx, angle, span_deg):
         from .role_planners import find_clear_retreat
+        from .warning_approach import warning_ingress, deploy_inside_warning
         base, center = ctx.geometry, ctx.center
         widths = []
         for stock in ctx.split:
@@ -132,7 +133,9 @@ class AreaSearchPlanner:
                 inward, _ = start_line(ctx.scene, mean)
                 normal = np.array([-inward[1], inward[0]])
                 widths.append(max(abs(float((ctx.starts[a] - mean) @ normal)) for a in members))
-        low = ctx.zones["alert"]["offset_m"] + (215. + 2 * max(widths) if ctx.multi else 35.)
+        # The 100m approach is outside the warning zone; no inner strip must
+        # reserve that old approach distance before its scan-start event.
+        low = ctx.zones["alert"]["offset_m"] + 35.
         high = ctx.zones["warning"]["offset_m"] - 35.
         if high <= low:
             return None, "annulus_too_narrow"
@@ -197,39 +200,26 @@ class AreaSearchPlanner:
                 for segment in segments:
                     scan.extend(list(reversed(segment)) if inward else segment)
             velocity = (scan[1] - scan[0]) / np.linalg.norm(scan[1] - scan[0])
-            gate = scan[0] - 120. * velocity
-            if not ctx.route_valid([gate, scan[0]]):
-                return None, "final_approach_clearance"
+            gate = scan[0]
             scans[a] = scan
             gates[a] = gate
             refs[a] = {"scan_geometry": strip, "scan_lane_endpoints_m": [p.tolist() for p in scan],
                        "scan_axis_enu": velocity.tolist(), "scan_strip_count": len(indices),
                        "scan_leg_count": len(scan) // 2, "assigned_scan_length_m": sum(lengths[i] for i in indices),
                        "retreat_required": True, "retreat_warning_clearance_m": 210.}
+        ingress, reason = warning_ingress(ctx, angle)
+        if reason:
+            return None, reason
         approaches = {}
-        blocks = defaultdict(list)
-        for a in ordered:
-            blocks[side_by_id[a], ctx.states[a].get("entry_id", "none")].append(a)
-        for (side, entry), members in blocks.items():
-            mean = np.mean([ctx.starts[a] for a in members], axis=0)
-            inward, _ = start_line(ctx.scene, mean)
-            normal = np.array([-inward[1], inward[0]])
-            offsets = {a: float((ctx.starts[a] - mean) @ normal) for a in members}
-            half = max(abs(v) for v in offsets.values())
-            margin = 35. + 1.5 * half + 2.
-            tail = np.mean([gates[a] for a in members], axis=0)
-            flow = np.asarray(refs[members[0]]["scan_axis_enu"])
-            lead = tail - (30. + 2 * half) * flow
-            corridor, reason = shared_reference_corridor(ctx.scene, members, ctx.starts, lead, tail,
-                ctx.planner(margin), ctx.planner(), form_up_depths=(max(100., 2 * half + 50.), 150., 200., 60.))
-            if reason:
-                return None, reason
-            for a in members:
-                lane = offset_polyline(corridor["reference"], offsets[a])
-                if lane is None:
-                    return None, "offset_lane_swallowtail"
-                approaches[a] = [ctx.starts[a], *lane[1:], gates[a]]
-                refs[a]["formation_lane"] = {"side": side, "entry_id": entry, "lane_offset_m": offsets[a]}
+        for agent in ordered:
+            points = list(ingress['routes'][agent])
+            branch = deploy_inside_warning(ctx, points[-1], gates[agent])
+            if branch is None:
+                return None, 'inside_warning_scan_deployment_unavailable'
+            points.extend(branch[1:])
+            approaches[agent] = points
+            refs[agent]['formation_lane'] = ingress['references'][agent]
+
         routes, headings, total, retreats = {}, {}, 0., []
         for a in ordered:
             scan = scans[a]
@@ -251,8 +241,9 @@ class AreaSearchPlanner:
             if not ctx.route_valid(points):
                 return None, "route_clearance"
             distance = planned_core_distance(points, refs[a]["scan_geometry"])
-            heading = heading_before_distance(points, distance)
-            if heading is None:
+            warning_distance = planned_core_distance(points, ctx.zones['warning']['geometry'])
+            heading = heading_before_distance(points, warning_distance)
+            if distance is None or heading is None:
                 return None, "missing_planned_core"
             headings[a] = heading
             total += distance
@@ -262,7 +253,7 @@ class AreaSearchPlanner:
             retreats.append(retreat)
         values = list(headings.values())
         spread = max(min(abs(a - b), 360 - abs(a - b)) for a in values for b in values)
-        if (ctx.multi and spread < 90.) or (not ctx.multi and spread > 10.):
+        if ctx.multi and spread < 90.:
             return None, "planned_approach_heading"
         survey = {"geometry": sector, "area_m2": fine, "angle_span_deg": span_deg,
                   "area_quadrature_error_m2": abs(area - fine), "bounds_m": [*(center - bound).tolist(), *(center + bound).tolist()],
@@ -274,5 +265,6 @@ class AreaSearchPlanner:
                   "assumptions": "Geometric coverage proxy; no camera, detection or recognition simulation"}
         return {"routes": routes, "length": total, "template": {"role": "reconnaissance", "execution_method": "area_search",
                 "planning_version": "v07_s2x_area_search_v1", "survey": survey, "references": refs,
+                "formation": {'blocks': ingress['blocks']},
                 "planned_approach_headings_deg": headings, "planned_approach_span_deg": spread,
                 "work_area_bearing_deg": math.degrees(angle) % 360}}, None
