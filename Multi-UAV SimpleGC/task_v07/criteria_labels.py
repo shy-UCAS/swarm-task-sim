@@ -45,6 +45,7 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
     agents, events, headings, covered = {}, {}, {}, []
     phases = np.zeros(p.shape[:2], np.int8)
     kind = role_kind(skeleton)
+    patrol_masks, patrol_angles = {}, {}
     for a in sorted(ids):
         i = ids.index(a); xy = p[:, i, :2]; speed = np.linalg.norm(v[:, i], axis=1)
         target_levels = levels[:, i, target]; distance = facts[target]["signed_distance_m"][:, i]
@@ -131,9 +132,24 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
         inside_frames = np.flatnonzero(target_levels >= 1)
         end = (int(inside_frames[-1]) + 1 if len(inside_frames) and inside_frames[-1] < len(t) - 1 else None)
         work_end = None if end is None else float(t[end] / 1e6)
+        from .criteria_diagnostics import role_diagnostics, group_revisit_diagnostic
+        metrics, extra, terminal = role_diagnostics(kind, skeleton, a, t, p[:, i], v[:, i], target_levels,
+            distance, center, work, cfg, events[a], work_end)
+        if kind == "intrusion":
+            metrics["maximum_protected_depth_m"] = float(facts[target]["protected_depth_m"][:, i].max())
+        if kind == "feint":
+            offsets = {e["layer"]: e["offset_m"] for e in scene["entities"] if e.get("facility_id") == skeleton["target_id"]}
+            band = target_levels == 2
+            depth = float(np.maximum(offsets["alert"] - distance, 0)[band].max()) if band.any() else 0.
+            metrics.update(max_depth_in_alert_m=round(depth, 3),
+                           depth_fraction_in_alert_band=round(depth / (offsets["alert"] - offsets["protected"]), 3))
+        if kind == "monitoring":
+            patrol_masks[a] = extra.pop("_patrol_mask"); patrol_angles[a] = extra.pop("_patrol_angles")
+        contribution.update(metrics, dwell_total_duration_s=dwelling["total_duration_s"])
         phases[:, i] = np.where(speed >= cfg["detectors"]["coverage"]["effective_speed_min_m_s"], 1, 0)
         if events[a]["frame_index"] is not None: phases[events[a]["frame_index"]:, i] = 2
         if end is not None: phases[end:, i] = 3
+        phases[terminal, i] = 4
         agents[a] = {"assigned": {"intent": skeleton["base_intent"], "role": skeleton["role"],
             "target": skeleton["target_id"], "task_group": skeleton["group_id"],
             "execution_method": skeleton["execution_method"], "planned_coordination": mode,
@@ -142,7 +158,7 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
             "observed": {"behaviors": behavior, "regions_by_facility": regions, "core_event": events[a],
                 "contribution": contribution, "work_end_s": work_end, "batch_index": None,
                 "minimum_separation_m": minima[a], "hard_obstacle_sample_count": int(obstacle[:, i].sum()),
-                "outside_world_sample_count": int(outside[:, i].sum())},
+                "outside_world_sample_count": int(outside[:, i].sum()), **extra},
             "result": {"status": observed_conditions_result(checks, complete), "conditions": checks}}
     coord = coordination(events, **cfg["coordination"])
     for batch in coord["batches"]:
@@ -177,6 +193,8 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
                  "behaviors": sorted({b for a in agents.values() for b in a["observed"]["behaviors"]})},
              "result": {"status": observed_conditions_result(group_checks, complete), "conditions": group_checks}}
     related = sorted(fid for j, fid in enumerate(fids) if (levels[:, :, j] >= 1).any())
+    if kind == "monitoring":
+        group["observed"]["shared_revisit"] = group_revisit_diagnostic(skeleton, t / 1e6, patrol_masks, patrol_angles)
     threshold = cfg["quality"]["min_separation_error_m"]
     error = minimum is not None and minimum < threshold
     labels = {"schema_version": EXPANSION_LABEL_VERSION,
