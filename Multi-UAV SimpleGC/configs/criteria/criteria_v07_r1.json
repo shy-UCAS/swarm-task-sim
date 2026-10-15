@@ -1,0 +1,35 @@
+{
+  "criteria_version": "criteria/0.7-r1",
+  "source": "统一集群规划器设计文档 r1.2 定稿 第2章",
+  "quality": {
+    "min_separation_error_m": 2.0,
+    "restricted_zone_entry": "constraint_violation",
+    "outside_world": "record_only"
+  },
+  "exclusion_max_layer": {
+    "other_facilities": 1,
+    "transit": 1,
+    "reconnaissance": 1,
+    "monitoring": 1,
+    "feint": 2,
+    "intrusion": 3
+  },
+  "detectors": {
+    "dwell": {"window_s": 20.0, "radius_m": 30.0, "max_start_end_m": 30.0},
+    "revisit": {
+      "radius_m": 30.0,
+      "min_departure_m": 150.0,
+      "parallel_max_deg": 45.0,
+      "antiparallel_min_deg": 135.0,
+      "min_azimuth_coverage_deg": 120.0,
+      "min_speed_m_s": 0.5
+    },
+    "coverage": {"min_group_fraction": 0.80, "effective_speed_min_m_s": 0.5}
+  },
+  "roles": {
+    "intrusion": {"max_contour_distance_m": 50.0}
+  },
+  "approach": {"heading_distance_m": 100.0, "same_max_deg": 30.0, "multi_min_deg": 60.0},
+  "coordination": {"sync_window_s": 10.0, "batch_split_gap_s": 20.0},
+  "diagnostics": {"reversal_angle_deg": 135.0, "reversal_lag_s": 20.0}
+}
