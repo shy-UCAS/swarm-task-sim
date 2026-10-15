@@ -35,8 +35,8 @@ def table(headers,rows):
                       *['| '+' | '.join(str(x).replace('|',' / ').replace('\n',' ') for x in row)+' |' for row in rows]])+'\n'
 
 
-def write_yes_appendix(path,cross):
-    lines=['# S2 第二段交叉否定：逐条“是”见证','',
+def write_yes_appendix(path,cross,*,revision=False):
+    lines=[f'# S2 {"修订轮" if revision else "第二段"}交叉否定：逐条“是”见证','',
            '每一项保留模板与轨迹、任务组对应、实际取交集的成员，以及使模板成立的组级和单机判据。'
            '同一模板几何在两个 A 时序槽位中的重复请求按 960 项登记保留，不去重。','']
     for i,row in enumerate(cross['affirmative_witnesses'],1):
@@ -47,7 +47,7 @@ def write_yes_appendix(path,cross):
                   '```json',json.dumps(row['facts'],ensure_ascii=False,indent=2),'```','']
     if not cross['affirmative_witnesses']:
         lines += ['本次已执行项中没有“是”；未执行项仍按 not_run 统计，不据此宣称全部否定成立。','']
-    path.write_text('\n'.join(lines),encoding='utf-8')
+    path.write_text('\n'.join(lines),encoding='utf-8',newline='\n')
 
 
 def write_report(attempt, *, revision=False):
@@ -70,7 +70,7 @@ def write_report(attempt, *, revision=False):
     yes=report.with_name(f'{"S2_revision_cross_yes" if revision else "S2_phase2_cross_yes"}_{stamp}.md')
     if report.exists() or yes.exists():
         raise FileExistsError('Final reports already exist; preserve original evidence')
-    write_yes_appendix(yes,cross)
+    write_yes_appendix(yes,cross,revision=revision)
     lines=['# Traj2Language v0.7 S2 修订轮全量统计' if revision else '# Traj2Language v0.7 S2 第二段总报告','',
         f'全量 attempt：`{attempt.name}`。冻结生成代码提交 `{registration["commit"]}`，工作进程 {registration["workers"]}。'
         f'登记 60 个常规骨架（120 个时序请求）及 6 个中止请求，记录 {execution["record_count"]} 项，未复用试点结果。','',

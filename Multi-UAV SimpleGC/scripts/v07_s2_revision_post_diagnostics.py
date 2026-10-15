@@ -19,6 +19,18 @@ NUMERIC_PARAMETERS=('approach_obstacle_clearance_m','collection_clearance_m','fe
 CATEGORICAL_PARAMETERS=('observation_dwell_method','monitoring_laps','monitoring_rotation_sign')
 
 
+def sampling_unit(stage,key):
+    if stage=='measured_retained_episodes':
+        return '保留轨迹中的单机（同步/递次分别计）'
+    candidate=stage=='all_attempted_draws'
+    if key=='approach_obstacle_clearance_m':
+        return '候选组记录（同骨架共用净空值）' if candidate else '组记录（同骨架共用净空值）'
+    member=key in ('feint_member_depth_fraction','transit_chord_length_m',
+                   'transit_entry_exit_azimuth_difference_deg','transit_lateral_offset_m')
+    if member:return '候选中的单机计划值' if candidate else '骨架中的单机计划值'
+    return '候选中的任务组参数记录' if candidate else '骨架中的任务组参数记录'
+
+
 def summarize(values):
     values=[float(v) for v in values if v is not None and np.isfinite(v)]
     return {'n':len(values),'unique':len(set(values)), 'minimum':min(values) if values else None,
@@ -97,9 +109,9 @@ def parameter_distributions(attempt,descriptors,records):
             for key in ('approach_obstacle_clearance_m',*numbers):numeric.setdefault((stage,role,key),[])
             for key in categories:categorical.setdefault((stage,role,key),Counter())
         for key in measured:numeric.setdefault(('measured_retained_episodes',role,key),[])
-    return {'numeric':[{'stage':stage,'role':role,'parameter':key,**summarize(values)}
+    return {'numeric':[{'stage':stage,'role':role,'parameter':key,'sampling_unit':sampling_unit(stage,key),**summarize(values)}
                         for (stage,role,key),values in sorted(numeric.items())],
-            'categorical':[{'stage':stage,'role':role,'parameter':key,'counts':dict(counts),'unique':len(counts),
+            'categorical':[{'stage':stage,'role':role,'parameter':key,'sampling_unit':sampling_unit(stage,key),'counts':dict(counts),'unique':len(counts),
                             'spread_status':'unmeasured' if not counts else 'insufficient_n' if sum(counts.values())<2
                                             else 'single_value' if len(counts)==1 else 'noncollapsed'}
                            for (stage,role,key),counts in sorted(categorical.items())],
@@ -163,15 +175,17 @@ def render(data,output):
         table(['角色','逼近方式','股数','N','最小','中位','P90','最大'],
             [[s['role'],s['approach'],s['stock_count'],s['n'],*[number(s[k]) for k in ('minimum','median','p90','maximum')]] for s in data['spans']]),'',
         '### 作业参数实际取值与塌缩诊断','',
-        'all_attempted_draws 为候选尝试（后续组可能因前组拒绝而未抽样）；selected_for_execution 为完成校时后实际选中的骨架，每组仅计一次；'
-        'retained_skeletons_once 为至少保留一个时序版本的骨架，每组一次；measured_retained_episodes 为真实轨迹单机事实。'
-        'sample 数为 0/1 时不能证明未塌缩。角色结果条件均未因这些分布调整。接近净空按骨架抽样，监视圈数/方向保留原有随机规则。','',
-        table(['阶段','角色','参数','N/不同值数','最小/P10/中位/P90/最大','诊断'],
-            [[v['stage'],v['role'],v['parameter'],f"{v['n']}/{v['unique']}",
+        'all_attempted_draws 为候选尝试（后续组可能因前组拒绝而未抽样）；selected_for_execution 为完成校时后实际选中的骨架；'
+        'retained_skeletons_once 为至少保留一个时序版本的骨架。这两个阶段去除了同步/递次重复，组级参数每组一次，'
+        '佯攻成员扰动和过境计划弦指标按每机展开。接近净空按骨架抽样，保存到各组及候选的值会重复，N 不是独立随机抽样次数。'
+        'measured_retained_episodes 为真实轨迹单机事实，包含两个时序版本；各行明确计数单位。'
+        'sample 数为 0/1 时不能证明未塌缩。角色结果条件均未因这些分布调整。监视圈数/方向保留原有随机规则。','',
+        table(['阶段','角色','参数','计数单位','N/不同值数','最小/P10/中位/P90/最大','诊断'],
+            [[v['stage'],v['role'],v['parameter'],v['sampling_unit'],f"{v['n']}/{v['unique']}",
               ' / '.join(number(v[k]) for k in ('minimum','p10','median','p90','maximum')),v['spread_status']]
              for v in data['parameters']['numeric']]),'',
-        table(['阶段','角色','参数','取值计数','不同值数','诊断'],
-            [[v['stage'],v['role'],v['parameter'],str(v['counts']),v['unique'],v['spread_status']] for v in data['parameters']['categorical']]),'',
+        table(['阶段','角色','参数','计数单位','取值计数','不同值数','诊断'],
+            [[v['stage'],v['role'],v['parameter'],v['sampling_unit'],str(v['counts']),v['unique'],v['spread_status']] for v in data['parameters']['categorical']]),'',
         '### 两项 family 留一捷径检查','',
         '固定深度 2、叶节点至少 3 样本的浅层决策树，不调参。同步/递次同属一个 family 留出折。'
         '时长是仿真时间轴，不是墙钟；监视时长只作测量，不作为优化目标。五类均匀随机参考 20%，另报告训练折多数类基线。','',
