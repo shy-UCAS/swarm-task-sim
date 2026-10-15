@@ -112,6 +112,10 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
             if abort_facts["approached_then_withdrew"]: behavior.append("approached_then_withdrew")
         if kind != "intrusion" or skeleton.get("abort_observation"):
             checks["ended_outside_warning"] = bool(target_levels[-1] == 0) if complete else None
+        events[a]["t_confirm"] = (observation["t_confirm"] if kind == "close_observation" and not skeleton.get("abort_observation")
+                                  else events[a]["t_s"])
+        events[a]["confirm_frame_index"] = (observation["confirm_frame_index"] if kind == "close_observation" and not skeleton.get("abort_observation")
+                                             else events[a]["frame_index"])
         limit = cfg["exclusion_max_layer"][skeleton["role"]]
         forbidden = target_levels > limit
         for j in range(len(fids)):
