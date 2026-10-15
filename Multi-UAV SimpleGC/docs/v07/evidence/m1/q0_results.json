@@ -1,0 +1,3335 @@
+{
+  "passed": true,
+  "tests_run": 8,
+  "failures": 0,
+  "errors": 0,
+  "results": {
+    "G1": {
+      "model": "ideal_isotropic_horizontal_disk",
+      "assumptions": "Geometric footprint only",
+      "footprint_radius_m": 60.0,
+      "grid_spacing_m": 10.0,
+      "grid_point_count": 1400,
+      "covered_grid_point_count": 1400,
+      "coverage_fraction": 1.0,
+      "required_fraction": 0.8,
+      "declared_region_area_m2": 140000.0,
+      "planned_strip_count": null
+    },
+    "G2": {
+      "status": "success",
+      "conditions": {
+        "primary_task_success": true,
+        "assigned_role_composition_matches": true
+      },
+      "primary_task_success": true,
+      "all_groups_complete": false
+    },
+    "G2_views": {
+      "primary": 0,
+      "extended": 2,
+      "aborted": 0,
+      "failed": 0,
+      "pending": 0
+    },
+    "G4": {
+      "primary": 0,
+      "extended": 2,
+      "aborted": 0,
+      "failed": 0,
+      "pending": 0
+    },
+    "G3": {
+      "status": "failure",
+      "conditions": {
+        "all_task_groups_complete": false,
+        "assigned_role_composition_matches": true
+      },
+      "primary_task_success": false,
+      "all_groups_complete": false
+    },
+    "G5": {
+      "20": "same_direction",
+      "75": "multi_direction",
+      "45": "intermediate",
+      "missing": "unknown"
+    },
+    "G5_measured": [
+      {
+        "angle": 20,
+        "measured_span": 20.00000000000001,
+        "classification": "same_direction",
+        "result": {
+          "status": "success",
+          "conditions": {
+            "member_contributions_complete": true
+          }
+        }
+      },
+      {
+        "angle": 75,
+        "measured_span": 74.99999999999997,
+        "classification": "multi_direction",
+        "result": {
+          "status": "success",
+          "conditions": {
+            "member_contributions_complete": true
+          }
+        }
+      },
+      {
+        "angle": 45,
+        "measured_span": 44.999999999999986,
+        "classification": "intermediate",
+        "result": {
+          "status": "success",
+          "conditions": {
+            "member_contributions_complete": true
+          }
+        }
+      },
+      {
+        "angle": null,
+        "measured_span": null,
+        "classification": "unknown",
+        "result": {
+          "status": "success",
+          "conditions": {
+            "member_contributions_complete": true
+          }
+        }
+      }
+    ],
+    "P1": {
+      "result": {
+        "status": "unknown",
+        "conditions": {
+          "observation_dwell": null,
+          "no_revisit": null,
+          "ended_outside_warning": null,
+          "exclusion_policy_respected": null
+        }
+      },
+      "core_event": {
+        "raw_event_type": "observation_point_arrival",
+        "role_core_event": "start_core_operation",
+        "t_s": null,
+        "frame_index": null,
+        "status": "unknown",
+        "source": "truth.csv:10Hz_half_open_sim_clock",
+        "resolution_s": 0.1,
+        "t_confirm": null,
+        "confirm_frame_index": null
+      }
+    },
+    "P2": {
+      "result": {
+        "status": "unknown",
+        "conditions": {
+          "patrol_revisit": null,
+          "ended_outside_warning": null,
+          "exclusion_policy_respected": null
+        }
+      },
+      "core_event": {
+        "raw_event_type": "enter_warning_zone",
+        "role_core_event": "start_core_operation",
+        "t_s": 76.3,
+        "frame_index": 763,
+        "status": "known",
+        "source": "truth.csv:10Hz_half_open_sim_clock",
+        "resolution_s": 0.1,
+        "t_confirm": 76.3,
+        "confirm_frame_index": 763
+      }
+    },
+    "P3": {
+      "result": {
+        "status": "unknown",
+        "conditions": {
+          "entered_warning": true,
+          "single_warning_visit": true,
+          "no_dwell": null,
+          "no_revisit": null,
+          "ended_outside_warning": null,
+          "exclusion_policy_respected": null
+        }
+      },
+      "core_event": {
+        "raw_event_type": "enter_warning_zone",
+        "role_core_event": "start_core_operation",
+        "t_s": 210.7,
+        "frame_index": 2107,
+        "status": "known",
+        "source": "truth.csv:10Hz_half_open_sim_clock",
+        "resolution_s": 0.1,
+        "t_confirm": 210.7,
+        "confirm_frame_index": 2107
+      }
+    },
+    "T1": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 210.7,
+          "frame_index": 2107,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 210.7,
+          "confirm_frame_index": 2107
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 210.7,
+          "frame_index": 2107,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 210.7,
+          "confirm_frame_index": 2107
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      }
+    },
+    "T2": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 84.3,
+          "frame_index": 843,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 84.3,
+          "confirm_frame_index": 843
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 84.3,
+          "frame_index": 843,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 84.3,
+          "confirm_frame_index": 843
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      }
+    },
+    "T3": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 101.7,
+          "frame_index": 1017,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 101.7,
+          "confirm_frame_index": 1017
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1617,
+          "confirm_frame_index": 1817,
+          "t_s": 161.7,
+          "t_confirm": 181.7,
+          "total_duration_s": 34.9,
+          "union_frame_intervals": [
+            [
+              1617,
+              1966
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": 161.7,
+          "frame_index": 1617,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 181.7,
+          "confirm_frame_index": 1817
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1617,
+          "confirm_frame_index": 1817,
+          "t_s": 161.7,
+          "t_confirm": 181.7,
+          "total_duration_s": 34.9,
+          "union_frame_intervals": [
+            [
+              1617,
+              1966
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 101.7,
+          "frame_index": 1017,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 101.7,
+          "confirm_frame_index": 1017
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1617,
+          "confirm_frame_index": 1817,
+          "t_s": 161.7,
+          "t_confirm": 181.7,
+          "total_duration_s": 34.9,
+          "union_frame_intervals": [
+            [
+              1617,
+              1966
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1617,
+          "confirm_frame_index": 1817,
+          "t_s": 161.7,
+          "t_confirm": 181.7,
+          "total_duration_s": 34.9,
+          "union_frame_intervals": [
+            [
+              1617,
+              1966
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1617,
+          "confirm_frame_index": 1817,
+          "t_s": 161.7,
+          "t_confirm": 181.7,
+          "total_duration_s": 34.9,
+          "union_frame_intervals": [
+            [
+              1617,
+              1966
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      }
+    },
+    "T4": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 101.7,
+          "frame_index": 1017,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 101.7,
+          "confirm_frame_index": 1017
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1636,
+          "confirm_frame_index": 1836,
+          "t_s": 163.6,
+          "t_confirm": 183.6,
+          "total_duration_s": 61.4,
+          "union_frame_intervals": [
+            [
+              1636,
+              2250
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 2
+      },
+      "close_observation": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": 163.6,
+          "frame_index": 1636,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 183.6,
+          "confirm_frame_index": 1836
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1636,
+          "confirm_frame_index": 1836,
+          "t_s": 163.6,
+          "t_confirm": 183.6,
+          "total_duration_s": 61.4,
+          "union_frame_intervals": [
+            [
+              1636,
+              2250
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 2
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 101.7,
+          "frame_index": 1017,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 101.7,
+          "confirm_frame_index": 1017
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1636,
+          "confirm_frame_index": 1836,
+          "t_s": 163.6,
+          "t_confirm": 183.6,
+          "total_duration_s": 61.4,
+          "union_frame_intervals": [
+            [
+              1636,
+              2250
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 2
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1636,
+          "confirm_frame_index": 1836,
+          "t_s": 163.6,
+          "t_confirm": 183.6,
+          "total_duration_s": 61.4,
+          "union_frame_intervals": [
+            [
+              1636,
+              2250
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 2
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": true,
+          "frame_index": 1636,
+          "confirm_frame_index": 1836,
+          "t_s": 163.6,
+          "t_confirm": 183.6,
+          "total_duration_s": 61.4,
+          "union_frame_intervals": [
+            [
+              1636,
+              2250
+            ]
+          ]
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 2
+      }
+    },
+    "T5": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1125,
+          "confirm_frame_index": 5800,
+          "t1": 112.5,
+          "t2": 580.0,
+          "t_confirm": 580.0,
+          "distance_m": 29.908087076785524,
+          "departure_m": 1199.9999899129507,
+          "heading_difference_deg": 2.8563077017868657,
+          "azimuth_coverage_deg": 357.1436922982131
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1125,
+          "confirm_frame_index": 5800,
+          "t1": 112.5,
+          "t2": 580.0,
+          "t_confirm": 580.0,
+          "distance_m": 29.908087076785524,
+          "departure_m": 1199.9999899129507,
+          "heading_difference_deg": 2.8563077017868657,
+          "azimuth_coverage_deg": 357.1436922982131
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1125,
+          "confirm_frame_index": 5800,
+          "t1": 112.5,
+          "t2": 580.0,
+          "t_confirm": 580.0,
+          "distance_m": 29.908087076785524,
+          "departure_m": 1199.9999899129507,
+          "heading_difference_deg": 2.8563077017868657,
+          "azimuth_coverage_deg": 357.1436922982131
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1125,
+          "confirm_frame_index": 5800,
+          "t1": 112.5,
+          "t2": 580.0,
+          "t_confirm": 580.0,
+          "distance_m": 29.908087076785524,
+          "departure_m": 1199.9999899129507,
+          "heading_difference_deg": 2.8563077017868657,
+          "azimuth_coverage_deg": 357.1436922982131
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1125,
+          "confirm_frame_index": 5800,
+          "t1": 112.5,
+          "t2": 580.0,
+          "t_confirm": 580.0,
+          "distance_m": 29.908087076785524,
+          "departure_m": 1199.9999899129507,
+          "heading_difference_deg": 2.8563077017868657,
+          "azimuth_coverage_deg": 357.1436922982131
+        },
+        "reversal_count": 0
+      }
+    },
+    "T6": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1517,
+          "confirm_frame_index": 4623,
+          "t1": 151.7,
+          "t2": 462.3,
+          "t_confirm": 462.3,
+          "distance_m": 29.589654256123175,
+          "departure_m": 1039.3119442430811,
+          "heading_difference_deg": 177.17410974118692,
+          "azimuth_coverage_deg": 120.01555948673645
+        },
+        "reversal_count": 1
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1517,
+          "confirm_frame_index": 4623,
+          "t1": 151.7,
+          "t2": 462.3,
+          "t_confirm": 462.3,
+          "distance_m": 29.589654256123175,
+          "departure_m": 1039.3119442430811,
+          "heading_difference_deg": 177.17410974118692,
+          "azimuth_coverage_deg": 120.01555948673645
+        },
+        "reversal_count": 1
+      },
+      "monitoring": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1517,
+          "confirm_frame_index": 4623,
+          "t1": 151.7,
+          "t2": 462.3,
+          "t_confirm": 462.3,
+          "distance_m": 29.589654256123175,
+          "departure_m": 1039.3119442430811,
+          "heading_difference_deg": 177.17410974118692,
+          "azimuth_coverage_deg": 120.01555948673645
+        },
+        "reversal_count": 1
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1517,
+          "confirm_frame_index": 4623,
+          "t1": 151.7,
+          "t2": 462.3,
+          "t_confirm": 462.3,
+          "distance_m": 29.589654256123175,
+          "departure_m": 1039.3119442430811,
+          "heading_difference_deg": 177.17410974118692,
+          "azimuth_coverage_deg": 120.01555948673645
+        },
+        "reversal_count": 1
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": true,
+          "frame_index": 1517,
+          "confirm_frame_index": 4623,
+          "t1": 151.7,
+          "t2": 462.3,
+          "t_confirm": 462.3,
+          "distance_m": 29.589654256123175,
+          "departure_m": 1039.3119442430811,
+          "heading_difference_deg": 177.17410974118692,
+          "azimuth_coverage_deg": 120.01555948673645
+        },
+        "reversal_count": 1
+      }
+    },
+    "T7": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      }
+    },
+    "T8": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 79.1,
+          "frame_index": 791,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 79.1,
+          "confirm_frame_index": 791
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 5
+      },
+      "area_search": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "scan_start",
+          "role_core_event": "start_core_operation",
+          "t_s": 83.8,
+          "frame_index": 838,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 83.8,
+          "confirm_frame_index": 838
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 5
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 5
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 79.1,
+          "frame_index": 791,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 79.1,
+          "confirm_frame_index": 791
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 5
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 5
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 5
+      }
+    },
+    "T9_10": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 105.8,
+          "frame_index": 1058,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 105.8,
+          "confirm_frame_index": 1058
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 105.8,
+          "frame_index": 1058,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 105.8,
+          "confirm_frame_index": 1058
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      }
+    },
+    "T9_4": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 231.5,
+          "frame_index": 2315,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 231.5,
+          "confirm_frame_index": 2315
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 231.5,
+          "frame_index": 2315,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 231.5,
+          "confirm_frame_index": 2315
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      }
+    },
+    "T9c": {
+      "transit": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 210.7,
+          "frame_index": 2107,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 210.7,
+          "confirm_frame_index": 2107
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 210.7,
+          "frame_index": 2107,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 210.7,
+          "confirm_frame_index": 2107
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      }
+    },
+    "T10": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "feint": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 138.8,
+          "frame_index": 1388,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 138.8,
+          "confirm_frame_index": 1388
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      }
+    },
+    "T11": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 138.8,
+          "frame_index": 1388,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 138.8,
+          "confirm_frame_index": 1388
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      },
+      "intrusion": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 170.0,
+          "frame_index": 1700,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 170.0,
+          "confirm_frame_index": 1700
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 1
+      }
+    },
+    "T12": {
+      "transit": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "close_observation": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "observation_point_arrival",
+          "role_core_event": "start_core_operation",
+          "t_s": null,
+          "frame_index": null,
+          "status": "unknown",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": null,
+          "confirm_frame_index": null
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "monitoring": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_warning_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 76.3,
+          "frame_index": 763,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 76.3,
+          "confirm_frame_index": 763
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "feint": {
+        "result": "failure",
+        "core_event": {
+          "raw_event_type": "enter_alert_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 138.8,
+          "frame_index": 1388,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 138.8,
+          "confirm_frame_index": 1388
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      },
+      "intrusion": {
+        "result": "success",
+        "core_event": {
+          "raw_event_type": "enter_protected_zone",
+          "role_core_event": "start_core_operation",
+          "t_s": 170.0,
+          "frame_index": 1700,
+          "status": "known",
+          "source": "truth.csv:10Hz_half_open_sim_clock",
+          "resolution_s": 0.1,
+          "t_confirm": 170.0,
+          "confirm_frame_index": 1700
+        },
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "revisit": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t1": null,
+          "t2": null,
+          "t_confirm": null,
+          "distance_m": null,
+          "departure_m": null,
+          "heading_difference_deg": null,
+          "azimuth_coverage_deg": null
+        },
+        "reversal_count": 0
+      }
+    },
+    "T13": {
+      "status": "constraint_violation",
+      "retained": false,
+      "exclusion_reasons": [
+        "restricted_zone_entry"
+      ],
+      "minimum_separation_m": null,
+      "separation_error_threshold_m": 2.0,
+      "separation_affects_task_result": false,
+      "hard_obstacle_sample_count": 251,
+      "outside_world_sample_count": 0
+    },
+    "T9_10_corner": {
+      "corner_frame": 2218,
+      "corner_time_s": 221.8,
+      "minimum_speed_m_s": 0.1845967341840397,
+      "minimum_window_start_end_m": 91.20902091361482,
+      "window_start_frame_range": [
+        2018,
+        2218
+      ],
+      "fastsim_wall_s": 3.5471477000028244,
+      "config_sha256": "94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193"
+    },
+    "T9_4_corner": {
+      "corner_frame": 5214,
+      "corner_time_s": 521.4,
+      "minimum_speed_m_s": 0.41129115200176886,
+      "minimum_window_start_end_m": 51.289106393668746,
+      "window_start_frame_range": [
+        5014,
+        5214
+      ],
+      "fastsim_wall_s": 8.206721200003813,
+      "config_sha256": "94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193"
+    },
+    "performance": {
+      "frames": 9319,
+      "three_detectors_wall_s": 0.2858224000010523
+    },
+    "cross": [
+      {
+        "source_role": "transit",
+        "criterion_role": "area_search",
+        "expected": "not_applicable",
+        "verdict": "not_applicable",
+        "status": "not_applicable"
+      },
+      {
+        "source_role": "transit",
+        "criterion_role": "close_observation",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "observation_dwell": false,
+            "no_revisit": true,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "transit",
+        "criterion_role": "monitoring",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "patrol_revisit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "transit",
+        "criterion_role": "feint",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_alert": false,
+            "single_alert_visit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "transit",
+        "criterion_role": "intrusion",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_protected": false,
+            "near_facility_contour": false,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "close_observation",
+        "criterion_role": "transit",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_warning": true,
+            "single_warning_visit": true,
+            "no_dwell": false,
+            "no_revisit": true,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "close_observation",
+        "criterion_role": "area_search",
+        "expected": "not_applicable",
+        "verdict": "not_applicable",
+        "status": "not_applicable"
+      },
+      {
+        "source_role": "close_observation",
+        "criterion_role": "monitoring",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "patrol_revisit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "close_observation",
+        "criterion_role": "feint",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_alert": false,
+            "single_alert_visit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "close_observation",
+        "criterion_role": "intrusion",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_protected": false,
+            "near_facility_contour": false,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "monitoring",
+        "criterion_role": "transit",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_warning": true,
+            "single_warning_visit": true,
+            "no_dwell": true,
+            "no_revisit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "monitoring",
+        "criterion_role": "area_search",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "reason": "observed patrol revisit violates search negative predicate"
+      },
+      {
+        "source_role": "monitoring",
+        "criterion_role": "close_observation",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "observation_dwell": false,
+            "no_revisit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "monitoring",
+        "criterion_role": "feint",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_alert": false,
+            "single_alert_visit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "monitoring",
+        "criterion_role": "intrusion",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_protected": false,
+            "near_facility_contour": false,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "area_search",
+        "criterion_role": "transit",
+        "expected": "not_required",
+        "verdict": "yes",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": true
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_warning": true,
+            "single_warning_visit": true,
+            "no_dwell": true,
+            "no_revisit": true,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "area_search",
+        "criterion_role": "close_observation",
+        "expected": "not_required",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "observation_dwell": false,
+            "no_revisit": true,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "area_search",
+        "criterion_role": "monitoring",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "patrol_revisit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "area_search",
+        "criterion_role": "feint",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_alert": false,
+            "single_alert_visit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "area_search",
+        "criterion_role": "intrusion",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_protected": false,
+            "near_facility_contour": false,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "feint",
+        "criterion_role": "transit",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_warning": true,
+            "single_warning_visit": true,
+            "no_dwell": true,
+            "no_revisit": true,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": false
+          }
+        }
+      },
+      {
+        "source_role": "feint",
+        "criterion_role": "area_search",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "reason": "target alert/protected entry excludes reconnaissance"
+      },
+      {
+        "source_role": "feint",
+        "criterion_role": "close_observation",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "observation_dwell": false,
+            "no_revisit": true,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": false
+          }
+        }
+      },
+      {
+        "source_role": "feint",
+        "criterion_role": "monitoring",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "patrol_revisit": false,
+            "ended_outside_warning": true,
+            "exclusion_policy_respected": false
+          }
+        }
+      },
+      {
+        "source_role": "feint",
+        "criterion_role": "intrusion",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_protected": false,
+            "near_facility_contour": false,
+            "exclusion_policy_respected": true
+          }
+        }
+      },
+      {
+        "source_role": "intrusion",
+        "criterion_role": "transit",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_warning": true,
+            "single_warning_visit": true,
+            "no_dwell": true,
+            "no_revisit": true,
+            "ended_outside_warning": false,
+            "exclusion_policy_respected": false
+          }
+        }
+      },
+      {
+        "source_role": "intrusion",
+        "criterion_role": "area_search",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "reason": "target alert/protected entry excludes reconnaissance"
+      },
+      {
+        "source_role": "intrusion",
+        "criterion_role": "close_observation",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "observation_dwell": false,
+            "no_revisit": true,
+            "ended_outside_warning": false,
+            "exclusion_policy_respected": false
+          }
+        }
+      },
+      {
+        "source_role": "intrusion",
+        "criterion_role": "monitoring",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "patrol_revisit": false,
+            "ended_outside_warning": false,
+            "exclusion_policy_respected": false
+          }
+        }
+      },
+      {
+        "source_role": "intrusion",
+        "criterion_role": "feint",
+        "expected": "no",
+        "verdict": "no",
+        "status": "PASS",
+        "group_conditions": {
+          "member_contributions_complete": false
+        },
+        "agent_conditions": {
+          "a": {
+            "entered_alert": true,
+            "single_alert_visit": true,
+            "ended_outside_warning": false,
+            "exclusion_policy_respected": false
+          }
+        }
+      }
+    ]
+  }
+}
