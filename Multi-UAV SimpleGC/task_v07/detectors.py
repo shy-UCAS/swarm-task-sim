@@ -83,6 +83,14 @@ def revisit(xy, velocity, time_us, levels, frames, center, criteria=None):
     gap_us = 2 * (rules["min_departure_m"] - radius) / float(speed.max()) * 1e6
     buckets = defaultdict(list)
     neighbours = tuple(product((-1, 0, 1), repeat=2))
+    relative = xy - center
+    unwrapped = np.unwrap(np.arctan2(relative[:, 1], relative[:, 0]))
+    minimums, maximums = [unwrapped], [unwrapped]
+    block = 1
+    while block * 2 <= len(xy):
+        minimums.append(np.minimum(minimums[-1][:-block], minimums[-1][block:]))
+        maximums.append(np.maximum(maximums[-1][:-block], maximums[-1][block:]))
+        block *= 2
     for end in indexes:
         cell = tuple(np.floor(xy[end] / radius).astype(np.int64))
         candidates = [start for dx, dy in neighbours for start in buckets[(cell[0] + dx, cell[1] + dy)]
@@ -97,6 +105,13 @@ def revisit(xy, velocity, time_us, levels, frames, center, criteria=None):
                 angles = np.degrees(np.arccos(np.clip(cosine, -1, 1)))
                 for start, angle in zip(candidates, angles):
                     if not (angle <= rules["parallel_max_deg"] or angle >= rules["antiparallel_min_deg"]):
+                        continue
+                    width = int(end - start + 1); power = width.bit_length() - 1
+                    tail = end - (1 << power) + 1
+                    extent_bound = max(maximums[power][start], maximums[power][tail]) - min(minimums[power][start], minimums[power][tail])
+                    # An unwrapped range is an upper bound, never a replacement
+                    # for the exact largest-circular-gap test below.
+                    if np.degrees(extent_bound) < rules["min_azimuth_coverage_deg"]:
                         continue
                     segment = xy[start:end + 1]
                     departure = float(np.linalg.norm(segment - xy[start], axis=1).max())
