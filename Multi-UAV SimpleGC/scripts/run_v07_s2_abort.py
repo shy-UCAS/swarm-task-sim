@@ -47,8 +47,14 @@ def run_abort_job(payload):
     root = out / requested['skeleton_id']
     root.mkdir()
     save_json(root / 'registered_abort_descriptor.json', requested)
+    selection=payload.get('abort_reference_selection')
+    if selection is not None:
+        save_json(root / 'reference_selection.json', selection)
     if source_record['path'] is None:
         row = unavailable(requested, source_record, 'referenced_regular_trajectory_not_generated', 'pending')
+        if selection and selection['all_planning_failed']:
+            row['reason']='all_same_map_penetration_references_planning_failed'
+        if selection is not None:row['abort_reference_selection']=selection
         save_json(root / 'not_run.json', row)
         return row
     source_directory = source_attempt / source_record['path']
@@ -92,6 +98,7 @@ def run_abort_job(payload):
     extras = {'source_episode_id': source_record['episode_id'], 'source_skeleton_id': source_task['skeleton_id'],
               'abort_pairing': registration, 'exact_prefix_comparison': prefix, 'amortized_skeleton_setup_s': setup,
               'other_group_routes_unchanged': unchanged_groups, 'departure_delays_reused_exactly': True}
+    if selection is not None:extras['abort_reference_selection']=selection
     row = write_result(scene, descriptor, task, bundle, run, plan,
                        source_private['single_agent_measured_core_times_s'], 'synchronous', out, setup,
                        extra_metrics=extras)

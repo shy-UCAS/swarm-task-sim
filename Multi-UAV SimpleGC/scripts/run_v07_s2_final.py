@@ -19,20 +19,18 @@ from scripts.v07_s2_process_comparison import compare_process_counts
 
 
 def abort_jobs(regular_jobs, descriptors, records, out):
+    from task_v07.expansion.abort_references import select_abort_reference
     jobs = []
     by_id = {job['descriptor']['skeleton_id']: job for job in regular_jobs}
     by_episode = {r['episode_id']: r for r in records}
     for descriptor in descriptors:
         if descriptor['subset'] != 'aborted':
             continue
-        candidates = sorted(sid for sid, job in by_id.items() if job['descriptor']['family_id'] == descriptor['family_id']
-                            and job['descriptor']['base_intent'] == 'penetration')
-        source_id = descriptor.get('source_skeleton_id') or descriptor.get('reference_skeleton_id') or candidates[0]
-        if source_id not in candidates:
-            raise P0ContractError('Abort reference does not name a registered same-family penetration skeleton')
+        source_id, selection = select_abort_reference(descriptor, by_id, by_episode)
         jobs.append({'scene': by_id[source_id]['scene'], 'descriptor': descriptor,
                      'source_descriptor': by_id[source_id]['descriptor'],
-                     'source_record': by_episode[source_id + '_synchronous'], 'out': str(out)})
+                     'source_record': by_episode[source_id + '_synchronous'], 'out': str(out),
+                     'abort_reference_selection': selection})
     return jobs
 
 
@@ -63,7 +61,8 @@ def main():
         save_json(out / 'regular_episode_records.json', rows)
         branched_jobs = abort_jobs(jobs, descriptors, rows, out)
         save_json(out / 'abort_pairing_registration.json', [{'abort_skeleton_id': j['descriptor']['skeleton_id'],
-            'source_skeleton_id': j['source_descriptor']['skeleton_id'], 'source_episode_id': j['source_record']['episode_id']}
+            'source_skeleton_id': j['source_descriptor']['skeleton_id'], 'source_episode_id': j['source_record']['episode_id'],
+            'reference_selection': j['abort_reference_selection']}
             for j in branched_jobs])
         rows += run_aborts(branched_jobs, args.workers)
         rows.sort(key=lambda r: r['episode_id'])
