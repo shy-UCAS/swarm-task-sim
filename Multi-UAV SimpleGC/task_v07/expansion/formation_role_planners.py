@@ -51,6 +51,11 @@ class Context:
         self.multi=params['approach_mode']=='multi_direction'
         self.slot=params.get('geometry_slot',0)
         self.split=stable_split(self.family,group['members'],self.slot,self.multi)
+        if params.get('common_slot') is not None:
+            from .public_approach_shape import public_approach_shape
+            self.public_shape=public_approach_shape(self.family,params['common_slot'],group['members'],self.multi)
+            self.split=self.public_shape['members']
+            self.relative_bearings_rad=self.public_shape['relative_bearings_rad']
         self.rng=random.Random(params.get('geometry_seed',params['planning_seed']))
         self.speed=self.family['cruise_speed_m_s'];self.altitude=self.family['task_altitude_m']
         self._planners={}
@@ -270,7 +275,8 @@ class RadialFormationPlanner:
                   'retreat_warning_minimum_m':ctx.retreat_warning_minimum_m,
                   'planning_minimum_endpoint_spacing_m':minimum}
         if self.kind=='close_observation':
-            template['close_observation']={'observation_radius_m':30.,'planned_dwell_s':operation.get('planned_observation_dwell_s',24.),'minimum_dwell_s':19.2,
+            planned_dwell=operation.get('planned_observation_dwell_s',24.)
+            template['close_observation']={'observation_radius_m':30.,'planned_dwell_s':planned_dwell,'minimum_dwell_s':planned_dwell*4/5,
                                            'approach_mode':ctx.params['approach_mode']}
         elif self.kind=='feint':template['feint']={'retreat_distance_tolerance_m':5.,'retreat_drop_fraction_max':.1,
                                                  'approach_mode':ctx.params['approach_mode']}

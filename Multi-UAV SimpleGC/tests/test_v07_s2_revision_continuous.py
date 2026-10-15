@@ -65,6 +65,53 @@ class ContinuousRevisionTests(unittest.TestCase):
             self.assertEqual(report['solo_flights_run'],0)
             with self.assertRaises(ValueError):episode_candidate_pool({},descriptor,budget=199)
 
+    def test_each_group_has_its_own_115_percent_bound(self):
+        costs=[(100,200),(200,100),(114,114),(116,100)]
+        pool=[{'index':i,'cost':sum(values),'cost_by_group':dict(zip(('g1','g2'),values))}
+              for i,values in enumerate(costs)]
+        selected,report=choose_eligible(pool,True,random.Random(8))
+        self.assertEqual([c['index'] for c in selected],[2])
+        self.assertEqual(report['minimum_approach_length_by_group_m'],{'g1':100,'g2':100})
+        self.assertEqual(len(choose_eligible(pool,False,random.Random(8))[0]),4)
+
+    def test_variable_observation_dwell_preserves_eighty_percent_criterion(self):
+        from task_v07.expansion.formation_role_planners import Context,CloseObservationPlanner
+        from task_v07.expansion.pipeline import COMMON_CONSTANTS,exclusion_policy
+        from task_v07.labels import measure
+        from scripts.audit_v07_s2_conditions import audit_conditions
+        from test_v07_s2_expansion import scene
+        ids=['a','b']
+        family={'sampling_seed':41,'cruise_speed_m_s':5.,'task_altitude_m':100.,
+                'lateral_spacing_m':40.,'initial_states':[{'agent_id':a,'position_enu_m':[60.,1980.+40*i,100.]}
+                                                       for i,a in enumerate(ids)]}
+        group={'role':'reconnaissance','execution_method':'close_observation','target_id':'f','members':ids}
+        ctx=Context(scene(),group,{'family':family,'approach_mode':'same_direction','planning_seed':10})
+        for planned,minimum in ((25.,20.),(55.,44.)):
+            ctx.operation_parameters={'observation_alert_clearance_m':50.,'planned_observation_dwell_s':planned,
+                                      'observation_dwell_method':'hover'}
+            result,reason=CloseObservationPlanner().attempt(ctx,math.pi)
+            self.assertIsNotNone(result,reason)
+            self.assertEqual(result['template']['close_observation']['minimum_dwell_s'],minimum)
+        sk={**COMMON_CONSTANTS,**result['template'],'base_intent':'reconnaissance','group_id':'g',
+            'members':ids,'agent_ids':ids,'approach_mode':'same_direction','cruise_speed_m_s':5.,
+            'continuous_geometry_draw':{},'exclusion_policy':exclusion_policy(scene(),'reconnaissance','f',ids)}
+        positions=np.repeat(np.asarray([[sk['references'][a]['observation_point_enu_m'] for a in ids]]),301,axis=0)
+        run={'agent_ids':ids,'time_us':np.arange(301,dtype=np.int64)*100000,'p':positions,
+             'v':np.zeros_like(positions),'execution_status':'completed'}
+        labels,frame=measure(scene(),sk,run,'synchronous')
+        self.assertFalse(labels['agents']['a']['result']['conditions']['minimum_dwell'])
+        # A copied fixed threshold must be rejected independently even if production
+        # labels were computed from that same corrupted threshold.
+        sk['close_observation']['minimum_dwell_s']=19.2
+        labels,frame=measure(scene(),sk,run,'synchronous')
+        self.assertTrue(labels['agents']['a']['result']['conditions']['minimum_dwell'])
+        with TemporaryDirectory() as directory:
+            (Path(directory)/'truth.csv').write_text('',encoding='utf-8')
+            audit=audit_conditions(directory,data={'scene':scene(),'task':sk,'labels':labels,'ids':ids,
+                't':run['time_us'],'p':positions,'v':run['v'],'frame':frame})
+        self.assertEqual(audit['status'],'P0_STOP')
+        self.assertTrue(any(w.get('field')=='planned_dwell_acceptance_ratio' for w in audit['event_or_metric_witnesses']))
+
     def test_nominal_spacing_includes_stationary_middle_dwell(self):
         points=[[0.,0.,50.],[100.,0.,50.],[200.,0.,50.]]
         sampled=timed_route_samples(points,10.,10.,{'waypoint_index':1,'duration_s':25.})

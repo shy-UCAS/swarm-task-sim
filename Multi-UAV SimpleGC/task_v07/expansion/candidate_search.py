@@ -30,9 +30,19 @@ def choose_eligible(candidates, same_direction, rng):
     if not candidates:
         return [], {'minimum_approach_length_m': None, 'feasible_candidates': 0, 'eligible_candidates': 0}
     minimum = min(c['cost'] for c in candidates)
-    eligible = [c for c in candidates if not same_direction or (c['cost']/minimum <= 1.15 if minimum else c['cost'] == 0)]
+    group_ids = set(candidates[0].get('cost_by_group', {}))
+    if any(set(c.get('cost_by_group', {})) != group_ids for c in candidates):
+        raise P0ContractError('Candidate task-group cost axes differ')
+    minima = {g: min(c['cost_by_group'][g] for c in candidates) for g in sorted(group_ids)}
+    def within_bound(candidate):
+        costs = candidate.get('cost_by_group', {'single_group': candidate['cost']})
+        bounds = minima or {'single_group': minimum}
+        return all(cost/bounds[g] <= 1.15 if bounds[g] else cost == 0 for g, cost in costs.items())
+    eligible = [c for c in candidates if not same_direction or within_bound(c)]
     rng.shuffle(eligible)
     return eligible, {'minimum_approach_length_m': minimum, 'maximum_ratio': 1.15 if same_direction else None,
+                      'minimum_approach_length_by_group_m': minima,
+                      'ratio_scope': 'each task group independently within whole-episode feasible pool',
                       'feasible_candidates': len(candidates), 'eligible_candidates': len(eligible),
                       'selection_order': 'all geometry -> nominal whole-route separation -> same-direction 115% -> private random order -> at most 5 actual calibration rounds'}
 
@@ -55,6 +65,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
     for index in range(budget):
         groups, bundles, checks, bearings, draws = {}, {}, {}, {}, {}
         cost = 0.
+        cost_by_group = {}
         rejected = None
         for group in order:
             gid = group['group_id']
@@ -84,6 +95,7 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
             groups[gid], bundles[gid], checks[gid] = skeleton, bundle, pre
             bearings.setdefault(group['target_id'], []).append(angle)
             cost += result['approach_length_m']
+            cost_by_group[gid] = result['approach_length_m']
         if rejected:
             stage, reason = rejected
             reasons[reason] += 1
@@ -103,13 +115,22 @@ def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
             records.append(record)
             continue
         checks = {**checks, 'nominal_whole_episode_interval': interval}
-        candidates.append({'index': index, 'cost': cost, 'skeleton': skeleton, 'bundle': bundle, 'checks': checks})
-        records.append(_candidate_record(index, 'feasible', None, draws))
+        candidates.append({'index': index, 'cost': cost, 'cost_by_group': cost_by_group,
+                           'skeleton': skeleton, 'bundle': bundle, 'checks': checks})
+        record = _candidate_record(index, 'feasible', None, draws)
+        record.update(approach_length_m=cost, approach_length_by_group_m=cost_by_group)
+        records.append(record)
     rng = random.Random(seed_for(descriptor['role_seed'], 'continuous-feasible-pool-order'))
     eligible, selection = choose_eligible(candidates, descriptor['common_draw']['approach_mode'] == 'same_direction', rng)
+    eligible_ids = {c['index'] for c in eligible}
+    for record in records:
+        if record['stage'] == 'feasible' and record['candidate_index'] not in eligible_ids:
+            record.update(stage='same_direction_115_percent', reason='task_group_approach_length_exceeds_115_percent')
+            reasons[record['reason']] += 1
     for item in eligible:
         item['skeleton']['candidate_selection'] = {**selection, 'candidate_index': item['index'],
-                                                   'selected_approach_length_m': item['cost']}
+                                                   'selected_approach_length_m': item['cost'],
+                                                   'selected_approach_length_by_group_m': item['cost_by_group']}
     report = {'candidate_budget': budget, 'attempted_candidates': len(records),
               'group_attempt_counts': dict(group_attempts), 'rejection_reasons': dict(reasons),
               'selection': selection, 'eligible_candidate_order': [c['index'] for c in eligible],

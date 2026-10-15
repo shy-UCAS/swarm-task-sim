@@ -132,6 +132,10 @@ def audit_conditions(root, *, data=None):
             condition('no_loop_in_warning',_absence(turn>=rules['maximum_cumulative_turn_deg'],last is not None or complete),'cumulative_turn_in_warning_deg')
         elif kind=='close_observation':
             rules=task['close_observation'];obs=np.asarray(ref['observation_point_enu_m'][:2])
+            minimum_dwell=rules['minimum_dwell_s']
+            if 'continuous_geometry_draw' in task:
+                minimum_dwell=rules['planned_dwell_s']*4/5
+                compare(a,'planned_dwell_acceptance_ratio',rules['minimum_dwell_s'],minimum_dwell)
             distances=np.linalg.norm(track-obs,axis=1);inside=distances<=rules['observation_radius_m']
             core=_first(inside);hits=np.flatnonzero(inside)
             last=int(hits[-1]) if len(hits) else None
@@ -140,7 +144,7 @@ def audit_conditions(root, *, data=None):
             metrics.update(dwell_s=dwell,observation_enter_s=None if core is None else float(seconds[core]),
                 observation_exit_s=end,min_distance_to_obs_m=float(distances.min()))
             condition('reached_observation_point',_positive(core is not None,complete),'observation_enter_s')
-            condition('minimum_dwell',_positive(dwell>=rules['minimum_dwell_s'],complete),'dwell_s')
+            condition('minimum_dwell',_positive(dwell>=minimum_dwell,complete),'dwell_s')
             condition('no_alert_entry',not bool((levels[:,i,target]>=2).any()),'target_zone_membership')
         elif kind=='monitoring':
             rules=task['monitoring'];oc=np.asarray(rules['orbit_center_enu_m'][:2]);radius=rules['orbit_radius_m']
