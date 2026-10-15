@@ -60,3 +60,23 @@ S2 测试 154 项通过（首次 28.346 s），六个登记反例全部通过原
 逐组 `geometry_wall_s` 已显式加入进程比较的墙钟元数据列表；几何、随机序列及轨迹差异仍按内容比较。
 
 第 3 步 S2 单元测试 156/156 PASS，23.792 s；固定模板回放尚未运行。
+
+## 第 3 步后快速检查 A
+
+证据 `F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s2_search_step3_planning_20261015T080240Z_5a408589`；源提交 `7fb1ba07208a734e6beccd7b88d2dc3e12cad113`，另保存所有规划源码 SHA256。
+纯规划可行 27/60；墙钟 968.224 s；仿真 0。历史列为实测完整成功配对，本轮列为规划可行。
+
+| 意图 | 逼近方式 | 修订前实测 | 上一轮实测 | 本轮规划 |
+|---|---|---:|---:|---:|
+| 过境 | same_direction | 3/5 | 3/5 | 3/5 |
+| 过境 | multi_direction | 5/7 | 1/7 | 1/7 |
+| 侦察 | same_direction | 2/5 | 2/5 | 3/5 |
+| 侦察 | multi_direction | 2/7 | 3/7 | 3/7 |
+| 游弋监视 | same_direction | 0/5 | 0/5 | 3/5 |
+| 游弋监视 | multi_direction | 3/7 | 0/7 | 4/7 |
+| 佯动 | same_direction | 4/5 | 1/5 | 2/5 |
+| 佯动 | multi_direction | 4/7 | 3/7 | 3/7 |
+| 突防 | same_direction | 3/5 | 1/5 | 2/5 |
+| 突防 | multi_direction | 5/7 | 2/7 | 3/7 |
+
+第 5 步停止条件触发：False。
