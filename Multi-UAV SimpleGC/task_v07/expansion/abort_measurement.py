@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def observed_abort(time_us, positions, contour_distance, target_levels, endpoint, radius, complete):
+def observed_abort(time_us, positions, contour_distance, target_levels, endpoint, radius, complete, *, require_retreat=True):
     def first(mask):
         found = np.flatnonzero(mask)
         return int(found[0]) if len(found) else None
@@ -26,6 +26,9 @@ def observed_abort(time_us, positions, contour_distance, target_levels, endpoint
                   'abort_no_protected_entry': False if protected else True if complete else None,
                   'abort_left_warning_after_turn': positive(exit_frame is not None),
                   'abort_reached_retreat': positive(arrived is not None)}
+    if not require_retreat:
+        conditions.pop('abort_reached_retreat')
+        conditions['abort_ended_outside_warning'] = bool(target_levels[-1] == 0) if complete else None
     facts = {'alert_entry_frame': alert, 'alert_entry_s': None if alert is None else float(seconds[alert]),
              'entered_protected': protected, 'turn_frame': turn, 'turn_s': None if turn is None else float(seconds[turn]),
              'warning_exit_after_turn_frame': exit_frame,
