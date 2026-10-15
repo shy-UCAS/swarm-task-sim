@@ -84,9 +84,9 @@ class ContinuousRevisionTests(unittest.TestCase):
         from task_v07.expansion.candidate_search import episode_candidate_pool
         descriptor={'base_intent':'transit','role_seed':1,'common_draw':{'approach_mode':'same_direction'},
                     'task_groups':[{'role':'transit','group_id':'g','target_id':'f'}]}
-        with patch('task_v07.expansion.candidate_search.Context'), \
-             patch('task_v07.expansion.candidate_search.role_parameters',return_value={}), \
-             patch('task_v07.expansion.candidate_search.draw_role',side_effect=lambda c,i:(None,'geometric_failure',{'index':i})) as draw:
+        with patch('task_v07.expansion.group_candidate_pool.Context',return_value=SimpleNamespace()), \
+             patch('task_v07.expansion.group_candidate_pool.role_parameters',return_value={}), \
+             patch('task_v07.expansion.group_candidate_pool.draw_role',side_effect=lambda c,i:(None,'geometric_failure',{'index':i})) as draw:
             pool,report=episode_candidate_pool({},descriptor)
             self.assertEqual(pool,[])
             self.assertEqual(draw.call_count,200)

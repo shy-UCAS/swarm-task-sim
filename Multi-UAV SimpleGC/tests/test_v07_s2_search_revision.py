@@ -6,6 +6,33 @@ from task_v07.expansion.search_diagnostics import rejection, summarize
 
 
 class SearchEvidenceTests(unittest.TestCase):
+    def test_empty_first_group_does_not_censor_other_group_budgets(self):
+        from unittest.mock import patch
+        from task_v07.expansion.candidate_search import episode_candidate_pool
+        groups=[{'role':'transit','group_id':g,'target_id':'f'} for g in ('a','b','c')]
+        descriptor={'base_intent':'transit','role_seed':4,'common_draw':{'approach_mode':'multi_direction'},'task_groups':groups}
+        with patch('task_v07.expansion.group_candidate_pool.Context',return_value=SimpleNamespace()), \
+             patch('task_v07.expansion.group_candidate_pool.role_parameters',return_value={}), \
+             patch('task_v07.expansion.group_candidate_pool.draw_role',side_effect=lambda c,i:(None,'local_failure',{'index':i})) as draw:
+            pool,report=episode_candidate_pool({},descriptor)
+        self.assertEqual(pool,[])
+        self.assertEqual(draw.call_count,600)
+        self.assertEqual(report['group_attempt_counts'],{'a':200,'b':200,'c':200})
+        self.assertEqual(report['combination_search']['attempts'],0)
+        self.assertTrue(all(v['classification']=='search_budget_exhausted' for v in report['group_terminations'].values()))
+        self.assertTrue(all(v['wall_s']>=v['geometry_wall_s']>=0 for v in report['group_search_metrics'].values()))
+
+    def test_combination_order_is_bounded_unique_and_reproducible(self):
+        import random
+        from itertools import product
+        from task_v07.expansion.group_candidate_pool import combination_indices
+        self.assertEqual(set(combination_indices([2,3],1000,random.Random(8))),set(product(range(2),range(3))))
+        choices=combination_indices([200,200,200],1000,random.Random(8))
+        self.assertEqual(len(set(choices)),1000)
+        self.assertEqual(choices,combination_indices([200,200,200],1000,random.Random(8)))
+        self.assertNotEqual(choices,combination_indices([200,200,200],1000,random.Random(9)))
+        self.assertEqual(combination_indices([2,0,3],1000,random.Random(8)),[])
+
     def context(self,extra_facility=False):
         from test_v07_s2_expansion import scene
         from task_v07.expansion.formation_role_planners import Context
