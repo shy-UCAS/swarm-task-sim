@@ -11,7 +11,7 @@ from .survey import survey_grid
 
 LABEL_VERSION="traj2language.labels/0.7-s2.3"
 # Expansion task groups (explicit exclusion policy, new roles) use a new schema.
-EXPANSION_LABEL_VERSION="traj2language.labels/0.7-s2x.2"
+EXPANSION_LABEL_VERSION="traj2language.labels/0.7-criteria-r1"
 EVIDENCE_SOURCE="truth.csv:10Hz_half_open_sim_clock"
 _LAYER_CODES={"warning":1,"alert":2,"protected":3}
 

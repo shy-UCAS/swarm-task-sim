@@ -92,7 +92,7 @@ def measure_groups(scene, skeleton, run, mode, planned_batches=None, *, cutoff_s
     complete = prototype["evidence"]["complete_observation"]
     quality = quality_facts(minimum, int(frame["inside_hard_obstacle"].sum()),
                             sum(a["observed"]["outside_world_sample_count"] for a in agents.values()))
-    labels = {"schema_version": "traj2language.labels/0.7-s2x.groups.1", "evidence": prototype["evidence"],
+    labels = {"schema_version": "traj2language.labels/0.7-criteria-r1.groups", "evidence": prototype["evidence"],
               "agents": {a: agents[a] for a in sorted(agents)}, "task_groups": {g: groups[g] for g in sorted(groups)},
               "cluster": {"assigned": {"intent": skeleton["base_intent"], "intent_from_role_composition": assigned_intent,
                             "target_set": targets, "task_groups": sorted(groups), "planned_coordination": mode,
