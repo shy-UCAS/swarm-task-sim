@@ -40,6 +40,14 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
     engine=SynchronousEngine(cfg,initial)
     trackers=[RouteTracker(r,skeleton["cruise_speed_m_s"],cfg.vehicle_profile,cfg.controller,
                            cfg.reference,cfg.engine.step_us) for r in routes]
+    dwell_trackers=[]
+    for i,a in enumerate(ids):
+        dwell=skeleton["references"][a].get("intermediate_dwell")
+        if dwell:
+            from .dwell import DwellRouteTracker
+            trackers[i]=DwellRouteTracker(routes[i],skeleton["cruise_speed_m_s"],cfg,dwell,
+                                          skeleton["terminal_radius_m"],skeleton["terminal_speed_m_s"])
+            dwell_trackers.append(i)
     release=np.array([round((skeleton["initial_settle_s"]+delays_s[a])*1e6) for a in ids],dtype=np.int64)
     if np.any(release<0) or np.any(release%100000):
         raise ValueError("Release delays must lie on the nonnegative 10 Hz grid")
@@ -88,6 +96,9 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
                         t.observe_segment(engine.last_segment,agent_index=i)
         # Runtime stopping uses the same observable 10 Hz samples, never dense semantic events.
         for sample in engine.samples[cursor:]:
+            for i in dwell_trackers:
+                if sample.t_us>=release[i] and hasattr(trackers[i],'observe_sample'):
+                    trackers[i].observe_sample(sample,i)
             ok=(np.linalg.norm(sample.p-end_points,axis=1)<=skeleton["terminal_radius_m"])
             ok&=np.linalg.norm(sample.v,axis=1)<=skeleton["terminal_speed_m_s"]
             ok&=sample.t_us>=release
@@ -121,6 +132,8 @@ def completion_budget(skeleton, delays_s, measured_completion_s=None):
             length=float(np.linalg.norm(np.diff(points,axis=0),axis=1).sum())
             base[a]=(skeleton["initial_settle_s"]+2*length/skeleton["cruise_speed_m_s"]
                      +10*(len(points)-1)+skeleton["terminal_hold_s"])
+            if "intermediate_dwell" in reference:
+                base[a]+=reference["intermediate_dwell"]["duration_s"]
         source="conservative bootstrap: settle + 2*route_length/speed + 10s/leg + hold"
     else:
         if set(measured_completion_s)!=set(delays_s) or any(t is None for t in measured_completion_s.values()):

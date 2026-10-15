@@ -70,6 +70,9 @@ class AreaSearchPlanner:
         return self.plan_with_template(scene, group, params)[0]
 
     def plan_with_template(self, scene, group, params):
+        if 'candidate_budget' in params:
+            from .candidate_search import plan_continuous_group
+            return plan_continuous_group(scene,group,params)
         from .role_planners import PlanningInfeasible
         from .candidate_constraints import bearing_allowed
         ctx = Context(scene, group, params)
@@ -119,7 +122,7 @@ class AreaSearchPlanner:
             "selection_order": "role constraints -> 115% route-length filter -> private random direction"}
         return RouteBundle(selected["routes"], {a: 0. for a in group["members"]}), template
 
-    def candidate(self, ctx, angle, span_deg):
+    def candidate(self, ctx, angle, span_deg, *, area_m2=None, ingress_angle=None):
         from .role_planners import find_clear_retreat
         from .warning_approach import warning_ingress, deploy_inside_warning
         base, center = ctx.geometry, ctx.center
@@ -148,6 +151,20 @@ class AreaSearchPlanner:
                   "inner_offset_m": low, "outer_offset_m": high, "start_angle_rad": angle - span / 2,
                   "angle_span_rad": span, "bounding_radius_m": bound}
         area = sector_area(sector)
+        if area_m2 is not None:
+            if area < area_m2:
+                return None, 'sampled_sector_area_does_not_fit_original_band'
+            lower, upper = low, high
+            for _ in range(32):
+                middle = (lower+upper)/2
+                sector['outer_offset_m'] = middle
+                if sector_area(sector) < area_m2:
+                    lower = middle
+                else:
+                    upper = middle
+            sector['outer_offset_m'] = upper
+            sector['bounding_radius_m'] = extent+upper
+            area = sector_area(sector)
         if not 200000 <= area <= 600000:
             return None, "sector_area"
         fine = sector_area(sector, 32)
@@ -156,7 +173,7 @@ class AreaSearchPlanner:
         if not sector_clear(ctx.scene, sector, ctx.group["target_id"], 35.):
             return None, "sector_clearance"
         footprint = .5 * ctx.altitude
-        spacing = 2 * footprint * .8
+        spacing = 2 * footprint * (1-getattr(ctx,'strip_overlap_fraction',.2))
         x0, x1 = lateral_bounds(sector, axis)
         count = math.ceil((x1 - x0) / spacing)
         if count < len(ctx.group["members"]):
@@ -207,7 +224,7 @@ class AreaSearchPlanner:
                        "scan_axis_enu": velocity.tolist(), "scan_strip_count": len(indices),
                        "scan_leg_count": len(scan) // 2, "assigned_scan_length_m": sum(lengths[i] for i in indices),
                        "retreat_required": True, "retreat_warning_clearance_m": ctx.retreat_warning_minimum_m}
-        ingress, reason = warning_ingress(ctx, angle)
+        ingress, reason = warning_ingress(ctx, angle if ingress_angle is None else ingress_angle)
         if reason:
             return None, reason
         approaches = {}
@@ -264,6 +281,9 @@ class AreaSearchPlanner:
                   "effective_speed_min_m_s": .5, "lane_endpoint_radius_m": 5., "planning_margin_m": 35.,
                   "strip_allocation": "minimum maximum contiguous sum of actual strip lengths",
                   "assumptions": "Geometric coverage proxy; no camera, detection or recognition simulation"}
+        if hasattr(ctx,'strip_overlap_fraction'):
+            survey['strip_overlap_factor']=1-ctx.strip_overlap_fraction
+            survey['strip_overlap_fraction']=ctx.strip_overlap_fraction
         return {"routes": routes, "length": total, "template": {"role": "reconnaissance", "execution_method": "area_search",
                 "planning_version": "v07_s2x_area_search_v1", "survey": survey, "references": refs,
                 "retreat_warning_minimum_m": ctx.retreat_warning_minimum_m,

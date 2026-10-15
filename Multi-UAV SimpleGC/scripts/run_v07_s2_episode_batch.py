@@ -162,32 +162,53 @@ def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode,
 
 
 def run_episode_job(payload):
+    from task_v07.expansion.candidate_search import episode_candidate_pool, MAX_CALIBRATION_ROUNDS
     scene, descriptor, out = payload["scene"], payload["descriptor"], Path(payload["out"])
     skroot = out / descriptor["skeleton_id"]
     skroot.mkdir()
     started = time.perf_counter()
+    pool, search = episode_candidate_pool(scene, descriptor)
+    search["actual_single_agent_calibration_rounds"] = 0
+    save_json(skroot / "candidate_pool.json", search)
     history = []
-    for variant in range(3):
+    if not pool:
+        save_json(skroot / "candidate_search.json", search)
+        item = {"geometry_variant": 0, "category": "geometry_infeasible",
+                "detail": f"continuous candidate pool: {search['rejection_reasons']}"}
+        attempt = skroot / "geometry_00"
+        attempt.mkdir()
+        save_json(attempt / "planning_rejection.json", item)
+        save_json(skroot / "planning_rejection.json", {"history": [item], "candidate_budget": search["candidate_budget"], "calibration_rounds": 0})
+        print(json.dumps({"stage": "geometry_pool_rejected", "skeleton": descriptor["skeleton_id"], **item}, ensure_ascii=False), flush=True)
+        return rejected(descriptor, [item])
+    for variant, candidate in enumerate(pool[:MAX_CALIBRATION_ROUNDS]):
         attempt = skroot / f"geometry_{variant:02d}"
         attempt.mkdir()
+        sk, bundle, pre = candidate["skeleton"], candidate["bundle"], candidate["checks"]
         try:
-            sk, bundle, pre = plan_episode(scene, descriptor, variant)
             save_json(attempt / "skeleton.json", sk)
             save_json(attempt / "planning_checks.json", pre)
-            print(json.dumps({"stage": "calibration", "skeleton": descriptor["skeleton_id"], "geometry_variant": variant}, ensure_ascii=False), flush=True)
+            print(json.dumps({"stage": "calibration", "skeleton": descriptor["skeleton_id"],
+                              "geometry_variant": variant, "candidate_index": candidate["index"]}, ensure_ascii=False), flush=True)
             measured, finished, solo, plans = calibrate_episode(scene, sk)
+            search["actual_single_agent_calibration_rounds"] += 1
+            search["solo_flights_run"] += len(solo)
+            save_json(attempt / "candidate_search_progress.json", {
+                k:search[k] for k in ("actual_single_agent_calibration_rounds","solo_flights_run")})
             for a, flight in solo.items():
                 np.savez_compressed(attempt / f"single_agent_{a}.npz", time_us=flight["time_us"], p=flight["p"], v=flight["v"], agent_ids=np.array(flight["agent_ids"]))
-            calibration = {"core_times_s": measured, "completed_hold_times_s": finished, "timing_plans": plans}
+            calibration = {"core_times_s": measured, "completed_hold_times_s": finished, "timing_plans": plans,
+                           "candidate_index": candidate["index"], "calibration_round": variant + 1}
             save_json(attempt / "timing_calibration.json", calibration)
             if plans is None:
                 raise PlanningInfeasible("kinematic_infeasible", "single-agent core event or completed hold unobserved")
             interval = episode_interval_check(sk, bundle, plans)
             save_json(attempt / "planning_layer_interval.json", interval)
             if any(interval[mode]["below_warning"] for mode in ("synchronous", "sequential")):
-                raise PlanningInfeasible("planning_spacing_rejection", "whole episode actual-delay constant-speed estimate below 6m")
+                raise PlanningInfeasible("planning_spacing_rejection",
+                    f"whole episode actual-delay constant-speed estimate below {interval['warning_threshold_m']:g}m")
         except PlanningInfeasible as exc:
-            item = {"geometry_variant": variant, "category": exc.category, "detail": exc.detail}
+            item = {"geometry_variant": variant, "candidate_index": candidate["index"], "category": exc.category, "detail": exc.detail}
             history.append(item)
             save_json(attempt / "planning_rejection.json", item)
             print(json.dumps({"stage": "geometry_rejected", "skeleton": descriptor["skeleton_id"], **item}, ensure_ascii=False), flush=True)
@@ -197,15 +218,27 @@ def run_episode_job(payload):
         save_json(skroot / "timing_calibration.json", calibration)
         save_json(skroot / "planning_layer_interval.json", interval)
         save_json(skroot / "geometry_history.json", history)
+        save_json(skroot / "candidate_search.json", search)
         setup_s = time.perf_counter() - started
         rows = []
         for mode, plan in plans.items():
             run = execute(sk, plan["departure_delays_s"], time_budget=completion_budget(sk, plan["departure_delays_s"], finished))
-            rows.append(write_result(scene, descriptor, sk, bundle, run, plan, measured, mode, out, setup_s))
+            rows.append(write_result(scene, descriptor, sk, bundle, run, plan, measured, mode, out, setup_s,
+                extra_metrics={"geometry_candidate_budget": search["candidate_budget"],
+                               "geometry_candidates_attempted": search["attempted_candidates"],
+                               "single_agent_calibration_rounds": search["actual_single_agent_calibration_rounds"],
+                               "selected_candidate_index": candidate["index"]}))
         load_pair(*(skroot / mode for mode in ("synchronous", "sequential")))
         return rows
-    save_json(skroot / "planning_rejection.json", {"history": history, "finite_geometry_budget": 3})
-    return rejected(descriptor, history)
+    save_json(skroot / "candidate_search.json", search)
+    save_json(skroot / "planning_rejection.json", {"history": history, "candidate_budget": search["candidate_budget"],
+        "calibration_rounds": search["actual_single_agent_calibration_rounds"], "maximum_calibration_rounds": MAX_CALIBRATION_ROUNDS,
+        "category": "planning_spacing_rejection", "detail": "eligible pool or five-round calibration budget exhausted"})
+    rows = rejected(descriptor, history)
+    for row in rows:
+        row["reason"] = "planning_spacing_rejection"
+        row["rejection_detail"] = "eligible pool or five-round calibration budget exhausted; per-round causes retained in geometry_attempts"
+    return rows
 
 
 def run_jobs(jobs, workers):

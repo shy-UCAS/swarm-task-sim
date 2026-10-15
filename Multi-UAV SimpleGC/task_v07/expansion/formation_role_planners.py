@@ -90,7 +90,9 @@ class Context:
         return True
 
     def retreat(self,point,outward):
-        for distance in np.arange(100.,3500.,25.):
+        distances=([self.rng.uniform(100.,3500.) for _ in range(12)] if getattr(self,'continuous_candidate',False)
+                   else np.arange(100.,3500.,25.))
+        for distance in distances:
             q=np.asarray(point)+distance*outward
             if (check_retreat_point(self.scene,q,warning_clearance_m=self.retreat_warning_minimum_m)['valid'] and
                 (self.planner().visible(point.tolist(),q.tolist()) if self.role=='feint' else
@@ -131,6 +133,9 @@ class RadialFormationPlanner:
     def plan(self,scene,group,params):return self.plan_with_template(scene,group,params)[0]
 
     def plan_with_template(self,scene,group,params):
+        if 'candidate_budget' in params:
+            from .candidate_search import plan_continuous_group
+            return plan_continuous_group(scene,group,params)
         from .role_planners import PlanningInfeasible
         ctx=Context(scene,group,params)
         candidates=[];reasons=defaultdict(int)
@@ -171,18 +176,21 @@ class RadialFormationPlanner:
         from .warning_approach import warning_ingress, deploy_inside_warning
         members=ctx.group['members'];routes={};refs={};score=0.
         spacing=float(ctx.family['lateral_spacing_m'])
+        operation=getattr(ctx,'operation_parameters',{})
         radius=max(12.,1.1*max(ctx.speed**2/3.75,math.sqrt(ctx.speed**3/14.)))
         if self.kind=='close_observation':
             spacing=max(spacing,2*radius+25.)
-            clearance=ctx.zones['alert']['offset_m']+70.
+            clearance=ctx.zones['alert']['offset_m']+operation.get('observation_alert_clearance_m',70.)
         elif self.kind=='feint':
             clearance=(ctx.zones['alert']['offset_m']+ctx.zones['protected']['offset_m'])/2
-        else:clearance=ctx.zones['protected']['offset_m']-30.
+        else:clearance=ctx.zones['protected']['offset_m']-operation.get('intrusion_endpoint_depth_m',30.)
         ingress,failure=warning_ingress(ctx,angle,spacing)
         if failure:return None,failure
         blocks=ingress['blocks']
         for side,stock in enumerate(ctx.split):
-            outward=np.array([math.cos(angle+side*math.pi),math.sin(angle+side*math.pi)])
+            relative=getattr(ctx,'relative_bearings_rad',[i*math.pi for i in range(len(ctx.split))])
+            work_angle=getattr(ctx,'work_angle',angle)+relative[side]
+            outward=np.array([math.cos(work_angle),math.sin(work_angle)])
             direction=-outward;normal=np.array([-direction[1],direction[0]])
             entry_blocks=defaultdict(list)
             for a in stock:entry_blocks[ctx.states[a].get('entry_id','none')].append(a)
@@ -200,14 +208,19 @@ class RadialFormationPlanner:
                 half=max(abs(x) for x in offsets.values())
                 layouts.append((agents,virtual,offsets,half))
             widths=[2*l[3] for l in layouts];whole=sum(widths)+spacing*(len(widths)-1)
-            cursor=-whole/2
+            cursor=-whole/2+getattr(ctx,'station_lateral_shift_m',0.)
             for agents,virtual,offsets,half in layouts:
                 hcenter=cursor+half;cursor+=2*half+spacing
                 for a in agents:
                     h=hcenter+offsets[a]
-                    station=contour_point(ctx.geometry,ctx.center,outward,clearance,-h)
+                    member_clearance=clearance
+                    if self.kind=='feint' and operation:
+                        fraction=operation['feint_depth_fraction_by_agent'][a]
+                        member_clearance=ctx.zones['alert']['offset_m']-fraction*(ctx.zones['alert']['offset_m']-ctx.zones['protected']['offset_m'])
+                    station=contour_point(ctx.geometry,ctx.center,outward,member_clearance,-h)
                     if station is None:return None,'exact_station_unavailable'
-                    target=station+(radius*outward if self.kind=='close_observation' else 0.)
+                    hover=self.kind=='close_observation' and operation.get('observation_dwell_method')=='hover'
+                    target=station+(radius*outward if self.kind=='close_observation' and not hover else 0.)
                     points=list(ingress['routes'][a])
                     branch=deploy_inside_warning(ctx,points[-1],target)
                     if branch is None:return None,'inside_warning_station_deployment_unavailable'
@@ -221,9 +234,13 @@ class RadialFormationPlanner:
                         alpha=math.atan2(outward[1],outward[0]);steps=6
                         ring=[station+radius*np.array([math.cos(alpha+k*2*math.pi/steps),math.sin(alpha+k*2*math.pi/steps)])
                               for k in range(1,steps+1)]
+                        if operation:
+                            from .operation_parameters import dwell_circle
+                            ring=[] if hover else dwell_circle(station,outward,radius,ctx.speed,operation['planned_observation_dwell_s'])
                         points+=ring
                         ref['observation_point_enu_m']=[*station.tolist(),ctx.altitude]
-                        ref['planned_observation_dwell_s']=24.
+                        ref['planned_observation_dwell_s']=operation.get('planned_observation_dwell_s',24.)
+                        if operation:ref['observation_dwell_method']=operation['observation_dwell_method']
                     if self.kind!='intrusion':
                         end=ctx.retreat(points[-1],outward)
                         if end is None:return None,'all-warning-exterior_retreat_unavailable'
@@ -234,6 +251,11 @@ class RadialFormationPlanner:
                     try:points=[np.asarray(p) for p in clean_route([p.tolist() for p in points],ctx.planner())]
                     except ValueError:return None,'lane_full_route_invalid'
                     if not ctx.route_valid(points):return None,'exact_role_policy_or_restriction_clearance'
+                    if hover:
+                        index=int(np.argmin(np.linalg.norm(np.asarray(points)-station,axis=1)))
+                        if not 0<index<len(points)-1 or np.linalg.norm(points[index]-station)>1e-6:
+                            return None,'hover_station_lost_during_route_cleaning'
+                        ref['intermediate_dwell']={'waypoint_index':index,'duration_s':operation['planned_observation_dwell_s']}
                     ref['endpoint_enu_m']=[*end.tolist(),ctx.altitude]
                     score+=core_path_length(ctx,points,ref,self.kind)
                     if self.kind=='feint':
@@ -248,7 +270,7 @@ class RadialFormationPlanner:
                   'retreat_warning_minimum_m':ctx.retreat_warning_minimum_m,
                   'planning_minimum_endpoint_spacing_m':minimum}
         if self.kind=='close_observation':
-            template['close_observation']={'observation_radius_m':30.,'planned_dwell_s':24.,'minimum_dwell_s':19.2,
+            template['close_observation']={'observation_radius_m':30.,'planned_dwell_s':operation.get('planned_observation_dwell_s',24.),'minimum_dwell_s':19.2,
                                            'approach_mode':ctx.params['approach_mode']}
         elif self.kind=='feint':template['feint']={'retreat_distance_tolerance_m':5.,'retreat_drop_fraction_max':.1,
                                                  'approach_mode':ctx.params['approach_mode']}

@@ -28,27 +28,8 @@ class ConstrainedPlanner:
         return self.planner.plan_with_template(scene, group, parameters)
 
 
-def plan_episode(scene, descriptor, variant=0):
-    if derive_intent(descriptor["task_groups"]) != descriptor["base_intent"]:
-        raise P0ContractError("Public sampling roles disagree with assigned intent")
-    groups, bundles, checks, bearings = {}, {}, {}, {}
-    # Establish the other approach lanes first. Monitoring then filters its
-    # radius/phase candidates; no new task-unit or target draw is made.
-    order = sorted(descriptor["task_groups"], key=lambda g: (g["role"] == "monitoring", g["group_id"]))
-    radius_first = any(g['role'] == 'monitoring' for g in order)
-    for group in order:
-        planner = ConstrainedPlanner(planner_for(group["role"], group["execution_method"]),
-                                     bearings.get(group["target_id"], []), variant, radius_first)
-        skeleton, bundle, pre = plan_group(scene, descriptor, group, planner)
-        if pre["status"] != "PASS":
-            raise PlanningInfeasible("geometry_infeasible", f"{group['group_id']}: {pre['failures']}")
-        skeleton["agent_ids"] = [a for a in descriptor["agent_ids"] if a in group["members"]]
-        skeleton["between_group_offset_s"] = group["between_group_offset_s"]
-        angle = skeleton["work_area_bearing_deg"]
-        bearings.setdefault(group["target_id"], []).append(angle)
-        groups[group["group_id"]] = skeleton
-        bundles[group["group_id"]] = bundle
-        checks[group["group_id"]] = pre
+def assemble_episode(descriptor, groups, bundles, variant=0):
+    """Merge already checked group geometries without resampling public fields."""
     ids = descriptor["agent_ids"]
     paths = {a: bundle.waypoints_by_agent[a] for bundle in bundles.values() for a in bundle.waypoints_by_agent}
     if len(paths) != len(ids) or set(paths) != set(ids):
@@ -65,7 +46,16 @@ def plan_episode(scene, descriptor, variant=0):
                 "main_unit_id": descriptor["main_unit_id"],
                 "main_group_id": next((g["group_id"] for g in descriptor["task_groups"] if descriptor["main_unit_id"] in g["source_units"]), None),
                 "approach_mode": descriptor["common_draw"]["approach_mode"], "common_slot": descriptor["common_draw"]["slot"]}
-    return skeleton, RouteBundle(paths, {a: 0. for a in ids}), checks
+    return skeleton, RouteBundle(paths, {a: 0. for a in ids})
+
+
+def plan_episode(scene, descriptor, variant=0):
+    from .candidate_search import episode_candidate_pool
+    candidates, report = episode_candidate_pool(scene, descriptor)
+    if variant >= len(candidates):
+        raise PlanningInfeasible('geometry_infeasible', f"continuous candidate pool exhausted: {report['rejection_reasons']}")
+    chosen = candidates[variant]
+    return chosen['skeleton'], chosen['bundle'], chosen['checks']
 
 
 def compose_timing_plans(skeleton, measured_by_group):
@@ -107,7 +97,8 @@ def episode_interval_check(skeleton, bundle, plans):
     for plan in gate_plans.values():
         plan["departure_delays_s"] = {a: value + skeleton["initial_settle_s"]
                                       for a, value in plan["departure_delays_s"].items()}
-    report = planning_layer_interval_check(bundle, gate_plans, skeleton["cruise_speed_m_s"])
+    report = planning_layer_interval_check(bundle, gate_plans, skeleton["cruise_speed_m_s"],
+        dwells_by_agent={a:r['intermediate_dwell'] for a,r in skeleton.get('references',{}).items() if 'intermediate_dwell' in r})
     report["scope"] = "all agents across all groups, entire episode, both timing versions"
     report["includes_registered_group_offsets"] = True
     report["includes_initial_settle_s"] = skeleton["initial_settle_s"]

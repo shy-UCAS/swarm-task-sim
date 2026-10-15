@@ -167,7 +167,7 @@ def _interpolate_route_at_speed(waypoints_3d, speed_m_s, sample_hz=PLANNING_INTE
 
 def planning_layer_interval_check(bundle, timing_plans, speed_m_s,
                                    warning_m=PLANNING_INTERVAL_WARNING_M,
-                                   sample_hz=PLANNING_INTERVAL_SAMPLE_HZ):
+                                   sample_hz=PLANNING_INTERVAL_SAMPLE_HZ, *, dwells_by_agent=None):
     """Estimate minimum inter-agent separation at the planning layer.
 
     Uses constant-speed interpolation along each agent's waypoints, shifted by
@@ -201,6 +201,10 @@ def planning_layer_interval_check(bundle, timing_plans, speed_m_s,
     results = {}
     interpolated={a:_interpolate_route_at_speed(points,speed_m_s,sample_hz)
                   for a,points in bundle.waypoints_by_agent.items()}
+    if dwells_by_agent:
+        from task_v07.dwell import timed_route_samples
+        for a,dwell in dwells_by_agent.items():
+            interpolated[a]=timed_route_samples(bundle.waypoints_by_agent[a],speed_m_s,sample_hz,dwell)
     for mode in ("synchronous", "sequential"):
         plan = timing_plans[mode]
         delays = plan["departure_delays_s"]

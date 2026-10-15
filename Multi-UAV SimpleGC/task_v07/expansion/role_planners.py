@@ -152,6 +152,9 @@ class TransitPlanner:
     def plan_with_template(self, scene, task_group, role_parameters):
         family = role_parameters["family"]
         members = sorted(task_group["members"])
+        if 'candidate_budget' in role_parameters:
+            from .candidate_search import plan_continuous_group
+            return plan_continuous_group(scene,task_group,role_parameters)
         from .candidate_constraints import bearing_allowed
         from .area_search import planned_core_distance
         multi = role_parameters["approach_mode"] == "multi_direction"
@@ -291,7 +294,7 @@ class TransitPlanner:
     def _block(self, ctx, agents, chords, start, direction, normal, side, entry_id):
         h_center = float(np.mean([c["offset"] for c in chords]))
         half = max(abs(c["offset"] - h_center) for c in chords)
-        margin = PLANNING_MARGIN_M + 1.5 * half + 2.0
+        margin = getattr(ctx,'approach_clearance_m',PLANNING_MARGIN_M) + 1.5 * half + 2.0
         planner = ctx.approach_planner(margin)
         origin = ctx.center + h_center * normal
         lead = self._point_on_line(ctx, origin, direction, math.ceil(margin) + 4 * half + 20.0, -1, planner)

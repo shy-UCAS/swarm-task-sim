@@ -51,7 +51,10 @@ def role_parameters(descriptor, group):
     match=re.search(r"_ext_(\d+)",descriptor["skeleton_id"])
     slot=descriptor.get("geometry_slot",int(match.group(1)) if match else 0)
     return {"geometry_slot":slot, "column_seed":descriptor["column_seed"], "retreat_warning_minimum_m":100.,
-            "geometry_seed":seed_for(descriptor["family_conditions"]["sampling_seed"],f"geometry-slot:{slot}"),"family": descriptor["family_conditions"], "cruise_speed_m_s": descriptor["cruise_speed_m_s"],
+            "candidate_budget":200,
+            "geometry_seed":seed_for(descriptor["role_seed"],f"continuous-geometry:{group['group_id']}"),
+            "approach_clearance_m":__import__('random').Random(seed_for(descriptor["role_seed"],"approach-clearance")).uniform(35.,70.),
+            "family": descriptor["family_conditions"], "cruise_speed_m_s": descriptor["cruise_speed_m_s"],
             "task_altitude_m": descriptor["task_altitude_m"],
             "approach_mode": descriptor["common_draw"]["approach_mode"],
             "planning_seed": seed_for(descriptor["role_seed"], f"route:{group['group_id']}")}

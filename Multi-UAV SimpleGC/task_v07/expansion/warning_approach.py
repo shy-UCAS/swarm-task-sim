@@ -44,13 +44,20 @@ def warning_ingress(ctx, angle, spacing_m=None):
         for agents, virtual, offsets, half in layouts:
             hcenter = cursor + half
             cursor += 2 * half + spacing
-            margin = 35. + 1.5 * half + 2.
+            margin = getattr(ctx,'approach_clearance_m',35.) + 1.5 * half + 2.
             exterior = ctx.planner(margin, warnings=True)
             origin = ctx.center + hcenter * normal
             lead = None
+            if hasattr(ctx,'collection_clearance_m'):
+                point=contour_point(ctx.geometry,ctx.center,outward,
+                    ctx.zones['warning']['offset_m']+ctx.collection_clearance_m+half,-hcenter)
+                if point is not None and exterior.free(point.tolist()):
+                    lead=point
+                else:
+                    return None,'random_warning_collection_unavailable'
             # Keep at least 150m of straight motion outside the warning boundary
             # before entry. The final measured 100m cannot include a prior turn.
-            for distance in np.arange(200., 3500., 25.):
+            for distance in ([] if lead is not None else np.arange(200., 3500., 25.)):
                 point = origin + distance * outward
                 clearance = float(geometry_facts(ctx.zones['warning']['geometry'], point)['signed_distance_m'])
                 if clearance >= 150. + half and exterior.free(point.tolist()):

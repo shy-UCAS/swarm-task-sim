@@ -8,17 +8,18 @@ from .warning_approach import warning_ingress, deploy_inside_warning
 from .monitoring_phases import shared_phase_candidates
 
 
-def monitoring_candidate(ctx, angle, radius, phase_variant=0):
+def monitoring_candidate(ctx, angle, radius, phase_variant=0, *, phase_diagnostic=None):
     from .formation_role_planners import core_path_length, VERSION
     role_planner = ctx.planner()
-    if not hasattr(ctx, '_phase_candidates'):
-        ctx._phase_candidates = {}
-    if radius not in ctx._phase_candidates:
-        ctx._phase_candidates[radius] = shared_phase_candidates(ctx, radius)
-    phase_diagnostic = ctx._phase_candidates[radius][phase_variant]
+    if phase_diagnostic is None:
+        if not hasattr(ctx, '_phase_candidates'):
+            ctx._phase_candidates = {}
+        if radius not in ctx._phase_candidates:
+            ctx._phase_candidates[radius] = shared_phase_candidates(ctx, radius)
+        phase_diagnostic = ctx._phase_candidates[radius][phase_variant]
     if phase_diagnostic['estimated_max_interval_s'] > phase_diagnostic['allowed_interval_s']:
         return None, 'nominal_revisit_geometry_infeasible'
-    phases = {a: angle + value for a, value in phase_diagnostic['phases'].items()}
+    phases = {a: getattr(ctx,'work_angle',angle) + value for a, value in phase_diagnostic['phases'].items()}
     if not hasattr(ctx, '_warning_ingresses'):
         ctx._warning_ingresses = {}
     if angle not in ctx._warning_ingresses:
