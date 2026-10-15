@@ -89,6 +89,8 @@ def role_diagnostics(kind, skeleton, agent, t, positions, velocity, levels, dist
             turnaway_s=None if turn is None else float(seconds[turn]), turnaway_frame=turn,
             maximum_retreat_drop_m=drop, retreat_descending_fraction=descending, retreat_ok=retreat_ok,
             entered_protected=bool((levels == 3).any()))
+        metrics.update(retreat_tolerance_m=skeleton.get("feint", {}).get("retreat_distance_tolerance_m"),
+                       retreat_drop_fraction_max=skeleton.get("feint", {}).get("retreat_drop_fraction_max"))
     elif kind == "monitoring":
         rules = skeleton.get("monitoring", {})
         orbit_center = np.asarray(rules.get("orbit_center_enu_m", center)[:2])
