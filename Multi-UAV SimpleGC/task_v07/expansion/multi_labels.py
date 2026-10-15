@@ -5,6 +5,7 @@ import numpy as np
 
 from .contracts import P0ContractError
 from .sampling import derive_intent
+from task_v07.criteria import quality_facts
 
 
 def measure_groups(scene, skeleton, run, mode, planned_batches=None, *, cutoff_s=None, timing_plan=None):
@@ -89,12 +90,8 @@ def measure_groups(scene, skeleton, run, mode, planned_batches=None, *, cutoff_s
     conditions = {"primary_task_success" if assigned_intent == "penetration" else "all_task_groups_complete": primary_success,
                   "assigned_role_composition_matches": assigned_intent == skeleton["base_intent"]}
     complete = prototype["evidence"]["complete_observation"]
-    quality = deepcopy(prototype["generation_quality"])
-    error = minimum is not None and minimum < 2.
-    quality.update(status="generation_error" if error else "valid", retained=not error,
-                   exclusion_reasons=["minimum_separation_below_2m"] if error else [], minimum_separation_m=minimum,
-                   hard_obstacle_sample_count=int(frame["inside_hard_obstacle"].sum()),
-                   outside_world_sample_count=sum(a["observed"]["outside_world_sample_count"] for a in agents.values()))
+    quality = quality_facts(minimum, int(frame["inside_hard_obstacle"].sum()),
+                            sum(a["observed"]["outside_world_sample_count"] for a in agents.values()))
     labels = {"schema_version": "traj2language.labels/0.7-s2x.groups.1", "evidence": prototype["evidence"],
               "agents": {a: agents[a] for a in sorted(agents)}, "task_groups": {g: groups[g] for g in sorted(groups)},
               "cluster": {"assigned": {"intent": skeleton["base_intent"], "intent_from_role_composition": assigned_intent,

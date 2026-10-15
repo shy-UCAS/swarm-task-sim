@@ -2,7 +2,7 @@
 from itertools import combinations
 import numpy as np
 from scene_v07.geometry import center_of
-from .criteria import load_criteria
+from .criteria import load_criteria, quality_facts
 from .detectors import coverage, dwell, revisit, runs, work_mask
 from .geometry import geometry_facts, GEOMETRY_VERSION
 
@@ -205,8 +205,6 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
         f"{cfg['approach']['heading_distance_m']:g} m before first entry into assigned task-group target warning zone")
     if kind == "monitoring":
         group["observed"]["shared_revisit"] = group_revisit_diagnostic(skeleton, t / 1e6, patrol_masks, patrol_angles)
-    threshold = cfg["quality"]["min_separation_error_m"]
-    error = minimum is not None and minimum < threshold
     labels = {"schema_version": EXPANSION_LABEL_VERSION,
         "evidence": {"source": EVIDENCE_SOURCE, "last_observed_s": float(t[-1] / 1e6), "frame_count": len(t),
             "complete_observation": complete, "future_events_used": False, "geometry_version": GEOMETRY_VERSION,
@@ -219,10 +217,7 @@ def measure_criteria(scene, skeleton, run, mode, planned_batches=None, *, cutoff
         "frame_labels": {"file": "frame_labels.npz", "source": EVIDENCE_SOURCE, "agent_ids": ids, "facility_ids": fids,
             "region_codes": {"0": "outside", "1": "warning", "2": "alert", "3": "protected"},
             "phase_codes": {"0": "low_speed", "1": "approach_motion", "2": "after_core_start", "3": "withdrawal", "4": "at_own_endpoint"}},
-        "generation_quality": {"status": "generation_error" if error else "valid", "retained": not error,
-            "exclusion_reasons": ["minimum_separation_below_2m"] if error else [], "minimum_separation_m": minimum,
-            "separation_error_threshold_m": threshold, "separation_affects_task_result": False,
-            "hard_obstacle_sample_count": int(obstacle.sum()), "outside_world_sample_count": int(outside.sum())}}
+        "generation_quality": quality_facts(minimum, int(obstacle.sum()), int(outside.sum()))}
     frame = {"time_us": t, "agent_ids": np.array(ids), "facility_ids": np.array(fids),
              "region_all_facilities": levels, "region_assigned_target": levels[:, :, target],
              "phase": phases, "inside_hard_obstacle": obstacle}
