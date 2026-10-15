@@ -152,6 +152,11 @@ def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode,
            "audit": audit, "truncation": truncation, "event_times_s": events,
            "simulation_wall_s": run["wall_s"], "amortized_skeleton_setup_s": setup_s / 2,
            "episode_postprocess_wall_s": time.perf_counter() - started}
+    row.update(primary_task_success=labels["cluster"]["result"]["primary_task_success"],
+               all_groups_complete=labels["cluster"]["result"]["all_groups_complete"],
+               quality_status=labels["generation_quality"]["status"],
+               reason=None if quality else ";".join(labels["generation_quality"]["exclusion_reasons"]),
+               measured_approach_by_group={gid: group["observed"]["approach_classification"] for gid, group in groups.items()})
     if extra_metrics:
         row.update(extra_metrics)
     if skeleton.get('abort_observation'):

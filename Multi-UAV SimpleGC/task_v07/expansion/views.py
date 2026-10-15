@@ -18,6 +18,8 @@ def _usable(row):
 def _paired(rows):
     if len(rows) != 2 or {r["mode"] for r in rows} != set(MODES) or not all(_usable(r) for r in rows):
         return False
+    if not all(r.get("all_groups_complete") is True and r.get("execution_status") == "completed" for r in rows):
+        return False
     if not all(r.get("coordination_by_group") and all(v == r["mode"] for v in r["coordination_by_group"].values()) for r in rows):
         return False
     if set(rows[0]["coordination_by_group"]) != set(rows[1]["coordination_by_group"]):
