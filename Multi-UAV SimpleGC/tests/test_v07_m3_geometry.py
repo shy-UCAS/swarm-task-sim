@@ -14,6 +14,8 @@ from task_v07.unified.assign import assign
 from task_v07.unified.route import clean_joints, offset_lane, route_group, line_interval, GeometryRejected
 from task_v07.geometry import offset_geometry
 from task_v07.expansion.contracts import validate_route_bundle
+from task_v07.expansion.contracts import RouteBundle
+from task_v07.unified.checks import plan_checks, warning_visits
 
 
 class SpecTests(unittest.TestCase):
@@ -89,6 +91,26 @@ class ConnectionTests(unittest.TestCase):
             self.assertEqual(points[-1], template["references"][agent]["endpoint_enu_m"])
             self.assertEqual(points[0], next(s["position_enu_m"] for s in d["family_conditions"]["initial_states"] if s["agent_id"] == agent))
         self.assertGreater(template["approach_length_m"], 0)
+        checks = plan_checks(scene, spec, bundle, template, free, d["family_conditions"]["initial_states"])
+        self.assertEqual(checks["status"], "PASS", checks["issues"])
+
+    def test_G4_G5_full_route_witnesses(self):
+        scene, d, g = request(count=2); spec = build_spec(d, g)
+        for route, entity in (([[-600., 0., 120.], [600., 0., 120.]], "F1_alert"),
+                              ([[-1600., -1200., 120.], [-800., -1200., 120.]], "R1"),
+                              ([[2900., 2500., 120.], [3050., 2500., 120.]], "world")):
+            bundle = RouteBundle({a: route for a in g["members"]}, {a: 0. for a in g["members"]})
+            template = {"references": {a: {"endpoint_enu_m": route[-1], "split_index": 0} for a in g["members"]}}
+            result = plan_checks(scene, spec, bundle, template)
+            self.assertEqual(result["status"], "REJECT")
+            self.assertTrue(any(i.get("entity_id") == entity and i["segment"] == 0 for i in result["issues"]))
+
+    def test_G6_multiple_visits_and_same_boundary_join(self):
+        warning = {"type": "Circle", "center_m": [0., 0.], "radius_m": 10.}
+        visits, _ = warning_visits(np.array([[-20., 0.], [0., 0.], [20., 0.]]), warning)
+        self.assertEqual(len(visits), 1)
+        visits, _ = warning_visits(np.array([[-20., 0.], [20., 0.], [-20., 0.]]), warning)
+        self.assertEqual(len(visits), 2)
 
 
 class FreeSpaceTests(unittest.TestCase):
