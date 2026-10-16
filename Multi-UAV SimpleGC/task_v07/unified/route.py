@@ -146,7 +146,7 @@ def _approaches(scene, spec, mapping, states, free, clearance):
 
 
 def route_group(scene, spec, shape, free, initial_states, rng):
-    if shape["kind"] != "transit":
+    if shape.get("kind", spec["execution_method"]) != "transit":
         from .operation_routes import route_operation
         return route_operation(scene, spec, shape, free, initial_states, rng)
     states = {s["agent_id"]: s for s in initial_states}

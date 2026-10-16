@@ -30,7 +30,7 @@ class UnifiedIntegrationTests(unittest.TestCase):
 
     def test_G11_unsupported_and_P0_are_not_swallowed(self):
         scene, d, g = request()
-        g["role"] = g["execution_method"] = "monitoring"
+        g["role"] = g["execution_method"] = "unsupported_method"
         with patch("task_v07.expansion.group_candidate_pool.Context", side_effect=AssertionError("legacy Context")), \
              patch("task_v07.expansion.continuous_geometry.draw_role", side_effect=AssertionError("legacy draw")):
             with self.assertRaises(PlannerUnavailable):

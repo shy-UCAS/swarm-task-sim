@@ -12,6 +12,7 @@ from task_v07.unified.route import route_group, GeometryRejected
 from task_v07.unified.checks import plan_checks
 from task_v07.unified.patrol_shape import patrol_shape, parallel_paths
 from task_v07.geometry import geometry_facts
+from task_v07.expansion.group_candidate_pool import build_group_pool
 
 
 def role_request(method, multi=False, count=2):
@@ -23,6 +24,15 @@ def role_request(method, multi=False, count=2):
 
 
 class M3bGeometryTests(unittest.TestCase):
+    def test_all_six_default_paths_are_isolated_from_legacy(self):
+        with patch("task_v07.expansion.group_candidate_pool.Context",side_effect=AssertionError("legacy Context")), \
+             patch("task_v07.expansion.group_candidate_pool.draw_role",side_effect=AssertionError("legacy draw")):
+            for method in ("transit","area_search","close_observation","monitoring","feint","intrusion"):
+                with self.subTest(method=method):
+                    scene,d,g=role_request(method)
+                    pool,report=build_group_pool(scene,d,g,budget=6)
+                    self.assertTrue(pool,report["rejection_reasons"])
+                    self.assertTrue(all(c["checks"]["status"]=="PASS" for c in pool))
     def test_intrusion_exact_signed_endpoints_and_family_spacing(self):
         scene,d,g=role_request("intrusion",multi=True,count=4)
         spec=build_spec(d,g); free=free_space(scene,spec); rng=random.Random(3)
