@@ -21,7 +21,7 @@ def ingress_issues(spec, free, slots):
         for slot in block:
             gate = np.asarray(slot["entry"], float)
             direction = np.asarray(slot["direction"], float)
-            start = gate-(free.cfg["alignment_length_m"]+half+50.)*direction
+            start = gate-(free.cfg["alignment_length_m"]+half)*direction
             for phase, a, b in (("ingress_line_outside_entry", start, gate),
                                 ("entry_to_work_start", gate, slot["work"][0])):
                 for issue in free.segment_issues(a, b):

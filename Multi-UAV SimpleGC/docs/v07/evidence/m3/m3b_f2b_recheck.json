@@ -1,0 +1,958 @@
+{
+  "original_commit": "7e67fa232c1a3c2a2540dd612d85797bb56276c9",
+  "new_commit": null,
+  "precheck_formula_before": "gate - (alignment_length_m + half + 50) * direction",
+  "precheck_formula_after": "gate - (alignment_length_m + half) * direction",
+  "tests": {
+    "status": "PASS",
+    "started_utc": "2026-10-16T10:43:26.716258+00:00",
+    "finished_utc": "2026-10-16T10:44:29.596141+00:00",
+    "entry_commit": "7e67fa232c1a3c2a2540dd612d85797bb56276c9",
+    "production_sha256": {
+      "task_v07/criteria.py": "6454c9fc52a34a78107d48dcdd0675ef0af37a3557e55881eed77d1d21606d05",
+      "task_v07/criteria_diagnostics.py": "cc226fa6e816a6e8787e1ac181a8b5dea2feacf2430b027f3370a26b5f15cb70",
+      "task_v07/criteria_labels.py": "bb52b3dd559285f827df64d0c205ef1fefd5ffc3387a880118f41b5633db0ffe",
+      "task_v07/detectors.py": "741669e343cde547167c4962f3834d2cb0945da7b7c0a6a4b7f83167b85e9c47",
+      "task_v07/dwell.py": "f9e92c4ece903e76ef81ee5ede25718ec54b36de9d2e89bdb6da9b9b77035805",
+      "task_v07/execution.py": "153a24c9401f0c88fe5a884462d17915ab828660b7c6964299e0dce31c8c623d",
+      "task_v07/geometry.py": "875628870ae778e597d222abc1a6bdde603b6eb4afe1e289f6d3e3e2a0310451",
+      "task_v07/io.py": "2ded4a2cafe5a5bc9d9e87d2edfde092b6a352eb6fbc74b8f81126cfe1479402",
+      "task_v07/labels.py": "ab6ed6d6de1be7ec8bf5ded44a35129b1cdf1d6d2dbe87fa3f7fe4c2b66e67b2",
+      "task_v07/planning.py": "7b92f9ffaac4a54d2a2e01a115c8410464a13bec16df892e4619812fcd915d64",
+      "task_v07/survey.py": "e808fe42a355d64a2056e10fe559b81f02018283151811eb89005936746d2216",
+      "task_v07/visibility.py": "1808c5f4916535e1168dbf3b0b77c537f465e2cbc336871ccab74f694f2a169c",
+      "task_v07/__init__.py": "2d5de7724a06c7b0a7e2e1b5d966c188be12085ed32f0a424a5765bd9a729cef",
+      "task_v07/expansion/abort_measurement.py": "f1f309fce58fecb87a58738d8b976d143f6522b5e47da982afe46f187f72e4cd",
+      "task_v07/expansion/abort_planning.py": "1677944ddd606edb3e242714668d2991e4a2188371cfe778299d104bc3f0b77f",
+      "task_v07/expansion/abort_references.py": "fdd3381799bd06d44b6c0cbed40b7413238af2c7c24c04a8e6e58b0d162b4bf3",
+      "task_v07/expansion/area_search.py": "217468c8a5d1c71ba1b54993dd960cc31f7523a6476b5ef1f144e40768aa35ec",
+      "task_v07/expansion/candidate_constraints.py": "d6ac09ccfcfc41b9932d4ca809d5155047393f161d34708a0522d59ffc831148",
+      "task_v07/expansion/candidate_search.py": "2ad0e5e24967521ecea0cd57a187ba1d47b8f9b32bf84bc617bc96290e27b95e",
+      "task_v07/expansion/continuous_geometry.py": "845fd7ea8a7a07b2046959e7fad3fc97723d8e9af17e57f61dd5adaf302c09bc",
+      "task_v07/expansion/contracts.py": "916f73831b98cebf8c098e7d4a15d200daf85034333cfa9bcf661f7651bb1c2e",
+      "task_v07/expansion/episode_pipeline.py": "516156860efe632235872a213b07c442fc22cd5a0ab7b91f120bc47919835388",
+      "task_v07/expansion/evaluation.py": "4a57077afea8a72209ff19f924360e50c78a8bff0a053c7129848c2ffec251b8",
+      "task_v07/expansion/formation_corridors.py": "b6976873cb4ec4d101f9d4204a62527db034b39fdb19db5b49657b0b0d25031a",
+      "task_v07/expansion/formation_role_planners.py": "62b086e57262cbed5596d543bca8acf01efb7d211d4a7afdcfe8165b21227418",
+      "task_v07/expansion/geometry_checks.py": "b3b9d711bb68c31a7daaa7f6dfb419852f0f550e621cc61900ce4161e8718c27",
+      "task_v07/expansion/group_candidate_pool.py": "b57c46ca091b1c8a777c2eb6162862ac225fd235e45543cd4cf68d9ce981c649",
+      "task_v07/expansion/monitoring_deployment.py": "e7a84ad377943d8ed405c5a05d00ccacde51cf62f02e3b8814860a7a4c2eb479",
+      "task_v07/expansion/monitoring_phases.py": "c6c266ecacbcd8d770ae6ccea5bc287950ad922094ef8e9251c3a84c9cabca51",
+      "task_v07/expansion/monitoring_search.py": "ea158affc3916721a35b7a910e24248b08d3a07da9c0f9f1a5237a93ed89ac43",
+      "task_v07/expansion/multi_labels.py": "677c3754f2d87e08f064ea99dbf02b68be2700f16d46d18cfe7e0e2cfd334a57",
+      "task_v07/expansion/operation_parameters.py": "febd3699e1108b361e4bd49a92464f6ff8198ca6e5bc3fce5b13bff3713e22c3",
+      "task_v07/expansion/pipeline.py": "8160772d3f099dc7ebbfd63783e175ef3f16e2e52667542b6602113bfad06dc0",
+      "task_v07/expansion/public_approach_shape.py": "60f650e0421dcd2f5e26d781efb2fe7d13ae38f952d1626b1a4fd26317d7c43d",
+      "task_v07/expansion/role_evaluation.py": "2152f83ac295e3d2ab19a8ccb0120fba07af5db246ee88df9f8fa18d04839386",
+      "task_v07/expansion/role_planners.py": "7b42db6913bd61ff3bd73bbad82fd19df7200564d58498d2dcd696ac99663f25",
+      "task_v07/expansion/sampling.py": "b2add00f81624ab1e955426e1e728cefcbecff06d61dfa37445ed06367ec21ab",
+      "task_v07/expansion/search_diagnostics.py": "6deb41d76791f8f17cadd105724009128e704fec6f633fc257c4b8188dd42959",
+      "task_v07/expansion/solo_spacing.py": "021623461c7e68d67e25f079a9e08eeb3671af989b25a475f985f94b03446811",
+      "task_v07/expansion/views.py": "27a9a9290ef1653ef69fe554f76e7ef40e7808727b9aa0c56b2ac9b81251bd67",
+      "task_v07/expansion/warning_approach.py": "b8723ee2e1b5a0a6975c758bca2afd999320df20e787f06a0543126c15b6f0e1",
+      "task_v07/expansion/__init__.py": "6fe0029a0fdaac2a956f5cab0440ef5c5a1225ee16c26a77fb23728ca6e56e35",
+      "task_v07/unified/adapter.py": "da0094ee9b1511fec11eb720bd98d18e45299dee00f9e3501f6a42ef9bf0588a",
+      "task_v07/unified/assign.py": "4267ac99b23d7032720da4a7972378bda88fb9a8a9fdb5726b2105f28a77a624",
+      "task_v07/unified/checks.py": "d273159122574788a9b9a4f2170722155014c01d33d313424d7546fd0f33f95e",
+      "task_v07/unified/config.py": "acd1a6aa8813ccaa4f8027ac56f92c0aa5dbebcdbacec608c3fe0c077814a39a",
+      "task_v07/unified/construction.py": "5390fa72488cedf5e7d523f35946811b7d8f37292bf999d75f54126f80adbba1",
+      "task_v07/unified/diagnostics.py": "c45baf775409d960d4809604e26912f16bb98fb0a83e4f3cdeb4fe2a9ef292b0",
+      "task_v07/unified/free_space.py": "8e4b84be0c09c7cce15d55a40db20848e33d38376716e80fed9df9ee4832fe8e",
+      "task_v07/unified/geometry_config.py": "e9c8bf066c812fe351fa6bf48a5a7e9f6043d1acba88046c3706fb50932b6584",
+      "task_v07/unified/operation_routes.py": "3f624bf4445113084e7488f4d4d0d5eb45c7b62fff6dc52e1fb036b43b236b88",
+      "task_v07/unified/operation_shapes.py": "fd39e8612fbd1843b5829cf292f7dbfeb1be8ea231b4b306c68479672e3bcc37",
+      "task_v07/unified/outcome.py": "be4bf51584ea9551c92e763484c933aac2fed16b27a58215bf77075c0ac05234",
+      "task_v07/unified/patrol_shape.py": "294afe78a297880e97a2249ebc0890279f53615ac4995b08af0f76a3ae58e7e7",
+      "task_v07/unified/rehearsal.py": "5f90971cca40b3d412f3736dcf0c6940b8ed90419b1f72ac3db25de1239c288d",
+      "task_v07/unified/route.py": "d1766ed2dd44c0c3db9dd4db0268424b366f1a9ba31d98759dc198420d1b1758",
+      "task_v07/unified/shapes.py": "c6e07394542213e23c28cc8991113100612b872532aebaac55bd965514177d5d",
+      "task_v07/unified/spec.py": "f1c563ef2835a77e865d52185ef70ca86744724df4400e4c90ec92c662ad8bcf",
+      "task_v07/unified/terminal_shapes.py": "af40ad9241223310a40bd99ceec81325c780fb5cda56ddb06f82aa5c0fd495c9",
+      "task_v07/unified/timing.py": "c171f67a297c35c11ca6de7eda43c0beb3db2f165adea5e06f2a4ab3ffad393a",
+      "task_v07/unified/__init__.py": "337a02cc56e4b9806d9556a90a6262dd3edd2ad95b69b8417cee3f95aac7c658",
+      "configs/criteria/criteria_v07_r1.json": "d85c3753fc9d3096c6b09ade59637db8fb6b2f79b765d3aebb07d7b7211ceb74",
+      "configs/fast_dynamics/m3_r2_20261013_index.json": "80b95306fa287815c9026e32a6c689d8815723da7931a87b4317042b113fd8c7",
+      "configs/fast_dynamics/m3_r2_20261013_v1.json": "94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193",
+      "configs/generator/generator_v07_r1.json": "88c0ef30d0a8fe65f5f3dc7073e3112ea2bcec39485c4f8564b2531e01e02976",
+      "configs/generator/geometry_v07_r1.json": "cd575d67e260a5a5bf7ecdf1dd83a29a8cb530c299915d514d83d82c00cece03"
+    },
+    "test_source_sha256": {
+      "tests/test_v07_m3_fix_patrol_entry.py": "4968498f58567f312717f23b18a78d78ed52e107badfa36565ced343833bff46",
+      "tests/test_v07_m2_timing_rehearsal.py": "471659c22017a29f190ba70b40ae2303b19a32d7b7f3a3379046f4379959bca0",
+      "tests/test_v07_m3_integration.py": "fc0f6fd26ef54ae1b51d6caa931156efe93ac423310b22b2c9ef59cd8c682f3a",
+      "tests/test_v07_m1_criteria.py": "4cba49452153e8852ecff47393ea6159628fa35ee65429e237ec700ec434e798",
+      "tests/test_v07_s2_revision_continuous.py": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+      "tests/test_v07_m3_geometry.py": "12c48812e2023d3f42d34324da11d0f8d8f64d681b071dc80eaf3cd2bb56cbad",
+      "tests/test_v07_m3_fix_entry.py": "d35f019fbe2e7c0ee22e105310043d6c3d9d723abd6eefb2dd2dc7f1c46f3342",
+      "tests/test_v07_m3_f2b.py": "df2b1a90fc408e2be6255784b5a37356d9176582af274b459347f6362eb308ee",
+      "tests/test_v07_s2_search_revision.py": "89938786f143f73c2c1ce1bab863cb1bbb8670d1da19a8163c8a0f92713ead3e",
+      "tests/test_v07_m3_fix_connections.py": "924095405ebf6942a7554f0798455101b2b5cd73cb570c1f04888666b73dfd2b",
+      "tests/test_v07_m3b_geometry.py": "1c5f25ce795810a87335c2bba497dfd84905e2ae8763a9ec9db9f99ba37f640b"
+    },
+    "runner_sha256": "d59e296b6f909faf3f20f0244073614d6bbf21f54be6ce3158cf324c3765bfc1",
+    "suites": [
+      {
+        "suite": "F2b_deterministic",
+        "status": "PASS",
+        "test_entries": [
+          "test_v07_m3_f2b"
+        ],
+        "test_ids": [
+          "test_v07_m3_f2b.F2bRegressionTests.test_A1_extra_fifty_metres_can_be_blocked_while_final_route_is_legal",
+          "test_v07_m3_f2b.F2bRegressionTests.test_A2_obstacle_in_required_ingress_is_still_rejected",
+          "test_v07_m3_f2b.F2bRegressionTests.test_A3_existing_route_and_ingress_constraints_are_preserved"
+        ],
+        "tests_run": 3,
+        "expected_test_count": 3,
+        "failures": [],
+        "errors": [],
+        "skipped": [],
+        "wall_s": 0.7270776000004844
+      },
+      {
+        "suite": "m3a_checks",
+        "status": "PASS",
+        "test_entries": [
+          "test_v07_m3_geometry",
+          "test_v07_m3_integration",
+          "test_v07_m1_criteria",
+          "test_v07_m2_timing_rehearsal",
+          "test_v07_s2_search_revision.SearchEvidenceTests.test_empty_first_group_does_not_censor_other_group_budgets",
+          "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration"
+        ],
+        "test_ids": [
+          "test_v07_m3_geometry.AssignmentTests.test_G2_physical_slots_survive_column_and_slot_permutation",
+          "test_v07_m3_geometry.ConnectionTests.test_G10_clean_forward_joins_preserves_bends_and_endpoint",
+          "test_v07_m3_geometry.ConnectionTests.test_G4_G5_full_route_witnesses",
+          "test_v07_m3_geometry.ConnectionTests.test_G6_multiple_visits_and_same_boundary_join",
+          "test_v07_m3_geometry.ConnectionTests.test_G7_shared_connection_has_truthful_metadata",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G3_exact_circle_and_polygon_offsets",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G3_feasible_chord_intervals",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G4_full_segment_detects_inner_zone",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G5_obstacle_and_world_segment_checks",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G6_empty_domain_and_arcs_are_finite",
+          "test_v07_m3_geometry.FreeSpaceTests.test_zero_width_reference_corridor_keeps_configured_pad",
+          "test_v07_m3_geometry.SpecTests.test_G1_registered_group_not_reassigned",
+          "test_v07_m3_geometry.SpecTests.test_G1_spec_without_geometry_or_execution",
+          "test_v07_m3_geometry.SpecTests.test_G2_column_permutation_does_not_change_spec",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G11_default_dispatch_is_unified_and_legacy_is_explicit",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G11_unsupported_and_P0_are_not_swallowed",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G2_G7_G8_transit_routes_survive_column_permutation_and_feed_M2",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G8_straight_bend_and_multi_are_real_shapes",
+          "test_v07_m1_criteria.CriteriaQ0.test_G1_shared_coverage",
+          "test_v07_m1_criteria.CriteriaQ0.test_G2_G3_groups_and_G4_G5_views_approach",
+          "test_v07_m1_criteria.CriteriaQ0.test_G5_measured_headings_do_not_gate_success",
+          "test_v07_m1_criteria.CriteriaQ0.test_P1_P3_prefixes",
+          "test_v07_m1_criteria.CriteriaQ0.test_T1_T13_role_matrix_and_audit",
+          "test_v07_m1_criteria.CriteriaQ0.test_dwell_erratum_and_audit_rejects_mutations",
+          "test_v07_m1_criteria.CriteriaQ0.test_event_times_and_diagnostics",
+          "test_v07_m1_criteria.CriteriaQ0.test_performance_and_cross_negation",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A10_rehearsal_observed_roles",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A11_independent_completeness_and_frame_count",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A1_random_schedules",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A2_A3_independent_draws_and_pair_conditions",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A4_overlay_threshold",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A5_vertical_default_is_exact_baseline",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A6_relaxed_stop_is_exact_prefix",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A7_observation_hold_unchanged",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A8_partial_finish_uses_conservative_budget",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A9_last_failure_and_history",
+          "test_v07_s2_search_revision.SearchEvidenceTests.test_empty_first_group_does_not_censor_other_group_budgets",
+          "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration"
+        ],
+        "tests_run": 38,
+        "expected_test_count": 38,
+        "failures": [],
+        "errors": [],
+        "skipped": [],
+        "wall_s": 29.24286200000097
+      },
+      {
+        "suite": "m3b_checks",
+        "status": "PASS",
+        "test_entries": [
+          "test_v07_m3_geometry",
+          "test_v07_m3_integration",
+          "test_v07_m3b_geometry",
+          "test_v07_m1_criteria",
+          "test_v07_m2_timing_rehearsal",
+          "test_v07_s2_search_revision.SearchEvidenceTests.test_empty_first_group_does_not_censor_other_group_budgets",
+          "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration"
+        ],
+        "test_ids": [
+          "test_v07_m3_geometry.AssignmentTests.test_G2_physical_slots_survive_column_and_slot_permutation",
+          "test_v07_m3_geometry.ConnectionTests.test_G10_clean_forward_joins_preserves_bends_and_endpoint",
+          "test_v07_m3_geometry.ConnectionTests.test_G4_G5_full_route_witnesses",
+          "test_v07_m3_geometry.ConnectionTests.test_G6_multiple_visits_and_same_boundary_join",
+          "test_v07_m3_geometry.ConnectionTests.test_G7_shared_connection_has_truthful_metadata",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G3_exact_circle_and_polygon_offsets",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G3_feasible_chord_intervals",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G4_full_segment_detects_inner_zone",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G5_obstacle_and_world_segment_checks",
+          "test_v07_m3_geometry.FreeSpaceTests.test_G6_empty_domain_and_arcs_are_finite",
+          "test_v07_m3_geometry.FreeSpaceTests.test_zero_width_reference_corridor_keeps_configured_pad",
+          "test_v07_m3_geometry.SpecTests.test_G1_registered_group_not_reassigned",
+          "test_v07_m3_geometry.SpecTests.test_G1_spec_without_geometry_or_execution",
+          "test_v07_m3_geometry.SpecTests.test_G2_column_permutation_does_not_change_spec",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G11_default_dispatch_is_unified_and_legacy_is_explicit",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G11_unsupported_and_P0_are_not_swallowed",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G2_G7_G8_transit_routes_survive_column_permutation_and_feed_M2",
+          "test_v07_m3_integration.UnifiedIntegrationTests.test_G8_straight_bend_and_multi_are_real_shapes",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_all_six_default_paths_are_isolated_from_legacy",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_feint_continuous_turn_single_alert_visit_no_dwell",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_intrusion_exact_signed_endpoints_and_family_spacing",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_observation_keeps_true_intermediate_dwell_after_join_cleanup",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_patrol_arc_reversals_preserve_group_unique_lanes",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_patrol_full_preserves_group_unique_continuous_lanes",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_patrol_polygon_offsets_and_finite_short_arc_rejection",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_search_sector_coverage_and_complete_route",
+          "test_v07_m3b_geometry.M3bGeometryTests.test_six_execution_methods_use_the_shared_exclusion_policy",
+          "test_v07_m1_criteria.CriteriaQ0.test_G1_shared_coverage",
+          "test_v07_m1_criteria.CriteriaQ0.test_G2_G3_groups_and_G4_G5_views_approach",
+          "test_v07_m1_criteria.CriteriaQ0.test_G5_measured_headings_do_not_gate_success",
+          "test_v07_m1_criteria.CriteriaQ0.test_P1_P3_prefixes",
+          "test_v07_m1_criteria.CriteriaQ0.test_T1_T13_role_matrix_and_audit",
+          "test_v07_m1_criteria.CriteriaQ0.test_dwell_erratum_and_audit_rejects_mutations",
+          "test_v07_m1_criteria.CriteriaQ0.test_event_times_and_diagnostics",
+          "test_v07_m1_criteria.CriteriaQ0.test_performance_and_cross_negation",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A10_rehearsal_observed_roles",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A11_independent_completeness_and_frame_count",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A1_random_schedules",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A2_A3_independent_draws_and_pair_conditions",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A4_overlay_threshold",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A5_vertical_default_is_exact_baseline",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A6_relaxed_stop_is_exact_prefix",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A7_observation_hold_unchanged",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A8_partial_finish_uses_conservative_budget",
+          "test_v07_m2_timing_rehearsal.M2Checks.test_A9_last_failure_and_history",
+          "test_v07_s2_search_revision.SearchEvidenceTests.test_empty_first_group_does_not_censor_other_group_budgets",
+          "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration"
+        ],
+        "tests_run": 47,
+        "expected_test_count": 47,
+        "failures": [],
+        "errors": [],
+        "skipped": [],
+        "wall_s": 32.40030769999976
+      },
+      {
+        "suite": "F0_F4_regressions",
+        "status": "PASS",
+        "test_entries": [
+          "test_v07_m3_fix_entry",
+          "test_v07_m3_fix_connections",
+          "test_v07_m3_fix_patrol_entry"
+        ],
+        "test_ids": [
+          "test_v07_m3_fix_entry.EntryRepairTests.test_F1_exterior_detour_has_ten_metre_clearance_and_one_visit",
+          "test_v07_m3_fix_entry.EntryRepairTests.test_F1_formal_entry_uses_anchor_even_after_an_earlier_visit",
+          "test_v07_m3_fix_entry.EntryRepairTests.test_F1_missing_anchor_cannot_bypass_production_check",
+          "test_v07_m3_fix_entry.EntryRepairTests.test_F4_large_inside_lane_retains_actual_hundred_metre_alignment",
+          "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_neighbor_warning_rejects_radial_endpoint_during_shape_precheck",
+          "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_precheck_does_not_consume_connection_random_draws",
+          "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_rejected_ingress_stays_in_twenty_shape_attempt_budget",
+          "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_whole_ingress_checked_on_both_sides_of_gate",
+          "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F3_first_legal_rotated_exit_avoids_neighbor_warning",
+          "test_v07_m3_fix_patrol_entry.PatrolEntryRegressionTests.test_F2_blocked_unused_entrance_does_not_reject_clear_full_patrol"
+        ],
+        "tests_run": 10,
+        "expected_test_count": 10,
+        "failures": [],
+        "errors": [],
+        "skipped": [],
+        "wall_s": 0.34682299999985844
+      }
+    ],
+    "wall_s": 62.88017319999926,
+    "tests_run_including_intentional_original_suite_overlap": 98,
+    "distinct_test_ids_executed": 60,
+    "source_evidence_sha256": {
+      "m3a_checks.json": "63261649856070983193913af1f4f94e94889062a79e363cde578b201724f857",
+      "m3b_checks.json": "2a14a9a06a024e1cf7a95aba0c18c774eeda1a9c1eab844d9c53362b3182f22b",
+      "m3b_fix_checks.json": "83a9371bab8ebade39e622fab6ab13eadf2c6716a06ef328c53cc05d7642e28d",
+      "m3b_fix_q2.json": "6ed3e0c488f788a9ea730c88801ea43b74ed3c967d63b26efbae7c3c5f70e0b1",
+      "m3b_q2_repro.json": "c66ab5366a1af9a36591dcb76b6ed160ebc85f49589154c79d322ba0f6f8631b",
+      "m3b_q2_graze_audit.json": "0bb95cc85d441b28f0abd5f8547040d269907a056fea77930db2a4f329d372a8",
+      "m3b_q2_diagnostics.json": "0fe6cb67b5b80397bcfdd98e953ce6e037c039dc0d8a8fb2aa0e3daf30127121"
+    },
+    "frozen_check_before": {
+      "status": "PASS",
+      "file_count": 39
+    },
+    "frozen_check": {
+      "status": "PASS",
+      "file_count": 39
+    },
+    "deterministic_geometry_evidence": {
+      "A1": {
+        "old_excess_range_issues": [
+          {
+            "code": "constraint_clearance",
+            "entity_id": "extra_ingress_blocker",
+            "clearance_m": 15.0,
+            "required_m": 35.0,
+            "kind": "obstacle"
+          }
+        ],
+        "new_ingress_issues": [],
+        "obstacle": {
+          "id": "extra_ingress_blocker",
+          "type": "hard_constraint_obstacle",
+          "geometry": {
+            "type": "Circle",
+            "center_m": [
+              -1048.9438184514795,
+              30.0
+            ],
+            "radius_m": 5.0
+          }
+        },
+        "half_width_m": 10.0,
+        "obstacle_projection_before_gate_m": 159.0,
+        "waypoints_by_agent": {
+          "a0": [
+            [
+              -1090.0,
+              -1500.0,
+              120.0
+            ],
+            [
+              -1090.0,
+              -1401.4514135227587,
+              120.0
+            ],
+            [
+              -1044.123148827546,
+              -1246.738755260728,
+              120.0
+            ],
+            [
+              -1038.1921471959681,
+              -1216.9215965304697,
+              120.0
+            ],
+            [
+              -1038.0078131777366,
+              -1215.365917941354,
+              120.0
+            ],
+            [
+              -990.3315328329279,
+              -10.0,
+              120.0
+            ],
+            [
+              -469.8936049788292,
+              -10.0,
+              120.0
+            ],
+            [
+              -965.7397361619315,
+              -10.0,
+              120.0
+            ]
+          ],
+          "a1": [
+            [
+              -1110.0,
+              -1500.0,
+              120.0
+            ],
+            [
+              -1110.0,
+              -1400.0,
+              120.0
+            ],
+            [
+              -1109.5873721798594,
+              -1397.1570623142845,
+              120.0
+            ],
+            [
+              -1063.559400687299,
+              -1241.9347739045108,
+              120.0
+            ],
+            [
+              -1057.9611342330759,
+              -1213.7903878717839,
+              120.0
+            ],
+            [
+              -1009.9360052737428,
+              0.39522463104777106,
+              120.0
+            ],
+            [
+              -1006.873744630362,
+              7.209446799528995,
+              120.0
+            ],
+            [
+              -999.9438184514795,
+              10.0,
+              120.0
+            ],
+            [
+              -469.8936049788292,
+              10.0,
+              120.0
+            ],
+            [
+              -965.7397361619315,
+              10.0,
+              120.0
+            ]
+          ]
+        },
+        "references": {
+          "a0": {
+            "split_index": 0,
+            "slot_id": "0:0",
+            "collection_point_enu_m": [
+              -987.2096179474869,
+              -10.0,
+              120.0
+            ],
+            "alignment_point_enu_m": [
+              -999.9438184514795,
+              -10.0,
+              120.0
+            ],
+            "warning_entry_enu_m": [
+              -889.9438184514795,
+              -10.0,
+              120.0
+            ],
+            "ingress_direction": [
+              1.0,
+              0.0
+            ],
+            "lane_offset_m": -10.0,
+            "reference_obstacle_margin_m": 52.0,
+            "observation_point_enu_m": [
+              -469.8936049788292,
+              -10.0,
+              120.0
+            ],
+            "endpoint_enu_m": [
+              -965.7397361619315,
+              -10.0,
+              120.0
+            ],
+            "retreat_required": true,
+            "retreat_warning_clearance_m": 50.0,
+            "work_points_enu_m": [
+              [
+                -469.8936049788292,
+                -10.0,
+                120.0
+              ]
+            ],
+            "stage_geometry": {
+              "collection": [
+                -987.2096179474869,
+                -10.0,
+                120.0
+              ],
+              "warning_entry": [
+                -889.9438184514795,
+                -10.0,
+                120.0
+              ],
+              "work_start": [
+                -469.8936049788292,
+                -10.0,
+                120.0
+              ],
+              "work_end": [
+                -469.8936049788292,
+                -10.0,
+                120.0
+              ],
+              "endpoint": [
+                -965.7397361619315,
+                -10.0,
+                120.0
+              ]
+            },
+            "intermediate_dwell": {
+              "waypoint_index": 6,
+              "duration_s": 50.0
+            }
+          },
+          "a1": {
+            "split_index": 0,
+            "slot_id": "0:1",
+            "collection_point_enu_m": [
+              -987.2096179474869,
+              10.0,
+              120.0
+            ],
+            "alignment_point_enu_m": [
+              -999.9438184514795,
+              10.0,
+              120.0
+            ],
+            "warning_entry_enu_m": [
+              -889.9438184514795,
+              10.0,
+              120.0
+            ],
+            "ingress_direction": [
+              1.0,
+              0.0
+            ],
+            "lane_offset_m": 10.0,
+            "reference_obstacle_margin_m": 52.0,
+            "observation_point_enu_m": [
+              -469.8936049788292,
+              10.0,
+              120.0
+            ],
+            "endpoint_enu_m": [
+              -965.7397361619315,
+              10.0,
+              120.0
+            ],
+            "retreat_required": true,
+            "retreat_warning_clearance_m": 50.0,
+            "work_points_enu_m": [
+              [
+                -469.8936049788292,
+                10.0,
+                120.0
+              ]
+            ],
+            "stage_geometry": {
+              "collection": [
+                -987.2096179474869,
+                10.0,
+                120.0
+              ],
+              "warning_entry": [
+                -889.9438184514795,
+                10.0,
+                120.0
+              ],
+              "work_start": [
+                -469.8936049788292,
+                10.0,
+                120.0
+              ],
+              "work_end": [
+                -469.8936049788292,
+                10.0,
+                120.0
+              ],
+              "endpoint": [
+                -965.7397361619315,
+                10.0,
+                120.0
+              ]
+            },
+            "intermediate_dwell": {
+              "waypoint_index": 8,
+              "duration_s": 50.0
+            }
+          }
+        },
+        "final_plan_checks": {
+          "status": "PASS",
+          "issues": [],
+          "members": {
+            "a0": {
+              "status": "PASS",
+              "issues": [],
+              "warning_intervals_route_m": [
+                [
+                  1598.5838883894176,
+                  2438.684315334718
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 5,
+                "distance_on_segment_m": 100.3877143814484,
+                "point": [
+                  -889.9438184514795,
+                  -10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 100.3877143814484
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 75.79150855767887
+              },
+              "segment_count": 7
+            },
+            "a1": {
+              "status": "PASS",
+              "issues": [],
+              "warning_intervals_route_m": [
+                [
+                  1633.5477235608287,
+                  2473.6481505061292
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 7,
+                "distance_on_segment_m": 110.0,
+                "point": [
+                  -889.9438184514795,
+                  10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 110.0
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 75.79150855767887
+              },
+              "segment_count": 9
+            }
+          },
+          "scope": "all segments against original primitives; no nominal-spacing gate",
+          "multi_max_pairwise_ingress_heading_deg": null,
+          "heading_aim_deg_diagnostic_only": 90.0,
+          "observed_minimum_separation_m": null,
+          "observed_spacing_reason": "planning_only_no_simulation"
+        }
+      },
+      "A2": {
+        "new_ingress_issues": [
+          {
+            "slot": "0:1",
+            "phase": "ingress_line_outside_entry",
+            "start_m": [
+              -999.9438184514795,
+              10.0
+            ],
+            "end_m": [
+              -889.9438184514795,
+              10.0
+            ],
+            "code": "constraint_clearance",
+            "entity_id": "extra_ingress_blocker",
+            "clearance_m": 15.0,
+            "required_m": 35.0,
+            "kind": "obstacle"
+          }
+        ]
+      },
+      "A3": {
+        "normal_plan_checks": {
+          "status": "PASS",
+          "issues": [],
+          "members": {
+            "a0": {
+              "status": "PASS",
+              "issues": [],
+              "warning_intervals_route_m": [
+                [
+                  1562.064700503228,
+                  2402.1651274485284
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 3,
+                "distance_on_segment_m": 110.0,
+                "point": [
+                  -889.9438184514795,
+                  -10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 110.0
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 261.8584342343081
+              },
+              "segment_count": 5
+            },
+            "a1": {
+              "status": "PASS",
+              "issues": [],
+              "warning_intervals_route_m": [
+                [
+                  1562.0647005032279,
+                  2402.1651274485284
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 3,
+                "distance_on_segment_m": 105.51690017799854,
+                "point": [
+                  -889.9438184514795,
+                  10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 105.51690017799854
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 261.8584342343081
+              },
+              "segment_count": 5
+            }
+          },
+          "scope": "all segments against original primitives; no nominal-spacing gate",
+          "multi_max_pairwise_ingress_heading_deg": null,
+          "heading_aim_deg_diagnostic_only": 90.0,
+          "observed_minimum_separation_m": null,
+          "observed_spacing_reason": "planning_only_no_simulation"
+        },
+        "early_visit_plan_checks": {
+          "status": "REJECT",
+          "issues": [
+            {
+              "agent_id": "a0",
+              "code": "warning_visit_count",
+              "count": 2,
+              "required": 1,
+              "intervals_route_m": [
+                [
+                  1489.4854875816175,
+                  2589.730123292611
+                ],
+                [
+                  5641.280311377456,
+                  6481.380738322757
+                ]
+              ]
+            },
+            {
+              "agent_id": "a0",
+              "code": "pre_entry_warning_clearance",
+              "segment": 0,
+              "clearance_m": -290.0,
+              "required_m": 10.0
+            },
+            {
+              "agent_id": "a0",
+              "code": "pre_entry_warning_clearance",
+              "segment": 1,
+              "clearance_m": -290.0,
+              "required_m": 10.0
+            }
+          ],
+          "members": {
+            "a0": {
+              "status": "REJECT",
+              "issues": [
+                {
+                  "code": "warning_visit_count",
+                  "count": 2,
+                  "required": 1,
+                  "intervals_route_m": [
+                    [
+                      1489.4854875816175,
+                      2589.730123292611
+                    ],
+                    [
+                      5641.280311377456,
+                      6481.380738322757
+                    ]
+                  ]
+                },
+                {
+                  "code": "pre_entry_warning_clearance",
+                  "segment": 0,
+                  "clearance_m": -290.0,
+                  "required_m": 10.0
+                },
+                {
+                  "code": "pre_entry_warning_clearance",
+                  "segment": 1,
+                  "clearance_m": -290.0,
+                  "required_m": 10.0
+                }
+              ],
+              "warning_intervals_route_m": [
+                [
+                  1489.4854875816175,
+                  2589.730123292611
+                ],
+                [
+                  5641.280311377456,
+                  6481.380738322757
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 0,
+                "distance_on_segment_m": 1489.4854875816175,
+                "point": [
+                  -539.439314155398,
+                  707.8878628310795
+                ],
+                "direction": [
+                  0.9805806756909201,
+                  -0.19611613513818404
+                ],
+                "straight_before_warning_m": 1489.4854875816175
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 261.8584342343081
+              },
+              "segment_count": 7
+            },
+            "a1": {
+              "status": "PASS",
+              "issues": [],
+              "warning_intervals_route_m": [
+                [
+                  1562.0647005032279,
+                  2402.1651274485284
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 3,
+                "distance_on_segment_m": 105.51690017799854,
+                "point": [
+                  -889.9438184514795,
+                  10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 105.51690017799854
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 261.8584342343081
+              },
+              "segment_count": 5
+            }
+          },
+          "scope": "all segments against original primitives; no nominal-spacing gate",
+          "multi_max_pairwise_ingress_heading_deg": null,
+          "heading_aim_deg_diagnostic_only": 90.0,
+          "observed_minimum_separation_m": null,
+          "observed_spacing_reason": "planning_only_no_simulation"
+        },
+        "short_alignment_plan_checks": {
+          "status": "REJECT",
+          "issues": [
+            {
+              "agent_id": "a0",
+              "code": "alignment_length",
+              "measured_m": 90.0,
+              "required_m": 100.0
+            }
+          ],
+          "members": {
+            "a0": {
+              "status": "REJECT",
+              "issues": [
+                {
+                  "code": "alignment_length",
+                  "measured_m": 90.0,
+                  "required_m": 100.0
+                }
+              ],
+              "warning_intervals_route_m": [
+                [
+                  1561.5519663311482,
+                  2401.6523932764485
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 3,
+                "distance_on_segment_m": 90.0,
+                "point": [
+                  -889.9438184514795,
+                  -10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 90.0
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 261.8584342343081
+              },
+              "segment_count": 5
+            },
+            "a1": {
+              "status": "PASS",
+              "issues": [],
+              "warning_intervals_route_m": [
+                [
+                  1562.0647005032279,
+                  2402.1651274485284
+                ]
+              ],
+              "first_warning_entry": {
+                "segment": 3,
+                "distance_on_segment_m": 105.51690017799854,
+                "point": [
+                  -889.9438184514795,
+                  10.0
+                ],
+                "direction": [
+                  1.0,
+                  0.0
+                ],
+                "straight_before_warning_m": 105.51690017799854
+              },
+              "retreat_clearances_m": {
+                "F1_warning": 261.8584342343081
+              },
+              "segment_count": 5
+            }
+          },
+          "scope": "all segments against original primitives; no nominal-spacing gate",
+          "multi_max_pairwise_ingress_heading_deg": null,
+          "heading_aim_deg_diagnostic_only": 90.0,
+          "observed_minimum_separation_m": null,
+          "observed_spacing_reason": "planning_only_no_simulation"
+        },
+        "forbidden_entry_to_work_issues": [
+          {
+            "slot": "0:0",
+            "phase": "entry_to_work_start",
+            "start_m": [
+              -889.9438184514795,
+              -10.0
+            ],
+            "end_m": [
+              0.0,
+              0.0
+            ],
+            "code": "constraint_clearance",
+            "entity_id": "F1_alert",
+            "clearance_m": -390.0,
+            "required_m": 10.0,
+            "kind": "forbidden_layer"
+          }
+        ]
+      }
+    },
+    "fixture_development_errors": [
+      {
+        "scope": "new A1 fixture, not historical regression",
+        "attempts": [
+          "seed 1 with original northwest starts",
+          "seed 4 with original northwest starts"
+        ],
+        "result": "Original plan_checks correctly rejected the generated route: a1 approach segment 4 had obstacle clearance 15 m, below unchanged 35 m.",
+        "correction": "The test's synthetic initial positions were moved south so the exterior connector reaches the reserved line without the extra extension. Production geometry and thresholds were not altered.",
+        "note": "An initial progress message called this segment retreat; actual waypoint inspection identified it as ingress, and this record corrects that label."
+      }
+    ],
+    "method": "Original M3a 38 and M3b 47 entry lists run independently, including their overlap; all 10 F0-F4 tests and 3 new F2b tests run. The existing ingress-start assertion is updated only from -150 to -100 to match the explicitly approved new formula. No skips or deleted tests."
+  },
+  "fixed_proposals": {
+    "status": "NOT_RUN",
+    "reason": "Performed separately after deterministic regressions"
+  }
+}

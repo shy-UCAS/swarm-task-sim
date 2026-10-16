@@ -23,7 +23,7 @@ class ShapeConnectionRegressionTests(unittest.TestCase):
         slot={"split_index":0,"slot_id":"0:0","entry":[0.,0.],"direction":[1.,0.],"work":[[200.,0.]]}
         with patch.object(free,"segment_issues",side_effect=[[],[{"code":"constraint_clearance","entity_id":"neighbor_alert"}]]) as check:
             issues=ingress_issues(spec,free,[slot])
-        np.testing.assert_array_equal(check.call_args_list[0].args[0],[-150.,0.])
+        np.testing.assert_array_equal(check.call_args_list[0].args[0],[-100.,0.])
         np.testing.assert_array_equal(check.call_args_list[1].args[1],[200.,0.])
         self.assertEqual(issues[0]["phase"],"entry_to_work_start")
 
