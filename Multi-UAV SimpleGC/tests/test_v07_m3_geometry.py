@@ -72,6 +72,9 @@ class ConnectionTests(unittest.TestCase):
         lane = offset_lane([[0., 0.], [100., 0.], [100., 100.]], -20.)
         np.testing.assert_allclose(lane[-1], [120., 100.])
         self.assertTrue(all(np.linalg.norm(b-a) >= 1. for a, b in zip(lane, lane[1:])))
+        short_arc_lane = offset_lane([[0., 0.], [100., 0.], [200., 5.]], -10.)
+        self.assertEqual(len(short_arc_lane), 3)
+        self.assertTrue(all(np.linalg.norm(b-a) >= 1. for a, b in zip(short_arc_lane, short_arc_lane[1:])))
 
     def test_G7_shared_connection_has_truthful_metadata(self):
         scene, d, g = request(); spec = build_spec(d, g); free = free_space(scene, spec)

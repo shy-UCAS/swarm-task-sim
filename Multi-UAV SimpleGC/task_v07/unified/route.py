@@ -39,7 +39,8 @@ def clean_joints(points):
                 break
         result.append(point)
     if len(result) < 2 or np.any(np.linalg.norm(np.diff(result, axis=0), axis=1) < 1.-TOL):
-        raise GeometryRejected("sub_metre_semantic_join")
+        raise GeometryRejected("sub_metre_semantic_join", [{"points": [p.tolist() for p in result],
+            "segment_lengths_m": np.linalg.norm(np.diff(result, axis=0), axis=1).tolist()}])
     return result
 
 
@@ -65,7 +66,14 @@ def offset_lane(points, offset, error=1.):
         else:
             begin = math.atan2(offset*normals[i-1, 1], offset*normals[i-1, 0])
             sweep = math.atan2(cross, cosine)
-            joints.append(arc_points(points[i], abs(offset), begin, sweep, error))
+            # A sub-metre outer arc cannot export both endpoints. Its tangent
+            # intersection retains the connector turn with bounded arc error;
+            # work-shape bends are never processed by this lane discretizer.
+            tangent_error = abs(offset)*(1/math.cos(abs(sweep)/2)-1)
+            if 2*abs(offset)*math.sin(abs(sweep)/2) < 1. and tangent_error <= error:
+                joints.append([points[i]+offset*(normals[i-1]+normals[i])/(1.+cosine)])
+            else:
+                joints.append(arc_points(points[i], abs(offset), begin, sweep, error))
     joints.append([points[-1]+offset*normals[-1]])
     for i, direction in enumerate(directions):
         if float((joints[i+1][0]-joints[i][-1]) @ direction) < 1.:
@@ -170,7 +178,8 @@ def route_group(scene, spec, shape, free, initial_states, rng):
             template = {"planning_version": "v07_m3a_unified_geometry_r1", "geometry_seed": spec["geometry_seed"],
                 "references": references, "source_units": spec["source_units"], "common_slot": spec["common_slot"],
                 "retreat_warning_minimum_m": minimum, "work_area_bearing_deg": bearing,
-                "public_approach_shape": spec["public_split"], "geometry_provenance": {"shape": shape["draw"],
+                "public_approach_shape": spec["public_split"], "formation_split": spec["public_split"],
+                "geometry_provenance": {"shape": shape["draw"],
                     "connection_attempt": attempt, "collection_clearance_m": collection, "retreat_clearance_m": retreat,
                     "connection_rejections": failures}, "approach_length_m": cost}
             return RouteBundle(routes, {a: 0. for a in spec["members"]}), template
