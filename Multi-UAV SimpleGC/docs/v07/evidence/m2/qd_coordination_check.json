@@ -1,0 +1,4065 @@
+{
+  "status": "PASS",
+  "baseline_commit": "bb7670b",
+  "baseline_full_sha": "bb7670be238d9e52639ef5d91fca0aca24219dee",
+  "source_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z",
+  "scope": {
+    "generated_episodes": 16,
+    "successful_skeleton_pairs": 8,
+    "rejected_skeletons": 2,
+    "simulation_runs": 0,
+    "operation": "read-only measured timing, strict eligibility and official views"
+  },
+  "counts": {
+    "input_records": 20,
+    "generated_episodes": 16,
+    "strict_pairs_passed": 8,
+    "strict_pairs_failed": 0,
+    "task_groups_total": 28,
+    "task_groups_checked": 28,
+    "episodes_consistent": 16,
+    "sequential_groups_checked": 14,
+    "sequential_groups_batch_consistent": 14,
+    "sequential_episodes_batch_consistent": 8,
+    "registered_skeletons": 10,
+    "rejected_skeletons": 2
+  },
+  "method": {
+    "event_source": "labels.agents[agent_id].observed.core_event.t_s",
+    "member_source": "labels.task_groups[group_id].assigned.members",
+    "assignment_sources": [
+      "assigned.planned_batches",
+      "assigned.timing.batch_by_agent"
+    ],
+    "independent_coordination": true,
+    "production_coordination_called": false,
+    "sync_span_max_s": 10,
+    "new_batch_adjacent_gap_strictly_greater_than_s": 20,
+    "tie_break": "agent_id ascending",
+    "within_batch_member_representation": "agent_id ascending",
+    "arithmetic": "Decimal(str(actual t_s)); no tolerance or altered thresholds; saved spans compared at existing 6 decimal precision",
+    "classification_rule": "all events known; synchronous if total span <=10; else sequential if >=2 batches and all batch spans <=10; otherwise invalid",
+    "interbatch_gap": "next batch minimum actual event minus previous batch maximum actual event",
+    "official_calls": [
+      "views._paired(original rows)",
+      "views.make_views(all 20 original records)"
+    ],
+    "fail_fast": true
+  },
+  "prechecks": {
+    "git": {
+      "branch": "v07-scene",
+      "head": "bb7670be238d9e52639ef5d91fca0aca24219dee",
+      "clean": true
+    },
+    "inventory": {
+      "registered": 10,
+      "paired_skeletons": 8,
+      "rejected_skeletons": 2,
+      "generated_episodes_with_records_metrics_labels": 16,
+      "passed": true
+    }
+  },
+  "episode_checks": [
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_001_regular_sequential",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_001_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 758.7,
+            "uav_02": 756.5,
+            "uav_03": 829.7,
+            "uav_04": 756.2,
+            "uav_05": 883.0,
+            "uav_06": 882.9,
+            "uav_07": 880.2
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_04": 0,
+            "uav_01": 0,
+            "uav_03": 1,
+            "uav_05": 2,
+            "uav_07": 2,
+            "uav_06": 2
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_04"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_03"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_05",
+                "uav_06",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 758.7,
+              "uav_02": 756.5,
+              "uav_03": 829.7,
+              "uav_04": 756.2,
+              "uav_05": 883.0,
+              "uav_06": 882.9,
+              "uav_07": 880.2
+            },
+            "event_range_s": 126.8,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_04"
+                ],
+                "start_s": 756.2,
+                "end_s": 758.7,
+                "span_s": 2.5
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_03"
+                ],
+                "start_s": 829.7,
+                "end_s": 829.7,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_05",
+                  "uav_06",
+                  "uav_07"
+                ],
+                "start_s": 880.2,
+                "end_s": 883.0,
+                "span_s": 2.8
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_04",
+              "uav_02",
+              "uav_01",
+              "uav_03",
+              "uav_07",
+              "uav_06",
+              "uav_05"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              2.5,
+              0.0,
+              2.8
+            ],
+            "observed_min_interbatch_gap_s": 50.5,
+            "observed_interbatch_gaps_s": [
+              71.0,
+              50.5
+            ]
+          },
+          "observed_batch_count": 3,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_02",
+              "uav_04"
+            ],
+            [
+              "uav_03"
+            ],
+            [
+              "uav_05",
+              "uav_06",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_001_regular_synchronous",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_001_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 756.7,
+            "uav_02": 753.7,
+            "uav_03": 759.1,
+            "uav_04": 756.3,
+            "uav_05": 758.7,
+            "uav_06": 757.1,
+            "uav_07": 754.6
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_03": 0,
+            "uav_04": 0,
+            "uav_05": 0,
+            "uav_06": 0,
+            "uav_07": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_03",
+                "uav_04",
+                "uav_05",
+                "uav_06",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 756.7,
+              "uav_02": 753.7,
+              "uav_03": 759.1,
+              "uav_04": 756.3,
+              "uav_05": 758.7,
+              "uav_06": 757.1,
+              "uav_07": 754.6
+            },
+            "event_range_s": 5.4,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_03",
+                  "uav_04",
+                  "uav_05",
+                  "uav_06",
+                  "uav_07"
+                ],
+                "start_s": 753.7,
+                "end_s": 759.1,
+                "span_s": 5.4
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_07",
+              "uav_04",
+              "uav_01",
+              "uav_06",
+              "uav_05",
+              "uav_03"
+            ],
+            "observed_sync_span_s": 5.4,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_02",
+              "uav_03",
+              "uav_04",
+              "uav_05",
+              "uav_06",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_003_regular_sequential",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_003_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 1012.5,
+            "uav_02": 1009.3,
+            "uav_03": 861.6,
+            "uav_04": 945.5,
+            "uav_05": 857.8,
+            "uav_06": 860.8,
+            "uav_07": 1012.4
+          },
+          "assigned_batch_by_agent": {
+            "uav_06": 0,
+            "uav_03": 0,
+            "uav_05": 0,
+            "uav_04": 1,
+            "uav_02": 2,
+            "uav_01": 2,
+            "uav_07": 2
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_03",
+                "uav_05",
+                "uav_06"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_04"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 1012.5,
+              "uav_02": 1009.3,
+              "uav_03": 861.6,
+              "uav_04": 945.5,
+              "uav_05": 857.8,
+              "uav_06": 860.8,
+              "uav_07": 1012.4
+            },
+            "event_range_s": 154.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_03",
+                  "uav_05",
+                  "uav_06"
+                ],
+                "start_s": 857.8,
+                "end_s": 861.6,
+                "span_s": 3.8
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 945.5,
+                "end_s": 945.5,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_07"
+                ],
+                "start_s": 1009.3,
+                "end_s": 1012.5,
+                "span_s": 3.2
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_05",
+              "uav_06",
+              "uav_03",
+              "uav_04",
+              "uav_02",
+              "uav_07",
+              "uav_01"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              3.8,
+              0.0,
+              3.2
+            ],
+            "observed_min_interbatch_gap_s": 63.8,
+            "observed_interbatch_gaps_s": [
+              83.9,
+              63.8
+            ]
+          },
+          "observed_batch_count": 3,
+          "observed_batch_members": [
+            [
+              "uav_03",
+              "uav_05",
+              "uav_06"
+            ],
+            [
+              "uav_04"
+            ],
+            [
+              "uav_01",
+              "uav_02",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_003_regular_synchronous",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_003_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 856.9,
+            "uav_02": 859.8,
+            "uav_03": 856.5,
+            "uav_04": 857.2,
+            "uav_05": 856.8,
+            "uav_06": 857.5,
+            "uav_07": 856.0
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_03": 0,
+            "uav_04": 0,
+            "uav_05": 0,
+            "uav_06": 0,
+            "uav_07": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_03",
+                "uav_04",
+                "uav_05",
+                "uav_06",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 856.9,
+              "uav_02": 859.8,
+              "uav_03": 856.5,
+              "uav_04": 857.2,
+              "uav_05": 856.8,
+              "uav_06": 857.5,
+              "uav_07": 856.0
+            },
+            "event_range_s": 3.8,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_03",
+                  "uav_04",
+                  "uav_05",
+                  "uav_06",
+                  "uav_07"
+                ],
+                "start_s": 856.0,
+                "end_s": 859.8,
+                "span_s": 3.8
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_07",
+              "uav_03",
+              "uav_05",
+              "uav_01",
+              "uav_04",
+              "uav_06",
+              "uav_02"
+            ],
+            "observed_sync_span_s": 3.8,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_02",
+              "uav_03",
+              "uav_04",
+              "uav_05",
+              "uav_06",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_004_regular_sequential",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_004_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_02": 917.3,
+            "uav_03": 1036.9,
+            "uav_04": 979.4,
+            "uav_05": 1170.3,
+            "uav_07": 1088.9
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_04": 1,
+            "uav_03": 2,
+            "uav_07": 3,
+            "uav_05": 4
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_04"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_03"
+              ]
+            },
+            {
+              "batch_index": 3,
+              "members": [
+                "uav_07"
+              ]
+            },
+            {
+              "batch_index": 4,
+              "members": [
+                "uav_05"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_02": 917.3,
+              "uav_03": 1036.9,
+              "uav_04": 979.4,
+              "uav_05": 1170.3,
+              "uav_07": 1088.9
+            },
+            "event_range_s": 253.0,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02"
+                ],
+                "start_s": 917.3,
+                "end_s": 917.3,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 979.4,
+                "end_s": 979.4,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_03"
+                ],
+                "start_s": 1036.9,
+                "end_s": 1036.9,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 3,
+                "members": [
+                  "uav_07"
+                ],
+                "start_s": 1088.9,
+                "end_s": 1088.9,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 4,
+                "members": [
+                  "uav_05"
+                ],
+                "start_s": 1170.3,
+                "end_s": 1170.3,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_04",
+              "uav_03",
+              "uav_07",
+              "uav_05"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 52.0,
+            "observed_interbatch_gaps_s": [
+              62.1,
+              57.5,
+              52.0,
+              81.4
+            ]
+          },
+          "observed_batch_count": 5,
+          "observed_batch_members": [
+            [
+              "uav_02"
+            ],
+            [
+              "uav_04"
+            ],
+            [
+              "uav_03"
+            ],
+            [
+              "uav_07"
+            ],
+            [
+              "uav_05"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_01",
+            "uav_06"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 624.3,
+            "uav_06": 546.6
+          },
+          "assigned_batch_by_agent": {
+            "uav_06": 0,
+            "uav_01": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_06"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_01"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 624.3,
+              "uav_06": 546.6
+            },
+            "event_range_s": 77.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_06"
+                ],
+                "start_s": 546.6,
+                "end_s": 546.6,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_01"
+                ],
+                "start_s": 624.3,
+                "end_s": 624.3,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_06",
+              "uav_01"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 77.7,
+            "observed_interbatch_gaps_s": [
+              77.7
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_06"
+            ],
+            [
+              "uav_01"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_004_regular_synchronous",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_004_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_02": 919.5,
+            "uav_03": 919.3,
+            "uav_04": 918.3,
+            "uav_05": 922.0,
+            "uav_07": 918.4
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_03": 0,
+            "uav_04": 0,
+            "uav_05": 0,
+            "uav_07": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02",
+                "uav_03",
+                "uav_04",
+                "uav_05",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_02": 919.5,
+              "uav_03": 919.3,
+              "uav_04": 918.3,
+              "uav_05": 922.0,
+              "uav_07": 918.4
+            },
+            "event_range_s": 3.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02",
+                  "uav_03",
+                  "uav_04",
+                  "uav_05",
+                  "uav_07"
+                ],
+                "start_s": 918.3,
+                "end_s": 922.0,
+                "span_s": 3.7
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_04",
+              "uav_07",
+              "uav_03",
+              "uav_02",
+              "uav_05"
+            ],
+            "observed_sync_span_s": 3.7,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_02",
+              "uav_03",
+              "uav_04",
+              "uav_05",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_01",
+            "uav_06"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 546.2,
+            "uav_06": 548.9
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_06": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_06"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 546.2,
+              "uav_06": 548.9
+            },
+            "event_range_s": 2.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_06"
+                ],
+                "start_s": 546.2,
+                "end_s": 548.9,
+                "span_s": 2.7
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_01",
+              "uav_06"
+            ],
+            "observed_sync_span_s": 2.7,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_06"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_008_regular_sequential",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_008_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_02",
+            "uav_04"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_02": 920.7,
+            "uav_04": 1007.6
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_04": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_04"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_02": 920.7,
+              "uav_04": 1007.6
+            },
+            "event_range_s": 86.9,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02"
+                ],
+                "start_s": 920.7,
+                "end_s": 920.7,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 1007.6,
+                "end_s": 1007.6,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_04"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 86.9,
+            "observed_interbatch_gaps_s": [
+              86.9
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_02"
+            ],
+            [
+              "uav_04"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_01",
+            "uav_03",
+            "uav_05",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 863.1,
+            "uav_03": 863.1,
+            "uav_05": 943.8,
+            "uav_06": 866.6,
+            "uav_07": 862.8
+          },
+          "assigned_batch_by_agent": {
+            "uav_06": 0,
+            "uav_07": 0,
+            "uav_01": 0,
+            "uav_03": 0,
+            "uav_05": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_03",
+                "uav_06",
+                "uav_07"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_05"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 863.1,
+              "uav_03": 863.1,
+              "uav_05": 943.8,
+              "uav_06": 866.6,
+              "uav_07": 862.8
+            },
+            "event_range_s": 81.0,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_03",
+                  "uav_06",
+                  "uav_07"
+                ],
+                "start_s": 862.8,
+                "end_s": 866.6,
+                "span_s": 3.8
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_05"
+                ],
+                "start_s": 943.8,
+                "end_s": 943.8,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_07",
+              "uav_01",
+              "uav_03",
+              "uav_06",
+              "uav_05"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              3.8,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 77.2,
+            "observed_interbatch_gaps_s": [
+              77.2
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_03",
+              "uav_06",
+              "uav_07"
+            ],
+            [
+              "uav_05"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_008_regular_synchronous",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_008_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_02",
+            "uav_04"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_02": 920.9,
+            "uav_04": 920.1
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_04": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02",
+                "uav_04"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_02": 920.9,
+              "uav_04": 920.1
+            },
+            "event_range_s": 0.8,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02",
+                  "uav_04"
+                ],
+                "start_s": 920.1,
+                "end_s": 920.9,
+                "span_s": 0.8
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_04",
+              "uav_02"
+            ],
+            "observed_sync_span_s": 0.8,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_02",
+              "uav_04"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_01",
+            "uav_03",
+            "uav_05",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 864.5,
+            "uav_03": 863.8,
+            "uav_05": 867.3,
+            "uav_06": 867.4,
+            "uav_07": 866.4
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_03": 0,
+            "uav_05": 0,
+            "uav_06": 0,
+            "uav_07": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_03",
+                "uav_05",
+                "uav_06",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 864.5,
+              "uav_03": 863.8,
+              "uav_05": 867.3,
+              "uav_06": 867.4,
+              "uav_07": 866.4
+            },
+            "event_range_s": 3.6,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_03",
+                  "uav_05",
+                  "uav_06",
+                  "uav_07"
+                ],
+                "start_s": 863.8,
+                "end_s": 867.4,
+                "span_s": 3.6
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_03",
+              "uav_01",
+              "uav_07",
+              "uav_05",
+              "uav_06"
+            ],
+            "observed_sync_span_s": 3.6,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_03",
+              "uav_05",
+              "uav_06",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_009_regular_sequential",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_009_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_02",
+            "uav_04"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_02": 905.2,
+            "uav_04": 987.7
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_04": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_04"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_02": 905.2,
+              "uav_04": 987.7
+            },
+            "event_range_s": 82.5,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02"
+                ],
+                "start_s": 905.2,
+                "end_s": 905.2,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 987.7,
+                "end_s": 987.7,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_04"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 82.5,
+            "observed_interbatch_gaps_s": [
+              82.5
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_02"
+            ],
+            [
+              "uav_04"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_01",
+            "uav_05"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 860.7,
+            "uav_05": 792.6
+          },
+          "assigned_batch_by_agent": {
+            "uav_05": 0,
+            "uav_01": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_05"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_01"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 860.7,
+              "uav_05": 792.6
+            },
+            "event_range_s": 68.1,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_05"
+                ],
+                "start_s": 792.6,
+                "end_s": 792.6,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_01"
+                ],
+                "start_s": 860.7,
+                "end_s": 860.7,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_05",
+              "uav_01"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 68.1,
+            "observed_interbatch_gaps_s": [
+              68.1
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_05"
+            ],
+            [
+              "uav_01"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_03",
+          "members": [
+            "uav_03",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_03": 816.0,
+            "uav_06": 817.9,
+            "uav_07": 772.5
+          },
+          "assigned_batch_by_agent": {
+            "uav_07": 0,
+            "uav_06": 1,
+            "uav_03": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_07"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_03",
+                "uav_06"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_03": 816.0,
+              "uav_06": 817.9,
+              "uav_07": 772.5
+            },
+            "event_range_s": 45.4,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_07"
+                ],
+                "start_s": 772.5,
+                "end_s": 772.5,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_03",
+                  "uav_06"
+                ],
+                "start_s": 816.0,
+                "end_s": 817.9,
+                "span_s": 1.9
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_07",
+              "uav_03",
+              "uav_06"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              1.9
+            ],
+            "observed_min_interbatch_gap_s": 43.5,
+            "observed_interbatch_gaps_s": [
+              43.5
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_07"
+            ],
+            [
+              "uav_03",
+              "uav_06"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_4d13d93f9171c446_ext_009_regular_synchronous",
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_009_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_02",
+            "uav_04"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_02": 905.3,
+            "uav_04": 906.9
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_04": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02",
+                "uav_04"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_02": 905.3,
+              "uav_04": 906.9
+            },
+            "event_range_s": 1.6,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02",
+                  "uav_04"
+                ],
+                "start_s": 905.3,
+                "end_s": 906.9,
+                "span_s": 1.6
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_04"
+            ],
+            "observed_sync_span_s": 1.6,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_02",
+              "uav_04"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_01",
+            "uav_05"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 797.8,
+            "uav_05": 797.1
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_05": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_05"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 797.8,
+              "uav_05": 797.1
+            },
+            "event_range_s": 0.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_05"
+                ],
+                "start_s": 797.1,
+                "end_s": 797.8,
+                "span_s": 0.7
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_05",
+              "uav_01"
+            ],
+            "observed_sync_span_s": 0.7,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_05"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_03",
+          "members": [
+            "uav_03",
+            "uav_06",
+            "uav_07"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_03": 770.0,
+            "uav_06": 771.4,
+            "uav_07": 771.7
+          },
+          "assigned_batch_by_agent": {
+            "uav_03": 0,
+            "uav_06": 0,
+            "uav_07": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_03",
+                "uav_06",
+                "uav_07"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_03": 770.0,
+              "uav_06": 771.4,
+              "uav_07": 771.7
+            },
+            "event_range_s": 1.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_03",
+                  "uav_06",
+                  "uav_07"
+                ],
+                "start_s": 770.0,
+                "end_s": 771.7,
+                "span_s": 1.7
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_03",
+              "uav_06",
+              "uav_07"
+            ],
+            "observed_sync_span_s": 1.7,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_03",
+              "uav_06",
+              "uav_07"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_5024cb2ccea653ae_ext_000_regular_sequential",
+      "family_id": "family_s12_5024cb2ccea653ae",
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_05",
+            "uav_06",
+            "uav_07",
+            "uav_08",
+            "uav_10",
+            "uav_11"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 1154.0,
+            "uav_02": 998.1,
+            "uav_05": 1363.6,
+            "uav_06": 1498.7,
+            "uav_07": 1068.3,
+            "uav_08": 1314.4,
+            "uav_10": 1411.0,
+            "uav_11": 1242.9
+          },
+          "assigned_batch_by_agent": {
+            "uav_02": 0,
+            "uav_07": 1,
+            "uav_01": 2,
+            "uav_11": 3,
+            "uav_08": 4,
+            "uav_05": 5,
+            "uav_10": 6,
+            "uav_06": 7
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_02"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_07"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_01"
+              ]
+            },
+            {
+              "batch_index": 3,
+              "members": [
+                "uav_11"
+              ]
+            },
+            {
+              "batch_index": 4,
+              "members": [
+                "uav_08"
+              ]
+            },
+            {
+              "batch_index": 5,
+              "members": [
+                "uav_05"
+              ]
+            },
+            {
+              "batch_index": 6,
+              "members": [
+                "uav_10"
+              ]
+            },
+            {
+              "batch_index": 7,
+              "members": [
+                "uav_06"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 1154.0,
+              "uav_02": 998.1,
+              "uav_05": 1363.6,
+              "uav_06": 1498.7,
+              "uav_07": 1068.3,
+              "uav_08": 1314.4,
+              "uav_10": 1411.0,
+              "uav_11": 1242.9
+            },
+            "event_range_s": 500.6,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_02"
+                ],
+                "start_s": 998.1,
+                "end_s": 998.1,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_07"
+                ],
+                "start_s": 1068.3,
+                "end_s": 1068.3,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_01"
+                ],
+                "start_s": 1154.0,
+                "end_s": 1154.0,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 3,
+                "members": [
+                  "uav_11"
+                ],
+                "start_s": 1242.9,
+                "end_s": 1242.9,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 4,
+                "members": [
+                  "uav_08"
+                ],
+                "start_s": 1314.4,
+                "end_s": 1314.4,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 5,
+                "members": [
+                  "uav_05"
+                ],
+                "start_s": 1363.6,
+                "end_s": 1363.6,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 6,
+                "members": [
+                  "uav_10"
+                ],
+                "start_s": 1411.0,
+                "end_s": 1411.0,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 7,
+                "members": [
+                  "uav_06"
+                ],
+                "start_s": 1498.7,
+                "end_s": 1498.7,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_07",
+              "uav_01",
+              "uav_11",
+              "uav_08",
+              "uav_05",
+              "uav_10",
+              "uav_06"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 47.4,
+            "observed_interbatch_gaps_s": [
+              70.2,
+              85.7,
+              88.9,
+              71.5,
+              49.2,
+              47.4,
+              87.7
+            ]
+          },
+          "observed_batch_count": 8,
+          "observed_batch_members": [
+            [
+              "uav_02"
+            ],
+            [
+              "uav_07"
+            ],
+            [
+              "uav_01"
+            ],
+            [
+              "uav_11"
+            ],
+            [
+              "uav_08"
+            ],
+            [
+              "uav_05"
+            ],
+            [
+              "uav_10"
+            ],
+            [
+              "uav_06"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_03",
+            "uav_04",
+            "uav_09"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_03": 835.1,
+            "uav_04": 902.5,
+            "uav_09": 993.3
+          },
+          "assigned_batch_by_agent": {
+            "uav_03": 0,
+            "uav_04": 1,
+            "uav_09": 2
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_03"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_04"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_09"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_03": 835.1,
+              "uav_04": 902.5,
+              "uav_09": 993.3
+            },
+            "event_range_s": 158.2,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_03"
+                ],
+                "start_s": 835.1,
+                "end_s": 835.1,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 902.5,
+                "end_s": 902.5,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_09"
+                ],
+                "start_s": 993.3,
+                "end_s": 993.3,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_03",
+              "uav_04",
+              "uav_09"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 67.4,
+            "observed_interbatch_gaps_s": [
+              67.4,
+              90.8
+            ]
+          },
+          "observed_batch_count": 3,
+          "observed_batch_members": [
+            [
+              "uav_03"
+            ],
+            [
+              "uav_04"
+            ],
+            [
+              "uav_09"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_5024cb2ccea653ae_ext_000_regular_synchronous",
+      "family_id": "family_s12_5024cb2ccea653ae",
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_05",
+            "uav_06",
+            "uav_07",
+            "uav_08",
+            "uav_10",
+            "uav_11"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 998.6,
+            "uav_02": 998.4,
+            "uav_05": 995.5,
+            "uav_06": 1000.2,
+            "uav_07": 997.6,
+            "uav_08": 995.8,
+            "uav_10": 997.0,
+            "uav_11": 999.6
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_05": 0,
+            "uav_06": 0,
+            "uav_07": 0,
+            "uav_08": 0,
+            "uav_10": 0,
+            "uav_11": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_05",
+                "uav_06",
+                "uav_07",
+                "uav_08",
+                "uav_10",
+                "uav_11"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 998.6,
+              "uav_02": 998.4,
+              "uav_05": 995.5,
+              "uav_06": 1000.2,
+              "uav_07": 997.6,
+              "uav_08": 995.8,
+              "uav_10": 997.0,
+              "uav_11": 999.6
+            },
+            "event_range_s": 4.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_05",
+                  "uav_06",
+                  "uav_07",
+                  "uav_08",
+                  "uav_10",
+                  "uav_11"
+                ],
+                "start_s": 995.5,
+                "end_s": 1000.2,
+                "span_s": 4.7
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_05",
+              "uav_08",
+              "uav_10",
+              "uav_07",
+              "uav_02",
+              "uav_01",
+              "uav_11",
+              "uav_06"
+            ],
+            "observed_sync_span_s": 4.7,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_02",
+              "uav_05",
+              "uav_06",
+              "uav_07",
+              "uav_08",
+              "uav_10",
+              "uav_11"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_03",
+            "uav_04",
+            "uav_09"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_03": 832.2,
+            "uav_04": 831.5,
+            "uav_09": 831.9
+          },
+          "assigned_batch_by_agent": {
+            "uav_03": 0,
+            "uav_04": 0,
+            "uav_09": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_03",
+                "uav_04",
+                "uav_09"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_03": 832.2,
+              "uav_04": 831.5,
+              "uav_09": 831.9
+            },
+            "event_range_s": 0.7,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_03",
+                  "uav_04",
+                  "uav_09"
+                ],
+                "start_s": 831.5,
+                "end_s": 832.2,
+                "span_s": 0.7
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_04",
+              "uav_09",
+              "uav_03"
+            ],
+            "observed_sync_span_s": 0.7,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_03",
+              "uav_04",
+              "uav_09"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_5024cb2ccea653ae_ext_002_regular_sequential",
+      "family_id": "family_s12_5024cb2ccea653ae",
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_002_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_05",
+            "uav_06",
+            "uav_07",
+            "uav_08",
+            "uav_10",
+            "uav_11"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 1117.6,
+            "uav_02": 1112.7,
+            "uav_05": 961.0,
+            "uav_06": 1041.6,
+            "uav_07": 1113.8,
+            "uav_08": 1043.0,
+            "uav_10": 1040.1,
+            "uav_11": 1114.0
+          },
+          "assigned_batch_by_agent": {
+            "uav_05": 0,
+            "uav_10": 1,
+            "uav_06": 1,
+            "uav_08": 1,
+            "uav_01": 2,
+            "uav_07": 2,
+            "uav_11": 2,
+            "uav_02": 2
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_05"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_06",
+                "uav_08",
+                "uav_10"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_07",
+                "uav_11"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 1117.6,
+              "uav_02": 1112.7,
+              "uav_05": 961.0,
+              "uav_06": 1041.6,
+              "uav_07": 1113.8,
+              "uav_08": 1043.0,
+              "uav_10": 1040.1,
+              "uav_11": 1114.0
+            },
+            "event_range_s": 156.6,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_05"
+                ],
+                "start_s": 961.0,
+                "end_s": 961.0,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_06",
+                  "uav_08",
+                  "uav_10"
+                ],
+                "start_s": 1040.1,
+                "end_s": 1043.0,
+                "span_s": 2.9
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_07",
+                  "uav_11"
+                ],
+                "start_s": 1112.7,
+                "end_s": 1117.6,
+                "span_s": 4.9
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_05",
+              "uav_10",
+              "uav_06",
+              "uav_08",
+              "uav_02",
+              "uav_07",
+              "uav_11",
+              "uav_01"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              2.9,
+              4.9
+            ],
+            "observed_min_interbatch_gap_s": 69.7,
+            "observed_interbatch_gaps_s": [
+              79.1,
+              69.7
+            ]
+          },
+          "observed_batch_count": 3,
+          "observed_batch_members": [
+            [
+              "uav_05"
+            ],
+            [
+              "uav_06",
+              "uav_08",
+              "uav_10"
+            ],
+            [
+              "uav_01",
+              "uav_02",
+              "uav_07",
+              "uav_11"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_03",
+            "uav_04",
+            "uav_09"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_03": 1075.8,
+            "uav_04": 987.0,
+            "uav_09": 1072.5
+          },
+          "assigned_batch_by_agent": {
+            "uav_04": 0,
+            "uav_03": 1,
+            "uav_09": 1
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_04"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_03",
+                "uav_09"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_03": 1075.8,
+              "uav_04": 987.0,
+              "uav_09": 1072.5
+            },
+            "event_range_s": 88.8,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 987.0,
+                "end_s": 987.0,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_03",
+                  "uav_09"
+                ],
+                "start_s": 1072.5,
+                "end_s": 1075.8,
+                "span_s": 3.3
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_04",
+              "uav_09",
+              "uav_03"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              0.0,
+              3.3
+            ],
+            "observed_min_interbatch_gap_s": 85.5,
+            "observed_interbatch_gaps_s": [
+              85.5
+            ]
+          },
+          "observed_batch_count": 2,
+          "observed_batch_members": [
+            [
+              "uav_04"
+            ],
+            [
+              "uav_03",
+              "uav_09"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_5024cb2ccea653ae_ext_002_regular_synchronous",
+      "family_id": "family_s12_5024cb2ccea653ae",
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_002_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_05",
+            "uav_06",
+            "uav_07",
+            "uav_08",
+            "uav_10",
+            "uav_11"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 962.7,
+            "uav_02": 960.7,
+            "uav_05": 961.7,
+            "uav_06": 960.7,
+            "uav_07": 961.3,
+            "uav_08": 964.4,
+            "uav_10": 966.0,
+            "uav_11": 961.0
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_05": 0,
+            "uav_06": 0,
+            "uav_07": 0,
+            "uav_08": 0,
+            "uav_10": 0,
+            "uav_11": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_05",
+                "uav_06",
+                "uav_07",
+                "uav_08",
+                "uav_10",
+                "uav_11"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 962.7,
+              "uav_02": 960.7,
+              "uav_05": 961.7,
+              "uav_06": 960.7,
+              "uav_07": 961.3,
+              "uav_08": 964.4,
+              "uav_10": 966.0,
+              "uav_11": 961.0
+            },
+            "event_range_s": 5.3,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_05",
+                  "uav_06",
+                  "uav_07",
+                  "uav_08",
+                  "uav_10",
+                  "uav_11"
+                ],
+                "start_s": 960.7,
+                "end_s": 966.0,
+                "span_s": 5.3
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_02",
+              "uav_06",
+              "uav_11",
+              "uav_07",
+              "uav_05",
+              "uav_01",
+              "uav_08",
+              "uav_10"
+            ],
+            "observed_sync_span_s": 5.3,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_02",
+              "uav_05",
+              "uav_06",
+              "uav_07",
+              "uav_08",
+              "uav_10",
+              "uav_11"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        },
+        {
+          "group_id": "task_group_02",
+          "members": [
+            "uav_03",
+            "uav_04",
+            "uav_09"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_03": 987.2,
+            "uav_04": 990.7,
+            "uav_09": 985.4
+          },
+          "assigned_batch_by_agent": {
+            "uav_03": 0,
+            "uav_04": 0,
+            "uav_09": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_03",
+                "uav_04",
+                "uav_09"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_03": 987.2,
+              "uav_04": 990.7,
+              "uav_09": 985.4
+            },
+            "event_range_s": 5.3,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_03",
+                  "uav_04",
+                  "uav_09"
+                ],
+                "start_s": 985.4,
+                "end_s": 990.7,
+                "span_s": 5.3
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_09",
+              "uav_03",
+              "uav_04"
+            ],
+            "observed_sync_span_s": 5.3,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_03",
+              "uav_04",
+              "uav_09"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_f2adfbfae12fbbad_ext_000_regular_sequential",
+      "family_id": "family_s12_f2adfbfae12fbbad",
+      "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+      "mode": "sequential",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_06",
+            "uav_07",
+            "uav_08",
+            "uav_09"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 576.4,
+            "uav_02": 647.8,
+            "uav_03": 690.1,
+            "uav_04": 832.9,
+            "uav_05": 691.9,
+            "uav_06": 922.9,
+            "uav_07": 576.3,
+            "uav_08": 575.1,
+            "uav_09": 772.7
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_08": 0,
+            "uav_07": 0,
+            "uav_02": 1,
+            "uav_05": 2,
+            "uav_03": 2,
+            "uav_09": 3,
+            "uav_04": 4,
+            "uav_06": 5
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_07",
+                "uav_08"
+              ]
+            },
+            {
+              "batch_index": 1,
+              "members": [
+                "uav_02"
+              ]
+            },
+            {
+              "batch_index": 2,
+              "members": [
+                "uav_03",
+                "uav_05"
+              ]
+            },
+            {
+              "batch_index": 3,
+              "members": [
+                "uav_09"
+              ]
+            },
+            {
+              "batch_index": 4,
+              "members": [
+                "uav_04"
+              ]
+            },
+            {
+              "batch_index": 5,
+              "members": [
+                "uav_06"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "sequential",
+            "event_times_s": {
+              "uav_01": 576.4,
+              "uav_02": 647.8,
+              "uav_03": 690.1,
+              "uav_04": 832.9,
+              "uav_05": 691.9,
+              "uav_06": 922.9,
+              "uav_07": 576.3,
+              "uav_08": 575.1,
+              "uav_09": 772.7
+            },
+            "event_range_s": 347.8,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_07",
+                  "uav_08"
+                ],
+                "start_s": 575.1,
+                "end_s": 576.4,
+                "span_s": 1.3
+              },
+              {
+                "batch_index": 1,
+                "members": [
+                  "uav_02"
+                ],
+                "start_s": 647.8,
+                "end_s": 647.8,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 2,
+                "members": [
+                  "uav_03",
+                  "uav_05"
+                ],
+                "start_s": 690.1,
+                "end_s": 691.9,
+                "span_s": 1.8
+              },
+              {
+                "batch_index": 3,
+                "members": [
+                  "uav_09"
+                ],
+                "start_s": 772.7,
+                "end_s": 772.7,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 4,
+                "members": [
+                  "uav_04"
+                ],
+                "start_s": 832.9,
+                "end_s": 832.9,
+                "span_s": 0.0
+              },
+              {
+                "batch_index": 5,
+                "members": [
+                  "uav_06"
+                ],
+                "start_s": 922.9,
+                "end_s": 922.9,
+                "span_s": 0.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_08",
+              "uav_07",
+              "uav_01",
+              "uav_02",
+              "uav_03",
+              "uav_05",
+              "uav_09",
+              "uav_04",
+              "uav_06"
+            ],
+            "observed_sync_span_s": null,
+            "observed_batch_spans_s": [
+              1.3,
+              0.0,
+              1.8,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "observed_min_interbatch_gap_s": 42.3,
+            "observed_interbatch_gaps_s": [
+              71.4,
+              42.3,
+              80.8,
+              60.2,
+              90.0
+            ]
+          },
+          "observed_batch_count": 6,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_07",
+              "uav_08"
+            ],
+            [
+              "uav_02"
+            ],
+            [
+              "uav_03",
+              "uav_05"
+            ],
+            [
+              "uav_09"
+            ],
+            [
+              "uav_04"
+            ],
+            [
+              "uav_06"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    },
+    {
+      "episode_id": "family_s12_f2adfbfae12fbbad_ext_000_regular_synchronous",
+      "family_id": "family_s12_f2adfbfae12fbbad",
+      "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+      "mode": "synchronous",
+      "groups": [
+        {
+          "group_id": "task_group_01",
+          "members": [
+            "uav_01",
+            "uav_02",
+            "uav_03",
+            "uav_04",
+            "uav_05",
+            "uav_06",
+            "uav_07",
+            "uav_08",
+            "uav_09"
+          ],
+          "consistent": true,
+          "actual_core_event_times_s": {
+            "uav_01": 574.7,
+            "uav_02": 574.2,
+            "uav_03": 576.0,
+            "uav_04": 574.4,
+            "uav_05": 574.0,
+            "uav_06": 574.1,
+            "uav_07": 576.0,
+            "uav_08": 575.4,
+            "uav_09": 574.4
+          },
+          "assigned_batch_by_agent": {
+            "uav_01": 0,
+            "uav_02": 0,
+            "uav_03": 0,
+            "uav_04": 0,
+            "uav_05": 0,
+            "uav_06": 0,
+            "uav_07": 0,
+            "uav_08": 0,
+            "uav_09": 0
+          },
+          "assigned_batches": [
+            {
+              "batch_index": 0,
+              "members": [
+                "uav_01",
+                "uav_02",
+                "uav_03",
+                "uav_04",
+                "uav_05",
+                "uav_06",
+                "uav_07",
+                "uav_08",
+                "uav_09"
+              ]
+            }
+          ],
+          "assignment_sources_agree": true,
+          "independent_observed": {
+            "classification": "synchronous",
+            "event_times_s": {
+              "uav_01": 574.7,
+              "uav_02": 574.2,
+              "uav_03": 576.0,
+              "uav_04": 574.4,
+              "uav_05": 574.0,
+              "uav_06": 574.1,
+              "uav_07": 576.0,
+              "uav_08": 575.4,
+              "uav_09": 574.4
+            },
+            "event_range_s": 2.0,
+            "batches": [
+              {
+                "batch_index": 0,
+                "members": [
+                  "uav_01",
+                  "uav_02",
+                  "uav_03",
+                  "uav_04",
+                  "uav_05",
+                  "uav_06",
+                  "uav_07",
+                  "uav_08",
+                  "uav_09"
+                ],
+                "start_s": 574.0,
+                "end_s": 576.0,
+                "span_s": 2.0
+              }
+            ],
+            "ordered_agents_by_actual_time": [
+              "uav_05",
+              "uav_06",
+              "uav_02",
+              "uav_04",
+              "uav_09",
+              "uav_01",
+              "uav_08",
+              "uav_03",
+              "uav_07"
+            ],
+            "observed_sync_span_s": 2.0,
+            "observed_batch_spans_s": null,
+            "observed_min_interbatch_gap_s": null,
+            "observed_interbatch_gaps_s": null
+          },
+          "observed_batch_count": 1,
+          "observed_batch_members": [
+            [
+              "uav_01",
+              "uav_02",
+              "uav_03",
+              "uav_04",
+              "uav_05",
+              "uav_06",
+              "uav_07",
+              "uav_08",
+              "uav_09"
+            ]
+          ],
+          "comparisons": {
+            "classification_matches_mode": true,
+            "classification_matches_label": true,
+            "classification_matches_metrics": true,
+            "actual_times_match_saved_observation": true,
+            "batch_structure_matches_saved_observation": true,
+            "batch_members_match_assignment": true,
+            "batch_order_matches_assignment": true,
+            "members_complete_without_duplicates": true,
+            "saved_coordination_and_batch_flags_true": true
+          }
+        }
+      ],
+      "consistent": true
+    }
+  ],
+  "pair_checks": [
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_001_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_001_regular_synchronous",
+        "family_s12_4d13d93f9171c446_ext_001_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_003_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_003_regular_synchronous",
+        "family_s12_4d13d93f9171c446_ext_003_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_004_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_004_regular_synchronous",
+        "family_s12_4d13d93f9171c446_ext_004_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_008_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_008_regular_synchronous",
+        "family_s12_4d13d93f9171c446_ext_008_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_009_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_009_regular_synchronous",
+        "family_s12_4d13d93f9171c446_ext_009_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_5024cb2ccea653ae",
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+      "episode_ids": [
+        "family_s12_5024cb2ccea653ae_ext_000_regular_synchronous",
+        "family_s12_5024cb2ccea653ae_ext_000_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_5024cb2ccea653ae",
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_002_regular",
+      "episode_ids": [
+        "family_s12_5024cb2ccea653ae_ext_002_regular_synchronous",
+        "family_s12_5024cb2ccea653ae_ext_002_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    },
+    {
+      "family_id": "family_s12_f2adfbfae12fbbad",
+      "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+      "episode_ids": [
+        "family_s12_f2adfbfae12fbbad_ext_000_regular_synchronous",
+        "family_s12_f2adfbfae12fbbad_ext_000_regular_sequential"
+      ],
+      "paired_return": true,
+      "independent_conditions": {
+        "condition_digest_identical": true,
+        "scene_digest_identical": true,
+        "agent_ids_identical": true,
+        "generated": true,
+        "quality_valid": true,
+        "audit_passed": true,
+        "task_result_success": true,
+        "execution_completed": true,
+        "all_groups_complete": true,
+        "group_identities_identical": true,
+        "actual_coordination_matches": true,
+        "sequential_batch_members_and_order_match": true
+      }
+    }
+  ],
+  "rejection_checks": [
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_006_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_006_regular_sequential",
+        "family_s12_4d13d93f9171c446_ext_006_regular_synchronous"
+      ],
+      "category": "rehearsal_failure",
+      "exhausted": true,
+      "round_categories": [
+        "rehearsal_failure",
+        "rehearsal_failure",
+        "rehearsal_failure",
+        "rehearsal_failure",
+        "rehearsal_failure"
+      ],
+      "complete_rejection": true,
+      "counted_as_successful_pair": false,
+      "paired_return": false
+    },
+    {
+      "family_id": "family_s12_4d13d93f9171c446",
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_007_regular",
+      "episode_ids": [
+        "family_s12_4d13d93f9171c446_ext_007_regular_sequential",
+        "family_s12_4d13d93f9171c446_ext_007_regular_synchronous"
+      ],
+      "category": "timing_conflict",
+      "exhausted": true,
+      "round_categories": [
+        "timing_conflict",
+        "timing_conflict",
+        "timing_conflict",
+        "timing_conflict",
+        "timing_conflict"
+      ],
+      "complete_rejection": true,
+      "counted_as_successful_pair": false,
+      "paired_return": false
+    }
+  ],
+  "views": {
+    "actual": {
+      "schema_version": "traj2language.views/0.7-s2-infrastructure",
+      "index_only": true,
+      "views": {
+        "primary": [],
+        "extended": [
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_001_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_001_regular",
+            "intent": "reconnaissance",
+            "mode": "sequential",
+            "path": "family_s12_4d13d93f9171c446_ext_001_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_001_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_001_regular",
+            "intent": "reconnaissance",
+            "mode": "synchronous",
+            "path": "family_s12_4d13d93f9171c446_ext_001_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_003_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_003_regular",
+            "intent": "feint",
+            "mode": "sequential",
+            "path": "family_s12_4d13d93f9171c446_ext_003_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_003_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_003_regular",
+            "intent": "feint",
+            "mode": "synchronous",
+            "path": "family_s12_4d13d93f9171c446_ext_003_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_004_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_004_regular",
+            "intent": "penetration",
+            "mode": "sequential",
+            "path": "family_s12_4d13d93f9171c446_ext_004_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_004_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_004_regular",
+            "intent": "penetration",
+            "mode": "synchronous",
+            "path": "family_s12_4d13d93f9171c446_ext_004_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_008_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_008_regular",
+            "intent": "feint",
+            "mode": "sequential",
+            "path": "family_s12_4d13d93f9171c446_ext_008_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_008_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_008_regular",
+            "intent": "feint",
+            "mode": "synchronous",
+            "path": "family_s12_4d13d93f9171c446_ext_008_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_009_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_009_regular",
+            "intent": "penetration",
+            "mode": "sequential",
+            "path": "family_s12_4d13d93f9171c446_ext_009_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_009_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_009_regular",
+            "intent": "penetration",
+            "mode": "synchronous",
+            "path": "family_s12_4d13d93f9171c446_ext_009_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_5024cb2ccea653ae_ext_000_regular_sequential",
+            "family_id": "family_s12_5024cb2ccea653ae",
+            "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+            "intent": "transit",
+            "mode": "sequential",
+            "path": "family_s12_5024cb2ccea653ae_ext_000_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_5024cb2ccea653ae_ext_000_regular_synchronous",
+            "family_id": "family_s12_5024cb2ccea653ae",
+            "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+            "intent": "transit",
+            "mode": "synchronous",
+            "path": "family_s12_5024cb2ccea653ae_ext_000_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_5024cb2ccea653ae_ext_002_regular_sequential",
+            "family_id": "family_s12_5024cb2ccea653ae",
+            "skeleton_id": "family_s12_5024cb2ccea653ae_ext_002_regular",
+            "intent": "monitoring",
+            "mode": "sequential",
+            "path": "family_s12_5024cb2ccea653ae_ext_002_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_5024cb2ccea653ae_ext_002_regular_synchronous",
+            "family_id": "family_s12_5024cb2ccea653ae",
+            "skeleton_id": "family_s12_5024cb2ccea653ae_ext_002_regular",
+            "intent": "monitoring",
+            "mode": "synchronous",
+            "path": "family_s12_5024cb2ccea653ae_ext_002_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_f2adfbfae12fbbad_ext_000_regular_sequential",
+            "family_id": "family_s12_f2adfbfae12fbbad",
+            "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+            "intent": "transit",
+            "mode": "sequential",
+            "path": "family_s12_f2adfbfae12fbbad_ext_000_regular/sequential",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          },
+          {
+            "episode_id": "family_s12_f2adfbfae12fbbad_ext_000_regular_synchronous",
+            "family_id": "family_s12_f2adfbfae12fbbad",
+            "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+            "intent": "transit",
+            "mode": "synchronous",
+            "path": "family_s12_f2adfbfae12fbbad_ext_000_regular/synchronous",
+            "state": "generated",
+            "reason": null,
+            "task_result": "success"
+          }
+        ],
+        "aborted": [],
+        "failed": [
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_006_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_006_regular",
+            "intent": "reconnaissance",
+            "mode": "sequential",
+            "path": null,
+            "state": "infeasible",
+            "reason": "rehearsal_failure",
+            "task_result": null
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_006_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_006_regular",
+            "intent": "reconnaissance",
+            "mode": "synchronous",
+            "path": null,
+            "state": "infeasible",
+            "reason": "rehearsal_failure",
+            "task_result": null
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_007_regular_sequential",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_007_regular",
+            "intent": "monitoring",
+            "mode": "sequential",
+            "path": null,
+            "state": "infeasible",
+            "reason": "timing_conflict",
+            "task_result": null
+          },
+          {
+            "episode_id": "family_s12_4d13d93f9171c446_ext_007_regular_synchronous",
+            "family_id": "family_s12_4d13d93f9171c446",
+            "skeleton_id": "family_s12_4d13d93f9171c446_ext_007_regular",
+            "intent": "monitoring",
+            "mode": "synchronous",
+            "path": null,
+            "state": "infeasible",
+            "reason": "timing_conflict",
+            "task_result": null
+          }
+        ],
+        "pending": []
+      },
+      "family_balance": [
+        {
+          "family_id": "family_s12_4d13d93f9171c446",
+          "successful_pairs_by_intent": {
+            "transit": 0,
+            "reconnaissance": 1,
+            "monitoring": 0,
+            "feint": 2,
+            "penetration": 2
+          },
+          "pairs_per_intent": 0
+        },
+        {
+          "family_id": "family_s12_5024cb2ccea653ae",
+          "successful_pairs_by_intent": {
+            "transit": 1,
+            "reconnaissance": 0,
+            "monitoring": 1,
+            "feint": 0,
+            "penetration": 0
+          },
+          "pairs_per_intent": 0
+        },
+        {
+          "family_id": "family_s12_f2adfbfae12fbbad",
+          "successful_pairs_by_intent": {
+            "transit": 1,
+            "reconnaissance": 0,
+            "monitoring": 0,
+            "feint": 0,
+            "penetration": 0
+          },
+          "pairs_per_intent": 0
+        }
+      ],
+      "counts": {
+        "primary": 0,
+        "extended": 16,
+        "aborted": 0,
+        "failed": 4,
+        "pending": 0
+      }
+    },
+    "independent_family_balance": [
+      {
+        "family_id": "family_s12_4d13d93f9171c446",
+        "successful_pairs_by_intent": {
+          "transit": 0,
+          "reconnaissance": 1,
+          "monitoring": 0,
+          "feint": 2,
+          "penetration": 2
+        },
+        "pairs_per_intent": 0
+      },
+      {
+        "family_id": "family_s12_5024cb2ccea653ae",
+        "successful_pairs_by_intent": {
+          "transit": 1,
+          "reconnaissance": 0,
+          "monitoring": 1,
+          "feint": 0,
+          "penetration": 0
+        },
+        "pairs_per_intent": 0
+      },
+      {
+        "family_id": "family_s12_f2adfbfae12fbbad",
+        "successful_pairs_by_intent": {
+          "transit": 1,
+          "reconnaissance": 0,
+          "monitoring": 0,
+          "feint": 0,
+          "penetration": 0
+        },
+        "pairs_per_intent": 0
+      }
+    ],
+    "family_balance_matches": true,
+    "episode_membership": {
+      "family_s12_4d13d93f9171c446_ext_001_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_001_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_003_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_003_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_004_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_004_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_008_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_008_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_009_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_009_regular_synchronous": "extended",
+      "family_s12_5024cb2ccea653ae_ext_000_regular_sequential": "extended",
+      "family_s12_5024cb2ccea653ae_ext_000_regular_synchronous": "extended",
+      "family_s12_5024cb2ccea653ae_ext_002_regular_sequential": "extended",
+      "family_s12_5024cb2ccea653ae_ext_002_regular_synchronous": "extended",
+      "family_s12_f2adfbfae12fbbad_ext_000_regular_sequential": "extended",
+      "family_s12_f2adfbfae12fbbad_ext_000_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_006_regular_sequential": "failed",
+      "family_s12_4d13d93f9171c446_ext_006_regular_synchronous": "failed",
+      "family_s12_4d13d93f9171c446_ext_007_regular_sequential": "failed",
+      "family_s12_4d13d93f9171c446_ext_007_regular_synchronous": "failed"
+    },
+    "expected_episode_membership": {
+      "family_s12_4d13d93f9171c446_ext_001_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_001_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_003_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_003_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_004_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_004_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_006_regular_sequential": "failed",
+      "family_s12_4d13d93f9171c446_ext_006_regular_synchronous": "failed",
+      "family_s12_4d13d93f9171c446_ext_007_regular_sequential": "failed",
+      "family_s12_4d13d93f9171c446_ext_007_regular_synchronous": "failed",
+      "family_s12_4d13d93f9171c446_ext_008_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_008_regular_synchronous": "extended",
+      "family_s12_4d13d93f9171c446_ext_009_regular_sequential": "extended",
+      "family_s12_4d13d93f9171c446_ext_009_regular_synchronous": "extended",
+      "family_s12_5024cb2ccea653ae_ext_000_regular_sequential": "extended",
+      "family_s12_5024cb2ccea653ae_ext_000_regular_synchronous": "extended",
+      "family_s12_5024cb2ccea653ae_ext_002_regular_sequential": "extended",
+      "family_s12_5024cb2ccea653ae_ext_002_regular_synchronous": "extended",
+      "family_s12_f2adfbfae12fbbad_ext_000_regular_sequential": "extended",
+      "family_s12_f2adfbfae12fbbad_ext_000_regular_synchronous": "extended"
+    },
+    "episode_membership_matches": true,
+    "explanation": "Strict eligibility is separate from five-intent balance within each family."
+  },
+  "source_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v07scene\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m2\\qd_summary.json": "13a5fa09eaa5d33c49b6af6b0f8491426ce0962bc9b962455dc2e74925a84b78",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\registration.json": "75d4517fd0fb8396dc4b520f5a11f3dce4b8639b1cc722a746f4e4d9ab066cb0",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\trial_result.json": "8149116d68882eb9605f800650cb3347ef707e3359618148f1d0036912e47360",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\episode_records.json": "0dadae483e8d73ccb549afccfc888dd5bc40834248fde80694e7cd60188659ed",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s2_search_quick_b_20261015T090658Z_5ac915b5\\registration.json": "f33b31bea9cb387d30196aa64d88618f221633075bba7ed5c664058404cae125",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_001_regular\\sequential\\metrics.json": "9df29f22b0b9642065fbe91855366c474c323b4504c4fb2b549d67ec0f6e4f1b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_001_regular\\sequential\\labels.json": "11b385eb845e10fdb4f4e7ae289c981da21367d97a3ef35ea9c4c58135a17dcc",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_001_regular\\synchronous\\metrics.json": "49a6dbb54fc869aeb6d00c4f95b5c9c6cbe7dc0cdc065b6bfc889f6149bd74df",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_001_regular\\synchronous\\labels.json": "f5bff37ae6265b935fdb3d78f4f9198c97d42aa35222ff93327641df666651f1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_003_regular\\sequential\\metrics.json": "8dfb4b74bfcda4082e24018b69b905372e3d105e67072e285ce158a49e38f581",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_003_regular\\sequential\\labels.json": "6b029251046146fc054c689061c7a8392f463150f1d8d7e74b10629f243e4f60",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_003_regular\\synchronous\\metrics.json": "42e835a3352167fbc7fa3543c63c2f8b4387564e0cb267bfaefe5b5c45eed47d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_003_regular\\synchronous\\labels.json": "0611fcd617413e664e2ab4a86cc994315c2deac5b44025aca3b4f6f2a91e3424",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_004_regular\\sequential\\metrics.json": "5c6f82252e217832075aa20ad13ec69efb63b528a40843515680647983997ac4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_004_regular\\sequential\\labels.json": "a0c8cc55d182347ea52e42a6523c9a7111c3aa1368670b786051dfe0928a3f61",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_004_regular\\synchronous\\metrics.json": "45137df50a30043b0099d2c2e4c12b1abaca39659935e7a55696d5af7e56d6a4",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_004_regular\\synchronous\\labels.json": "4fa32965734be8d85751ba955c027de2ff97e696b5724f62d89775582edabf2e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_008_regular\\sequential\\metrics.json": "01b87349023e38ba6e9df532bbbfbac6366063a6cc3092cd29e517ab6dd32fe6",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_008_regular\\sequential\\labels.json": "03b0821616eec105b1c3c05bad6c052c879203e7b56dbd5d25d57e643962e0a1",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_008_regular\\synchronous\\metrics.json": "ec4b911dc7675d27163321f9ab2aefa0c1691d9c6a66b929c7eef5c17eb7473f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_008_regular\\synchronous\\labels.json": "c82db3cebead4ae06ced097b260bebedf179db1b2664d50d5ab92f0deaa8b527",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_009_regular\\sequential\\metrics.json": "022bc71eaec3246f6a323883042bb81e44812041901326be08be48d25f6ad824",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_009_regular\\sequential\\labels.json": "3a5f86a6a5834088c8ff10a442f37bdac5840575c54d3a7dccf1e273a3e2371d",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_009_regular\\synchronous\\metrics.json": "a04c841c900a747b6a1217eaed2a8603a8ba0539082079455638803df96c68ec",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_4d13d93f9171c446_ext_009_regular\\synchronous\\labels.json": "5253a7d260e6b2a6878f8a5b6c094aa82c25e3ee3a63d92c5e4a815d66bc7ce7",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_000_regular\\sequential\\metrics.json": "64ecfae1ade6f092bac1b2c338eab61b0517c9bc00567c8ddf019b7d31b1449e",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_000_regular\\sequential\\labels.json": "4710eee94c2fb14014bf19ec969f060841c2d8e4016ba28248777374d8c7b5a3",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_000_regular\\synchronous\\metrics.json": "e8789c36a4b38125c809ad69ca85cdebc4f4e9a8a0571d4d339704bece3dfe19",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_000_regular\\synchronous\\labels.json": "1f82c7cb5992b267892fcb6483510323f83a7e0bcb7efb201852f31bfd784203",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_002_regular\\sequential\\metrics.json": "67950384794ca1429a6614556cce22af1d222866d5626bf2a21a36b5b55bd116",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_002_regular\\sequential\\labels.json": "54a83afd5a6c055452d29c54eca404a1c0457fa92bb4f7dae78084fc130fd21b",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_002_regular\\synchronous\\metrics.json": "9aafb24b117ff235c4e473b4eb5e7719ebdd9afc1f3edc04c1c23f918caa9c92",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_5024cb2ccea653ae_ext_002_regular\\synchronous\\labels.json": "ead9b0d8a6e885b1e85365077b8c117d8f2d536a48a6adcf0b3b052c4bfd6a29",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_f2adfbfae12fbbad_ext_000_regular\\sequential\\metrics.json": "af7cbcf4956a08adc66daeab3594d72df1b4e71405b57110df74d6acde670f92",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_f2adfbfae12fbbad_ext_000_regular\\sequential\\labels.json": "77fe4994ca1b7221a45bdd908ef4f6297867654b713ae60e0b872a697c88ad9c",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_f2adfbfae12fbbad_ext_000_regular\\synchronous\\metrics.json": "61c406217872dc919da2193a6a6454554618e130a9276127c15cc579736fe804",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m2_trial_20261016T022948423699Z\\family_s12_f2adfbfae12fbbad_ext_000_regular\\synchronous\\labels.json": "3925dfa1b0c127e3f7675904c1d6e08e3fac1c6282659e3f91b765cc3934733f"
+  },
+  "preservation": {
+    "attempt_before": {
+      "file_count": 585,
+      "bytes": 884113288,
+      "manifest_sha256": "77231cd23df2d3c1d3739f01b3cdf8d2c2a531c1d5180515e35cb8ef5ce4135d",
+      "method": "SHA256 of sorted relative-path/size/content-SHA256 manifest; every attempt file"
+    },
+    "attempt_after": {
+      "file_count": 585,
+      "bytes": 884113288,
+      "manifest_sha256": "77231cd23df2d3c1d3739f01b3cdf8d2c2a531c1d5180515e35cb8ef5ce4135d",
+      "method": "SHA256 of sorted relative-path/size/content-SHA256 manifest; every attempt file"
+    },
+    "all_attempt_files_byte_identical": true,
+    "all_used_source_hashes_unchanged": true,
+    "production_and_tests_unchanged": true,
+    "git_clean_before_evidence_write": true,
+    "source_data_writes": 0,
+    "temporary_verifier_sha256": "b5277a1aa8cf1d2c0297c618208ef6d0d053207fafe3906de85e5d6a5fefe42e"
+  },
+  "mismatches": [],
+  "implementation_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v07scene\\Multi-UAV SimpleGC\\task_v07\\expansion\\views.py": "27a9a9290ef1653ef69fe554f76e7ef40e7808727b9aa0c56b2ac9b81251bd67",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v07scene\\Multi-UAV SimpleGC\\task_v07\\labels.py": "ab6ed6d6de1be7ec8bf5ded44a35129b1cdf1d6d2dbe87fa3f7fe4c2b66e67b2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v07scene\\Multi-UAV SimpleGC\\task_v07\\criteria_labels.py": "bb52b3dd559285f827df64d0c205ef1fefd5ffc3387a880118f41b5633db0ffe"
+  },
+  "timing_summary": {
+    "synchronous_groups": 14,
+    "sequential_groups": 14,
+    "max_observed_sync_span_s": 5.4,
+    "min_observed_interbatch_gap_s": 42.3,
+    "max_observed_sequential_batch_span_s": 4.9
+  },
+  "m2_closure_allowed": true,
+  "m3_entry_allowed": true,
+  "m3_started": false,
+  "checked_at_utc": "2026-10-16T04:09:55.561112+00:00"
+}
