@@ -62,10 +62,14 @@ def stage_walls(rows, skeleton_root):
     planning = group_search_metrics[*].wall_s + combination_search.wall_s (candidate_pool.json);
     the records do not separate solo rehearsal from timing selection, nor M1 judgement from audit,
     so those pairs are reported merged from the row fields that do exist. A skeleton with no episode
-    row (not run, or cut off by the wall-clock cap) has no decomposition at all: its interrupted
-    candidate_pool.json is not a stage measurement, so every stage stays None.
+    row (not run, or cut off by the wall-clock cap), or with rows that carry no timing field at all
+    (the two infeasible rows of a rejected skeleton), has no decomposition: every stage stays None
+    rather than producing a negative residual.
     """
-    if not rows:
+    timed = any(row.get("amortized_skeleton_setup_s") is not None
+                or row.get("simulation_wall_s") is not None
+                or row.get("episode_postprocess_wall_s") is not None for row in rows)
+    if not rows or not timed:
         return {"规划": None, "单机预演+时刻安排": None, "联合仿真": None,
                 "M1判定+审计+测量+写盘": None, "skeleton_total": None}
     planning = None
@@ -117,17 +121,25 @@ def markdown_table(rows, columns, row_label=""):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pilot", type=Path, required=True)
+    parser.add_argument("--pilot", type=Path, required=True, dest="pilots", action="append",
+                        help="Pilot attempt directory; repeat the option to merge staged attempts")
     parser.add_argument("--out-dir", type=Path, default=OUT_DIR)
     args = parser.parse_args()
-    pilot = args.pilot.resolve()
-    for required in ("registration.json", "run_result.json"):
-        if not (pilot / required).exists():
-            raise P0ContractError(f"{pilot} has no {required}; an attempt that has not finished "
-                                  "cannot be summarised")
-    registration = read_json(pilot / "registration.json")
-    run_result = read_json(pilot / "run_result.json")
-    selection = read_json(Path(registration["skeletons_file"]))
+    attempts = []
+    for directory in args.pilots:
+        directory = directory.resolve()
+        for required in ("registration.json", "run_result.json"):
+            if not (directory / required).exists():
+                raise P0ContractError(f"{directory} has no {required}; an attempt that has not finished "
+                                      "cannot be summarised")
+        records_file = directory / "episode_records.json"
+        attempts.append({"dir": directory, "registration": read_json(directory / "registration.json"),
+                         "result": read_json(directory / "run_result.json"),
+                         "rows": read_json(records_file) if records_file.exists() else []})
+    registration = attempts[0]["registration"]
+    for attempt in attempts[1:]:
+        if attempt["registration"]["draws"] != registration["draws"]:
+            raise P0ContractError(f"{attempt['dir']} registered a different draw manifest")
     draw_of, selection_mode = {}, {}
     for draw in registration["draws"]:
         if draw["draw_key"] in draw_of.values():
@@ -135,14 +147,30 @@ def main():
         for skeleton_id in draw["skeletons"]:
             draw_of[skeleton_id] = draw["draw_key"]
             selection_mode[skeleton_id] = draw["approach_mode"]
-    undeclared = sorted(set(registration["selected_skeletons"]) - set(draw_of))
-    if undeclared:
-        raise P0ContractError(f"The attempt ran skeletons that no registered draw declares: {undeclared}")
-    rows = read_json(pilot / "episode_records.json") if (pilot / "episode_records.json").exists() else []
+    # A skeleton may be declared by one stage only, and may carry episode rows in at most one.
+    owner, declared_by = {}, {}
+    for attempt in attempts:
+        declared = attempt["registration"]["selected_skeletons"]
+        completed = sorted({row["skeleton_id"] for row in attempt["rows"]})
+        attempt["declared"], attempt["completed"] = declared, completed
+        for skeleton_id in declared:
+            if skeleton_id not in draw_of:
+                raise P0ContractError(f"{attempt['dir']} declares an unregistered skeleton_id: {skeleton_id}")
+            if skeleton_id in declared_by:
+                raise P0ContractError(f"skeleton_id declared by more than one attempt: {skeleton_id} "
+                                      f"({declared_by[skeleton_id]} and {attempt['dir']})")
+            declared_by[skeleton_id] = attempt["dir"]
+        for skeleton_id in completed:
+            if skeleton_id in owner:
+                raise P0ContractError(f"skeleton_id has episode rows in more than one attempt: {skeleton_id}")
+            owner[skeleton_id] = attempt
+    population = sorted(declared_by)
     records, anomalies = [], []
-    for skeleton_id in registration["selected_skeletons"]:
-        subset = [row for row in rows if row["skeleton_id"] == skeleton_id]
-        skeleton_root = pilot / skeleton_id
+    for skeleton_id in population:
+        attempt = owner.get(skeleton_id)
+        subset = [] if attempt is None else [row for row in attempt["rows"]
+                                             if row["skeleton_id"] == skeleton_id]
+        skeleton_root = None if attempt is None else attempt["dir"] / skeleton_id
         ordering = {mode: index for index, mode in enumerate(MODES)}
         subset.sort(key=lambda row: ordering.get(row.get("mode"), 99))
         paired = None
@@ -169,7 +197,7 @@ def main():
             for value in (row.get("measured_approach_by_group") or {}).values():
                 measured.append(value)
             if row.get("path"):
-                label = label_facts(pilot / row["path"] / "labels.json")
+                label = label_facts(attempt["dir"] / row["path"] / "labels.json")
                 if label:
                     for key in ("dwell_detected", "revisit_detected", "observation_dwell_detected",
                                 "agents_with_contribution"):
@@ -190,7 +218,9 @@ def main():
             "observation_dwell_detected": facts["observation_dwell_detected"],
             "agents_with_contribution": facts["agents_with_contribution"],
             "stage_wall_s": stage_walls(subset, skeleton_root),
-            "wall_s": run_result["per_skeleton"].get(skeleton_id, {}).get("wall_s")})
+            "attempt": None if attempt is None else str(attempt["dir"]),
+            "wall_s": (None if attempt is None
+                       else attempt["result"]["per_skeleton"].get(skeleton_id, {}).get("wall_s"))})
     measured_pairs = [record for record in records if record["strict_pair"] is True]
     stage_counter = Counter(record["failure_stage_by_mode"].get(mode) for record in records
                             for mode in MODES if record["failure_stage_by_mode"].get(mode))
@@ -225,18 +255,30 @@ def main():
     stage_columns = ("规划", "单机预演+时刻安排", "联合仿真", "M1判定+审计+测量+写盘", "skeleton_total")
     summary = {"schema": "traj2language.s15_sim_pilot_summary/1",
                "generated_utc": datetime.now(timezone.utc).isoformat(),
-               "provenance": {"pilot": str(pilot), "selection": registration["skeletons_file"],
+               "provenance": {"selection": registration["skeletons_file"],
                               "entry_commit": registration["entry_commit"],
-                              "registration_sha256": sha(pilot / "registration.json"),
-                              "run_result_sha256": sha(pilot / "run_result.json"),
-                              "script_sha256": sha(Path(__file__))},
-               "attempt": {"status": run_result["status"], "selected_count": run_result["selected_count"],
-                           "completed_count": run_result["completed_count"],
-                           "unfinished": run_result["unfinished"], "wall_s": run_result["wall_s"],
-                           "wall_limit_s": run_result["wall_limit_s"], "workers": run_result["workers"],
-                           "runtime_sha256_stable": run_result["runtime_sha256_stable"],
+                              "script_sha256": sha(Path(__file__)),
+                              "attempts": [{"attempt": str(attempt["dir"]),
+                                            "registration_sha256": sha(attempt["dir"] / "registration.json"),
+                                            "run_result_sha256": sha(attempt["dir"] / "run_result.json"),
+                                            "skeletons_file": attempt["registration"]["skeletons_file"],
+                                            "declared_count": len(attempt["declared"]),
+                                            "rows_skeletons": len(attempt["completed"])}
+                                           for attempt in attempts]},
+               "attempt": {"statuses": [attempt["result"]["status"] for attempt in attempts],
+                           "selected_count": len(population),
+                           "declared_count": sum(len(attempt["declared"]) for attempt in attempts),
+                           "completed_count": len(owner), "unfinished_count": len(population) - len(owner),
+                           "unfinished": [record["skeleton_id"] for record in records
+                                          if record["strict_pair"] is not True and not record["rows"]],
+                           "total_wall_s": sum(attempt["result"]["wall_s"] for attempt in attempts),
+                           "wall_limit_s": [attempt["result"]["wall_limit_s"] for attempt in attempts],
+                           "workers": attempts[0]["result"]["workers"],
+                           "runtime_sha256_stable": all(attempt["result"]["runtime_sha256_stable"]
+                                                        for attempt in attempts),
                            "strict_pairs": sum(record["strict_pair"] is True for record in records)},
-               "counts": {"skeletons": len(records), "episode_rows": len(rows),
+               "counts": {"skeletons": len(records),
+                          "episode_rows": sum(len(attempt["rows"]) for attempt in attempts),
                           "strict_paired_skeletons": len(measured_pairs),
                           "draws": len(draws), "draws_all_five_paired": sum(v["all_five_paired"] for v in draws.values()),
                           "measured_approach_comparisons": len(matches),
@@ -259,27 +301,32 @@ def main():
     args.out_dir.mkdir(parents=True, exist_ok=True)
     save_json(args.out_dir / "s15_sim_pilot_summary.json", summary)
     lines = ["# S1.5 仿真试点统计表（下游链路：规划 → M2 预演/时刻 → 联合 fastsim → M1 → 审计）", "",
-             f"- 试点 attempt：`{pilot}`",
-             f"- 入口提交：`{registration['entry_commit']}`；运行状态 `{run_result['status']}`；"
-             f"完成 {run_result['completed_count']}/{run_result['selected_count']}；"
-             f"墙钟 {run_result['wall_s']:.1f} s（上限 {run_result['wall_limit_s']:.0f} s）；"
-             f"运行前后指纹一致 {run_result['runtime_sha256_stable']}",
+             f"- 试点 attempt（{len(attempts)} 个，每个 skeleton_id 只来自其中一个）：",
+             *[f"  - `{attempt['dir']}`：状态 `{attempt['result']['status']}`，声明 {len(attempt['declared'])}，"
+               f"有 episode 行 {len(attempt['completed'])}，墙钟 {attempt['result']['wall_s']:.1f} s"
+               f"（上限 {attempt['result']['wall_limit_s']:.0f} s）" for attempt in attempts],
+             f"- 入口提交：`{registration['entry_commit']}`；合计墙钟 {summary['attempt']['total_wall_s']:.1f} s；"
+             f"运行前后指纹一致 {summary['attempt']['runtime_sha256_stable']}",
+             f"- 声明骨架 {summary['attempt']['declared_count']} 个；有 episode 行的 {summary['attempt']['completed_count']} 个；"
+             f"未完成 {summary['attempt']['unfinished_count']} 个",
              f"- 严格配对（同步与递次两版都成功）：{len(measured_pairs)}/{len(records)} 个骨架；"
              f"六次抽签中五意图全部配对的 {sum(v['all_five_paired'] for v in draws.values())}/{len(draws)} 次",
              f"- 失败环节计数（按链路顺序取第一个失败环节）：{json.dumps(summary['failure_stage_counts'], ensure_ascii=False)}",
              f"- 实测逼近方式与抽签指定一致：{sum(matches)}/{len(matches)} 次比较", ""]
     lines += ["## P1 逐骨架：严格配对、轮数、失败环节与墙钟", "",
               markdown_table([(record["skeleton_id"],
-                               {"draw": record["draw"].split("#")[0][-12:] + "#" + record["draw"].split("#")[1],
+                               {"attempt": (record["attempt"] or "-").rsplit("\\", 1)[-1].rsplit("/", 1)[-1],
+                                "draw": record["draw"].split("#")[0][-12:] + "#" + record["draw"].split("#")[1],
                                 "intent": record["intent"],
                                 "指定方式": record["specified_approach_mode"],
                                 "严格配对": record["strict_pair"],
                                 "轮数": "/".join(str(v) for v in record["calibration_rounds"]) or "-",
                                 "状态": "/".join(f"{m}={s}" for m, s in record["states"].items()),
                                 "失败环节": "/".join(f"{m}:{s}" for m, s in record["failure_stage_by_mode"].items()),
-                                "墙钟s": None if record["wall_s"] is None else round(record["wall_s"], 3)})
+                                "墙钟s": (None if record["stage_wall_s"]["skeleton_total"] is None
+                                         else round(record["stage_wall_s"]["skeleton_total"], 3))})
                               for record in records],
-                             ["draw", "intent", "指定方式", "严格配对", "轮数", "状态", "失败环节", "墙钟s"],
+                             ["attempt", "draw", "intent", "指定方式", "严格配对", "轮数", "状态", "失败环节", "墙钟s"],
                              row_label="skeleton_id"), ""]
     lines += ["## P2 原始 reason 计数（未归类前的字面值）", "",
               markdown_table([(key, {"count": value}) for key, value in sorted(reason_counter.items())],
@@ -333,7 +380,8 @@ def main():
                   markdown_table([(item["kind"] + ":" + item["skeleton_id"], {"detail": item["detail"]})
                                   for item in anomalies], ["detail"], row_label="kind"), ""]
     (args.out_dir / "s15_sim_pilot_tables.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
-    print({"skeletons": len(records), "rows": len(rows), "strict_pairs": len(measured_pairs),
+    print({"skeletons": len(records), "rows": summary["counts"]["episode_rows"],
+           "strict_pairs": len(measured_pairs),
            "draws_all_five_paired": sum(v["all_five_paired"] for v in draws.values()),
            "approach_matches": f"{sum(matches)}/{len(matches)}",
            "failure_stages": summary["failure_stage_counts"], "anomalies": len(anomalies)}, flush=True)
