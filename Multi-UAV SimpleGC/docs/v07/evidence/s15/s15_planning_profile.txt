@@ -1,0 +1,43 @@
+# S1.5 阶段 2 单骨架规划 cProfile（top 25 by cumulative time）
+
+- 来源批次：F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s15yield_20261016T154921Z
+- 该批已完成骨架：99 个；规划墙钟中位数：95.61485149999862 s
+- 选中骨架：family_s15_79c93b22d09e8a7a_ext_006_regular（该骨架规划墙钟 95.61485149999862 s，最接近中位数）
+- 单进程运行 planning_job；进程数 1；每组 200 提案、组合预算 1000（规划器内置值，未改）
+- planning_result 状态：PASS；eligible_combinations=82；planning_wall_s=131.30467280000084
+- 本次观测墙钟（含导入与写出）：131.313 s
+- 运行前后 runtime_sha256 一致：True
+- 本表只用于判断耗时来源，未据此优化规划器。
+         223038080 function calls (219137528 primitive calls) in 131.298 seconds
+
+   Ordered by: cumulative time
+   List reduced from 582 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.005    0.005  131.306  131.306 run_v07_m3_trial.py:34(planning_job)
+        1    0.002    0.002  130.604  130.604 group_candidate_pool.py:92(independent_episode_pool)
+        1    0.009    0.009  130.356  130.356 group_candidate_pool.py:32(build_group_pool)
+        1    0.009    0.009  130.334  130.334 adapter.py:15(build_unified_pool)
+  1733071   35.824    0.000  123.364    0.000 geometry.py:15(geometry_facts)
+      200    0.003    0.000  106.608    0.533 route.py:154(route_group)
+      200    0.063    0.000  106.603    0.533 operation_routes.py:26(route_operation)
+   410940    0.318    0.000  100.990    0.000 {built-in method builtins.all}
+   402033    0.519    0.000   98.951    0.000 visibility.py:66(visible)
+   386451    0.465    0.000   98.300    0.000 visibility.py:72(_visible_uncached)
+      391    0.061    0.000   97.671    0.250 route.py:84(_approaches)
+  1331755    1.188    0.000   97.307    0.000 visibility.py:78(<genexpr>)
+      982    0.002    0.000   86.459    0.088 free_space.py:115(planner)
+       21    0.156    0.007   86.453    4.117 visibility.py:38(__init__)
+  5723752    7.316    0.000   22.581    0.000 decorators.py:62(wrapped)
+  1169489    1.067    0.000   15.728    0.000 polygon.py:221(__new__)
+     6391    0.057    0.000   15.482    0.002 visibility.py:81(path)
+1805063/1621089    9.458    0.000   13.185    0.000 numeric.py:1226(roll)
+      200    0.094    0.000   11.736    0.059 checks.py:68(plan_checks)
+  1517430    2.055    0.000    9.978    0.000 linestring.py:38(__new__)
+ 12908936    9.696    0.000    9.696    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      189    0.008    0.000    8.088    0.043 pipeline.py:100(precheck)
+     2268    0.268    0.000    7.786    0.003 geometry_checks.py:81(check_polyline)
+  1517430    0.703    0.000    7.581    0.000 base.py:332(distance)
+  2109381    4.340    0.000    7.434    0.000 _linalg.py:2598(norm)
+
+
