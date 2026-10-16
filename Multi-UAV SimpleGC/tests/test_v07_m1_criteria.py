@@ -45,6 +45,7 @@ class CriteriaQ0(unittest.TestCase):
 
     def check_audit(self, sk, run, labels, frame):
         prefix = {**run, **{k: run[k][:len(frame["time_us"])] for k in ("time_us", "p", "v")}}
+        if len(frame["time_us"]) < len(run["time_us"]): prefix["execution_status"] = "running"
         report = audit_data(self.public, sk, prefix, labels, frame)
         self.assertEqual(report["status"], "PASS", report["event_or_metric_witnesses"])
         return report

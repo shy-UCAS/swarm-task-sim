@@ -157,7 +157,8 @@ def independently_measure(scene, task, run, complete, *, detector_cache=None):
 
 
 def audit_data(scene, task, run, labels, frame):
-    expected = independently_measure(scene, task, run, labels["evidence"]["complete_observation"])
+    complete = run["execution_status"] in ("completed", "timeout")
+    expected = independently_measure(scene, task, run, complete)
     errors = []
     def compare(path, actual, wanted):
         if isinstance(wanted, dict):
@@ -167,6 +168,8 @@ def audit_data(scene, task, run, labels, frame):
                 if key not in actual: errors.append({"field": path + "." + key, "error": "missing field"})
                 else: compare(path + "." + key, actual[key], value)
         elif not _equal(actual, wanted): errors.append({"field": path, "label": actual, "independent": wanted})
+    compare("evidence.complete_observation", labels["evidence"].get("complete_observation"), complete)
+    compare("evidence.frame_count", labels["evidence"].get("frame_count"), len(run["time_us"]))
     for a, wanted in expected["agents"].items():
         ob = labels["agents"][a]["observed"]
         compare(a + ".result", labels["agents"][a]["result"], wanted["result"])
@@ -200,7 +203,15 @@ def audit_data(scene, task, run, labels, frame):
 def audit_episode(root):
     root = Path(root)
     scene, task, labels = (_read(root / name) for name in ("public_scene.json", "task.json", "labels.json"))
-    ids, t, p, v = _load_truth(root)
+    source = _read(root / "source.json")
+    try:
+        ids, t, p, v = _load_truth(root)
+    except ValueError as exc:
+        return {"status": "P0_STOP", "region_difference_count": 0, "target_difference_count": 0,
+                "event_or_metric_difference_count": 1, "uncovered_conditions": [],
+                "event_or_metric_witnesses": [{"field": "truth_axes_or_content", "error": str(exc)}],
+                "method": "independent source status and stored truth validation"}
     with np.load(root / "frame_labels.npz", allow_pickle=False) as stored:
         frame = {key: stored[key].copy() for key in stored.files}
-    return audit_data(scene, task, {"agent_ids": ids, "time_us": t, "p": p, "v": v}, labels, frame)
+    return audit_data(scene, task, {"agent_ids": ids, "time_us": t, "p": p, "v": v,
+                                   "execution_status": source["execution_status"]}, labels, frame)
