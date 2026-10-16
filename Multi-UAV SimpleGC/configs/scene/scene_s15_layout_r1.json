@@ -1,0 +1,33 @@
+{
+  "revision": "s1.5",
+  "warning_overlap_max_fraction": 0.20,
+  "clustered_overlap_fraction": [0.02, 0.20],
+  "isolated_gap_m": [40, "0.5*W"],
+  "linear_gap_fraction": [-0.20, 0.50],
+  "edge_clearance_m": 350,
+  "map_side_quantum_m": 250,
+  "max_map_side_m": 8000,
+  "layout_attempts": 128,
+  "link_direction_attempts": 32,
+  "anchor_attempts": 32,
+  "direction_rad": [0, 6.283185307179586],
+  "bisection_iterations": 60,
+  "bisection_bracket_padding_m": 1,
+  "target_gap_tolerance_m": 0.001,
+  "annotations": {
+    "warning_overlap_max_fraction": {"kind": "定义性约束", "source": "S15_instruction_scene_layout.md §4 R2"},
+    "clustered_overlap_fraction": {"kind": "执行参数", "source": "§4 clustered, U(0.02,0.20)"},
+    "isolated_gap_m": {"kind": "执行参数", "source": "§4 isolated, U(40,0.5*W_pk), all pairs >=40 m"},
+    "linear_gap_fraction": {"kind": "执行参数", "source": "§4 linear, U(-0.20*W_pk,0.50*W_pk)"},
+    "edge_clearance_m": {"kind": "执行参数", "source": "§5.3: 300+35+15 m"},
+    "map_side_quantum_m": {"kind": "执行参数", "source": "§5.3 step 3"},
+    "max_map_side_m": {"kind": "执行参数", "source": "§5.3 step 3"},
+    "layout_attempts": {"kind": "执行参数", "source": "§5.1, shared with map and anchor retries"},
+    "link_direction_attempts": {"kind": "执行参数", "source": "§5.1"},
+    "anchor_attempts": {"kind": "执行参数", "source": "§5.3 step 6"},
+    "direction_rad": {"kind": "执行参数", "source": "§4: U(0,2*pi), shared along linear chain"},
+    "bisection_iterations": {"kind": "执行参数", "source": "§5.2"},
+    "bisection_bracket_padding_m": {"kind": "执行参数", "source": "§5.2"},
+    "target_gap_tolerance_m": {"kind": "定义性约束", "source": "§5.1 achieved vs target <=1e-3 m"}
+  }
+}
