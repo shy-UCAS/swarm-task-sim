@@ -47,18 +47,22 @@ def parallel_paths(base, radii, reference_rho, start, sweep, error):
     return [clean_joints([q+rho*n for q,n in selected]) for rho in radii], selected[0][1], selected[-1][1]
 
 
-def common_arcs(spec,free,radii_by_split):
+def common_arcs(spec,free,radii_by_split,*,ingress_sign=None):
+    from .construction import ingress_issues
     base = free.target["geometry"]; center = np.asarray(center_of(base))
     outer = offset_curve(base,max(r for block in radii_by_split for r in block),free.cfg["chord_error_m"])
     radius = max(np.linalg.norm(p-center) for p in outer)
     count = max(8,math.ceil(2*math.pi/(2*math.acos(1-min(1.,free.cfg["chord_error_m"]/radius)))))
-    step = 2*math.pi/count; all_points = []
+    step = 2*math.pi/count; all_points = []; frames_by_split=[]
     for side,block in enumerate(radii_by_split):
         mid = (block[0]+block[-1])/2
+        frames=[]
         for i in range(count):
             angle = i*step+spec["public_split"]["relative_bearings_rad"][side]
             q,n = frame_at_angle(base,mid,angle)
+            frames.append((q,n))
             all_points.extend(q+rho*n for rho in block)
+        frames_by_split.append(frames)
     points = np.asarray(all_points); valid = geometry_facts(free.world,points)["signed_distance_m"] <= -free.cfg["world_margin_m"]+TOL
     for constraint in free.constraints:
         valid &= geometry_facts(constraint["geometry"],points)["signed_distance_m"] >= constraint["margin_m"]-TOL
@@ -66,6 +70,20 @@ def common_arcs(spec,free,radii_by_split):
     for block in radii_by_split:
         good &= valid[cursor:cursor+count*len(block)].reshape(count,len(block)).all(axis=1)
         cursor += count*len(block)
+    if ingress_sign is not None:
+        warning=offset_geometry(base,free.offsets["warning"])
+        for i in np.flatnonzero(good):
+            slots=[]
+            for side,block in enumerate(radii_by_split):
+                q,n=frames_by_split[side][i]; heading=ingress_sign*np.array([-n[1],n[0]])
+                for j,rho in enumerate(block):
+                    point=q+rho*n; hit=line_interval(warning,point,heading)
+                    if hit is None or hit[0]>=0:
+                        good[i]=False; break
+                    slots.append({"split_index":side,"slot_id":f"{side}:{j}",
+                        "entry":(point+hit[0]*heading).tolist(),"direction":heading.tolist(),"work":[point.tolist()]})
+                if not good[i]: break
+            if good[i] and ingress_issues(spec,free,slots): good[i]=False
     if good.all(): return [(0.,2*math.pi)],True
     if not good.any(): return [],False
     first_bad = int(np.flatnonzero(~good)[0]); arcs=[]; start=None
@@ -95,11 +113,19 @@ def patrol_shape(spec,free,rng,draw,*,force_form=None):
         full=force_form=="full"
     sign=rng.choice((-1,1)); laps=rng.uniform(*p["laps"]) if full else None
     traversals=None if full else rng.choice(p["traversals"])
+    # Keep the original form/rotation/lap draws. Feasibility is then checked for
+    # that sampled rotation, rather than requiring both directions to be clear.
+    work_arcs,work_complete=arcs,complete
+    arcs,complete=common_arcs(spec,free,radii_by_split,ingress_sign=sign)
+    if full and not complete:
+        raise GeometryRejected("ingress_line_blocked",[{"rotation_sign":sign,"reason":"full_patrol_entry_domain"}])
     start=math.radians(draw["direction_deg"])
     if full: span=2*math.pi*laps
     else:
         maximum=max((b-a for a,b in arcs),default=0.)
-        if math.degrees(maximum)<p["arc_min_deg"]: raise GeometryRejected("patrol_arc_too_short",[{"available_deg":math.degrees(maximum)}])
+        if math.degrees(maximum)<p["arc_min_deg"]:
+            reason="ingress_line_blocked" if max((b-a for a,b in work_arcs),default=0.)>=math.radians(p["arc_min_deg"]) else "patrol_arc_too_short"
+            raise GeometryRejected(reason,[{"available_deg":math.degrees(maximum),"rotation_sign":sign}])
         span=rng.uniform(math.radians(p["arc_min_deg"]),maximum)
         if not complete:
             starts=[(a,b-span) for a,b in arcs if b-a>=span]

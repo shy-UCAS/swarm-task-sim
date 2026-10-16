@@ -10,6 +10,7 @@ from .route import _approaches, clean_joints, GeometryRejected, line_interval
 from .operation_shapes import round_corners
 from .config import load_generator
 from .free_space import TOL
+from .construction import retreat_endpoint
 
 
 def connect(planner, points):
@@ -52,10 +53,8 @@ def route_operation(scene, spec, shape, free, initial_states, rng):
                     incoming = round_corners(incoming, radius, free.cfg["chord_error_m"])
                 outgoing = []
                 if spec["role"] != "intrusion":
+                    endpoint, retreat_check = retreat_endpoint(free, slot, retreat)
                     direction = np.asarray(slot["exit_direction"])
-                    interval = line_interval(offset_geometry(warning, retreat), work[-1], direction)
-                    if interval is None or interval[1] <= 0: raise GeometryRejected("retreat_ray_unavailable")
-                    endpoint = work[-1]+interval[1]*direction
                     tail_direction = work[-1]-work[-2] if len(work)>1 else direction
                     tail_direction /= np.linalg.norm(tail_direction)
                     tail = work[-1]+spec["family"]["lateral_spacing_m"]*tail_direction

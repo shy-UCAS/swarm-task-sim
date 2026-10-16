@@ -154,6 +154,7 @@ def observation_shape(spec, free, rng, draw):
 
 
 def draw_operation(spec, region, rng, free):
+    from .construction import precheck_operation
     from .patrol_shape import patrol_shape
     from .terminal_shapes import feint_shape, intrusion_shape
     builders = {"area_search": search_shape, "close_observation": observation_shape, "monitoring": patrol_shape,
@@ -168,6 +169,7 @@ def draw_operation(spec, region, rng, free):
             evidence = [dict(slot=slot["slot_id"], segment=i, **issue) for slot in result["slots"]
                         for i, (a,b) in enumerate(zip(slot["work"], slot["work"][1:])) for issue in free.segment_issues(a,b)]
             if evidence: raise GeometryRejected("work_segment_clearance", evidence)
+            precheck_operation(spec, free, result, rng)
             draw["rejected_shape_attempts"] = rejected
             return result
         except GeometryRejected as exc:
