@@ -101,7 +101,8 @@ def _approaches(scene, spec, mapping, states, free, clearance):
         if interval is None:
             raise GeometryRejected("collection_line_unavailable")
         collection = origin+interval[0]*direction
-        lead_t = min(interval[0], min(float(p @ direction) for p in entries.values())-free.cfg["alignment_length_m"])
+        lead_t = min(interval[0], min(float(p @ direction) for p in entries.values())
+                     - free.cfg["alignment_length_m"] - half)
         lead = origin+lead_t*direction
         starts = {a: np.asarray(states[a]["position_enu_m"][:2]) for a in agents}
         mean = np.mean(list(starts.values()), axis=0)

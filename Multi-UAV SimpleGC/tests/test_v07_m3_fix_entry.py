@@ -8,11 +8,29 @@ from v07_m3_fixtures import request
 from task_v07.geometry import geometry_facts, offset_geometry
 from task_v07.unified.spec import build_spec
 from task_v07.unified.free_space import free_space
-from task_v07.unified.route import line_interval, route_group
+from task_v07.unified.route import _approaches, line_interval, route_group
 from task_v07.unified.checks import formal_entry_segment, plan_checks, warning_visits
 
 
 class EntryRepairTests(unittest.TestCase):
+    def test_F4_large_inside_lane_retains_actual_hundred_metre_alignment(self):
+        scene, descriptor, group = request(count=2)
+        descriptor["family_conditions"]["lateral_spacing_m"] = 300.
+        spec = build_spec(descriptor, group); free = free_space(scene, spec)
+        warning = offset_geometry(free.target["geometry"], free.offsets["warning"])
+        heading = np.array([1., 0.]); mapping = {}
+        for agent, y in zip(group["members"], (-800., -500.)):
+            origin = np.array([0., y]); low, _ = line_interval(warning, origin, heading)
+            mapping[agent] = {"split_index": 0, "slot_id": agent, "direction": heading.tolist(),
+                              "entry": (origin+low*heading).tolist()}
+        states = {s["agent_id"]: s for s in descriptor["family_conditions"]["initial_states"]}
+        approaches, references = _approaches(scene, spec, mapping, states, free, 50.)
+        self.assertEqual(max(abs(ref["lane_offset_m"]) for ref in references.values()), 150.)
+        for agent, points in approaches.items():
+            actual = float(np.linalg.norm(points[-1]-points[-2]))
+            self.assertGreaterEqual(actual, 100.-1e-6, (agent, actual))
+            np.testing.assert_allclose((points[-1]-points[-2])/actual, heading, atol=1e-10)
+
     def test_F1_exterior_detour_has_ten_metre_clearance_and_one_visit(self):
         scene, descriptor, group = request(count=2)
         spec = build_spec(descriptor, group); free = free_space(scene, spec)
