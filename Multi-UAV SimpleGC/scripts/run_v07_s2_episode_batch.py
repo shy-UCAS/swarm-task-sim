@@ -16,7 +16,7 @@ sys.path.insert(0, str(PROJECT))
 from scripts.run_v07_s2_expansion import (INFRA_ATTEMPT, new_attempt, descriptor_jobs, EXPANSION_SCOPE,
                                         scene_digest, compare_episode_dirs)
 from task_v07.expansion.contracts import P0ContractError, condition_digest, validate_model_input
-from task_v07.expansion.episode_pipeline import plan_episode, calibrate_episode, episode_interval_check
+from task_v07.expansion.episode_pipeline import plan_episode, calibrate_episode
 from task_v07.expansion.role_planners import PlanningInfeasible
 from task_v07.expansion.geometry_checks import exact_frame_geometry
 from task_v07.expansion.solo_spacing import load_saved_solos, solo_interval_check, prediction_error
@@ -212,11 +212,6 @@ def run_episode_job(payload):
             save_json(attempt / "timing_calibration.json", calibration)
             if plans is None:
                 raise PlanningInfeasible("kinematic_infeasible", "single-agent core event or completed hold unobserved")
-            interval = episode_interval_check(sk, bundle, plans)
-            save_json(attempt / "planning_layer_interval.json", interval)
-            if any(interval[mode]["below_warning"] for mode in ("synchronous", "sequential")):
-                raise PlanningInfeasible("planning_spacing_rejection",
-                    f"whole episode actual-delay constant-speed estimate below {interval['warning_threshold_m']:g}m")
             saved_solo = load_saved_solos(attempt, sk["agent_ids"])
             overlay = solo_interval_check(saved_solo, plans)
             save_json(attempt / "solo_overlay_interval.json", overlay)
@@ -238,7 +233,6 @@ def run_episode_job(payload):
         save_json(skroot / "skeleton.json", sk)
         save_json(skroot / "planning_checks.json", pre)
         save_json(skroot / "timing_calibration.json", calibration)
-        save_json(skroot / "planning_layer_interval.json", interval)
         save_json(skroot / "solo_overlay_interval.json", overlay)
         save_json(skroot / "geometry_history.json", history)
         save_json(skroot / "candidate_search.json", search)

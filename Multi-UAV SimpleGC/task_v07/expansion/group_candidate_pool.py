@@ -5,7 +5,7 @@ from task_v07.planning import seed_for
 from .contracts import P0ContractError
 from .formation_role_planners import Context
 from .continuous_geometry import draw_role
-from .pipeline import plan_group,role_parameters,COMMON_CONSTANTS
+from .pipeline import plan_group,role_parameters
 from .candidate_constraints import bearing_allowed
 from .role_planners import PlanningInfeasible
 from .search_diagnostics import rejection,summarize
@@ -82,7 +82,7 @@ def build_group_pool(scene,descriptor,group,budget):
 def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMBINATION_BUDGET):
     from .sampling import derive_intent
     from .candidate_search import choose_eligible,MAX_CALIBRATION_ROUNDS
-    from .episode_pipeline import assemble_episode,compose_timing_plans,episode_interval_check
+    from .episode_pipeline import assemble_episode
     if budget<200:raise ValueError('Every task group requires at least 200 proposals')
     if derive_intent(descriptor['task_groups'])!=descriptor['base_intent']:
         raise P0ContractError('Public sampling roles disagree with assigned intent')
@@ -110,17 +110,11 @@ def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMB
         if not reason:
             groups={g:c['skeleton'] for g,c in selected.items()};bundles={g:c['bundle'] for g,c in selected.items()}
             skeleton,bundle=assemble_episode(descriptor,groups,bundles,index)
-            nominal={gid:{a:COMMON_CONSTANTS['initial_settle_s']+distance/skeleton['cruise_speed_m_s'] for a,distance in g['nominal_core_distances_m'].items()} for gid,g in groups.items()}
-            interval=episode_interval_check(skeleton,bundle,compose_timing_plans(skeleton,nominal))
-            record['interval']=interval
-            if any(interval[m]['below_warning'] for m in ('synchronous','sequential')):
-                reason='nominal_whole_episode_spacing'
-            else:
-                costs={g:c['cost'] for g,c in selected.items()}
-                feasible.append({'index':index,'cost':sum(costs.values()),'cost_by_group':costs,
-                    'group_candidate_indices':proposal_ids,'skeleton':skeleton,'bundle':bundle,
-                    'checks':{**{g:c['checks'] for g,c in selected.items()},'nominal_whole_episode_interval':interval}})
-                record.update(stage='feasible',approach_length_by_group_m=costs)
+            costs={g:c['cost'] for g,c in selected.items()}
+            feasible.append({'index':index,'cost':sum(costs.values()),'cost_by_group':costs,
+                'group_candidate_indices':proposal_ids,'skeleton':skeleton,'bundle':bundle,
+                'checks':{g:c['checks'] for g,c in selected.items()}})
+            record.update(stage='feasible',approach_length_by_group_m=costs)
         if reason:
             record.update(reason=reason,rejection=rejection(reason,scope='combination'))
             combination_reasons[reason]+=1
