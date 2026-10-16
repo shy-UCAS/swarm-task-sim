@@ -14,7 +14,7 @@ import numpy as np
 from task_v07.execution import execute, departure_delays, completion_budget
 from task_v07.labels import measure
 from task_v07.planning import seed_for
-from task_v07.unified.config import stop_fields
+from task_v07.unified.config import stop_fields, load_generator
 from .contracts import P0ContractError, validate_route_bundle, validate_family_conditions
 from .geometry_checks import check_polyline, check_retreat_point, planning_layer_interval_check
 from .role_planners import PlanningInfeasible
@@ -51,7 +51,8 @@ def forbidden_zone_ids(scene, layers):
 def role_parameters(descriptor, group):
     match=re.search(r"_ext_(\d+)",descriptor["skeleton_id"])
     slot=descriptor.get("geometry_slot",int(match.group(1)) if match else 0)
-    return {"geometry_slot":slot, "column_seed":descriptor["column_seed"], "retreat_warning_minimum_m":100.,
+    return {"geometry_slot":slot, "column_seed":descriptor["column_seed"],
+            "retreat_warning_minimum_m":load_generator()["retreat"]["warning_clearance_m"],
             "candidate_budget":200,
             "collection_range_m":(50.,250.), "target_warning_only":True,
             "planning_interval_warning_m":10.,
