@@ -1,0 +1,748 @@
+{
+  "schema": "traj2language.m3b_q2_graze_audit/1",
+  "status": "COMPLETE",
+  "audit_utc": "2026-10-16T09:18:12.283083+00:00",
+  "source_code_sha": "9594c5755695e580d8dca48724f35723ad81cb23",
+  "source_q2_entry_commit": "5a6a1dbe1f50d273fcd8d7aba28e39b74859fe54",
+  "attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z",
+  "registration": {
+    "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\registration.json",
+    "sha256": "571b7f821f13b95982004ab47660a893f06dcc87fd8cbc9a13365ff29f1a6433"
+  },
+  "descriptor": {
+    "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s2infra_20261014T023604Z_d2566191\\private_skeleton_descriptors.json",
+    "sha256": "f2fabfae1126ebb1da5349c6255cf9a03997b58f4a6677a82e1279eaee46c615"
+  },
+  "definition": {
+    "population": "All unique (skeleton_id, group_id, candidate_index) records with whole_route_checks.status == PASS from all 20 registered Q2 candidate_pool.json files; before episode-combination expansion and without eligible-only filtering.",
+    "member_count_unit": "candidate member record; the same physical agent in another proposal is a different route observation; never count the same group proposal repeatedly through episode combinations.",
+    "role": "descriptor task_groups[].role; execution_method also reported to distinguish area_search and close_observation within reconnaissance.",
+    "warning_visits": "Saved exact whole-route warning_intervals_route_m from checks.warning_visits; route arc-length intervals, not sample-frame count.",
+    "multiple_visit": "len(warning_intervals_route_m) > 1",
+    "pre_formal_entry_short_visit": "An exhaustive interval with end-start <1 m and occurring before the intended warning entry. All saved intervals in this population are >=1 m, so this predicate is false without requiring reconstruction of intended-entry positions.",
+    "threshold_source": "User F0 diagnostic <1 m only; no criterion changes.",
+    "coverage": "All 20 pool files, every passing whole-route group proposal, every member; no simulation and no generator modification.",
+    "exclusion": "Rejected proposals including the six fixed reproductions are outside this accepted-population audit, so a zero here does not deny the rejected-proposal D-a grazes."
+  },
+  "totals": {
+    "pool_files": 20,
+    "group_candidates": 1195,
+    "member_records": 6220,
+    "visit_intervals": 6220,
+    "multiple_visit_member_records": 0,
+    "short_visit_member_records": 0,
+    "pre_formal_entry_short_visit_member_records": 0,
+    "either_condition_member_records": 0
+  },
+  "by_role": {
+    "transit": {
+      "group_candidates": 312,
+      "member_records": 1769,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1769,
+      "min_visit_length_m": 62.52263838824365
+    },
+    "reconnaissance": {
+      "group_candidates": 261,
+      "member_records": 1398,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1398,
+      "min_visit_length_m": 397.28345456980605
+    },
+    "monitoring": {
+      "group_candidates": 105,
+      "member_records": 445,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 445,
+      "min_visit_length_m": 3687.3737860897922
+    },
+    "feint": {
+      "group_candidates": 270,
+      "member_records": 1295,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1295,
+      "min_visit_length_m": 1030.522155070806
+    },
+    "intrusion": {
+      "group_candidates": 247,
+      "member_records": 1313,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1313,
+      "min_visit_length_m": 742.4214823415423
+    }
+  },
+  "by_execution_method": {
+    "transit": {
+      "group_candidates": 312,
+      "member_records": 1769,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1769,
+      "min_visit_length_m": 62.52263838824365
+    },
+    "close_observation": {
+      "group_candidates": 198,
+      "member_records": 1142,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1142,
+      "min_visit_length_m": 397.28345456980605
+    },
+    "monitoring": {
+      "group_candidates": 105,
+      "member_records": 445,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 445,
+      "min_visit_length_m": 3687.3737860897922
+    },
+    "feint": {
+      "group_candidates": 270,
+      "member_records": 1295,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1295,
+      "min_visit_length_m": 1030.522155070806
+    },
+    "intrusion": {
+      "group_candidates": 247,
+      "member_records": 1313,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 1313,
+      "min_visit_length_m": 742.4214823415423
+    },
+    "area_search": {
+      "group_candidates": 63,
+      "member_records": 256,
+      "multiple_visit_member_records": 0,
+      "short_visit_member_records": 0,
+      "pre_formal_entry_short_visit_member_records": 0,
+      "either_condition_member_records": 0,
+      "visit_intervals": 256,
+      "min_visit_length_m": 650.4348855665667
+    }
+  },
+  "by_skeleton": [
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_000_regular",
+      "group_candidates": 75,
+      "member_records": 525,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 75,
+          "member_records": 525,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 525,
+          "min_visit_length_m": 152.42220291211106,
+          "role": "transit",
+          "execution_method": "transit"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_001_regular",
+      "group_candidates": 76,
+      "member_records": 532,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 76,
+          "member_records": 532,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 532,
+          "min_visit_length_m": 847.8625196480307,
+          "role": "reconnaissance",
+          "execution_method": "close_observation"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_002_regular",
+      "group_candidates": 3,
+      "member_records": 21,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 3,
+          "member_records": 21,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 21,
+          "min_visit_length_m": 3687.3737860897922,
+          "role": "monitoring",
+          "execution_method": "monitoring"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_003_regular",
+      "group_candidates": 62,
+      "member_records": 434,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 62,
+          "member_records": 434,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 434,
+          "min_visit_length_m": 1355.7205827927082,
+          "role": "feint",
+          "execution_method": "feint"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_004_regular",
+      "group_candidates": 91,
+      "member_records": 434,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 84,
+          "member_records": 420,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 420,
+          "min_visit_length_m": 838.475739126081,
+          "role": "intrusion",
+          "execution_method": "intrusion"
+        },
+        "task_group_02": {
+          "group_candidates": 7,
+          "member_records": 14,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 14,
+          "min_visit_length_m": 4625.716562441874,
+          "role": "monitoring",
+          "execution_method": "monitoring"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_005_regular",
+      "group_candidates": 91,
+      "member_records": 344,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 37,
+          "member_records": 74,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 74,
+          "min_visit_length_m": 62.52263838824365,
+          "role": "transit",
+          "execution_method": "transit"
+        },
+        "task_group_02": {
+          "group_candidates": 54,
+          "member_records": 270,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 270,
+          "min_visit_length_m": 162.33413407737908,
+          "role": "transit",
+          "execution_method": "transit"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_006_regular",
+      "group_candidates": 37,
+      "member_records": 74,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 37,
+          "member_records": 74,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 74,
+          "min_visit_length_m": 1899.2415267789002,
+          "role": "reconnaissance",
+          "execution_method": "area_search"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_007_regular",
+      "groups": {}
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_008_regular",
+      "group_candidates": 17,
+      "member_records": 34,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 17,
+          "member_records": 34,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 34,
+          "min_visit_length_m": 1343.6486139149401,
+          "role": "feint",
+          "execution_method": "feint"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_009_regular",
+      "group_candidates": 75,
+      "member_records": 209,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 16,
+          "member_records": 32,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 32,
+          "min_visit_length_m": 929.7487620837164,
+          "role": "intrusion",
+          "execution_method": "intrusion"
+        },
+        "task_group_03": {
+          "group_candidates": 59,
+          "member_records": 177,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 177,
+          "min_visit_length_m": 932.3951785166382,
+          "role": "intrusion",
+          "execution_method": "intrusion"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+      "group_candidates": 119,
+      "member_records": 657,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 60,
+          "member_records": 480,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 480,
+          "min_visit_length_m": 171.81216590479426,
+          "role": "transit",
+          "execution_method": "transit"
+        },
+        "task_group_02": {
+          "group_candidates": 59,
+          "member_records": 177,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 177,
+          "min_visit_length_m": 64.9761474282011,
+          "role": "transit",
+          "execution_method": "transit"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_001_regular",
+      "group_candidates": 103,
+      "member_records": 534,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 45,
+          "member_records": 360,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 360,
+          "min_visit_length_m": 631.551464910377,
+          "role": "reconnaissance",
+          "execution_method": "close_observation"
+        },
+        "task_group_02": {
+          "group_candidates": 58,
+          "member_records": 174,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 174,
+          "min_visit_length_m": 397.28345456980605,
+          "role": "reconnaissance",
+          "execution_method": "close_observation"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_002_regular",
+      "group_candidates": 95,
+      "member_records": 410,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 25,
+          "member_records": 200,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 200,
+          "min_visit_length_m": 4216.369885187094,
+          "role": "monitoring",
+          "execution_method": "monitoring"
+        },
+        "task_group_02": {
+          "group_candidates": 70,
+          "member_records": 210,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 210,
+          "min_visit_length_m": 4869.037768635169,
+          "role": "monitoring",
+          "execution_method": "monitoring"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_003_regular",
+      "group_candidates": 91,
+      "member_records": 453,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 36,
+          "member_records": 288,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 288,
+          "min_visit_length_m": 1146.7160659689357,
+          "role": "feint",
+          "execution_method": "feint"
+        },
+        "task_group_02": {
+          "group_candidates": 55,
+          "member_records": 165,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 165,
+          "min_visit_length_m": 1030.522155070806,
+          "role": "feint",
+          "execution_method": "feint"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_004_regular",
+      "group_candidates": 115,
+      "member_records": 685,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 68,
+          "member_records": 544,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 544,
+          "min_visit_length_m": 742.4214823415423,
+          "role": "intrusion",
+          "execution_method": "intrusion"
+        },
+        "task_group_02": {
+          "group_candidates": 47,
+          "member_records": 141,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 141,
+          "min_visit_length_m": 1031.448855308734,
+          "role": "feint",
+          "execution_method": "feint"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_006_regular",
+      "group_candidates": 45,
+      "member_records": 258,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 26,
+          "member_records": 182,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 182,
+          "min_visit_length_m": 650.4348855665667,
+          "role": "reconnaissance",
+          "execution_method": "area_search"
+        },
+        "task_group_02": {
+          "group_candidates": 19,
+          "member_records": 76,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 76,
+          "min_visit_length_m": 633.0917109080374,
+          "role": "reconnaissance",
+          "execution_method": "close_observation"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_007_regular",
+      "groups": {}
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_008_regular",
+      "group_candidates": 30,
+      "member_records": 141,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 7,
+          "member_records": 49,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 49,
+          "min_visit_length_m": 1030.6917915119802,
+          "role": "feint",
+          "execution_method": "feint"
+        },
+        "task_group_02": {
+          "group_candidates": 23,
+          "member_records": 92,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 92,
+          "min_visit_length_m": 1145.9636428517506,
+          "role": "feint",
+          "execution_method": "feint"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_009_regular",
+      "group_candidates": 43,
+      "member_records": 232,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 20,
+          "member_records": 140,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 140,
+          "min_visit_length_m": 832.5659775101608,
+          "role": "intrusion",
+          "execution_method": "intrusion"
+        },
+        "task_group_02": {
+          "group_candidates": 23,
+          "member_records": 92,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 92,
+          "min_visit_length_m": 1163.1273537807856,
+          "role": "feint",
+          "execution_method": "feint"
+        }
+      }
+    },
+    {
+      "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+      "group_candidates": 27,
+      "member_records": 243,
+      "groups": {
+        "task_group_01": {
+          "group_candidates": 27,
+          "member_records": 243,
+          "multiple_visit_member_records": 0,
+          "short_visit_member_records": 0,
+          "pre_formal_entry_short_visit_member_records": 0,
+          "either_condition_member_records": 0,
+          "visit_intervals": 243,
+          "min_visit_length_m": 280.85423309173166,
+          "role": "transit",
+          "execution_method": "transit"
+        }
+      }
+    }
+  ],
+  "abnormal_members": [],
+  "recomputed_proposals": 0,
+  "source_files": [
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_000_regular\\candidate_pool.json",
+      "sha256": "e4a26b5d19dacab96cf06b642f1fd037a2f973c6690e6503ba887cdca51e6766",
+      "proposal_records": 200
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_001_regular\\candidate_pool.json",
+      "sha256": "855a816151823301e2d860b3907f5d57d9512f04558ece0cfe367440675c27e5",
+      "proposal_records": 200
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_002_regular\\candidate_pool.json",
+      "sha256": "45a962a5b13fa01fd87252c0e2894959340a7be076f9cd1c0743b835282706b7",
+      "proposal_records": 200
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_003_regular\\candidate_pool.json",
+      "sha256": "ae8c847f11b19144386e021d3a8536ace86a6d4756937bc3311ff76de0e4e6f8",
+      "proposal_records": 200
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_004_regular\\candidate_pool.json",
+      "sha256": "03602e7fe278af71579e9bcc54d3805df1f74052afdee112d8a4694f22a08509",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_005_regular\\candidate_pool.json",
+      "sha256": "32d08275e2593f6ed31ccbb035a546dfecccc3c92b74185fdc8fd1c6736365e8",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_006_regular\\candidate_pool.json",
+      "sha256": "86d705dd20f3bd742e84ddf57aa5f4b29c389b691094d3c4a266d9a8ab3b4306",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_007_regular\\candidate_pool.json",
+      "sha256": "a8326a8673bdf67dba58bcb304c232e658d47a4ba737cb1fa909e2c6d6e6eedf",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_008_regular\\candidate_pool.json",
+      "sha256": "e654ad616cc7bf252f15faece69c704c8276000f9d2f67be14a4ad4d66ddb29a",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_4d13d93f9171c446_ext_009_regular\\candidate_pool.json",
+      "sha256": "38f7c6707dc302f198630f7283321a94f1ebbb26cd110dfbbf2313d2f5ed4afc",
+      "proposal_records": 600
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_000_regular\\candidate_pool.json",
+      "sha256": "fa25e5dfc2b2faf8f7f68edfd64c7ae58ca2c71a9c2b80acd90953bcccfd0274",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_001_regular\\candidate_pool.json",
+      "sha256": "2d12b425ea2362e4f61691dd1c7bb56dc7c8c3962291cb1e9e387ed1dca4cb37",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_002_regular\\candidate_pool.json",
+      "sha256": "91daa85036f1671a9a0a4930a8ef4f83009e390f93a83aa7fc3709f6ee98a790",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_003_regular\\candidate_pool.json",
+      "sha256": "b1aa91a400e0bd58e592409ad7ef4ffbb0e3f1acf9de9092ab647503be7f0650",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_004_regular\\candidate_pool.json",
+      "sha256": "671c24e6895e6b77b464504ce8e21e7baec8ffdf4e3a9b2f8ef6686b9b54103b",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_006_regular\\candidate_pool.json",
+      "sha256": "029fdd536af4167baf57b45d023d73b6b21b751435c747f248ef6a68ee516762",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_007_regular\\candidate_pool.json",
+      "sha256": "d085c6fe78c65964c5c7e6923a063c2368bb10a8abeec6c204b3f89cd4d12780",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_008_regular\\candidate_pool.json",
+      "sha256": "ad4af1b16d0bc313c3e2e1870ad100ec0236d17734f0648b0aac29a532857421",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_5024cb2ccea653ae_ext_009_regular\\candidate_pool.json",
+      "sha256": "9fa4d8b45f82f2f97c919ce0cbc1f9b63f1c4c8c31acff4229ed4a5cdb2052bc",
+      "proposal_records": 400
+    },
+    {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3b_q2_20261016T072016010192Z\\family_s12_f2adfbfae12fbbad_ext_000_regular\\candidate_pool.json",
+      "sha256": "4040d983ccc688e6859ff60ef2a699b60214051189e1c3e1d987af0a438ec938",
+      "proposal_records": 200
+    }
+  ],
+  "limitations": [],
+  "tool_errors": [],
+  "timing": {
+    "final_aggregation_wall_s": 0.45625679999920976,
+    "stage_budget_start_utc": "2026-10-16T09:15:20+00:00",
+    "stage_budget_deadline_utc": "2026-10-16T09:35:20+00:00",
+    "elapsed_since_stage_start_s": 172.284083
+  },
+  "conclusion": "Among 1,195 accepted whole-route group candidates and 6,220 candidate-member records, none has more than one target-warning visit or any visit shorter than 1 m. Therefore none has a sub-1 m visit before its intended entry. No trajectory or simulation was executed."
+}
