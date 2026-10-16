@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 from task_v07.planning import seed_for
-from task_v07.unified.config import stop_fields
+from task_v07.unified.config import stop_fields, load_generator
 from .contracts import RouteBundle, P0ContractError
 from .pipeline import plan_group, single_agent_timing, timing_plans, COMMON_CONSTANTS
 from .role_planners import planner_for, PlanningInfeasible
@@ -21,7 +21,7 @@ class ConstrainedPlanner:
     def plan_with_template(self, scene, group, parameters):
         parameters = deepcopy(parameters)
         parameters["excluded_work_area_bearings_deg"] = list(self.excluded)
-        parameters["minimum_group_bearing_difference_deg"] = 60.
+        parameters["minimum_group_bearing_difference_deg"] = load_generator()["combination"]["same_target_bearing_min_deg"]
         parameters["monitor_radius_start_index"] = 2 * self.variant
         if self.variant and not (self.radius_first and self.variant == 1):
             for key in ("geometry_seed", "planning_seed"):

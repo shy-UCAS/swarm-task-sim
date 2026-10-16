@@ -5,6 +5,7 @@ import random
 import time
 
 from task_v07.planning import seed_for
+from task_v07.unified.config import load_generator
 from .contracts import RouteBundle, P0ContractError
 from .formation_role_planners import Context
 from .continuous_geometry import draw_role
@@ -15,7 +16,7 @@ from .role_planners import PlanningInfeasible
 from .search_diagnostics import rejection, summarize
 
 CANDIDATE_BUDGET = 200
-MAX_CALIBRATION_ROUNDS = 5
+MAX_CALIBRATION_ROUNDS = load_generator()["calibration"]["max_rounds"]
 
 
 class DrawnPlanner:
@@ -29,6 +30,7 @@ class DrawnPlanner:
 
 
 def choose_eligible(candidates, same_direction, rng):
+    ratio = load_generator()["combination"]["same_direction_length_ratio_max"]
     if not candidates:
         return [], {'minimum_approach_length_m': None, 'feasible_candidates': 0, 'eligible_candidates': 0}
     minimum = min(c['cost'] for c in candidates)
@@ -39,14 +41,14 @@ def choose_eligible(candidates, same_direction, rng):
     def within_bound(candidate):
         costs = candidate.get('cost_by_group', {'single_group': candidate['cost']})
         bounds = minima or {'single_group': minimum}
-        return all(cost/bounds[g] <= 1.15 if bounds[g] else cost == 0 for g, cost in costs.items())
+        return all(cost/bounds[g] <= ratio if bounds[g] else cost == 0 for g, cost in costs.items())
     eligible = [c for c in candidates if not same_direction or within_bound(c)]
     rng.shuffle(eligible)
-    return eligible, {'minimum_approach_length_m': minimum, 'maximum_ratio': 1.15 if same_direction else None,
+    return eligible, {'minimum_approach_length_m': minimum, 'maximum_ratio': ratio if same_direction else None,
                       'minimum_approach_length_by_group_m': minima,
                       'ratio_scope': 'each task group independently within whole-episode feasible pool',
                       'feasible_candidates': len(candidates), 'eligible_candidates': len(eligible),
-                      'selection_order': 'all geometry -> nominal whole-route separation -> same-direction 115% -> private random order -> at most 5 actual calibration rounds'}
+                      'selection_order': 'feasible candidates -> configured same-direction length ratio -> private random order -> bounded solo rehearsals'}
 
 
 def _candidate_record(index, stage, reason, draws, evidence=None):

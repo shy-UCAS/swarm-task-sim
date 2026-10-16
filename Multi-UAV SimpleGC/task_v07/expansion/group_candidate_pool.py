@@ -2,6 +2,7 @@
 from collections import Counter
 import math,random,time
 from task_v07.planning import seed_for
+from task_v07.unified.config import load_generator
 from .contracts import P0ContractError
 from .formation_role_planners import Context
 from .continuous_geometry import draw_role
@@ -104,7 +105,7 @@ def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMB
         bearings={};reason=None
         for gid,c in selected.items():
             if not bearing_allowed(math.radians(c['bearing_deg']),{'excluded_work_area_bearings_deg':bearings.get(c['target_id'],[]),
-                                                                  'minimum_group_bearing_difference_deg':60.}):
+                                                                  'minimum_group_bearing_difference_deg':load_generator()['combination']['same_target_bearing_min_deg']}):
                 reason='same_target_work_area_bearing';break
             bearings.setdefault(c['target_id'],[]).append(c['bearing_deg'])
         if not reason:
@@ -124,8 +125,8 @@ def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMB
     eligible_ids={c['index'] for c in eligible}
     for record in combinations:
         if record['stage']=='feasible' and record['candidate_index'] not in eligible_ids:
-            reason='task_group_approach_length_exceeds_115_percent'
-            record.update(stage='same_direction_115_percent',reason=reason,rejection=rejection(reason,scope='combination'))
+            reason='approach_length_ratio_exceeded'
+            record.update(stage='same_direction_length_ratio',reason=reason,rejection=rejection(reason,scope='combination'))
             combination_reasons[reason]+=1
     for c in eligible:
         c['skeleton']['candidate_selection']={**selection,'candidate_index':c['index'],'group_candidate_indices':c['group_candidate_indices'],
