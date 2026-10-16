@@ -1,6 +1,7 @@
 """M3b work-shape and shared-policy contracts, independent of runtime samples."""
 import random
 import unittest
+import numpy as np
 from v07_m3_fixtures import request
 from task_v07.expansion.pipeline import exclusion_policy, forbidden_zone_ids
 from task_v07.unified.spec import build_spec
@@ -19,6 +20,22 @@ def role_request(method, multi=False, count=2):
 
 
 class M3bGeometryTests(unittest.TestCase):
+    def test_observation_keeps_true_intermediate_dwell_after_join_cleanup(self):
+        scene, d, g = role_request("close_observation")
+        spec = build_spec(d,g); free = free_space(scene,spec)
+        rng = random.Random(3)
+        shape = draw_shape(spec,work_region(scene,spec,free),rng,free)
+        bundle, template = route_group(scene,spec,shape,free,d["family_conditions"]["initial_states"],rng)
+        checks = plan_checks(scene,spec,bundle,template,free,d["family_conditions"]["initial_states"])
+        self.assertEqual(checks["status"],"PASS", checks["issues"])
+        for agent, ref in template["references"].items():
+            dwell = ref["intermediate_dwell"]; points = bundle.waypoints_by_agent[agent]
+            self.assertGreater(dwell["waypoint_index"],0)
+            self.assertLess(dwell["waypoint_index"],len(points)-1)
+            np.testing.assert_array_equal(points[dwell["waypoint_index"]],ref["observation_point_enu_m"])
+            self.assertGreaterEqual(dwell["duration_s"],40.)
+            self.assertLessEqual(dwell["duration_s"],90.)
+
     def test_six_execution_methods_use_the_shared_exclusion_policy(self):
         for method in ("transit", "area_search", "close_observation", "monitoring", "feint", "intrusion"):
             with self.subTest(method=method):

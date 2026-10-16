@@ -9,7 +9,7 @@ from .route import GeometryRejected, line_interval
 
 
 def draw_shape(spec, region, rng, free):
-    if spec["execution_method"] == "area_search":
+    if spec["execution_method"] in ("area_search", "close_observation"):
         from .operation_shapes import draw_operation
         return draw_operation(spec, region, rng, free)
     if spec["role"] != "transit" or spec["execution_method"] != "transit":

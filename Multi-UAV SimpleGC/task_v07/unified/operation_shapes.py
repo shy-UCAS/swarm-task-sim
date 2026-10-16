@@ -128,8 +128,33 @@ def search_shape(spec, free, rng, draw):
     return {"kind": "area_search", "slots": slots, "template_fields": {"survey": survey}, "draw": draw}
 
 
+def observation_shape(spec, free, rng, draw):
+    from task_v07.criteria import load_criteria
+    p = spec["params"]; maximum = min(p["clearance_max_m"], p["band_fraction_max"]*(free.offsets["warning"]-free.offsets["alert"]))
+    if maximum < p["clearance_min_m"]: raise GeometryRejected("observation_band_empty")
+    clearance = rng.uniform(p["clearance_min_m"], maximum); duration = rng.uniform(*p["duration_s"])
+    curve = offset_geometry(free.target["geometry"], free.offsets["alert"]+clearance)
+    slots = gate_slots(spec, free, draw["direction_deg"])
+    for slot in slots:
+        direction = np.asarray(slot["direction"]); origin = np.asarray(slot["entry"])
+        hit = line_interval(curve, origin, direction)
+        if hit is None or hit[0] < 0: raise GeometryRejected("observation_station_unavailable")
+        point = origin+hit[0]*direction
+        if not free.point_valid(point): raise GeometryRejected("observation_station_blocked")
+        slot.update(work=[point.tolist()], exit_direction=(-direction).tolist(), dwell_s=duration,
+                    reference_fields={"observation_point_enu_m": [*point.tolist(), spec["family"]["task_altitude_m"]]})
+    points = np.asarray([s["work"][0] for s in slots])
+    spacing = spec["family"]["lateral_spacing_m"]
+    if any(np.linalg.norm(a-b) < spacing-TOL for i,a in enumerate(points) for b in points[i+1:]):
+        raise GeometryRejected("observation_station_spacing")
+    draw.update(observation_alert_clearance_m=clearance, dwell_s=duration)
+    return {"kind": "close_observation", "slots": slots, "draw": draw,
+            "template_fields": {"close_observation": {"observation_radius_m": load_criteria()["detectors"]["dwell"]["radius_m"],
+                                                       "planned_dwell_s": duration}}}
+
+
 def draw_operation(spec, region, rng, free):
-    builders = {"area_search": search_shape}
+    builders = {"area_search": search_shape, "close_observation": observation_shape}
     if spec["execution_method"] not in builders: raise PlannerUnavailable("Unified role not implemented")
     if region.is_empty: raise GeometryRejected("empty_work_region")
     rejected = []

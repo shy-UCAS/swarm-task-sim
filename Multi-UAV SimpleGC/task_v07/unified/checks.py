@@ -86,6 +86,17 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
             lo, hi = free.cfg["collection_clearance_m"]
             if distance < lo-TOL or distance > hi+TOL or not free.point_valid(collection[:2]):
                 local.append({"code": "collection_clearance", "measured_m": distance, "range_m": [lo, hi]})
+        if kind == "close_observation":
+            dwell = reference.get("intermediate_dwell", {})
+            index = dwell.get("waypoint_index", -1)
+            if not 0 < index < len(points)-1 or not spec["params"]["duration_s"][0] <= dwell.get("duration_s", 0) <= spec["params"]["duration_s"][1]:
+                local.append({"code": "observation_dwell_contract"})
+            else:
+                clearance = float(geometry_facts(free.target["geometry"], points[index])["signed_distance_m"])-free.offsets["alert"]
+                if clearance < spec["params"]["clearance_min_m"]-TOL:
+                    local.append({"code": "observation_alert_clearance", "measured_m": clearance})
+                if not np.allclose(points3[index], reference["observation_point_enu_m"], atol=1e-8, rtol=0):
+                    raise P0ContractError("Dwell index differs from the actual observation point")
         if entry:
             by_split.setdefault(reference["split_index"], []).append(entry["direction"])
         members[agent] = {"status": "REJECT" if local else "PASS", "issues": local,
