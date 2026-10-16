@@ -112,11 +112,12 @@ def _approaches(scene, spec, mapping, states, free, clearance):
         if path is None:
             raise GeometryRejected("no_exterior_connection", [{"split_index": side, "entry_id": entry_id,
                                                                 "from": form.tolist(), "to": lead.tolist()}])
-        reference = clean_joints([mean, *path])
+        entry_center = origin+float(np.mean([p @ direction for p in entries.values()]))*direction
+        reference = clean_joints([mean, *path, entry_center])
         for agent in sorted(agents):
             lane = offset_lane(reference, offsets[agent], free.cfg["chord_error_m"])
             # Physical starts are immutable; only the join to the formed lane is new.
-            points = clean_joints([starts[agent], *lane[1:], entries[agent]])
+            points = clean_joints([starts[agent], *lane[1:-1], entries[agent]])
             if any(geometry_facts(warning, np.asarray([a, b]), footprint=True)["clearance_m"] < -TOL
                    for a, b in zip(points[:-2], points[1:-1])):
                 raise GeometryRejected("warning_visit_before_alignment", [{"agent_id": agent}])

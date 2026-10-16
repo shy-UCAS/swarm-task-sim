@@ -19,8 +19,14 @@ def warning_visits(points, warning):
             low, high = max(0., hit[0]), min(length, hit[1])
             if high-low > TOL:
                 if entry is None:
+                    incoming = direction
+                    straight = low
+                    if low <= TOL and i > 0:
+                        previous = a-points[i-1]
+                        straight = float(np.linalg.norm(previous))
+                        incoming = previous/straight
                     entry = {"segment": i, "distance_on_segment_m": low, "point": (a+low*direction).tolist(),
-                             "direction": direction.tolist(), "straight_before_warning_m": low}
+                             "direction": incoming.tolist(), "straight_before_warning_m": straight}
                 begin, end = offset+low, offset+high
                 if intervals and begin <= intervals[-1][1]+TOL:
                     intervals[-1][1] = end
