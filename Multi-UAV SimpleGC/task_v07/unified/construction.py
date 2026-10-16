@@ -1,5 +1,6 @@
 """Shape-stage connection checks using the same free space as final checks."""
 from copy import deepcopy
+import math
 import numpy as np
 
 from task_v07.geometry import geometry_facts, offset_geometry
@@ -30,22 +31,30 @@ def ingress_issues(spec, free, slots):
 
 
 def retreat_endpoint(free, slot, clearance):
-    """Return a legal endpoint or reject before connecting the route."""
+    """Use the first legal direction in the approved deterministic sequence."""
     minimum = load_generator()["retreat"]["warning_clearance_m"]
-    direction = np.asarray(slot["exit_direction"], float)
+    nominal = np.asarray(slot["exit_direction"], float)
     work_end = np.asarray(slot["work"][-1], float)
     warning = offset_geometry(free.target["geometry"], free.offsets["warning"])
-    interval = line_interval(offset_geometry(warning, clearance), work_end, direction)
-    if interval is None or interval[1] <= 0:
-        raise GeometryRejected("retreat_endpoint_invalid", [{"slot": slot["slot_id"], "reason": "ray_unavailable"}])
-    endpoint = work_end+interval[1]*direction
-    clearances = {name: float(geometry_facts(g, endpoint)["signed_distance_m"])
-                  for name, g in free.warning_geometries.items()}
-    valid = free.point_valid(endpoint) and all(v >= minimum-TOL for v in clearances.values())
-    evidence = {"slot": slot["slot_id"], "rotation_deg": 0., "endpoint_m": endpoint.tolist(),
-                "clearances_m": clearances, "required_m": minimum, "point_valid": free.point_valid(endpoint)}
-    if not valid: raise GeometryRejected("retreat_endpoint_invalid", [evidence])
-    return endpoint, evidence
+    rejected=[]
+    for degrees in (0.,30.,-30.,60.,-60.,90.,-90.):
+        angle=math.radians(degrees); c,s=math.cos(angle),math.sin(angle)
+        direction=np.array([c*nominal[0]-s*nominal[1],s*nominal[0]+c*nominal[1]])
+        interval = line_interval(offset_geometry(warning, clearance), work_end, direction)
+        if interval is None or interval[1] <= 0:
+            rejected.append({"slot":slot["slot_id"],"rotation_deg":degrees,"reason":"ray_unavailable"})
+            continue
+        endpoint = work_end+interval[1]*direction
+        clearances = {name: float(geometry_facts(g, endpoint)["signed_distance_m"])
+                      for name, g in free.warning_geometries.items()}
+        point_valid=free.point_valid(endpoint)
+        evidence = {"slot": slot["slot_id"], "rotation_deg": degrees, "endpoint_m": endpoint.tolist(),
+                    "clearances_m": clearances, "required_m": minimum, "point_valid": point_valid,
+                    "direction":direction.tolist()}
+        if point_valid and all(v >= minimum-TOL for v in clearances.values()):
+            return endpoint, {**evidence,"rejected_directions":rejected}
+        rejected.append(evidence)
+    raise GeometryRejected("retreat_endpoint_invalid", rejected)
 
 
 def precheck_operation(spec, free, shape, rng):

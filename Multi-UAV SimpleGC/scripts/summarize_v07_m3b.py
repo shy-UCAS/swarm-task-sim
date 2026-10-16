@@ -1,6 +1,7 @@
 """Read-only full M3b acceptance, approach/style distributions and stop evidence."""
 from collections import defaultdict,Counter
 from pathlib import Path
+import argparse
 import json
 import sys
 import numpy as np
@@ -21,8 +22,24 @@ def pool_path(root):
     return root/("candidate_search.json" if (root/"candidate_search.json").exists() else "candidate_pool.json")
 
 
-def q2_summary(reg,scenes):
-    raw=read_json(EVIDENCE/"m3b_q2.json"); out=Path(raw["attempt"]); results=[]; approaches=[]; directions=[]
+def selected_retreat_diagnostics(sk):
+    """Actual selected-plan direction choices; no inferred zero for absent provenance."""
+    rows=[]
+    for gid,group in groups(sk).items():
+        selected=group.get("geometry_provenance",{}).get("retreat_by_agent",{})
+        for agent,ref in group["references"].items():
+            choice=selected.get(agent)
+            rows.append({"group_id":gid,"agent_id":agent,"role":group["role"],
+                "execution_method":group["execution_method"],
+                "retreat_required":bool(ref.get("retreat_required",group["role"]!="intrusion")),
+                "rotation_deg":None if choice is None else choice["rotation_deg"],
+                "retreat_choice":choice,"source":"selected_skeleton.json/group_skeletons/geometry_provenance/retreat_by_agent",
+                "missing_reason":None if choice is not None else "intrusion_has_no_retreat" if group["role"]=="intrusion" else "rotation_not_recorded_for_this_backend_path"})
+    return rows
+
+
+def q2_summary(reg,scenes,*,source_name="m3b_q2.json",output_name="m3b_q2_diagnostics.json"):
+    raw=read_json(EVIDENCE/source_name); out=Path(raw["attempt"]); results=[]; approaches=[]; directions=[]; retreats=[]
     by_id={r["skeleton_id"]:r for r in raw["rows"]}
     for fixed in reg["selected"]:
         sid=fixed["skeleton_id"]; root=out/sid
@@ -30,6 +47,7 @@ def q2_summary(reg,scenes):
         if (root/"selected_skeleton.json").exists():
             sk=read_json(root/"selected_skeleton.json")
             approaches.extend({**fixed,**r} for r in approach_rows(scenes[sid],sk))
+            retreats.extend({**fixed,**r} for r in selected_retreat_diagnostics(sk))
         if pool_path(root).exists():
             pool=read_json(pool_path(root)); direction=proposed_directions(pool)
             directions.extend({**fixed,"group_id":gid,**value} for gid,value in direction.items())
@@ -60,11 +78,21 @@ def q2_summary(reg,scenes):
             "whole_route_accepted_direction_30deg_bins":np.histogram(accepted,bins=np.arange(0,361,30))[0].tolist(),
             "accepted_original_proposed_direction_30deg_bins":np.histogram([x for r in draws for x in r["accepted_original_proposal"]],bins=np.arange(0,361,30))[0].tolist(),
             "proposed_count":len(proposed),"accepted_count":len(accepted)}
+    retreat_by_role={}
+    for role in sorted({r["role"] for r in retreats}):
+        values=[r for r in retreats if r["role"]==role]
+        choices=[r["rotation_deg"] for r in values if r["rotation_deg"] is not None]
+        retreat_by_role[role]={"selected_groups":len({(r["skeleton_id"],r["group_id"]) for r in values}),
+            "selected_member_records":len(values),"retreat_required_members":sum(r["retreat_required"] for r in values),
+            "rotation_recorded_members":len(choices),"rotation_deg_counts":dict(sorted(Counter(str(x) for x in choices).items())),
+            "rotation_deg_distribution":distribution(choices),
+            "method":"One selected eligible episode plan per nonempty skeleton; each physical group member counted once, not all proposals or episode-combination occurrences. Missing provenance is not treated as zero rotation."}
     result={**{k:v for k,v in raw.items() if k not in ("rows","unfinished_evidence")},"rows":results,
         "selected_plan_approach_members":approaches,"directions_by_group":directions,"by_intent_specified_approach":grouped,
+        "selected_plan_retreat_members":retreats,"selected_retreat_by_role":retreat_by_role,
         "method":"selected eligible candidate 0; exact polyline start-to-first-warning length; incoming heading vs vector from start to target center; local shape direction proposals vs whole-route accepted actual shape direction (patrol feasible-arc start may differ, original proposal also retained); empty cells explicitly included",
         "diagnostics_are_gates":False}
-    atomic(EVIDENCE/"m3b_q2_diagnostics.json",result)
+    atomic(EVIDENCE/output_name,result)
     return result
 
 
@@ -135,11 +163,14 @@ def q3_summary(reg,scenes):
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fix-q2",action="store_true",help="Only summarize repair Q2 into new evidence names; never summarize or run Q3")
+    args=parser.parse_args()
     reg=read_json(EVIDENCE/"m3b_inputs.json"); frozen_check(reg)
     jobs=descriptor_jobs(Path(reg["descriptor_attempt"]),[r["skeleton_id"] for r in reg["selected"]],EVIDENCE)
     scenes={j["descriptor"]["skeleton_id"]:j["scene"] for j in jobs}
-    q2=q2_summary(reg,scenes); print(json.dumps({"q2":q2["status"],"gate":q2["q2_gate"]},ensure_ascii=False))
-    if (EVIDENCE/"m3b_trial.json").exists():
+    q2=q2_summary(reg,scenes,**({"source_name":"m3b_fix_q2.json","output_name":"m3b_fix_q2_diagnostics.json"} if args.fix_q2 else {})); print(json.dumps({"q2":q2["status"],"gate":q2["q2_gate"]},ensure_ascii=False))
+    if not args.fix_q2 and (EVIDENCE/"m3b_trial.json").exists():
         q3=q3_summary(reg,scenes); print(json.dumps({"q3":q3["status"],"strict_pairs":q3["strict_pairs"]},ensure_ascii=False))
 
 

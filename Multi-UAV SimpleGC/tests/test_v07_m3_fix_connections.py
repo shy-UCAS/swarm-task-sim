@@ -49,6 +49,20 @@ class ShapeConnectionRegressionTests(unittest.TestCase):
         preview=deepcopy(rng); preview.uniform(*free.cfg["collection_clearance_m"])
         self.assertEqual(shape["draw"]["connection_precheck"]["retreat_clearance_m"],preview.uniform(50.,free.cfg["retreat_clearance_max_m"]))
 
+    def test_F3_first_legal_rotated_exit_avoids_neighbor_warning(self):
+        spec,free=self.fixture()
+        free.target["geometry"]={"type":"Circle","center_m":[0.,0.],"radius_m":10.}
+        free.offsets["warning"]=100.
+        free.warning_geometries={"target":{"type":"Circle","center_m":[0.,0.],"radius_m":110.},
+            "neighbor":{"type":"Circle","center_m":[160.,0.],"radius_m":80.}}
+        slot={"slot_id":"0:0","work":[[90.,0.]],"exit_direction":[1.,0.]}
+        with patch.object(free,"point_valid",return_value=True):
+            endpoint,evidence=retreat_endpoint(free,slot,50.)
+        self.assertEqual(evidence["rotation_deg"],90.)
+        self.assertEqual([r["rotation_deg"] for r in evidence["rejected_directions"]],[0.,30.,-30.,60.,-60.])
+        self.assertGreaterEqual(min(evidence["clearances_m"].values()),50.-1e-6)
+        np.testing.assert_allclose(endpoint,[90.,np.sqrt(160.**2-90.**2)])
+
     def test_F2_rejected_ingress_stays_in_twenty_shape_attempt_budget(self):
         spec,free=self.fixture()
         fake={"kind":"close_observation","draw":{},"slots":[]}

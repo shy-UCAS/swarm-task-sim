@@ -37,7 +37,7 @@ def route_operation(scene, spec, shape, free, initial_states, rng):
         retreat = rng.uniform(minimum, free.cfg["retreat_clearance_max_m"])
         try:
             approaches, refs = _approaches(scene, spec, mapping, states, free, clearance)
-            routes = {}; cost = 0.
+            routes = {}; cost = 0.; retreat_by_agent = {}
             for agent, slot in sorted(mapping.items()):
                 work = np.asarray(slot["work"], float); gate = np.asarray(slot["entry"])
                 heading = np.asarray(slot["direction"])
@@ -54,7 +54,8 @@ def route_operation(scene, spec, shape, free, initial_states, rng):
                 outgoing = []
                 if spec["role"] != "intrusion":
                     endpoint, retreat_check = retreat_endpoint(free, slot, retreat)
-                    direction = np.asarray(slot["exit_direction"])
+                    direction = np.asarray(retreat_check["direction"])
+                    retreat_by_agent[agent] = {**retreat_check,"endpoint_enu_m":[*endpoint.tolist(),altitude]}
                     tail_direction = work[-1]-work[-2] if len(work)>1 else direction
                     tail_direction /= np.linalg.norm(tail_direction)
                     tail = work[-1]+spec["family"]["lateral_spacing_m"]*tail_direction
@@ -82,7 +83,8 @@ def route_operation(scene, spec, shape, free, initial_states, rng):
                 "retreat_warning_minimum_m": minimum, "work_area_bearing_deg": math.degrees(math.atan2(*(mean-center)[::-1]))%360,
                 "public_approach_shape": spec["public_split"], "formation_split": spec["public_split"],
                 "geometry_provenance": {"shape": shape["draw"], "connection_attempt": attempt,
-                    "collection_clearance_m": clearance, "retreat_clearance_m": retreat, "connection_rejections": failures},
+                    "collection_clearance_m": clearance, "retreat_clearance_m": retreat, "connection_rejections": failures,
+                    "retreat_by_agent":retreat_by_agent},
                 "approach_length_m": cost, **deepcopy(shape.get("template_fields", {}))}
             return RouteBundle(routes, {a: 0. for a in spec["members"]}), template
         except GeometryRejected as exc:
