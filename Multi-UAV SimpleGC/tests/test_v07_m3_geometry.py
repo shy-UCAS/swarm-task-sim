@@ -3,6 +3,7 @@ from copy import deepcopy
 import unittest
 from unittest.mock import patch
 import numpy as np
+import random
 
 from v07_m3_fixtures import request
 from task_v07.expansion.contracts import P0ContractError
@@ -10,6 +11,9 @@ from task_v07.unified.spec import build_spec, validate_spec, proposal_seed
 from task_v07.unified.free_space import free_space, work_region, offset_curve, chord_intervals, quantile_interval
 from task_v07.geometry import geometry_facts
 from task_v07.unified.assign import assign
+from task_v07.unified.route import clean_joints, offset_lane, route_group, line_interval, GeometryRejected
+from task_v07.geometry import offset_geometry
+from task_v07.expansion.contracts import validate_route_bundle
 
 
 class SpecTests(unittest.TestCase):
@@ -55,6 +59,36 @@ class AssignmentTests(unittest.TestCase):
             self.assertEqual(set(stock), {a for a, s in mapping.items() if s["split_index"] == i})
         with self.assertRaises(P0ContractError):
             assign(g["members"], starts, slots[:-1], spec["public_split"])
+
+
+class ConnectionTests(unittest.TestCase):
+    def test_G10_clean_forward_joins_preserves_bends_and_endpoint(self):
+        points = clean_joints([[0., 0.], [0., 0.], [.5, 0.], [5., 0.], [5., 5.]])
+        np.testing.assert_allclose(points, [[0., 0.], [5., 0.], [5., 5.]])
+        with self.assertRaises(GeometryRejected):
+            clean_joints([[0., 0.], [.5, .2], [5., 5.]])
+        lane = offset_lane([[0., 0.], [100., 0.], [100., 100.]], -20.)
+        np.testing.assert_allclose(lane[-1], [120., 100.])
+        self.assertTrue(all(np.linalg.norm(b-a) >= 1. for a, b in zip(lane, lane[1:])))
+
+    def test_G7_shared_connection_has_truthful_metadata(self):
+        scene, d, g = request(); spec = build_spec(d, g); free = free_space(scene, spec)
+        warning = offset_geometry(free.target["geometry"], free.offsets["warning"])
+        slots = []
+        for i in range(len(g["members"])):
+            origin = np.array([0., 600.+20*i]); direction = np.array([1., 0.])
+            lo, hi = line_interval(warning, origin, direction)
+            entry, end = origin+lo*direction, origin+hi*direction
+            slots.append({"split_index": 0, "slot_id": str(i), "direction": direction.tolist(),
+                          "entry": entry.tolist(), "work": [entry.tolist(), end.tolist()], "exit_direction": direction.tolist()})
+        bundle, template = route_group(scene, spec, {"slots": slots, "draw": {"test": "straight"}}, free,
+                                       d["family_conditions"]["initial_states"], random.Random(73))
+        validate_route_bundle(bundle, g["members"])
+        self.assertEqual(template["retreat_warning_minimum_m"], 50.)
+        for agent, points in bundle.waypoints_by_agent.items():
+            self.assertEqual(points[-1], template["references"][agent]["endpoint_enu_m"])
+            self.assertEqual(points[0], next(s["position_enu_m"] for s in d["family_conditions"]["initial_states"] if s["agent_id"] == agent))
+        self.assertGreater(template["approach_length_m"], 0)
 
 
 class FreeSpaceTests(unittest.TestCase):
