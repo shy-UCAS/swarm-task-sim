@@ -87,13 +87,13 @@ class ContinuousRevisionTests(unittest.TestCase):
         with patch('task_v07.expansion.group_candidate_pool.Context',return_value=SimpleNamespace()), \
              patch('task_v07.expansion.group_candidate_pool.role_parameters',return_value={}), \
              patch('task_v07.expansion.group_candidate_pool.draw_role',side_effect=lambda c,i:(None,'geometric_failure',{'index':i})) as draw:
-            pool,report=episode_candidate_pool({},descriptor)
+            pool,report=episode_candidate_pool({},descriptor,backend='legacy')
             self.assertEqual(pool,[])
             self.assertEqual(draw.call_count,200)
             self.assertEqual(report['attempted_candidates'],200)
             self.assertEqual(report['rejection_reasons'],{'geometric_failure':200})
             self.assertEqual(report['solo_flights_run'],0)
-            with self.assertRaises(ValueError):episode_candidate_pool({},descriptor,budget=199)
+            with self.assertRaises(ValueError):episode_candidate_pool({},descriptor,budget=199,backend='legacy')
 
     def test_each_group_has_its_own_115_percent_bound(self):
         costs=[(100,200),(200,100),(114,114),(116,100)]

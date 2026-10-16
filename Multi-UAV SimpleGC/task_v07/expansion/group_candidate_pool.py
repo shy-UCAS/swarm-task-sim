@@ -29,7 +29,16 @@ def combination_indices(sizes,budget,rng):
     return result
 
 
-def build_group_pool(scene,descriptor,group,budget):
+def build_group_pool(scene,descriptor,group,budget=200,*,backend="unified"):
+    if backend == "unified":
+        from task_v07.unified.adapter import build_unified_pool
+        return build_unified_pool(scene,descriptor,group,budget)
+    if backend != "legacy":
+        raise ValueError(f"Unknown geometry backend: {backend}")
+    return _build_legacy_group_pool(scene,descriptor,group,budget)
+
+
+def _build_legacy_group_pool(scene,descriptor,group,budget):
     from .candidate_search import DrawnPlanner,_candidate_record
     gid=group['group_id'];ctx=Context(scene,group,role_parameters(descriptor,group))
     records=[];pool=[];reasons=Counter();started=time.perf_counter()
@@ -80,7 +89,7 @@ def build_group_pool(scene,descriptor,group,budget):
         'termination':rejection('group_pool_empty_after_registered_budget',scope='group_search',exhausted=True) if not pool else None}
 
 
-def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMBINATION_BUDGET):
+def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMBINATION_BUDGET,*,backend="unified"):
     from .sampling import derive_intent
     from .candidate_search import choose_eligible,MAX_CALIBRATION_ROUNDS
     from .episode_pipeline import assemble_episode
@@ -92,7 +101,7 @@ def independent_episode_pool(scene,descriptor,budget=200,combination_budget=COMB
     # No early return: even an empty first pool cannot censor later groups.
     for group in order:
         gid=group['group_id']
-        pools[gid],group_reports[gid]=build_group_pool(scene,descriptor,group,budget)
+        pools[gid],group_reports[gid]=build_group_pool(scene,descriptor,group,budget,backend=backend)
         records.extend(group_reports[gid]['records']);group_reasons.update(group_reports[gid]['rejection_reasons'])
     gids=[g['group_id'] for g in order]
     combination_seed=seed_for(descriptor['role_seed'],'independent-group-combination-order')

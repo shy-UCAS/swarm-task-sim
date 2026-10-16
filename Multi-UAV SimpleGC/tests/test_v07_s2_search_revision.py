@@ -14,7 +14,7 @@ class SearchEvidenceTests(unittest.TestCase):
         with patch('task_v07.expansion.group_candidate_pool.Context',return_value=SimpleNamespace()), \
              patch('task_v07.expansion.group_candidate_pool.role_parameters',return_value={}), \
              patch('task_v07.expansion.group_candidate_pool.draw_role',side_effect=lambda c,i:(None,'local_failure',{'index':i})) as draw:
-            pool,report=episode_candidate_pool({},descriptor)
+            pool,report=episode_candidate_pool({},descriptor,backend='legacy')
         self.assertEqual(pool,[])
         self.assertEqual(draw.call_count,600)
         self.assertEqual(report['group_attempt_counts'],{'a':200,'b':200,'c':200})

@@ -51,9 +51,9 @@ def assemble_episode(descriptor, groups, bundles, variant=0):
     return skeleton, RouteBundle(paths, {a: 0. for a in ids})
 
 
-def plan_episode(scene, descriptor, variant=0):
+def plan_episode(scene, descriptor, variant=0, *, backend="unified"):
     from .candidate_search import episode_candidate_pool
-    candidates, report = episode_candidate_pool(scene, descriptor)
+    candidates, report = episode_candidate_pool(scene, descriptor, backend=backend)
     if variant >= len(candidates):
         raise PlanningInfeasible('geometry_infeasible', f"continuous candidate pool exhausted: {report['rejection_reasons']}")
     chosen = candidates[variant]

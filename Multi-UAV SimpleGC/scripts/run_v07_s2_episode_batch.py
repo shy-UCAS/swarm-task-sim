@@ -181,7 +181,7 @@ def run_episode_job(payload):
     skroot.mkdir()
     started = time.perf_counter()
     limit = load_generator()["calibration"]["max_rounds"]
-    pool, search = episode_candidate_pool(scene, descriptor)
+    pool, search = episode_candidate_pool(scene, descriptor, backend=payload.get("geometry_backend", "unified"))
     search.update(actual_single_agent_calibration_rounds=0, solo_flights_run=0)
     save_json(skroot / "candidate_pool.json", search)
     history = []
@@ -295,6 +295,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--skeletons", nargs="+", required=True)
+    parser.add_argument("--geometry-backend", choices=("unified", "legacy"), default="unified")
     args = parser.parse_args()
     out = new_attempt("attempt_s2x_groups_pilot")
     print(f"OUTPUT {out}", flush=True)
@@ -303,7 +304,10 @@ def main():
                                          "source": str(INFRA_ATTEMPT), "skeleton_ids": args.skeletons, "config_sha256": FROZEN_SHA256})
     start = time.perf_counter()
     try:
-        rows = run_jobs(descriptor_jobs(INFRA_ATTEMPT, args.skeletons, out), args.workers)
+        jobs = descriptor_jobs(INFRA_ATTEMPT, args.skeletons, out)
+        for job in jobs:
+            job["geometry_backend"] = args.geometry_backend
+        rows = run_jobs(jobs, args.workers)
     except P0ContractError as exc:
         save_json(out / "P0_STOP.json", {"reason": str(exc), "traceback": traceback.format_exc()})
         raise

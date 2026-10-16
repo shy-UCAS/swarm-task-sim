@@ -56,9 +56,9 @@ def _candidate_record(index, stage, reason, draws, evidence=None):
             'rejection': rejection(reason, evidence=evidence) if reason else None}
 
 
-def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET):
+def episode_candidate_pool(scene, descriptor, budget=CANDIDATE_BUDGET, *, backend="unified"):
     from .group_candidate_pool import independent_episode_pool
-    return independent_episode_pool(scene, descriptor, budget)
+    return independent_episode_pool(scene, descriptor, budget, backend=backend)
 
 def plan_continuous_group(scene, group, params):
     """Standalone role API uses the same draw and filtering order as the batch."""
