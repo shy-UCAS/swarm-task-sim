@@ -1,7 +1,7 @@
 """Solo execution and observable M1 criteria, without geometry or label repairs."""
 from pathlib import Path
 import numpy as np
-from task_v07.execution import execute
+from task_v07.execution import execute, completion_budget
 from task_v07.labels import measure
 from task_v07.detectors import coverage
 from task_v07.criteria import load_criteria
@@ -64,6 +64,12 @@ def rehearse(scene, skeleton):
         for agent in sorted(group["members"]):
             solos[agent] = execute(group, {a: 0. for a in group["members"]}, only_agent=agent)
     return evaluate_solos(scene, skeleton, solos), solos
+
+
+def joint_budget(skeleton, delays, finished):
+    if set(finished) != set(delays):
+        raise P0ContractError("Solo completion identities differ from joint delay identities")
+    return completion_budget(skeleton, delays, finished) if all(v is not None for v in finished.values()) else completion_budget(skeleton, delays)
 
 
 def load_saved_rehearsal(directory, skeleton):
