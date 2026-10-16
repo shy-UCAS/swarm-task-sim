@@ -62,3 +62,27 @@ def episode_plan(skeleton, measured, mode, draw=0):
         result["departure_delays_s"].update(plan["departure_delays_s"])
         result["batch_by_agent"].update(plan["batch_by_agent"])
     return result
+
+
+def select_timing(skeleton, measured, solos):
+    from task_v07.expansion.solo_spacing import solo_interval_check
+    plans, overlays, versions = {}, {}, {}
+    budget = load_generator()["timing"]["redraw_budget_per_version"]
+    for mode in MODES:
+        attempts = []
+        for draw in range(budget):
+            plan = episode_plan(skeleton, measured, mode, draw)
+            overlay = solo_interval_check(solos, {mode: plan})[mode]
+            passed = not overlay["below_warning"]
+            attempts.append({"draw": draw, "status": "passed" if passed else "rejected", **overlay})
+            if passed:
+                plans[mode], overlays[mode] = plan, overlay
+                break
+        versions[mode] = {"accepted_draw": plans[mode]["draw"] if mode in plans else None,
+                          "rejected_count": sum(item["status"] == "rejected" for item in attempts),
+                          "attempts": attempts}
+    passed = len(plans) == len(MODES)
+    return {"status": "passed" if passed else "rejected", "category": None if passed else "timing_conflict",
+            "plans": plans, "overlay": overlays, "versions": versions,
+            "failed_versions": [mode for mode in MODES if mode not in plans],
+            "minimum_separation_required_m": load_generator()["overlay"]["min_separation_m"]}

@@ -3,10 +3,11 @@ from pathlib import Path
 from itertools import combinations
 import numpy as np
 from .contracts import P0ContractError
+from task_v07.unified.config import load_generator
 
 MODES=('synchronous','sequential')
 STEP_US=100000
-WARNING_M=10.
+WARNING_M=load_generator()["overlay"]["min_separation_m"]
 
 
 def load_saved_solos(directory,agent_ids):
@@ -67,7 +68,7 @@ def solo_interval_check(solos,plans):
         'method':'saved solo 10 Hz trajectories shifted by true departure delays',
         'scope':'all agents, all groups, from time zero through latest shifted solo end; initial/final positions held',
         'initial_settle_added_again':False}
-    for mode in MODES:
+    for mode in plans:
         t,p,ids=shifted_positions(solos,plans[mode]['departure_delays_s'])
         result[mode]={**minimum_spacing(t,p,ids),'predicted_end_s':float(t[-1])/1e6}
     return result
