@@ -158,6 +158,10 @@ def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode,
                measured_approach_by_group={gid: group["observed"]["approach_classification"] for gid, group in groups.items()})
     if extra_metrics:
         row.update(extra_metrics)
+        if "rehearsal" in extra_metrics:
+            from task_v07.unified.diagnostics import accepted_timing, rehearsal_discrepancies
+            row["timing_diagnostics"] = accepted_timing(plan, extra_metrics["timing_selection"][mode])
+            row["rehearsal_inconsistency"] = rehearsal_discrepancies(extra_metrics["rehearsal"], labels, run)
     if skeleton.get('abort_observation'):
         main=labels['task_groups'][skeleton['main_group_id']]
         row['abort_observation_valid']=main['result']['conditions']['abort_group_withdrawal_observed'] is True

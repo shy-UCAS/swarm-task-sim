@@ -80,9 +80,29 @@ def prediction_error(solos,plan,actual,prediction):
     actual_p=np.asarray(actual['p'])[:,[actual['agent_ids'].index(a) for a in ids]]
     observed=minimum_spacing(times,actual_p,ids)
     error=np.linalg.norm(projected-actual_p,axis=2)
+    segments={name:{"predicted":None,"actual":None} for name in ("before_solo_end","after_solo_end")}
+    ends={a:int(solos[a]['time_us'][-1])+round(plan['departure_delays_s'][a]*1e6) for a in ids}
+    for i,j in combinations(range(len(ids)),2):
+        before=times<=min(ends[ids[i]],ends[ids[j]])
+        for name,mask in (("before_solo_end",before),("after_solo_end",~before)):
+            frames=np.flatnonzero(mask)
+            if not len(frames):continue
+            for kind,positions in (("predicted",projected),("actual",actual_p)):
+                distances=np.linalg.norm(positions[frames,i]-positions[frames,j],axis=1)
+                local=int(distances.argmin());distance=float(distances[local])
+                previous=segments[name][kind]
+                if previous is None or distance<previous['minimum_m']:
+                    frame=int(frames[local])
+                    segments[name][kind]={'minimum_m':distance,'closest_pair':{'agents':[ids[i],ids[j]],
+                        'frame_index':frame,'t_s':float(times[frame])/1e6}}
+    for value in segments.values():
+        value['minimum_error_predicted_minus_actual_m']=(None if value['actual'] is None else
+            value['predicted']['minimum_m']-value['actual']['minimum_m'])
     return {'prediction':prediction,'actual':observed,
         'minimum_error_predicted_minus_actual_m':prediction['minimum_m']-observed['minimum_m'],
         'position_error_p95_m':float(np.percentile(error,95)),
         'position_error_max_m':float(error.max()),
         'actual_end_s':float(times[-1])/1e6,
-        'ten_metre_classification_matches':prediction['below_warning']==observed['below_warning']}
+        'separation_classification_matches':prediction['below_warning']==observed['below_warning'],
+        'separation_threshold_m':WARNING_M,'segments':segments,
+        'segment_definition':'before: both members remain within shifted recorded solo time; after: either member is past its shifted last solo sample'}
