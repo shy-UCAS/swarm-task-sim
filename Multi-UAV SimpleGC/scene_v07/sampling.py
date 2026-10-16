@@ -218,6 +218,9 @@ def sample_family_s1(seed, config=None):
 
 def sample_family(seed, config=None, *, revision="s1.1", policy=None):
     """Select the sampling revision; the original S1 remains reproducible."""
+    if revision == "s1.5":
+        from .sampling_s15 import sample_family_s15
+        return sample_family_s15(seed, config, policy)
     if revision == "s1":
         if policy is not None:
             raise ValueError("S1 does not support S1.1 placement policies")

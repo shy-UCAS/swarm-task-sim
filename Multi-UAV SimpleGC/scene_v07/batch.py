@@ -151,7 +151,8 @@ def representative_coverage(records):
 
 
 def generate_attempt(candidate_count=300, master_seed=2026101307, output_root=DEFAULT_OUTPUT_ROOT,
-                     attempt_name=None, config=None, plotter=None, progress=None, single_family_seed=None, sampling_revision="s1.1", sampling_policy=None):
+                     attempt_name=None, config=None, plotter=None, progress=None, single_family_seed=None, sampling_revision="s1.1", sampling_policy=None,
+                     max_wall_s=None):
     if isinstance(candidate_count, bool) or not isinstance(candidate_count, int) or candidate_count < 1:
         raise ValueError("candidate_count must be a positive integer")
     if single_family_seed is not None and candidate_count != 1:
@@ -213,17 +214,29 @@ def generate_attempt(candidate_count=300, master_seed=2026101307, output_root=DE
                   "issue_codes": sorted({i["code"] for i in checks["issues"]}),
                   "geometry_issue_codes": sorted({i["code"] for i in checks["issues"] if i["category"] == "geometry"}),
                   "connectivity_issue_codes": sorted({i["code"] for i in checks["issues"] if i["category"] == "connectivity"}),
-                  "facility_count": sum(e["type"] == "facility" for e in entities),
+                  "facility_count": family.get("requested_facility_count", sum(e["type"] == "facility" for e in entities)),
                   "facility_shapes": [e["geometry"]["type"] for e in entities if e["type"] == "facility"],
                   "layout": family["layout"], "obstacle_count": sum(e["type"] == "hard_constraint_obstacle" for e in entities),
                   "obstacle_placements": [p["placement"] for p in family["obstacle_placements"]],
                   "radar_count": sum(e["type"] == "radar" for e in entities), "vehicle_count": family["vehicle_count"],
                   "detour_ratios": [r["detour_ratio"] for r in checks["routes"] if r["detour_ratio"] is not None],
                   "approach_spans_deg": [a["available_span_deg"] for a in checks["approaches"]]}
+        if sampling_revision == "s1.5":
+            record["layout_s15"] = family["layout_s15"]
         records.append(record)
+        if sampling_revision == "s1.5":
+            fatal = {"s15_inner_layer_intrudes_warning", "s15_warning_overlap_exceeds_bound"} & set(record["issue_codes"])
+            limit = 3600 if max_wall_s is None else max_wall_s
+            if fatal or time.perf_counter()-started > limit:
+                _write(attempt / "candidates.json", records)
+                _write(attempt / "stop.json", {"reason": sorted(fatal) if fatal else "wall_clock_limit",
+                                              "completed_candidates": len(records), "elapsed_s": time.perf_counter()-started})
+                raise RuntimeError("S1.5 stop rule: " + (", ".join(sorted(fatal)) if fatal else "wall_clock_limit"))
         if progress:
             progress(index + 1, candidate_count, record)
     summary = summarize(records)
+    if sampling_revision == "s1.5":
+        summary["map_side_m"] = _distribution([r["map_side_m"] for r in records])
     representatives = select_representatives(records)
     summary.update({"schema_version": "traj2language.s1_attempt_summary/0.7-s1.2",
                     "public_scene_schema_version": SCHEMA_VERSION, "generator_version": family["generator_version"],
