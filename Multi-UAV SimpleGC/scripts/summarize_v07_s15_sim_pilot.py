@@ -61,8 +61,13 @@ def stage_walls(rows, skeleton_root):
 
     planning = group_search_metrics[*].wall_s + combination_search.wall_s (candidate_pool.json);
     the records do not separate solo rehearsal from timing selection, nor M1 judgement from audit,
-    so those pairs are reported merged from the row fields that do exist.
+    so those pairs are reported merged from the row fields that do exist. A skeleton with no episode
+    row (not run, or cut off by the wall-clock cap) has no decomposition at all: its interrupted
+    candidate_pool.json is not a stage measurement, so every stage stays None.
     """
+    if not rows:
+        return {"规划": None, "单机预演+时刻安排": None, "联合仿真": None,
+                "M1判定+审计+测量+写盘": None, "skeleton_total": None}
     planning = None
     pool = skeleton_root / "candidate_pool.json"
     if pool.exists():
@@ -172,7 +177,7 @@ def main():
         specified = selection_mode.get(skeleton_id)
         records.append({
             "skeleton_id": skeleton_id, "draw": draw_of.get(skeleton_id),
-            "intent": subset[0]["intent"] if subset else None,
+            "intent": (subset[0]["intent"] if subset else None) or "-",
             "specified_approach_mode": specified,
             "rows": len(subset), "modes": [row.get("mode") for row in subset],
             "states": {row.get("mode"): row.get("state") for row in subset},
@@ -202,7 +207,8 @@ def main():
             "strict_pairs": sum(record["strict_pair"] is True for record in members),
             "all_five_paired": (ran == len(draw["skeletons"])
                                 and all(record["strict_pair"] is True for record in members)),
-            "failing_intents": sorted(record["intent"] for record in members if record["strict_pair"] is not True),
+            "failing_intents": sorted(record["intent"] for record in members
+                                      if record["rows"] and record["strict_pair"] is not True),
             "failure_stages": sorted({stage for record in members
                                       for stage in record["failure_stage_by_mode"].values()})}
     matches = [value for record in records for value in record["measured_approach_matches_spec"]]
