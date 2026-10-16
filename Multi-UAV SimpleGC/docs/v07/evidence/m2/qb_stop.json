@@ -1,0 +1,23 @@
+{
+  "status": "resolved",
+  "first_attempt_status": "stopped",
+  "check": "Q-B",
+  "instruction": "docs/v07/m2/M2_instruction_timing_rehearsal.md §12: 出现异常导致无法算完，或类别超出三类：停下汇报",
+  "implementation_head": "d799ed4",
+  "qa_status": "PASS",
+  "completed_replay_rounds": 1,
+  "required_complete_rounds": 20,
+  "required_input_missing_rounds": 3,
+  "csv_is_partial": true,
+  "simulation_runs": 0,
+  "exception_type": "FileNotFoundError",
+  "script": "scripts/replay_v07_m2.py",
+  "script_line": 44,
+  "failed_input": "attempt_s2_search_quick_b_20261015T090658Z_5ac915b5/family_s12_5024cb2ccea653ae_ext_000_regular/geometry_history.json/skeleton.json",
+  "cause": "The geometry_* glob includes the geometry_history.json file; the replay script incorrectly treats it as a round directory.",
+  "proposed_fix": "Enumerate only directories matching geometry_XX before reading skeleton.json, then rerun the offline replay without any simulation or source-data changes.",
+  "fix_applied": true,
+  "resolution": "User clarified that errors in execution-owned tool scripts should be repaired directly. Filter now accepts only geometry_[0-9][0-9] directories. Q-B was rerun from scratch and passed: 20 complete rounds, three input_missing rounds, zero simulations. See qb_summary.json and qb_offline_replay.csv for the superseding full result.",
+  "rerun_status": "PASS",
+  "rerun_wall_s": 12.246725200000583
+}

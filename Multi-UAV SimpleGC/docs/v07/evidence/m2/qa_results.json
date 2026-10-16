@@ -1,0 +1,157 @@
+{
+  "status": "PASS",
+  "test_methods": 10,
+  "wall_s": 3.5924079000001257,
+  "cases": {
+    "A10": [
+      {
+        "trajectory": "T1",
+        "role": "transit",
+        "status": "passed",
+        "failures": []
+      },
+      {
+        "trajectory": "T3",
+        "role": "close_observation",
+        "status": "passed",
+        "failures": []
+      },
+      {
+        "trajectory": "T12",
+        "role": "intrusion",
+        "status": "passed",
+        "failures": []
+      },
+      {
+        "trajectory": "T1",
+        "role": "close_observation",
+        "status": "rejected",
+        "failures": [
+          {
+            "group_id": "g",
+            "agent_id": "a",
+            "conditions": [
+              "observation_dwell",
+              "core_event_missing"
+            ]
+          }
+        ]
+      }
+    ],
+    "A11": {
+      "completed": "PASS",
+      "running_with_complete_label": "P0_STOP",
+      "timeout_complete": "PASS",
+      "wrong_label_frame_count": "P0_STOP",
+      "deleted_truth_frame": "P0_STOP"
+    },
+    "A1": {
+      "groups": 200,
+      "plans": 400,
+      "maximum_sync_span_s": 5.885552822900081
+    },
+    "A2": {
+      "draws_per_version": 20,
+      "byte_identical_repeats": true,
+      "other_version_unchanged": true
+    },
+    "A3": {
+      "digest": "5b97fdadb2e05935415053d15f1b2e9e6467ad22575d0ab27432ec254a099ca1",
+      "skeleton_unchanged": true
+    },
+    "A4": {
+      "1.9": {
+        "minimum_m": 1.9,
+        "closest_pair": {
+          "agents": [
+            "a",
+            "b"
+          ],
+          "frame_index": 0,
+          "t_s": 0.0
+        },
+        "frames_checked": 21,
+        "below_warning": true,
+        "predicted_end_s": 2.0
+      },
+      "2.1": {
+        "minimum_m": 2.1,
+        "closest_pair": {
+          "agents": [
+            "a",
+            "b"
+          ],
+          "frame_index": 0,
+          "t_s": 0.0
+        },
+        "frames_checked": 21,
+        "below_warning": false,
+        "predicted_end_s": 2.0
+      }
+    },
+    "A5": {
+      "baseline": "e1fca53",
+      "frames": 425,
+      "status": "completed",
+      "trajectory_sha256": "c7495768aeee23d450e59eb388e7e11b9cc3b99f1e6bd02bea2324bec420d4e1",
+      "npz_byte_identical": true
+    },
+    "A6": {
+      "old_frames": 425,
+      "new_frames": 373,
+      "prefix_exact": true,
+      "final_distances_m": [
+        1.6736882923223675,
+        1.673688286230572,
+        1.673688294070871,
+        1.6736882922668883
+      ],
+      "final_speeds_m_s": [
+        0.7797099714428768,
+        0.7797099723467323,
+        0.7797099711840341,
+        0.7797099714488986
+      ]
+    },
+    "A7": {
+      "old": {
+        "hold_start_us": 38100000,
+        "hold_end_us": 63100000,
+        "planned_duration_s": 25.0
+      },
+      "new": {
+        "hold_start_us": 38100000,
+        "hold_end_us": 63100000,
+        "planned_duration_s": 25.0
+      }
+    },
+    "A8": {
+      "basis": "conservative bootstrap: settle + 2*route_length/speed + 10s/leg + hold",
+      "single_agent_completion_s": {
+        "uav_01": 59.67437974614555,
+        "uav_02": 59.67437974614555,
+        "uav_03": 59.67437974614555,
+        "uav_04": 59.67437974614555
+      },
+      "planned_completion_times_s": {
+        "uav_01": 59.67437974614555,
+        "uav_02": 59.67437974614555,
+        "uav_03": 59.67437974614555,
+        "uav_04": 59.67437974614555
+      },
+      "latest_planned_completion_s": 59.67437974614555,
+      "margin_s": 120.0,
+      "max_duration_s": 179.7
+    },
+    "A9": {
+      "category": "rehearsal_failure",
+      "exhausted": true,
+      "history_categories": [
+        "rehearsal_failure",
+        "timing_conflict",
+        "rehearsal_failure"
+      ]
+    }
+  },
+  "failures": []
+}
