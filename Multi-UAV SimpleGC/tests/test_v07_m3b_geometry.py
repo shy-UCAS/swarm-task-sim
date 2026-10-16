@@ -23,6 +23,18 @@ def role_request(method, multi=False, count=2):
 
 
 class M3bGeometryTests(unittest.TestCase):
+    def test_feint_continuous_turn_single_alert_visit_no_dwell(self):
+        scene,d,g=role_request("feint"); spec=build_spec(d,g); free=free_space(scene,spec); rng=random.Random(3)
+        shape=draw_shape(spec,work_region(scene,spec,free),rng,free)
+        bundle,template=route_group(scene,spec,shape,free,d["family_conditions"]["initial_states"],rng)
+        check=plan_checks(scene,spec,bundle,template,free,d["family_conditions"]["initial_states"])
+        self.assertEqual(check["status"],"PASS",check["issues"])
+        self.assertGreaterEqual(shape["draw"]["q"],.3)
+        self.assertLessEqual(shape["draw"]["q"],.8)
+        for ref in template["references"].values():
+            self.assertNotIn("intermediate_dwell",ref)
+            measured=geometry_facts(free.target["geometry"],np.asarray(ref["work_points_enu_m"])[:,:2],footprint=True)["clearance_m"]
+            self.assertAlmostEqual(measured,ref["feint_drawn_contour_clearance_m"],places=6)
     def check_patrol(self, form):
         scene,d,g = role_request("monitoring",multi=True,count=4)
         spec=build_spec(d,g); free=free_space(scene,spec); rng=random.Random(4)

@@ -40,7 +40,7 @@ def route_operation(scene, spec, shape, free, initial_states, rng):
             for agent, slot in sorted(mapping.items()):
                 work = np.asarray(slot["work"], float); gate = np.asarray(slot["entry"])
                 heading = np.asarray(slot["direction"])
-                if slot.get("entry_to_work") == "shared_tangent_parallel_lane":
+                if slot.get("entry_to_work") in ("shared_tangent_parallel_lane", "straight_parallel_lane"):
                     incoming = [gate,work[0]]
                 else:
                     inner = gate+free.cfg["alignment_length_m"]*heading

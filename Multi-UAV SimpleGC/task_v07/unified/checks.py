@@ -63,6 +63,10 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
             local.extend({"segment": i, **issue} for issue in free.segment_issues(a, b))
         visits, entry = warning_visits(points, warning)
         kind = spec["execution_method"]
+        if kind == "feint":
+            alert_visits, _ = warning_visits(points, offset_geometry(free.target["geometry"],free.offsets["alert"]))
+            if len(alert_visits) != 1:
+                local.append({"code":"alert_visit_count","count":len(alert_visits),"required":1})
         if kind == "transit" and len(visits) != 1:
             local.append({"code": "warning_visit_count", "count": len(visits), "required": 1, "intervals_route_m": visits})
         if entry is None or entry["straight_before_warning_m"] < free.cfg["alignment_length_m"]-TOL:
