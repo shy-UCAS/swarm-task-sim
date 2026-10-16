@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import time
+import unittest
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
@@ -11,6 +13,16 @@ from task_v07.io import read_json, save_json, sha
 from task_v07.unified.geometry_config import PATH as GEOMETRY_CONFIG
 
 EVIDENCE = PROJECT / "docs/v07/evidence/m3"
+
+
+def integration_evidence():
+    path = EVIDENCE / "m3a_acceptance.json"
+    if not path.exists():
+        return {"status": "pending", "reason": "fixed Q3 not yet summarized"}
+    result = read_json(path)
+    return {"status": result["status"], "attempt": result["attempt"],
+            "strict_pairs": result["strict_pairs"], "requested_pairs": result["requested_pairs"],
+            "evidence": path.name, "evidence_sha256": sha(path)}
 
 
 def register_inputs():
@@ -76,12 +88,28 @@ def register_inputs():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--register", action="store_true")
+    parser.add_argument("--unit", action="store_true")
     args = parser.parse_args()
     if args.register:
         result = register_inputs()
         print(json.dumps({"registered": result["selected"], "simulation_count": 0}, ensure_ascii=False))
+    elif args.unit:
+        sys.path.insert(0, str(PROJECT/"tests"))
+        names = ["test_v07_m3_geometry", "test_v07_m3_integration", "test_v07_m1_criteria", "test_v07_m2_timing_rehearsal",
+                 "test_v07_s2_search_revision.SearchEvidenceTests.test_empty_first_group_does_not_censor_other_group_budgets",
+                 "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration"]
+        from scripts.run_v07_m3_trial import frozen_check, atomic
+        frozen = frozen_check(read_json(EVIDENCE/"m3_inputs.json"))
+        started = time.perf_counter()
+        result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromNames(names))
+        atomic(EVIDENCE/"m3a_checks.json", {"status": "PASS" if result.wasSuccessful() else "FAIL",
+            "tests_run": result.testsRun, "failures": [(str(t), msg) for t, msg in result.failures],
+            "errors": [(str(t), msg) for t, msg in result.errors], "skipped": result.skipped,
+            "test_entries": names, "wall_s": time.perf_counter()-started, "frozen_check": frozen,
+            "legacy_selection_tests": names[-2:], "actual_frozen_fastsim_integration": integration_evidence()})
+        raise SystemExit(0 if result.wasSuccessful() else 1)
     else:
-        parser.error("select --register")
+        parser.error("select --register or --unit")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,605 @@
+{
+  "phase": "q2",
+  "status": "Q2_NOT_PASSED",
+  "attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_m3a_q2_20261016T053420703012Z",
+  "rows": [
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_000_regular",
+      "status": "PASS",
+      "planning_wall_s": 12.498842099998,
+      "attempted_proposals": 200,
+      "group_attempts": {
+        "task_group_01": 200
+      },
+      "accepted_by_group": {
+        "task_group_01": 12
+      },
+      "rejection_reasons": {
+        "connection_search_budget_exhausted": 157,
+        "whole_route_check": 31
+      },
+      "closest_proposals_by_group": {},
+      "eligible_combinations": 12,
+      "multi_max_pairwise_ingress_heading_deg": null,
+      "planned_heading_by_group_deg": {
+        "task_group_01": null
+      },
+      "observed_minimum_separation_m": null,
+      "spacing_source": "not_measured_Q2_has_no_simulation",
+      "combination_rejection_reasons": {},
+      "whole_route_pass": true,
+      "selected_candidate_index": 4
+    },
+    {
+      "skeleton_id": "family_s12_4d13d93f9171c446_ext_005_regular",
+      "status": "REJECT",
+      "planning_wall_s": 34.20135569999911,
+      "attempted_proposals": 400,
+      "group_attempts": {
+        "task_group_01": 200,
+        "task_group_02": 200
+      },
+      "accepted_by_group": {
+        "task_group_01": 37
+      },
+      "rejection_reasons": {
+        "connection_search_budget_exhausted": 319,
+        "whole_route_check": 44
+      },
+      "closest_proposals_by_group": {
+        "task_group_01": {
+          "candidate_index": 65,
+          "proposal_id": "task_group_01:65",
+          "group_id": "task_group_01",
+          "stage": "whole_route",
+          "reason": "whole_route_check",
+          "rejection": {
+            "classification": "geometric_infeasibility",
+            "scope": "proposal",
+            "reason": "whole_route_check",
+            "geometric_evidence": [
+              {
+                "agent_id": "uav_04",
+                "segment": 9,
+                "code": "constraint_clearance",
+                "entity_id": "obstacle_01",
+                "clearance_m": 0.3696196252718096,
+                "required_m": 35.0,
+                "kind": "obstacle"
+              }
+            ],
+            "global_infeasibility_claimed": false
+          },
+          "draws_by_group": {
+            "task_group_01": {
+              "proposal_seed": 257059673021918397,
+              "shape": {
+                "direction_deg": 88.56826882067897,
+                "bend": false,
+                "bend_angle_deg": 0.0,
+                "bend_sign": 1,
+                "split_draws": [
+                  {
+                    "split_index": 0,
+                    "chord_quantile": 0.9333579729707081,
+                    "feasible_lateral_intervals_m": [
+                      [
+                        -3236.240335066065,
+                        -3232.3853019753683
+                      ],
+                      [
+                        -1756.7292033469814,
+                        -1214.6699313576637
+                      ]
+                    ],
+                    "accepted_lateral_m": -1251.0507672324832
+                  },
+                  {
+                    "split_index": 1,
+                    "chord_quantile": 0.6253380566138514,
+                    "feasible_lateral_intervals_m": [
+                      [
+                        -3493.5289984336246,
+                        -2951.4697264443066
+                      ],
+                      [
+                        -1484.1334197734673,
+                        -1471.958594725223
+                      ]
+                    ],
+                    "accepted_lateral_m": -3146.9453252830226
+                  }
+                ],
+                "shape_attempt": 0,
+                "rejected_shape_attempts": []
+              }
+            }
+          },
+          "whole_route_checks": {
+            "status": "REJECT",
+            "issues": [
+              {
+                "agent_id": "uav_04",
+                "segment": 9,
+                "code": "constraint_clearance",
+                "entity_id": "obstacle_01",
+                "clearance_m": 0.3696196252718096,
+                "required_m": 35.0,
+                "kind": "obstacle"
+              }
+            ],
+            "members": {
+              "uav_02": {
+                "status": "PASS",
+                "issues": [],
+                "warning_intervals_route_m": [
+                  [
+                    3171.319940986782,
+                    4695.161210352118
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 2,
+                  "distance_on_segment_m": 288.10689153681164,
+                  "point": [
+                    2797.6354239513034,
+                    4391.502658025043
+                  ],
+                  "direction": [
+                    -0.9377887805545042,
+                    -0.347206283160452
+                  ],
+                  "straight_before_warning_m": 288.10689153681164
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 933.4373593839678,
+                  "facility_02_warning": 135.62479086920462,
+                  "facility_03_warning": 1117.5456092543768
+                },
+                "segment_count": 3
+              },
+              "uav_04": {
+                "status": "REJECT",
+                "issues": [
+                  {
+                    "segment": 9,
+                    "code": "constraint_clearance",
+                    "entity_id": "obstacle_01",
+                    "clearance_m": 0.3696196252718096,
+                    "required_m": 35.0,
+                    "kind": "obstacle"
+                  }
+                ],
+                "warning_intervals_route_m": [
+                  [
+                    5942.032588788035,
+                    6479.5187964166835
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 9,
+                  "distance_on_segment_m": 502.1379558253034,
+                  "point": [
+                    1332.9148152087105,
+                    3259.7653756674954
+                  ],
+                  "direction": [
+                    0.024985822613249085,
+                    0.9996878056014984
+                  ],
+                  "straight_before_warning_m": 502.1379558253034
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 816.0467364021886,
+                  "facility_02_warning": 135.62479086920462,
+                  "facility_03_warning": 1145.398521236687
+                },
+                "segment_count": 10
+              }
+            },
+            "scope": "all segments against original primitives; no nominal-spacing gate",
+            "multi_max_pairwise_ingress_heading_deg": 111.74826498735882,
+            "heading_aim_deg_diagnostic_only": 90.0,
+            "observed_minimum_separation_m": null,
+            "observed_spacing_reason": "planning_only_no_simulation"
+          }
+        },
+        "task_group_02": {
+          "candidate_index": 14,
+          "proposal_id": "task_group_02:14",
+          "group_id": "task_group_02",
+          "stage": "whole_route",
+          "reason": "whole_route_check",
+          "rejection": {
+            "classification": "geometric_infeasibility",
+            "scope": "proposal",
+            "reason": "whole_route_check",
+            "geometric_evidence": [
+              {
+                "agent_id": "uav_05",
+                "code": "warning_visit_count",
+                "count": 4,
+                "required": 1,
+                "intervals_route_m": [
+                  [
+                    3180.9721263752995,
+                    3180.972161751347
+                  ],
+                  [
+                    3379.0886431199006,
+                    3379.0886763756603
+                  ],
+                  [
+                    3577.205163831307,
+                    3577.2051870352043
+                  ],
+                  [
+                    4846.750239098546,
+                    6152.860555618388
+                  ]
+                ]
+              },
+              {
+                "agent_id": "uav_05",
+                "code": "alignment_length",
+                "measured_m": 99.05824015471319,
+                "required_m": 100.0
+              }
+            ],
+            "global_infeasibility_claimed": false
+          },
+          "draws_by_group": {
+            "task_group_02": {
+              "proposal_seed": 5308627150777525369,
+              "shape": {
+                "direction_deg": 21.808184689762626,
+                "bend": false,
+                "bend_angle_deg": 0.0,
+                "bend_sign": 1,
+                "split_draws": [
+                  {
+                    "split_index": 0,
+                    "chord_quantile": 0.4955563091683076,
+                    "feasible_lateral_intervals_m": [
+                      [
+                        583.7276981207012,
+                        1069.7700909973003
+                      ]
+                    ],
+                    "accepted_lateral_m": 824.5890724339612
+                  },
+                  {
+                    "split_index": 1,
+                    "chord_quantile": 0.8270236663852132,
+                    "feasible_lateral_intervals_m": [
+                      [
+                        -5016.754572823612,
+                        -5006.652528500492
+                      ],
+                      [
+                        -3536.9074171115417,
+                        -3028.0544283555682
+                      ]
+                    ],
+                    "accepted_lateral_m": -3117.8213672885304
+                  }
+                ],
+                "shape_attempt": 0,
+                "rejected_shape_attempts": []
+              }
+            }
+          },
+          "whole_route_checks": {
+            "status": "REJECT",
+            "issues": [
+              {
+                "agent_id": "uav_05",
+                "code": "warning_visit_count",
+                "count": 4,
+                "required": 1,
+                "intervals_route_m": [
+                  [
+                    3180.9721263752995,
+                    3180.972161751347
+                  ],
+                  [
+                    3379.0886431199006,
+                    3379.0886763756603
+                  ],
+                  [
+                    3577.205163831307,
+                    3577.2051870352043
+                  ],
+                  [
+                    4846.750239098546,
+                    6152.860555618388
+                  ]
+                ]
+              },
+              {
+                "agent_id": "uav_05",
+                "code": "alignment_length",
+                "measured_m": 99.05824015471319,
+                "required_m": 100.0
+              }
+            ],
+            "members": {
+              "uav_01": {
+                "status": "PASS",
+                "issues": [],
+                "warning_intervals_route_m": [
+                  [
+                    3905.584206509063,
+                    4830.305178591838
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 6,
+                  "distance_on_segment_m": 341.5502743414775,
+                  "point": [
+                    3180.2154598763095,
+                    1942.8148239518152
+                  ],
+                  "direction": [
+                    -0.9011902439228023,
+                    0.43342374676332635
+                  ],
+                  "straight_before_warning_m": 341.5502743414775
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 713.8637620503775,
+                  "facility_02_warning": 101.19511057542513,
+                  "facility_03_warning": 59.057510062912684
+                },
+                "segment_count": 7
+              },
+              "uav_03": {
+                "status": "PASS",
+                "issues": [],
+                "warning_intervals_route_m": [
+                  [
+                    2877.4066716470716,
+                    4235.134320486533
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 3,
+                  "distance_on_segment_m": 285.83958435900684,
+                  "point": [
+                    2796.070094010858,
+                    2006.9632176938453
+                  ],
+                  "direction": [
+                    0.9284327675924046,
+                    0.37150046576109175
+                  ],
+                  "straight_before_warning_m": 285.83958435900684
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 740.0799985953879,
+                  "facility_02_warning": 1048.8738665845053,
+                  "facility_03_warning": 59.05751006291314
+                },
+                "segment_count": 4
+              },
+              "uav_05": {
+                "status": "REJECT",
+                "issues": [
+                  {
+                    "code": "warning_visit_count",
+                    "count": 4,
+                    "required": 1,
+                    "intervals_route_m": [
+                      [
+                        3180.9721263752995,
+                        3180.972161751347
+                      ],
+                      [
+                        3379.0886431199006,
+                        3379.0886763756603
+                      ],
+                      [
+                        3577.205163831307,
+                        3577.2051870352043
+                      ],
+                      [
+                        4846.750239098546,
+                        6152.860555618388
+                      ]
+                    ]
+                  },
+                  {
+                    "code": "alignment_length",
+                    "measured_m": 99.05824015471319,
+                    "required_m": 100.0
+                  }
+                ],
+                "warning_intervals_route_m": [
+                  [
+                    3180.9721263752995,
+                    3180.972161751347
+                  ],
+                  [
+                    3379.0886431199006,
+                    3379.0886763756603
+                  ],
+                  [
+                    3577.205163831307,
+                    3577.2051870352043
+                  ],
+                  [
+                    4846.750239098546,
+                    6152.860555618388
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 2,
+                  "distance_on_segment_m": 99.05824015471319,
+                  "point": [
+                    3861.841639580529,
+                    2236.959559525549
+                  ],
+                  "direction": [
+                    -0.707106781186645,
+                    -0.70710678118645
+                  ],
+                  "straight_before_warning_m": 99.05824015471319
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 754.6929131231848,
+                  "facility_02_warning": 1051.702700803089,
+                  "facility_03_warning": 59.05751006291314
+                },
+                "segment_count": 8
+              },
+              "uav_06": {
+                "status": "PASS",
+                "issues": [],
+                "warning_intervals_route_m": [
+                  [
+                    2844.4493197540196,
+                    4250.423000749412
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 3,
+                  "distance_on_segment_m": 257.6793570903351,
+                  "point": [
+                    2765.199348437441,
+                    2019.179610648039
+                  ],
+                  "direction": [
+                    0.9284327675924046,
+                    0.3715004657610919
+                  ],
+                  "straight_before_warning_m": 257.6793570903351
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 725.5274131385836,
+                  "facility_02_warning": 1045.673166623243,
+                  "facility_03_warning": 59.057510062912456
+                },
+                "segment_count": 4
+              },
+              "uav_07": {
+                "status": "PASS",
+                "issues": [],
+                "warning_intervals_route_m": [
+                  [
+                    3707.0461359161436,
+                    4537.73033214566
+                  ]
+                ],
+                "first_warning_entry": {
+                  "segment": 3,
+                  "distance_on_segment_m": 279.42226550259477,
+                  "point": [
+                    3127.95629345991,
+                    1942.637023349188
+                  ],
+                  "direction": [
+                    -0.9011902439228022,
+                    0.43342374676332646
+                  ],
+                  "straight_before_warning_m": 279.42226550259477
+                },
+                "retreat_clearances_m": {
+                  "facility_01_warning": 734.226293766437,
+                  "facility_02_warning": 136.37376583466653,
+                  "facility_03_warning": 59.05751006291291
+                },
+                "segment_count": 4
+              }
+            },
+            "scope": "all segments against original primitives; no nominal-spacing gate",
+            "multi_max_pairwise_ingress_heading_deg": 152.5268354273503,
+            "heading_aim_deg_diagnostic_only": 90.0,
+            "observed_minimum_separation_m": null,
+            "observed_spacing_reason": "planning_only_no_simulation"
+          }
+        }
+      },
+      "eligible_combinations": 0,
+      "multi_max_pairwise_ingress_heading_deg": null,
+      "planned_heading_by_group_deg": {},
+      "observed_minimum_separation_m": null,
+      "spacing_source": "not_measured_Q2_has_no_simulation",
+      "combination_rejection_reasons": {},
+      "whole_route_pass": false
+    },
+    {
+      "skeleton_id": "family_s12_f2adfbfae12fbbad_ext_000_regular",
+      "status": "PASS",
+      "planning_wall_s": 40.53958910000074,
+      "attempted_proposals": 200,
+      "group_attempts": {
+        "task_group_01": 200
+      },
+      "accepted_by_group": {
+        "task_group_01": 24
+      },
+      "rejection_reasons": {
+        "connection_search_budget_exhausted": 133,
+        "whole_route_check": 43
+      },
+      "closest_proposals_by_group": {},
+      "eligible_combinations": 24,
+      "multi_max_pairwise_ingress_heading_deg": 110.50245701996944,
+      "planned_heading_by_group_deg": {
+        "task_group_01": 110.50245701996944
+      },
+      "observed_minimum_separation_m": null,
+      "spacing_source": "not_measured_Q2_has_no_simulation",
+      "combination_rejection_reasons": {},
+      "whole_route_pass": true,
+      "selected_candidate_index": 1
+    },
+    {
+      "skeleton_id": "family_s12_5024cb2ccea653ae_ext_000_regular",
+      "status": "PASS",
+      "planning_wall_s": 128.50070050000068,
+      "attempted_proposals": 400,
+      "group_attempts": {
+        "task_group_01": 200,
+        "task_group_02": 200
+      },
+      "accepted_by_group": {
+        "task_group_01": 16,
+        "task_group_02": 16
+      },
+      "rejection_reasons": {
+        "whole_route_check": 204,
+        "connection_search_budget_exhausted": 164
+      },
+      "closest_proposals_by_group": {},
+      "eligible_combinations": 112,
+      "multi_max_pairwise_ingress_heading_deg": null,
+      "planned_heading_by_group_deg": {
+        "task_group_01": null,
+        "task_group_02": null
+      },
+      "observed_minimum_separation_m": null,
+      "spacing_source": "not_measured_Q2_has_no_simulation",
+      "combination_rejection_reasons": {
+        "approach_length_ratio_exceeded": 144
+      },
+      "whole_route_pass": true,
+      "selected_candidate_index": 23
+    }
+  ],
+  "completed": [
+    "family_s12_4d13d93f9171c446_ext_000_regular",
+    "family_s12_4d13d93f9171c446_ext_005_regular",
+    "family_s12_f2adfbfae12fbbad_ext_000_regular",
+    "family_s12_5024cb2ccea653ae_ext_000_regular"
+  ],
+  "unfinished": [],
+  "wall_s": 128.93263730000035,
+  "wall_limit_s": 900,
+  "stop": null,
+  "frozen_check": {
+    "status": "PASS",
+    "file_count": 39
+  },
+  "unfinished_evidence": {}
+}

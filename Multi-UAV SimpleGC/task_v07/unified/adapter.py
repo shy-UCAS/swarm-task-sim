@@ -12,7 +12,7 @@ from .route import route_group, GeometryRejected
 from .checks import plan_checks
 
 
-def build_unified_pool(scene, descriptor, group, budget):
+def build_unified_pool(scene, descriptor, group, budget, *, on_record=None):
     spec = build_spec(descriptor, group)
     started = time.perf_counter()
     free = free_space(scene, spec)
@@ -53,6 +53,8 @@ def build_unified_pool(scene, descriptor, group, budget):
                 evidence=exc.evidence, exhausted=exc.reason.endswith("budget_exhausted")))
             reasons[exc.reason] += 1
         records.append(record)
+        if on_record is not None:
+            on_record(record)
     wall = time.perf_counter()-started
     return pool, {"records": records, "rejection_reasons": dict(reasons),
         "metrics": {"attempts": len(records), "budget": budget, "feasible_candidates": len(pool),
