@@ -1,7 +1,7 @@
 """Geometry gates, all-pairs entry access, and diagnostic approach directions."""
 import math
 
-from shapely.geometry import LineString, Point
+from shapely.geometry import LineString, Point, Polygon
 
 from .contract import SceneConfig, validate_public_scene
 from .diagnostics import route_diagnostics
@@ -33,6 +33,69 @@ def max_span(mask, step_deg):
     return min(best, len(mask)) * step_deg
 
 
+def check_layout_s15(facilities, layers, layout, world_bounds):
+    """Independent exact checks from public base contours and layer offsets.
+
+    No sampler helper, layout record, or claimed distance is consulted. Frozen
+    thresholds are S15 instruction sections 4/6: 20%, 40 m, 350 m, 1e-6 m.
+    """
+    issues, adjacency = [], {f["id"]: set() for f in facilities}
+
+    def issue(code, *ids):
+        issues.append({"code": code, "entity_ids": list(ids), "category": "geometry"})
+
+    def distance(a, b):
+        if a["type"] == "Circle" and b["type"] == "Circle":
+            return max(0.0, math.dist(a["center_m"], b["center_m"])-a["radius_m"]-b["radius_m"])
+        if a["type"] == "Polygon" and b["type"] == "Polygon":
+            return Polygon(a["vertices_m"]).distance(Polygon(b["vertices_m"]))
+        circle, polygon = (a, b) if a["type"] == "Circle" else (b, a)
+        return max(0.0, Point(circle["center_m"]).distance(Polygon(polygon["vertices_m"]))-circle["radius_m"])
+
+    for i, a in enumerate(facilities):
+        aid, geometry = a["id"], a["geometry"]
+        d1a = layers[aid]["warning"]["offset_m"]
+        if geometry["type"] == "Circle":
+            x, y = geometry["center_m"]
+            radius = geometry["radius_m"]
+            bounds = x-radius, y-radius, x+radius, y+radius
+        else:
+            xs, ys = zip(*geometry["vertices_m"])
+            bounds = min(xs), min(ys), max(xs), max(ys)
+        edge = min(bounds[0]-world_bounds[0], bounds[1]-world_bounds[1],
+                   world_bounds[2]-bounds[2], world_bounds[3]-bounds[3])-d1a
+        if edge < 350-1e-6:
+            issue("s15_warning_edge_clearance", aid)
+        for b in facilities[:i]:
+            bid = b["id"]
+            d1b = layers[bid]["warning"]["offset_m"]
+            d2a, d2b = layers[aid]["alert"]["offset_m"], layers[bid]["alert"]["offset_m"]
+            separation = distance(geometry, b["geometry"])
+            # Both ordered R1 inequalities are independently evaluated.
+            if separation-d2a-d1b <= 0:
+                issue("s15_inner_layer_intrudes_warning", aid, bid)
+            if separation-d2b-d1a <= 0:
+                issue("s15_inner_layer_intrudes_warning", bid, aid)
+            gap, width = separation-d1a-d1b, min(d1a-d2a, d1b-d2b)
+            if gap < -.20*width-1e-6:
+                issue("s15_warning_overlap_exceeds_bound", aid, bid)
+            if layout == "isolated" and gap < 40-1e-6:
+                issue("s15_isolated_gap_below_min", aid, bid)
+            if gap <= 0:
+                adjacency[aid].add(bid)
+                adjacency[bid].add(aid)
+    if layout == "clustered" and facilities:
+        visited, pending = set(), [facilities[0]["id"]]
+        while pending:
+            fid = pending.pop()
+            if fid not in visited:
+                visited.add(fid)
+                pending.extend(adjacency[fid]-visited)
+        if len(visited) != len(facilities):
+            issue("s15_cluster_warning_disconnected", *adjacency)
+    return issues
+
+
 def check_family(scene, family):
     validate_public_scene(scene)
     config = SceneConfig(**family["config"])
@@ -51,6 +114,8 @@ def check_family(scene, family):
     def issue(code, *ids, category="geometry"):
         issues.append({"code": code, "entity_ids": list(ids), "category": category})
 
+    if family.get("sampling_revision") == "s1.5":
+        issues.extend(check_layout_s15(facilities, layers, family["layout"], world.bounds))
     for e in entities:
         # Use enclosing tessellation for containment; keeps the full contour
         # inside the 4 km map rather than silently clipping protection layers.
@@ -94,7 +159,7 @@ def check_family(scene, family):
         corridor = LineString([centers[0], centers[-1]])
         if max(corridor.distance(Point(c)) for c in centers) > 1e-6:
             issue("linear_facilities_not_collinear", *[f["id"] for f in facilities])
-    if family.get("sampling_revision") == "s1.2":
+    if family.get("sampling_revision") in ("s1.2", "s1.5"):
         for i, a in enumerate(obstacles):
             for b in obstacles[:i]:
                 if to_shape(a["geometry"], q, True).intersects(to_shape(b["geometry"], q, True)):
