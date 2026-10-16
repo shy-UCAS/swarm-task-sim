@@ -141,6 +141,9 @@ def _approaches(scene, spec, mapping, states, free, clearance):
 
 
 def route_group(scene, spec, shape, free, initial_states, rng):
+    if shape["kind"] != "transit":
+        from .operation_routes import route_operation
+        return route_operation(scene, spec, shape, free, initial_states, rng)
     states = {s["agent_id"]: s for s in initial_states}
     starts = {a: states[a]["position_enu_m"] for a in spec["members"]}
     mapping = assign(spec["members"], starts, shape["slots"], spec["public_split"])

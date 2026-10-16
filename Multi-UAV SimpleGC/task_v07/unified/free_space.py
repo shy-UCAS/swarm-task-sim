@@ -89,6 +89,7 @@ class FreeSpace:
     offsets: dict
     cfg: dict
     candidate: object
+    exclusion_policy: dict = field(default_factory=dict)
     _planners: dict = field(default_factory=dict)
 
     def point_valid(self, point):
@@ -157,21 +158,25 @@ class FreeSpace:
 
 
 def free_space(scene, spec, config=None):
-    if spec["execution_method"] != "transit" or spec["role"] != "transit":
-        raise PlannerUnavailable("M3a unified geometry supports transit only; select legacy explicitly for regression")
+    from task_v07.expansion.pipeline import exclusion_policy, forbidden_zone_ids
     cfg = load_geometry() if config is None else deepcopy(config)
     target = next(e for e in scene["entities"] if e["id"] == spec["target_id"] and e["type"] == "facility")
     offsets = {e["layer"]: e["offset_m"] for e in scene["entities"] if e.get("facility_id") == target["id"]}
     constraints = []
+    policy = exclusion_policy(scene, spec["role"], spec["target_id"], spec["members"])
+    forbidden = set().union(*(set(forbidden_zone_ids(scene, p)) for p in policy.values()))
     for entity in scene["entities"]:
-        if entity["type"] == "hard_constraint_obstacle" or entity.get("layer") == "alert":
+        if entity["type"] == "hard_constraint_obstacle" or entity["id"] in forbidden:
             kind = "obstacle" if entity["type"] == "hard_constraint_obstacle" else "forbidden_layer"
+            margin = cfg["obstacle_margin_m"] if kind == "obstacle" else cfg["forbidden_margin_m"]
+            if spec["role"] == "feint" and entity.get("facility_id") == spec["target_id"]:
+                margin = cfg["feint"]["protected_clearance_m"]
             constraints.append({"id": entity["id"], "geometry": deepcopy(entity["geometry"]), "kind": kind,
-                                "margin_m": cfg["obstacle_margin_m"] if kind == "obstacle" else cfg["forbidden_margin_m"]})
+                                "margin_m": margin})
     world = deepcopy(scene["world"]["geometry"])
     candidate = polygon_of(world).buffer(-cfg["world_margin_m"], join_style=2)
     candidate = candidate.difference(unary_union([polygon_of(offset_geometry(c["geometry"], c["margin_m"])) for c in constraints]))
-    return FreeSpace(world, constraints, deepcopy(target), offsets, cfg, candidate)
+    return FreeSpace(world, constraints, deepcopy(target), offsets, cfg, candidate, policy)
 
 
 def work_region(scene, spec, free):

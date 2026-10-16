@@ -62,22 +62,23 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
         for i, (a, b) in enumerate(zip(points, points[1:])):
             local.extend({"segment": i, **issue} for issue in free.segment_issues(a, b))
         visits, entry = warning_visits(points, warning)
-        if len(visits) != 1:
+        kind = spec["execution_method"]
+        if kind == "transit" and len(visits) != 1:
             local.append({"code": "warning_visit_count", "count": len(visits), "required": 1, "intervals_route_m": visits})
         if entry is None or entry["straight_before_warning_m"] < free.cfg["alignment_length_m"]-TOL:
             local.append({"code": "alignment_length", "measured_m": None if entry is None else entry["straight_before_warning_m"],
                           "required_m": free.cfg["alignment_length_m"]})
-        if reference.get("intermediate_dwell"):
+        if kind in ("transit", "feint") and reference.get("intermediate_dwell"):
             local.append({"code": "transit_planned_dwell"})
         legs = np.diff(points, axis=0); directions = legs/np.linalg.norm(legs, axis=1)[:, None]
-        if any(float(a@b) <= -1.+1e-10 for a, b in zip(directions, directions[1:])):
+        if kind in ("transit", "feint") and any(float(a@b) <= -1.+1e-10 for a, b in zip(directions, directions[1:])):
             local.append({"code": "immediate_reversal"})
         clearances = {e["id"]: float(geometry_facts(e["geometry"], points[-1])["signed_distance_m"])
                       for e in scene["entities"] if e.get("layer") == "warning"}
-        if min(clearances.values()) < minimum-TOL:
+        if kind != "intrusion" and min(clearances.values()) < minimum-TOL:
             local.append({"code": "retreat_warning_clearance", "clearances_m": clearances, "required_m": minimum})
         target_clearance = float(geometry_facts(warning, points[-1])["signed_distance_m"])
-        if target_clearance > free.cfg["retreat_clearance_max_m"]+TOL:
+        if kind != "intrusion" and target_clearance > free.cfg["retreat_clearance_max_m"]+TOL:
             local.append({"code": "retreat_clearance_max", "measured_m": target_clearance})
         collection = reference.get("collection_point_enu_m")
         if collection is not None:
@@ -91,6 +92,11 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
                           "warning_intervals_route_m": visits, "first_warning_entry": entry,
                           "retreat_clearances_m": clearances, "segment_count": len(points)-1}
         issues.extend({"agent_id": agent, **issue} for issue in local)
+    if spec["execution_method"] == "area_search":
+        from .operation_shapes import nominal_coverage
+        fraction, size = nominal_coverage(template["survey"], [r["work_points_enu_m"] for r in template["references"].values()])
+        if fraction < spec["params"]["nominal_coverage_min"]:
+            issues.append({"code": "nominal_coverage_shortfall", "fraction": fraction, "grid_points": size})
     averages = [np.mean(v, axis=0) for _, v in sorted(by_split.items())]
     angle = heading_difference(averages) if spec["approach_mode"] == "multi_direction" else None
     return {"status": "REJECT" if issues else "PASS", "issues": issues, "members": members,
