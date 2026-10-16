@@ -106,7 +106,7 @@ def _approaches(scene, spec, mapping, states, free, clearance):
         starts = {a: np.asarray(states[a]["position_enu_m"][:2]) for a in agents}
         mean = np.mean(list(starts.values()), axis=0)
         inward, _ = start_line(scene, mean)
-        planner = free.planner(half, exterior=True)
+        planner = free.planner(half, exterior=True, reference_corridor=True)
         if planner is None or exterior is None:
             raise GeometryRejected("empty_connection_domain")
         form = None

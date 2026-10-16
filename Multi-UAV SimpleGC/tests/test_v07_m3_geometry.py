@@ -153,6 +153,13 @@ class FreeSpaceTests(unittest.TestCase):
         self.assertFalse(planner.free([2990., 2500.]))
         self.assertEqual(scene, original)
 
+    def test_zero_width_reference_corridor_keeps_configured_pad(self):
+        scene, d, g = request()
+        free = free_space(scene, build_spec(d, g))
+        point = [-1200.+100.+36., -1200.]
+        self.assertTrue(free.planner().free(point))
+        self.assertFalse(free.planner(reference_corridor=True).free(point))
+
     def test_G6_empty_domain_and_arcs_are_finite(self):
         scene, d, g = request()
         scene["entities"].append({"id": "blocked", "type": "hard_constraint_obstacle",

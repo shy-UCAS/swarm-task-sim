@@ -110,9 +110,9 @@ class FreeSpace:
                                "required_m": c["margin_m"], "kind": c["kind"]})
         return issues
 
-    def planner(self, half_width=0., exterior=False):
+    def planner(self, half_width=0., exterior=False, reference_corridor=False):
         """Private primitive view with margins applied once, planner.margin=0."""
-        key = (float(half_width), bool(exterior))
+        key = (float(half_width), bool(exterior), bool(reference_corridor))
         if key in self._planners:
             return self._planners[key]
         inset = polygon_of(self.world).buffer(-(self.cfg["world_margin_m"] + half_width), join_style=2)
@@ -122,7 +122,7 @@ class FreeSpace:
         entities = []
         for c in self.constraints:
             margin = (self.cfg["obstacle_margin_m"] + self.cfg["corridor_half_width_factor"]*half_width
-                      + self.cfg["corridor_pad_m"] if c["kind"] == "obstacle" and half_width > 0
+                      + self.cfg["corridor_pad_m"] if c["kind"] == "obstacle" and (half_width > 0 or reference_corridor)
                       else c["margin_m"] + half_width)
             entities.append({"id": c["id"], "type": "hard_constraint_obstacle",
                              "geometry": offset_geometry(c["geometry"], margin)})
