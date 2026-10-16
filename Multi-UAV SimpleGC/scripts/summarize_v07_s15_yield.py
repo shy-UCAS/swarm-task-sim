@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
@@ -134,10 +134,14 @@ def warning_geometry(scene, facility_id):
     return None
 
 
+def work_polyline(points):
+    """A one-point work set has zero length, so the registered length test can never fire."""
+    coords = [(point[0], point[1]) for point in points]
+    return LineString(coords if len(coords) > 1 else [coords[0], coords[0]])
+
+
 def enters_warning(points, geometry):
-    if len(points) < 2:
-        return None
-    line = LineString([(point[0], point[1]) for point in points])
+    line = work_polyline(points)
     shape = to_shape(geometry, 64)
     if not line.intersects(shape):
         return False
@@ -155,14 +159,15 @@ def skeleton_warning_scan(skeleton_file, descriptor, scene, anomalies):
     facilities = sorted(entity["id"] for entity in scene["entities"] if entity["type"] == "facility")
     targets = {group["group_id"]: group["target_id"] for group in descriptor["task_groups"]}
     members = {agent: group["group_id"] for group in descriptor["task_groups"] for agent in group["members"]}
-    entered, unavailable, details = 0, 0, []
+    entered, unavailable, degenerate, degenerate_inside, details = 0, 0, 0, 0, []
     for agent in sorted(members):
         info = merged.get(agent)
-        if not isinstance(info, dict) or not isinstance(info.get("work_points_enu_m"), list):
+        points = info.get("work_points_enu_m") if isinstance(info, dict) else None
+        if not isinstance(points, list) or not points:
             unavailable += 1
             continue
         target = targets[members[agent]]
-        hit = False
+        rings = []
         for facility in facilities:
             if facility == target:
                 continue
@@ -170,17 +175,26 @@ def skeleton_warning_scan(skeleton_file, descriptor, scene, anomalies):
             if geometry is None:
                 anomalies.append({"kind": "warning_layer_missing", "facility_id": facility})
                 continue
-            outcome = enters_warning(info["work_points_enu_m"], geometry)
-            if outcome is None:
-                anomalies.append({"kind": "work_points_too_short", "skeleton_id": descriptor["skeleton_id"], "agent_id": agent})
-                continue
-            hit = hit or outcome
+            rings.append((facility, geometry))
+        hit = any(enters_warning(points, geometry) for _, geometry in rings)
+        if len(points) == 1:
+            # Recorded diagnostic only: the registered test sees length 0 here, never an entry.
+            degenerate += 1
+            inside = [facility for facility, geometry in rings
+                      if Point(points[0][0], points[0][1]).within(to_shape(geometry, 64))]
+            if inside:
+                degenerate_inside += 1
+            anomalies.append({"kind": "single_point_work_set", "skeleton_id": descriptor["skeleton_id"],
+                              "agent_id": agent, "inside_non_target_warning": inside})
         entered += int(hit)
-        details.append({"agent_id": agent, "group_id": members[agent], "target_id": target, "entered": hit})
+        details.append({"agent_id": agent, "group_id": members[agent], "target_id": target,
+                        "work_point_count": len(points), "entered": hit})
     if unavailable == len(members):
         return {"status": "not_available", "reason": "work_points_enu_m_absent", "members": len(members)}
     return {"status": "measured", "entered_members": entered, "total_members": len(members),
-            "unavailable_members": unavailable, "entered": entered > 0, "details": details}
+            "unavailable_members": unavailable, "degenerate_members": degenerate,
+            "degenerate_inside_non_target_warning": degenerate_inside, "entered": entered > 0,
+            "details": details}
 
 
 def markdown_table(rows, columns, row_label=""):
@@ -344,9 +358,15 @@ def main():
                 t5[intent][layer] = "not_applicable"
                 continue
             applicable = [row for row in multi if row["warning_scan"]["status"] == "measured"]
-            not_available = len(multi) - len(applicable)
+            absent = [row for row in multi if row["warning_scan"].get("reason") == "selected_skeleton.json_absent"]
+            missing = [row for row in multi if row["warning_scan"]["status"] == "not_available"
+                       and row["warning_scan"].get("reason") != "selected_skeleton.json_absent"]
             cell = f"{sum(row['warning_scan']['entered'] for row in applicable)}/{len(applicable)}"
-            t5[intent][layer] = cell + (f" [not_available {not_available}]" if not_available else "")
+            if absent:
+                cell += f" [not_counted {len(absent)}]"
+            if missing:
+                cell += f" [not_available {len(missing)}]"
+            t5[intent][layer] = cell
     t6 = {intent: distribution([row["planning_wall_s"] for row in measured if row["intent"] == intent])
           for intent in INTENTS}
     t6["all"] = distribution([row["planning_wall_s"] for row in measured])
@@ -376,7 +396,12 @@ def main():
                           "group_proposals": len(proposal_rows),
                           "group_proposals_accepted": sum(row["accepted"] for row in proposal_rows),
                           "rejected_proposals": len(rejected_rows), "unattributed": sum(
-                              row["signature"].startswith("unattributed:") for row in rejected_rows)},
+                              row["signature"].startswith("unattributed:") for row in rejected_rows),
+                          "warning_members_scanned": sum(row["warning_scan"].get("total_members", 0) for row in rows),
+                          "warning_members_unavailable": sum(row["warning_scan"].get("unavailable_members", 0) for row in rows),
+                          "members_single_point_work_set": sum(row["warning_scan"].get("degenerate_members", 0) for row in rows),
+                          "members_single_point_inside_non_target_warning": sum(
+                              row["warning_scan"].get("degenerate_inside_non_target_warning", 0) for row in rows)},
                "unparseable_rejections": {"count": unparseable, "rate": rate},
                "proposal_field_note": "one proposals.jsonl line is one group proposal; accepted means record['reason'] is None",
                "anomalies": anomalies,
@@ -391,9 +416,12 @@ def main():
                               "success": row["success"], "planning_wall_s": row["planning_wall_s"],
                               "group_proposals": row["proposals"], "group_proposals_accepted": row["accepted"],
                               "warning_scan_status": row["warning_scan"]["status"],
+                              "warning_scan_reason": row["warning_scan"].get("reason"),
                               "warning_entered": row["warning_scan"].get("entered"),
                               "warning_entered_members": row["warning_scan"].get("entered_members"),
-                              "warning_total_members": row["warning_scan"].get("total_members")}
+                              "warning_total_members": row["warning_scan"].get("total_members"),
+                              "warning_unavailable_members": row["warning_scan"].get("unavailable_members"),
+                              "warning_single_point_members": row["warning_scan"].get("degenerate_members")}
                              for row in rows]}
     args.out_dir.mkdir(parents=True, exist_ok=True)
     save_json(args.out_dir / "s15_yield_summary.json", summary)
@@ -423,16 +451,22 @@ def main():
                   ["count"], row_label="signature"), ""]
     lines += ["## T5 作业段进入非目标预警区：意图 × 布局（仅多设施布局）", "",
               markdown_table(list(t5.items()), LAYERS, row_label="intent"), "",
-              "分母为有 `selected_skeleton.json` 且可测的骨架数；`[not_available n]` 为该格无法判定的骨架数；"
-              "单设施地图记 `not_applicable`。", ""]
+              "分母为有 `selected_skeleton.json` 且可测的骨架数；`not_applicable` 为单设施地图；"
+              "`[not_counted n]` 为无 `selected_skeleton.json` 因而按第 4.4 条不统计的骨架数；"
+              "`[not_available n]` 为找不到 `references` 或 `work_points_enu_m` 的骨架数。", ""]
     lines += ["## T6 每骨架规划墙钟（s）：按意图", "",
               markdown_table([(intent, t6[intent]) for intent in list(INTENTS) + ["all"]],
                              ["count", "min", "p50", "p90", "max"], row_label="intent"), ""]
     if anomalies:
-        lines += ["## 异常记录", ""]
-        for item in anomalies:
-            lines.append(f"- `{json.dumps(item, ensure_ascii=False)}`")
-        lines.append("")
+        kinds = Counter(item["kind"] for item in anomalies)
+        lines += ["## 异常记录（逐条见 summary JSON 的 anomalies）", "",
+                  markdown_table([(kind, {"count": count}) for kind, count in sorted(kinds.items())],
+                                 ["count"], row_label="kind"), "",
+                  f"- 作业段扫描覆盖成员 {summary['counts']['warning_members_scanned']} 名，"
+                  f"其中 work_points_enu_m 缺失 {summary['counts']['warning_members_unavailable']} 名；"
+                  f"单点作业段 {summary['counts']['members_single_point_work_set']} 名，"
+                  f"其中该点落在非目标预警区内 {summary['counts']['members_single_point_inside_non_target_warning']} 名"
+                  "（单点集合按登记的交集长度 > 1e-6 m 口径判为未进入，仅记录此诊断）。", ""]
     (args.out_dir / "s15_yield_tables.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
     print({"skeletons": len(rows), "measured": len(measured), "proposals": len(proposal_rows),
            "rejected": len(rejected_rows), "unparseable": unparseable, "anomalies": len(anomalies),
