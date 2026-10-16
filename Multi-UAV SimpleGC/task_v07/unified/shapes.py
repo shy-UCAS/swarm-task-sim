@@ -9,11 +9,11 @@ from .route import GeometryRejected, line_interval
 
 
 def draw_shape(spec, region, rng, free):
-    if spec["execution_method"] in ("area_search", "close_observation", "monitoring", "feint"):
+    if spec["execution_method"] in ("area_search", "close_observation", "monitoring", "feint", "intrusion"):
         from .operation_shapes import draw_operation
         return draw_operation(spec, region, rng, free)
     if spec["role"] != "transit" or spec["execution_method"] != "transit":
-        raise PlannerUnavailable("M3a has no unified shape for this execution method")
+        raise PlannerUnavailable("Unified geometry has no shape for this execution method")
     if region.is_empty:
         raise GeometryRejected("empty_work_region", [{"scope": "candidate_work_domain", "empty": True}])
     warning = offset_geometry(free.target["geometry"], free.offsets["warning"])

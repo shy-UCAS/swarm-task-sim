@@ -63,6 +63,11 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
             local.extend({"segment": i, **issue} for issue in free.segment_issues(a, b))
         visits, entry = warning_visits(points, warning)
         kind = spec["execution_method"]
+        if kind == "intrusion":
+            value=float(geometry_facts(free.target["geometry"],points[-1])["signed_distance_m"])
+            low,high=spec["params"]["endpoint_distance_m"]
+            if not low-TOL <= value <= high+TOL:
+                local.append({"code":"intrusion_endpoint_distance","measured_m":value})
         if kind == "feint":
             alert_visits, _ = warning_visits(points, offset_geometry(free.target["geometry"],free.offsets["alert"]))
             if len(alert_visits) != 1:
@@ -119,6 +124,11 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
         fraction, size = nominal_coverage(template["survey"], [r["work_points_enu_m"] for r in template["references"].values()])
         if fraction < spec["params"]["nominal_coverage_min"]:
             issues.append({"code": "nominal_coverage_shortfall", "fraction": fraction, "grid_points": size})
+    if spec["execution_method"] == "intrusion":
+        ends=[np.asarray(r["endpoint_enu_m"]) for r in template["references"].values()]
+        spacing=min((float(np.linalg.norm(a-b)) for a,b in combinations(ends,2)),default=float("inf"))
+        if spacing < spec["family"]["lateral_spacing_m"]-TOL:
+            issues.append({"code":"intrusion_endpoint_spacing","measured_m":spacing})
     if spec["execution_method"] == "monitoring":
         refs = list(template["references"].values())
         radii = sorted(r["patrol_offset_m"] for r in refs)

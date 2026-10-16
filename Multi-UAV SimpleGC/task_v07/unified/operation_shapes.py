@@ -155,9 +155,9 @@ def observation_shape(spec, free, rng, draw):
 
 def draw_operation(spec, region, rng, free):
     from .patrol_shape import patrol_shape
-    from .terminal_shapes import feint_shape
+    from .terminal_shapes import feint_shape, intrusion_shape
     builders = {"area_search": search_shape, "close_observation": observation_shape, "monitoring": patrol_shape,
-                "feint": feint_shape}
+                "feint": feint_shape, "intrusion": intrusion_shape}
     if spec["execution_method"] not in builders: raise PlannerUnavailable("Unified role not implemented")
     if region.is_empty: raise GeometryRejected("empty_work_region")
     rejected = []

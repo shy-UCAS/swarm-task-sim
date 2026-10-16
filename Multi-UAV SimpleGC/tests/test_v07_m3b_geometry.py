@@ -23,6 +23,20 @@ def role_request(method, multi=False, count=2):
 
 
 class M3bGeometryTests(unittest.TestCase):
+    def test_intrusion_exact_signed_endpoints_and_family_spacing(self):
+        scene,d,g=role_request("intrusion",multi=True,count=4)
+        spec=build_spec(d,g); free=free_space(scene,spec); rng=random.Random(3)
+        shape=draw_shape(spec,work_region(scene,spec,free),rng,free)
+        bundle,template=route_group(scene,spec,shape,free,d["family_conditions"]["initial_states"],rng)
+        check=plan_checks(scene,spec,bundle,template,free,d["family_conditions"]["initial_states"])
+        self.assertEqual(check["status"],"PASS",check["issues"])
+        self.assertEqual(template["intrusion_endpoint_min_spacing_m"],spec["family"]["lateral_spacing_m"])
+        for agent,ref in template["references"].items():
+            self.assertEqual(ref["endpoint_enu_m"],bundle.waypoints_by_agent[agent][-1])
+            signed=float(geometry_facts(free.target["geometry"],ref["endpoint_enu_m"][:2])["signed_distance_m"])
+            self.assertAlmostEqual(signed,ref["intrusion_endpoint_drawn_distance_m"],places=7)
+            self.assertGreaterEqual(signed,-10.); self.assertLessEqual(signed,25.)
+            self.assertFalse(ref["retreat_required"])
     def test_feint_continuous_turn_single_alert_visit_no_dwell(self):
         scene,d,g=role_request("feint"); spec=build_spec(d,g); free=free_space(scene,spec); rng=random.Random(3)
         shape=draw_shape(spec,work_region(scene,spec,free),rng,free)

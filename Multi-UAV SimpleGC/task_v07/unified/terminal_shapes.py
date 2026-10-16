@@ -39,3 +39,37 @@ def feint_shape(spec,free,rng,draw):
                                       "feint_drawn_contour_clearance_m":rho})
     draw.update(q=q,deepest_contour_clearance_m=rho,turn_radius_m=radius,planned_dwell=False)
     return {"kind":"feint","slots":slots,"draw":draw,"template_fields":{}}
+
+
+def intrusion_shape(spec,free,rng,draw):
+    slots=gate_slots(spec,free,draw["direction_deg"]); distances=[]
+    base=free.target["geometry"]
+    for slot in slots:
+        signed=rng.uniform(*spec["params"]["endpoint_distance_m"]); distances.append(signed)
+        origin=np.asarray(slot["entry"]); heading=np.asarray(slot["direction"])
+        if signed>=0:
+            hit=line_interval(offset_geometry(base,signed),origin,heading)
+            if hit is None: raise GeometryRejected("intrusion_contour_unavailable")
+            depth=hit[0]
+        else:
+            hit=line_interval(base,origin,heading)
+            if hit is None: raise GeometryRejected("intrusion_interior_unavailable")
+            low,high=hit[0],(hit[0]+hit[1])/2
+            if float(geometry_facts(base,origin+high*heading)["signed_distance_m"])>signed:
+                raise GeometryRejected("intrusion_interior_unavailable")
+            # Exact signed-distance solve also supports negative polygon offsets.
+            for _ in range(40):
+                mid=(low+high)/2
+                if float(geometry_facts(base,origin+mid*heading)["signed_distance_m"])>signed: low=mid
+                else: high=mid
+            depth=(low+high)/2
+        point=origin+depth*heading
+        slot.update(work=[point.tolist()],entry_to_work="straight_parallel_lane",
+                    reference_fields={"intrusion_endpoint_drawn_distance_m":signed})
+    ends=[np.asarray(s["work"][0]) for s in slots]
+    spacing=spec["family"]["lateral_spacing_m"]
+    if any(np.linalg.norm(a-b)<spacing-1e-6 for i,a in enumerate(ends) for b in ends[i+1:]):
+        raise GeometryRejected("intrusion_endpoint_spacing")
+    draw["endpoint_signed_distances_m"]=distances
+    return {"kind":"intrusion","slots":slots,"draw":draw,
+            "template_fields":{"intrusion_endpoint_min_spacing_m":spacing}}
