@@ -9,6 +9,7 @@ from task_v07.expansion.contracts import P0ContractError
 from task_v07.unified.spec import build_spec, validate_spec, proposal_seed
 from task_v07.unified.free_space import free_space, work_region, offset_curve, chord_intervals, quantile_interval
 from task_v07.geometry import geometry_facts
+from task_v07.unified.assign import assign
 
 
 class SpecTests(unittest.TestCase):
@@ -39,6 +40,21 @@ class SpecTests(unittest.TestCase):
         changed["agent_ids"] = list(reversed(changed["agent_ids"]))
         changed["column_seed"] += 1
         self.assertEqual(build_spec(descriptor, group), build_spec(changed, changed["task_groups"][0]))
+
+
+class AssignmentTests(unittest.TestCase):
+    def test_G2_physical_slots_survive_column_and_slot_permutation(self):
+        _, d, g = request(multi=True)
+        spec = build_spec(d, g)
+        starts = {s["agent_id"]: s["position_enu_m"] for s in d["family_conditions"]["initial_states"]}
+        slots = [{"slot_id": f"{i}:{j}", "split_index": i, "direction": [1., 0.], "entry": [0., 20.*j]}
+                 for i, stock in enumerate(spec["public_split"]["members"]) for j in range(len(stock))]
+        mapping = assign(g["members"], starts, slots, spec["public_split"])
+        self.assertEqual(mapping, assign(list(reversed(g["members"])), starts, list(reversed(slots)), spec["public_split"]))
+        for i, stock in enumerate(spec["public_split"]["members"]):
+            self.assertEqual(set(stock), {a for a, s in mapping.items() if s["split_index"] == i})
+        with self.assertRaises(P0ContractError):
+            assign(g["members"], starts, slots[:-1], spec["public_split"])
 
 
 class FreeSpaceTests(unittest.TestCase):
