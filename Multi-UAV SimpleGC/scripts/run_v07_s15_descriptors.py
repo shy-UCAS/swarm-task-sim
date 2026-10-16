@@ -36,7 +36,7 @@ def entry_commit():
     return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT, text=True).strip()
 
 
-def select_families(baseline):
+def select_families(baseline, per_layer):
     """Deterministic layer selection; planning outcomes are never consulted."""
     attempt = Path(baseline["external_attempt_path"])
     candidates = read_json(attempt / "candidates.json")
@@ -45,8 +45,8 @@ def select_families(baseline):
     layers, below = {}, {}
     for layer in LAYERS:
         pool = sorted((row for row in eligible if row["layout"] == layer), key=lambda r: r["candidate_index"])
-        layers[layer] = pool[:PER_LAYER]
-        if len(pool) < PER_LAYER:
+        layers[layer] = pool[:per_layer]
+        if len(pool) < per_layer:
             below[layer] = len(pool)
     return attempt, candidates, layers, below, unknown, {row["candidate_index"]: row for row in baseline["families"]}
 
@@ -114,9 +114,13 @@ def sample_descriptors(selected, maps):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline", type=Path, default=BASELINE)
+    parser.add_argument("--per-layer", type=int, default=PER_LAYER,
+                        help="Maps per layer; 6 is the registered rule, section 5 authorises 4 after a slow quick check")
     args = parser.parse_args()
+    if args.per_layer < 1:
+        raise SystemExit("--per-layer must be a positive integer")
     baseline = read_json(args.baseline)
-    attempt, candidates, layers, below, unknown, families = select_families(baseline)
+    attempt, candidates, layers, below, unknown, families = select_families(baseline, args.per_layer)
     selected, maps, anomalies = build_selection(layers, candidates, families)
     descriptors, counts = sample_descriptors(selected, maps)
     stamp = datetime.now(timezone.utc)
@@ -127,6 +131,7 @@ def main():
     registration = {"schema": "traj2language.s15_stage2_registration/1", "source_attempt": str(attempt),
                     "selected": selected, "selection_rule": SELECTION_RULE, "baseline": str(args.baseline),
                     "baseline_sha256": sha(args.baseline), "entry_commit": entry_commit(),
+                    "per_layer": args.per_layer,
                     "per_layout_counts": {layer: len(layers[layer]) for layer in LAYERS},
                     "layers_below_quota": below, "unrecognised_layouts": unknown,
                     "descriptor_attempt": str(out), "descriptor_count": len(descriptors),
