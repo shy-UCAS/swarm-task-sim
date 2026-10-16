@@ -154,7 +154,8 @@ def observation_shape(spec, free, rng, draw):
 
 
 def draw_operation(spec, region, rng, free):
-    builders = {"area_search": search_shape, "close_observation": observation_shape}
+    from .patrol_shape import patrol_shape
+    builders = {"area_search": search_shape, "close_observation": observation_shape, "monitoring": patrol_shape}
     if spec["execution_method"] not in builders: raise PlannerUnavailable("Unified role not implemented")
     if region.is_empty: raise GeometryRejected("empty_work_region")
     rejected = []
@@ -168,5 +169,6 @@ def draw_operation(spec, region, rng, free):
             draw["rejected_shape_attempts"] = rejected
             return result
         except GeometryRejected as exc:
+            if exc.reason == "patrol_band_too_narrow": raise
             rejected.append({"draw": draw.copy(), "reason": exc.reason, "evidence": exc.evidence})
     raise GeometryRejected("shape_search_budget_exhausted", rejected)

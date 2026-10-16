@@ -40,13 +40,16 @@ def route_operation(scene, spec, shape, free, initial_states, rng):
             for agent, slot in sorted(mapping.items()):
                 work = np.asarray(slot["work"], float); gate = np.asarray(slot["entry"])
                 heading = np.asarray(slot["direction"])
-                inner = gate+free.cfg["alignment_length_m"]*heading
-                if not free.point_valid(inner): raise GeometryRejected("inner_alignment_blocked")
-                tangent = work[1]-work[0] if len(work)>1 else heading
-                tangent /= np.linalg.norm(tangent)
-                lead = work[0]-spec["family"]["lateral_spacing_m"]*tangent
-                incoming = connect(planner, [gate, inner, lead, work[0]])
-                incoming = round_corners(incoming, radius, free.cfg["chord_error_m"])
+                if slot.get("entry_to_work") == "shared_tangent_parallel_lane":
+                    incoming = [gate,work[0]]
+                else:
+                    inner = gate+free.cfg["alignment_length_m"]*heading
+                    if not free.point_valid(inner): raise GeometryRejected("inner_alignment_blocked")
+                    tangent = work[1]-work[0] if len(work)>1 else heading.copy()
+                    tangent /= np.linalg.norm(tangent)
+                    lead = work[0]-spec["family"]["lateral_spacing_m"]*tangent
+                    incoming = connect(planner, [gate, inner, lead, work[0]])
+                    incoming = round_corners(incoming, radius, free.cfg["chord_error_m"])
                 outgoing = []
                 if spec["role"] != "intrusion":
                     direction = np.asarray(slot["exit_direction"])

@@ -126,6 +126,11 @@ def _approaches(scene, spec, mapping, states, free, clearance):
             lane = offset_lane(reference, offsets[agent], free.cfg["chord_error_m"])
             # Physical starts are immutable; only the join to the formed lane is new.
             points = clean_joints([starts[agent], *lane[1:-1], entries[agent]])
+            # An inside offset miter can consume part of the reference alignment.
+            # Reject this connection draw using the existing 100 m requirement.
+            if np.linalg.norm(points[-1]-points[-2]) < free.cfg["alignment_length_m"]-TOL:
+                raise GeometryRejected("alignment_consumed_by_lane_turn", [{"agent_id": agent,
+                    "actual_m": float(np.linalg.norm(points[-1]-points[-2]))}])
             if any(geometry_facts(warning, np.asarray([a, b]), footprint=True)["clearance_m"] < -TOL
                    for a, b in zip(points[:-2], points[1:-1])):
                 raise GeometryRejected("warning_visit_before_alignment", [{"agent_id": agent}])

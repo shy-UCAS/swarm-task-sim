@@ -97,6 +97,13 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
                     local.append({"code": "observation_alert_clearance", "measured_m": clearance})
                 if not np.allclose(points3[index], reference["observation_point_enu_m"], atol=1e-8, rtol=0):
                     raise P0ContractError("Dwell index differs from the actual observation point")
+        if kind == "monitoring":
+            rho = reference["patrol_offset_m"]
+            distances = geometry_facts(free.target["geometry"], np.asarray(reference["work_points_enu_m"])[:, :2])["signed_distance_m"]
+            if np.max(np.abs(distances-rho)) > 1e-6:
+                local.append({"code": "patrol_lane_changed", "offset_m": rho})
+            if not free.offsets["alert"]+spec["params"]["alert_clearance_m"]-TOL <= rho <= free.offsets["warning"]-spec["params"]["warning_inset_m"]+TOL:
+                local.append({"code": "patrol_offset_outside_band", "offset_m": rho})
         if entry:
             by_split.setdefault(reference["split_index"], []).append(entry["direction"])
         members[agent] = {"status": "REJECT" if local else "PASS", "issues": local,
@@ -108,6 +115,13 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
         fraction, size = nominal_coverage(template["survey"], [r["work_points_enu_m"] for r in template["references"].values()])
         if fraction < spec["params"]["nominal_coverage_min"]:
             issues.append({"code": "nominal_coverage_shortfall", "fraction": fraction, "grid_points": size})
+    if spec["execution_method"] == "monitoring":
+        refs = list(template["references"].values())
+        radii = sorted(r["patrol_offset_m"] for r in refs)
+        if any(b-a < spec["family"]["lateral_spacing_m"]-TOL for a,b in zip(radii,radii[1:])):
+            issues.append({"code": "patrol_lines_not_group_unique", "offsets_m": radii})
+        if template["monitoring"]["form"] == "full" and len({r["patrol_rotation_sign"] for r in refs}) != 1:
+            issues.append({"code": "patrol_rotation_inconsistent"})
     averages = [np.mean(v, axis=0) for _, v in sorted(by_split.items())]
     angle = heading_difference(averages) if spec["approach_mode"] == "multi_direction" else None
     return {"status": "REJECT" if issues else "PASS", "issues": issues, "members": members,

@@ -1,6 +1,7 @@
 """M3b work-shape and shared-policy contracts, independent of runtime samples."""
 import random
 import unittest
+from unittest.mock import patch
 import numpy as np
 from v07_m3_fixtures import request
 from task_v07.expansion.pipeline import exclusion_policy, forbidden_zone_ids
@@ -9,6 +10,8 @@ from task_v07.unified.free_space import free_space, work_region
 from task_v07.unified.shapes import draw_shape
 from task_v07.unified.route import route_group, GeometryRejected
 from task_v07.unified.checks import plan_checks
+from task_v07.unified.patrol_shape import patrol_shape, parallel_paths
+from task_v07.geometry import geometry_facts
 
 
 def role_request(method, multi=False, count=2):
@@ -20,6 +23,45 @@ def role_request(method, multi=False, count=2):
 
 
 class M3bGeometryTests(unittest.TestCase):
+    def check_patrol(self, form):
+        scene,d,g = role_request("monitoring",multi=True,count=4)
+        spec=build_spec(d,g); free=free_space(scene,spec); rng=random.Random(4)
+        shape=patrol_shape(spec,free,rng,{"direction_deg":37.},force_form=form)
+        offsets=[]
+        for slot in shape["slots"]:
+            ref=slot["reference_fields"]; rho=ref["patrol_offset_m"]
+            points=np.asarray(slot["work"])
+            np.testing.assert_allclose(geometry_facts(free.target["geometry"],points)["signed_distance_m"],rho,atol=1e-7)
+            incoming=points[0]-slot["entry"]
+            self.assertAlmostEqual(float(np.dot(incoming/np.linalg.norm(incoming),slot["direction"])),1.)
+            offsets.append(rho)
+            if form=="arc":
+                forward=np.asarray(ref["patrol_forward_points_m"]); size=len(forward)
+                np.testing.assert_array_equal(points[size-1:2*size-1],forward[::-1])
+                self.assertGreaterEqual(shape["draw"]["arc_span_deg"],150.)
+        self.assertTrue(np.all(np.diff(sorted(offsets)) >= spec["family"]["lateral_spacing_m"]-1e-8))
+        bundle,template=route_group(scene,spec,shape,free,d["family_conditions"]["initial_states"],rng)
+        check=plan_checks(scene,spec,bundle,template,free,d["family_conditions"]["initial_states"])
+        self.assertEqual(check["status"],"PASS",check["issues"])
+        for ref in template["references"].values():
+            np.testing.assert_allclose(geometry_facts(free.target["geometry"],np.asarray(ref["work_points_enu_m"])[:,:2])["signed_distance_m"],ref["patrol_offset_m"],atol=1e-7)
+
+    def test_patrol_full_preserves_group_unique_continuous_lanes(self): self.check_patrol("full")
+    def test_patrol_arc_reversals_preserve_group_unique_lanes(self): self.check_patrol("arc")
+
+    def test_patrol_polygon_offsets_and_finite_short_arc_rejection(self):
+        base={"type":"Polygon","vertices_m":[[-100.,-70.],[100.,-70.],[130.,70.],[-100.,70.]]}
+        paths,_,_=parallel_paths(base,[200.,220.],210.,.37,9.,1.)
+        for rho,points in zip([200.,220.],paths):
+            np.testing.assert_allclose(geometry_facts(base,np.asarray(points))["signed_distance_m"],rho,atol=1e-7)
+        scene,d,g=role_request("monitoring"); spec=build_spec(d,g); free=free_space(scene,spec)
+        with patch("task_v07.unified.patrol_shape.common_arcs",return_value=([(0.,1.)],False)):
+            with self.assertRaisesRegex(GeometryRejected,"patrol_arc_too_short"):
+                patrol_shape(spec,free,random.Random(4),{"direction_deg":37.},force_form="arc")
+        spec["family"]["lateral_spacing_m"]=1000.
+        with self.assertRaisesRegex(GeometryRejected,"patrol_band_too_narrow"):
+            patrol_shape(spec,free,random.Random(4),{"direction_deg":37.})
+
     def test_observation_keeps_true_intermediate_dwell_after_join_cleanup(self):
         scene, d, g = role_request("close_observation")
         spec = build_spec(d,g); free = free_space(scene,spec)
