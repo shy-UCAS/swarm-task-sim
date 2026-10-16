@@ -3,6 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 from task_v07.planning import seed_for
+from task_v07.unified.config import stop_fields
 from .contracts import RouteBundle, P0ContractError
 from .pipeline import plan_group, single_agent_timing, timing_plans, COMMON_CONSTANTS
 from .role_planners import planner_for, PlanningInfeasible
@@ -35,7 +36,7 @@ def assemble_episode(descriptor, groups, bundles, variant=0):
     if len(paths) != len(ids) or set(paths) != set(ids):
         raise P0ContractError("Merged groups do not partition registered physical IDs")
     family = descriptor["family_conditions"]
-    skeleton = {"schema_version": "traj2language.skeleton/0.7-s2x.groups.1", **COMMON_CONSTANTS,
+    skeleton = {"schema_version": "traj2language.skeleton/0.7-s2x.groups.1", **COMMON_CONSTANTS, **stop_fields(),
                 "skeleton_id": descriptor["skeleton_id"], "family_id": descriptor["family_id"], "map_id": descriptor["map_id"],
                 "base_intent": descriptor["base_intent"], "members": sorted(ids), "agent_ids": list(ids),
                 "column_seed": descriptor["column_seed"], "cruise_speed_m_s": family["cruise_speed_m_s"],

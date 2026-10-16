@@ -54,6 +54,9 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
     budget=time_budget or completion_budget(skeleton,delays_s)
     limit=round(budget["max_duration_s"]*1e6)
     end_points=np.array([r[-1] for r in routes])
+    stop_radius=skeleton.get("stop_radius_m",skeleton["terminal_radius_m"])
+    stop_speed=skeleton.get("stop_speed_m_s",skeleton["terminal_speed_m_s"])
+    stop_hold=skeleton.get("stop_hold_s",skeleton["terminal_hold_s"])
     hold_counts=np.zeros(len(ids),int)
     cursor=cycle_end=0
     status="timeout"
@@ -99,12 +102,12 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
             for i in dwell_trackers:
                 if sample.t_us>=release[i] and hasattr(trackers[i],'observe_sample'):
                     trackers[i].observe_sample(sample,i)
-            ok=(np.linalg.norm(sample.p-end_points,axis=1)<=skeleton["terminal_radius_m"])
-            ok&=np.linalg.norm(sample.v,axis=1)<=skeleton["terminal_speed_m_s"]
+            ok=(np.linalg.norm(sample.p-end_points,axis=1)<=stop_radius)
+            ok&=np.linalg.norm(sample.v,axis=1)<=stop_speed
             ok&=sample.t_us>=release
             hold_counts=np.where(ok,hold_counts+1,0)
         cursor=len(engine.samples)
-        if np.all(hold_counts>=round(skeleton["terminal_hold_s"]*10)+1) and all(t.complete for t in trackers):
+        if np.all(hold_counts>=round(stop_hold*10)+1) and all(t.complete for t in trackers):
             status="completed"
             break
     samples=engine.samples
@@ -131,7 +134,7 @@ def completion_budget(skeleton, delays_s, measured_completion_s=None):
             points=np.asarray(reference["points_enu_m"])
             length=float(np.linalg.norm(np.diff(points,axis=0),axis=1).sum())
             base[a]=(skeleton["initial_settle_s"]+2*length/skeleton["cruise_speed_m_s"]
-                     +10*(len(points)-1)+skeleton["terminal_hold_s"])
+                     +10*(len(points)-1)+skeleton.get("stop_hold_s",skeleton["terminal_hold_s"]))
             if "intermediate_dwell" in reference:
                 base[a]+=reference["intermediate_dwell"]["duration_s"]
         source="conservative bootstrap: settle + 2*route_length/speed + 10s/leg + hold"

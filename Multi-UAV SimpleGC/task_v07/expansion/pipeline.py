@@ -14,6 +14,7 @@ import numpy as np
 from task_v07.execution import execute, departure_delays, completion_budget
 from task_v07.labels import measure
 from task_v07.planning import seed_for
+from task_v07.unified.config import stop_fields
 from .contracts import P0ContractError, validate_route_bundle, validate_family_conditions
 from .geometry_checks import check_polyline, check_retreat_point, planning_layer_interval_check
 from .role_planners import PlanningInfeasible
@@ -87,6 +88,7 @@ def assemble_skeleton(descriptor, group, bundle, template, legacy):
             if skeleton[key] != value:
                 raise P0ContractError(f"Planner template changed request field {key}")
         skeleton["exclusion_policy"] = None  # filled by caller with the explicit policy
+        skeleton.update(stop_fields())
     if set(skeleton["references"]) != set(group["members"]):
         raise P0ContractError("Template references do not cover exactly the group")
     for a in group["members"]:
