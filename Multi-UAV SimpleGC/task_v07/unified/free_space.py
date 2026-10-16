@@ -90,6 +90,7 @@ class FreeSpace:
     cfg: dict
     candidate: object
     exclusion_policy: dict = field(default_factory=dict)
+    warning_geometries: dict = field(default_factory=dict)
     _planners: dict = field(default_factory=dict)
 
     def point_valid(self, point):
@@ -129,7 +130,8 @@ class FreeSpace:
                              "geometry": offset_geometry(c["geometry"], margin)})
         if exterior:
             entities.append({"id": "target_warning", "type": "hard_constraint_obstacle",
-                             "geometry": offset_geometry(self.target["geometry"], self.offsets["warning"] + half_width)})
+                             "geometry": offset_geometry(self.target["geometry"], self.offsets["warning"]
+                                 + self.cfg["pre_entry_warning_clearance_m"] + half_width)})
         view = {"world": {"geometry": {"type": "Polygon", "vertices_m": list(inset.exterior.coords)[:-1]}},
                 "entities": entities}
         self._planners[key] = ExactVisibilityPlanner(view, margin_m=0.)
@@ -176,7 +178,8 @@ def free_space(scene, spec, config=None):
     world = deepcopy(scene["world"]["geometry"])
     candidate = polygon_of(world).buffer(-cfg["world_margin_m"], join_style=2)
     candidate = candidate.difference(unary_union([polygon_of(offset_geometry(c["geometry"], c["margin_m"])) for c in constraints]))
-    return FreeSpace(world, constraints, deepcopy(target), offsets, cfg, candidate, policy)
+    warnings = {e["facility_id"]: deepcopy(e["geometry"]) for e in scene["entities"] if e.get("layer") == "warning"}
+    return FreeSpace(world, constraints, deepcopy(target), offsets, cfg, candidate, policy, warnings)
 
 
 def work_region(scene, spec, free):

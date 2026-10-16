@@ -41,6 +41,30 @@ def heading_difference(directions):
                 for a, b in combinations(directions, 2)), default=0.)
 
 
+def formal_entry_segment(points, reference):
+    """Find the declared ingress in actual segments, independent of early grazes.
+
+    clean_joints may remove the boundary waypoint. At an unremoved boundary
+    joint, the incoming segment owns the entry; a later retreat crossing does
+    not redefine that entry.
+    """
+    if "warning_entry_enu_m" not in reference:
+        return None
+    gate = np.asarray(reference["warning_entry_enu_m"], float)[:2]
+    incoming = reference.get("ingress_direction")
+    for i, (a, b) in enumerate(zip(points, points[1:])):
+        delta = b-a; length = float(np.linalg.norm(delta)); direction = delta/length
+        along = float((gate-a) @ direction)
+        if along <= TOL or along > length+TOL:
+            continue
+        if np.linalg.norm(gate-(a+along*direction)) > TOL:
+            continue
+        if incoming is not None and float(direction @ np.asarray(incoming)) < 1.-1e-8:
+            continue
+        return i
+    return None
+
+
 def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
     free = free_space(scene, spec) if free is None else free
     if set(template["references"]) != set(spec["members"]):
@@ -72,8 +96,19 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
             alert_visits, _ = warning_visits(points, offset_geometry(free.target["geometry"],free.offsets["alert"]))
             if len(alert_visits) != 1:
                 local.append({"code":"alert_visit_count","count":len(alert_visits),"required":1})
-        if kind == "transit" and len(visits) != 1:
+        if len(visits) != 1:
             local.append({"code": "warning_visit_count", "count": len(visits), "required": 1, "intervals_route_m": visits})
+        formal_segment = formal_entry_segment(points, reference)
+        if formal_segment is None:
+            # Older diagnostic fixtures may omit the anchor; report rejection
+            # while retaining their other witnesses, never skip the new check.
+            local.append({"code": "formal_warning_entry_missing"})
+        else:
+            for i, (a, b) in enumerate(zip(points[:formal_segment], points[1:formal_segment+1])):
+                clearance = float(geometry_facts(warning, np.asarray([a, b]), footprint=True)["clearance_m"])
+                if clearance < free.cfg["pre_entry_warning_clearance_m"]-TOL:
+                    local.append({"code": "pre_entry_warning_clearance", "segment": i,
+                                  "clearance_m": clearance, "required_m": free.cfg["pre_entry_warning_clearance_m"]})
         if entry is None or entry["straight_before_warning_m"] < free.cfg["alignment_length_m"]-TOL:
             local.append({"code": "alignment_length", "measured_m": None if entry is None else entry["straight_before_warning_m"],
                           "required_m": free.cfg["alignment_length_m"]})

@@ -131,9 +131,14 @@ def _approaches(scene, spec, mapping, states, free, clearance):
             if np.linalg.norm(points[-1]-points[-2]) < free.cfg["alignment_length_m"]-TOL:
                 raise GeometryRejected("alignment_consumed_by_lane_turn", [{"agent_id": agent,
                     "actual_m": float(np.linalg.norm(points[-1]-points[-2]))}])
-            if any(geometry_facts(warning, np.asarray([a, b]), footprint=True)["clearance_m"] < -TOL
-                   for a, b in zip(points[:-2], points[1:-1])):
-                raise GeometryRejected("warning_visit_before_alignment", [{"agent_id": agent}])
+            pre_entry_issues = [{"agent_id": agent, "segment": i,
+                                 "clearance_m": float(geometry_facts(warning, np.asarray([a, b]), footprint=True)["clearance_m"]),
+                                 "required_m": free.cfg["pre_entry_warning_clearance_m"]}
+                                for i, (a, b) in enumerate(zip(points[:-2], points[1:-1]))]
+            pre_entry_issues = [issue for issue in pre_entry_issues
+                                if issue["clearance_m"] < issue["required_m"]-TOL]
+            if pre_entry_issues:
+                raise GeometryRejected("pre_entry_warning_clearance", pre_entry_issues)
             approaches[agent] = points
             own_collection = collection+offsets[agent]*normal
             metadata[agent] = {"split_index": side, "slot_id": mapping[agent]["slot_id"],
