@@ -1,20 +1,22 @@
 # S1.5 仿真试点统计表（下游链路：规划 → M2 预演/时刻 → 联合 fastsim → M1 → 审计）
 
-- 试点 attempt：`F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s15sim_20261016T184726Z`
-- 入口提交：`b9950d2a71fb443a56b1fa8656bfa8edf6222807`；运行状态 `TIME_LIMIT_STOP`；完成 4/5；墙钟 1500.1 s（上限 1500 s）；运行前后指纹一致 True
+- 试点 attempt（1 个，每个 skeleton_id 只来自其中一个）：
+  - `F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\v07_dataset\attempt_s15sim_20261016T184726Z`：状态 `TIME_LIMIT_STOP`，声明 5，有 episode 行 4，墙钟 1500.1 s（上限 1500 s）
+- 入口提交：`b9950d2a71fb443a56b1fa8656bfa8edf6222807`；合计墙钟 1500.1 s；运行前后指纹一致 True
+- 声明骨架 5 个；有 episode 行的 4 个；未完成 1 个
 - 严格配对（同步与递次两版都成功）：4/5 个骨架；六次抽签中五意图全部配对的 0/6 次
 - 失败环节计数（按链路顺序取第一个失败环节）：{"规划": 0, "单机预演": 0, "时刻叠加间距": 0, "联合执行（超时）": 0, "联合执行（质量）": 0, "M1 角色判据": 0, "审计": 0}
 - 实测逼近方式与抽签指定一致：8/8 次比较
 
 ## P1 逐骨架：严格配对、轮数、失败环节与墙钟
 
-| skeleton_id | draw | intent | 指定方式 | 严格配对 | 轮数 | 状态 | 失败环节 | 墙钟s |
-|---|---|---|---|---|---|---|---|---|
-| family_s15_1b876e6b8b6f70c6_ext_005_regular | 6e6b8b6f70c6#slot1 | transit | multi_direction | True | 2 | synchronous=generated/sequential=generated |  | 611.238 |
-| family_s15_1b876e6b8b6f70c6_ext_006_regular | 6e6b8b6f70c6#slot1 | reconnaissance | multi_direction | True | 4 | synchronous=generated/sequential=generated |  | 1120.167 |
-| family_s15_1b876e6b8b6f70c6_ext_007_regular | 6e6b8b6f70c6#slot1 | - | multi_direction | False | - |  |  | 0 |
-| family_s15_1b876e6b8b6f70c6_ext_008_regular | 6e6b8b6f70c6#slot1 | feint | multi_direction | True | 2 | synchronous=generated/sequential=generated |  | 685.472 |
-| family_s15_1b876e6b8b6f70c6_ext_009_regular | 6e6b8b6f70c6#slot1 | penetration | multi_direction | True | 1 | synchronous=generated/sequential=generated |  | 387.775 |
+| skeleton_id | attempt | draw | intent | 指定方式 | 严格配对 | 轮数 | 状态 | 失败环节 | 墙钟s |
+|---|---|---|---|---|---|---|---|---|---|
+| family_s15_1b876e6b8b6f70c6_ext_005_regular | attempt_s15sim_20261016T184726Z | 6e6b8b6f70c6#slot1 | transit | multi_direction | True | 2 | synchronous=generated/sequential=generated |  | 611.238 |
+| family_s15_1b876e6b8b6f70c6_ext_006_regular | attempt_s15sim_20261016T184726Z | 6e6b8b6f70c6#slot1 | reconnaissance | multi_direction | True | 4 | synchronous=generated/sequential=generated |  | 1120.167 |
+| family_s15_1b876e6b8b6f70c6_ext_007_regular | - | 6e6b8b6f70c6#slot1 | - | multi_direction | False | - |  |  | None |
+| family_s15_1b876e6b8b6f70c6_ext_008_regular | attempt_s15sim_20261016T184726Z | 6e6b8b6f70c6#slot1 | feint | multi_direction | True | 2 | synchronous=generated/sequential=generated |  | 685.472 |
+| family_s15_1b876e6b8b6f70c6_ext_009_regular | attempt_s15sim_20261016T184726Z | 6e6b8b6f70c6#slot1 | penetration | multi_direction | True | 1 | synchronous=generated/sequential=generated |  | 387.775 |
 
 ## P2 原始 reason 计数（未归类前的字面值）
 
