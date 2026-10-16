@@ -25,18 +25,20 @@ from task_v07.expansion.evaluation import truncation_check
 from task_v07.expansion.role_evaluation import group_evaluator
 from task_v07.execution import execute, completion_budget, FROZEN_SHA256
 from task_v07.labels import measure
+from task_v07.unified.outcome import exhausted_failure
 from task_v07.io import read_json, save_json, write_episode, load_episode, load_pair
 from scripts.audit_v07_s2_groups import audit_groups
 from scripts.audit_v07_s2_infrastructure import audit_geometry
 
 
 def rejected(descriptor, history):
-    final = history[-1]
+    final = exhausted_failure(history)
     return [{"episode_id": f"{descriptor['skeleton_id']}_{mode}", "skeleton_id": descriptor["skeleton_id"],
              "family_id": descriptor["family_id"], "intent": descriptor["base_intent"], "mode": mode,
              "common_slot": descriptor["common_draw"]["slot"], "aborted": False, "diagnostic_only": False,
              "state": "infeasible", "path": None, "task_result": None, "quality_valid": None, "audit_passed": None,
-             "reason": final["category"], "rejection_detail": final["detail"], "geometry_attempts": history,
+             "reason": final["category"], "category": final["category"], "exhausted": True,
+             "rejection_detail": final["detail"], "geometry_attempts": history,
              "coordination_by_group": {}, "group_count": len(descriptor["task_groups"]),
              "approach_mode": descriptor["common_draw"]["approach_mode"]}
             for mode in ("synchronous", "sequential")]
