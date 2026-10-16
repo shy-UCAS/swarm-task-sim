@@ -50,7 +50,7 @@ def q2_summary(reg,scenes):
                 row["nested_rejection_reason_counts"]=dict(detailed)
         results.append(row)
     grouped={}
-    for key in sorted({(r["intent"],r["approach_mode"]) for r in approaches}):
+    for key in sorted({(r["intent"],r["approach_mode"]) for r in reg["selected"]}):
         members=[r for r in approaches if (r["intent"],r["approach_mode"])==key]
         draws=[r for r in directions if (r["intent"],r["approach_mode"])==key]
         proposed=[x for r in draws for x in r["proposed"]]; accepted=[x for r in draws for x in r["accepted"]]
@@ -58,10 +58,11 @@ def q2_summary(reg,scenes):
             **{k:distribution([r[k] for r in members if r[k] is not None]) for k in ("approach_length_m","detour_ratio","ingress_relative_to_start_bearing_deg")},
             "proposed_direction_30deg_bins":np.histogram(proposed,bins=np.arange(0,361,30))[0].tolist(),
             "whole_route_accepted_direction_30deg_bins":np.histogram(accepted,bins=np.arange(0,361,30))[0].tolist(),
+            "accepted_original_proposed_direction_30deg_bins":np.histogram([x for r in draws for x in r["accepted_original_proposal"]],bins=np.arange(0,361,30))[0].tolist(),
             "proposed_count":len(proposed),"accepted_count":len(accepted)}
     result={**{k:v for k,v in raw.items() if k not in ("rows","unfinished_evidence")},"rows":results,
         "selected_plan_approach_members":approaches,"directions_by_group":directions,"by_intent_specified_approach":grouped,
-        "method":"selected eligible candidate 0; exact polyline start-to-first-warning length; incoming heading vs vector from start to target center; local shape proposals vs whole-route accepted draws",
+        "method":"selected eligible candidate 0; exact polyline start-to-first-warning length; incoming heading vs vector from start to target center; local shape direction proposals vs whole-route accepted actual shape direction (patrol feasible-arc start may differ, original proposal also retained); empty cells explicitly included",
         "diagnostics_are_gates":False}
     atomic(EVIDENCE/"m3b_q2_diagnostics.json",result)
     return result

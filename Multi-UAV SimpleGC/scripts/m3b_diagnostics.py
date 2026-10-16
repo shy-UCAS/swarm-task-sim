@@ -69,7 +69,7 @@ def approach_rows(scene,sk):
 
 
 def proposed_directions(pool):
-    by_group=defaultdict(lambda:{"proposed":[],"accepted":[],"whole_route_rejections":defaultdict(int)})
+    by_group=defaultdict(lambda:{"proposed":[],"accepted":[],"accepted_original_proposal":[],"whole_route_rejections":defaultdict(int)})
     for record in pool.get("candidates",[]):
         gid=record["group_id"]; item=by_group[gid]
         shape=record.get("draws_by_group",{}).get(gid,{}).get("shape")
@@ -78,7 +78,9 @@ def proposed_directions(pool):
             if "direction_deg" in r.get("draw",{}): item["proposed"].append(r["draw"]["direction_deg"])
         if shape:
             item["proposed"].append(shape["direction_deg"])
-            if record.get("whole_route_checks",{}).get("status")=="PASS": item["accepted"].append(shape["direction_deg"])
+            if record.get("whole_route_checks",{}).get("status")=="PASS":
+                item["accepted"].append(shape.get("accepted_start_direction_deg",shape["direction_deg"]))
+                item["accepted_original_proposal"].append(shape["direction_deg"])
         if record.get("reason"): item["whole_route_rejections"][record["reason"]]+=1
     return dict(by_group)
 
