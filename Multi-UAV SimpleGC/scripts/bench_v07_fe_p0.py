@@ -91,6 +91,98 @@ def compare_plans(left, right):
     return {"equal": all(row["equal"] for row in rows), "files": rows, "removed_keys": sorted(removed)}
 
 
+def exact_view_key(view, margin_m):
+    """The specified G1 key, also usable before the cache module exists."""
+    import hashlib
+    import math
+    import numpy as np
+    def canonical(x):
+        if isinstance(x, dict): return {str(k): canonical(v) for k, v in x.items()}
+        if isinstance(x, (list, tuple)): return [canonical(v) for v in x]
+        if isinstance(x, np.ndarray): return canonical(x.tolist())
+        if isinstance(x, (bool, np.bool_)): return bool(x)
+        if isinstance(x, (int, np.integer)): return int(x)
+        if isinstance(x, (float, np.floating)):
+            value = float(x)
+            if not math.isfinite(value): raise ValueError("non-finite value in visibility view")
+            return value
+        if x is None or isinstance(x, str): return x
+        raise TypeError(f"Unsupported value in visibility view: {type(x)!r}")
+    raw = json.dumps({"builder": "ExactVisibilityPlanner/09279c2", "margin_m": float(margin_m),
+                      "view": canonical(view)}, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def graph_precheck_worker(task, out):
+    import importlib
+    free_module = importlib.import_module("task_v07.unified.free_space")
+    from scripts.run_v07_s2_expansion import descriptor_jobs
+    from scripts.run_v07_m3_trial import planning_job
+    original = free_module.ExactVisibilityPlanner
+    rows, plans, graphs = [], [], {}
+    current = None
+    def wrapped(view, margin_m=35.):
+        key = exact_view_key(view, margin_m)
+        started = time.perf_counter()
+        planner = original(view, margin_m=margin_m)
+        elapsed = time.perf_counter()-started
+        graph = (planner.vertices, planner.adjacency)
+        if key in graphs and graphs[key] != graph:
+            raise RuntimeError(f"Same key produced a different graph: {key}")
+        graphs.setdefault(key, graph)
+        rows.append({"key": key, "build_wall_s": elapsed, "skeleton_id": current})
+        if not (out/"first_view.json").exists():
+            # Real, effective S1.5 view used by the constructor, without reconstruction.
+            save(out/"first_view.json", {"view": view, "margin_m": margin_m, "skeleton_id": current})
+        return planner
+    free_module.ExactVisibilityPlanner = wrapped
+    try:
+        for sid in task["ids"]:
+            current = sid
+            jobs = descriptor_jobs(Path(task["descriptors"]), [sid], out)
+            assert len(jobs) == 1
+            if not (out/"source_scene.json").exists():
+                save(out/"source_scene.json", jobs[0]["scene"])
+            started = time.perf_counter(); result = planning_job(jobs[0])
+            plans.append({"skeleton_id": sid, "wall_s": time.perf_counter()-started, "result": result})
+    finally:
+        free_module.ExactVisibilityPlanner = original
+    seen = set(); family_saved = 0.
+    for row in rows:
+        if row["key"] in seen: family_saved += row["build_wall_s"]
+        seen.add(row["key"])
+    for plan in plans:
+        seen = set(); saved = 0.
+        for row in rows:
+            if row["skeleton_id"] != plan["skeleton_id"]: continue
+            if row["key"] in seen: saved += row["build_wall_s"]
+            seen.add(row["key"])
+        plan["saved_within"] = saved/plan["wall_s"]
+        plan["repeated_build_wall_s"] = saved
+    wall = sum(plan["wall_s"] for plan in plans)
+    return {"wall_s": wall, "plans": plans, "builds": rows, "saved_family": family_saved/wall,
+            "same_key_graphs_equal": True}
+
+
+def instrument_graphs():
+    """Keep small counter dictionaries, not planner instances or graph storage."""
+    from task_v07.visibility import ExactVisibilityPlanner
+    records = []
+    original = ExactVisibilityPlanner.__init__
+    def init(self, *args, **kwargs):
+        original(self, *args, **kwargs)
+        records.append(getattr(self, "_broadphase_stats", {}))
+    ExactVisibilityPlanner.__init__ = init
+    if hasattr(ExactVisibilityPlanner, "_from_blueprint"):
+        restore = ExactVisibilityPlanner._from_blueprint
+        def from_blueprint(cls, *args, **kwargs):
+            planner = restore(*args, **kwargs)
+            records.append(getattr(planner, "_broadphase_stats", {}))
+            return planner
+        ExactVisibilityPlanner._from_blueprint = classmethod(from_blueprint)
+    return records
+
+
 def worker(project, task):
     project = project.resolve()
     # Replace the script-directory entry; never import perf packages for a base run.
@@ -104,7 +196,10 @@ def worker(project, task):
     out = Path(task["out"]); out.mkdir(parents=True, exist_ok=False)
     meta = {"project": str(project), "task_v07_file": task_v07.__file__,
             "execution_file": execution.__file__, "task": task}
-    if task["kind"] == "plan":
+    graph_records = instrument_graphs() if task.get("diagnostics") else []
+    if task["kind"] == "graph-precheck":
+        meta.update(graph_precheck_worker(task, out))
+    elif task["kind"] == "plan":
         from scripts.run_v07_s2_expansion import descriptor_jobs
         from scripts.run_v07_m3_trial import planning_job
         jobs = descriptor_jobs(Path(task["descriptors"]), [task["skeleton_id"]], out)
@@ -133,7 +228,6 @@ def worker(project, task):
         started = time.perf_counter()
         run = execution.execute(*args, **kwargs)
         meta["wall_s"] = time.perf_counter()-started
-        meta["transaction_stats"] = dict(getattr(execution, "_TRANSACTION_STATS", {}))
         np.savez_compressed(out/"run.npz", **{key: run[key] for key in ("time_us", "p", "v", "a", "agent_ids", "execution_status")})
         meta["run"] = {key: value for key, value in run.items() if key not in ("time_us", "p", "v", "a", "wall_s")}
         with np.load(reference, allow_pickle=False) as expected:
@@ -156,6 +250,20 @@ def worker(project, task):
             file = getattr(module, "__file__", None)
             if file and not Path(file).resolve().is_relative_to(project):
                 raise RuntimeError(f"Wrong project import: {name}: {file}")
+    meta["transaction_stats"] = dict(getattr(execution, "_TRANSACTION_STATS", {}))
+    meta["broadphase_stats"] = {key: sum(row.get(key, 0) for row in graph_records)
+                                for key in ("exact_calls", "skipped")}
+    cache = sys.modules.get("task_v07.visibility_cache")
+    meta["graph_cache_stats"] = dict(cache._STATS) if cache else None
+    try:
+        import psutil
+        memory = psutil.Process().memory_info()
+        meta["peak_memory_bytes"] = getattr(memory, "peak_wset", None)
+        meta["memory_method"] = "Windows process peak_wset (includes imports)" if hasattr(memory, "peak_wset") else "未测：平台无高水位字段"
+    except ImportError:
+        meta["peak_memory_bytes"] = None
+        meta["memory_method"] = "未测：psutil 不可用"
+
     save(out/"metadata.json", meta)
     print(json.dumps({"out": str(out), "wall_s": meta["wall_s"], "parity": meta.get("parity")}), flush=True)
     return 0 if meta.get("parity", {}).get("equal", True) else 2
@@ -170,16 +278,72 @@ def launch(project, task, root, timeout=1200):
                          timeout=timeout)
     meta_path = Path(task["out"])/"metadata.json"
     meta = read(meta_path) if meta_path.exists() else {"worker_returncode": run.returncode}
+    if task["kind"] in ("solo", "joint") and "parity" not in meta:
+        save(root/"STOP.json", {"task": task, "metadata": meta, "error": "Missing replay parity"})
+        raise RuntimeError("Worker failed to record replay parity")
     if run.returncode:
         save(root/"STOP.json", {"worker_returncode": run.returncode, "task": task, "metadata": meta})
         raise RuntimeError(f"Worker stopped ({run.returncode}); see {root/'STOP.json'}")
     return meta
 
 
+def benchmark(base, perf, root):
+    import statistics
+    monitoring = FAMILY+"_ext_007_regular"
+    agent = sorted(read(ARCHIVE/monitoring/"skeleton.json")["agent_ids"])[0]
+    tasks = [(sid, {"kind": "plan", "skeleton_id": sid, "descriptors": str(DESCRIPTORS)}) for sid in PLAN_IDS]
+    tasks += [("monitoring_solo", {"kind": "solo", "skeleton_id": monitoring, "agent": agent, "archive": str(ARCHIVE)}),
+              ("transit_joint", {"kind": "joint", "skeleton_id": R0_ID, "mode": "synchronous", "archive": str(ARCHIVE)})]
+    rows = []
+    for repeat in range(3):
+        for label, task in tasks:
+            pair = {}
+            order = (("base", base), ("perf", perf)) if repeat%2 == 0 else (("perf", perf), ("base", base))
+            for version, project in order:
+                out = root/f"{version}_{repeat}_{label}"
+                row = launch(project, {**task, "out": str(out), "diagnostics": True}, root)
+                row.update(version=version, repeat=repeat, label=label)
+                pair[version] = row
+                rows.append(row); save(root/"results.json", rows)
+            if task["kind"] == "plan":
+                comparison = compare_plans(Path(pair["base"]["task"]["out"])/task["skeleton_id"],
+                                           Path(pair["perf"]["task"]["out"])/task["skeleton_id"])
+                pair["perf"]["comparison"] = comparison
+                save(root/"results.json", rows)
+                if not comparison["equal"]:
+                    save(root/"STOP.json", pair); raise RuntimeError("Benchmark planning mismatch")
+    summary = []
+    for label, task in tasks:
+        record = {"label": label, "kind": task["kind"]}
+        for version in ("base", "perf"):
+            values = [r["wall_s"] for r in rows if r["label"] == label and r["version"] == version]
+            record[version] = {"median_s": statistics.median(values), "min_s": min(values), "max_s": max(values), "runs_s": values}
+        record["speedup"] = record["base"]["median_s"]/record["perf"]["median_s"]
+        record["improvement"] = 1-record["perf"]["median_s"]/record["base"]["median_s"]
+        summary.append(record)
+    planning = [r for r in summary if r["kind"] == "plan"]
+    # Literal median over the three per-skeleton medians; also report total medians.
+    old = statistics.median(r["base"]["median_s"] for r in planning)
+    new = statistics.median(r["perf"]["median_s"] for r in planning)
+    improvement = 1-new/old
+    monitoring_improvement = next(r["improvement"] for r in summary if r["label"] == "monitoring_solo")
+    passed = improvement >= .15 and monitoring_improvement >= .20
+    result = {"status": "PASS" if passed else "CORRECT_BUT_PERFORMANCE_NOT_ACCEPTED", "tasks": summary,
+              "planning_median_improvement": improvement, "planning_speedup": old/new,
+              "planning_sum_medians_improvement": 1-sum(r["perf"]["median_s"] for r in planning)/sum(r["base"]["median_s"] for r in planning),
+              "monitoring_improvement": monitoring_improvement, "equivalence": "100%",
+              "cache_policy": "Fresh process per task and repeat for both versions; no cross-task cache warming.",
+              "diagnostics": "Counter dictionaries retained without graph objects; task timing excludes imports, output comparison and process startup.",
+              "results": str(root/"results.json")}
+    save(root/"summary.json", result)
+    print(json.dumps(result), flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("_worker", "r0", "replay", "plan"))
+    parser.add_argument("command", choices=("_worker", "r0", "replay", "plan", "graph-precheck", "bench"))
     parser.add_argument("--project", type=Path, required=True)
+    parser.add_argument("--base", type=Path)
     parser.add_argument("--task", type=Path)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--ids", nargs="+")
@@ -193,7 +357,22 @@ def main():
     rows = []
     save(root/"registration.json", {"command": args.command, "project": str(args.project.resolve()),
                                    "started_utc": datetime.now(timezone.utc).isoformat()})
-    if args.command in ("r0", "replay"):
+    if args.command == "graph-precheck":
+        for label, ids in (("family_A", [R0_ID, FAMILY+"_ext_006_regular", FAMILY+"_ext_009_regular"]),
+                           ("family_B", [PLAN_IDS[2]])):
+            task = {"kind": "graph-precheck", "ids": ids, "descriptors": str(DESCRIPTORS), "out": str(root/label)}
+            rows.append(launch(args.project, task, root, timeout=600))
+            save(root/"results.json", rows)
+        maximum = max(plan["saved_within"] for row in rows for plan in row["plans"])
+        decision = {"max_saved_within": maximum, "saved_family": rows[0]["saved_family"],
+                    "implement_G1": max(maximum, rows[0]["saved_family"]) >= .15}
+        save(root/"decision.json", decision)
+        print(json.dumps(decision), flush=True)
+    elif args.command == "bench":
+        if args.base is None: parser.error("bench requires --base")
+        benchmark(args.base, args.project, root)
+        return 0
+    elif args.command in ("r0", "replay"):
         ids = args.ids or ([R0_ID] if args.command == "r0" else REPLAY_IDS)
         for sid in ids:
             sk = read(ARCHIVE/sid/"skeleton.json")

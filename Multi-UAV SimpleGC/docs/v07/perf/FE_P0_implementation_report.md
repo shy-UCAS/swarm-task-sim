@@ -7,3 +7,15 @@
 G0 PASS：12 组共 100 项基线测试通过；6 单机及 1 同步联合重放与归档完全一致；突防样本两次独立进程规划一致。只剔除指定墙钟字段，精确比较结果见 FE_P0_baseline.json。
 
 后续门禁待执行。
+
+## G3 静态前提
+
+- E1 PASS：command 位于快照前；快照到回滚只调用 observe_segment；observe_sample 位于事务后。 定位：task_v07/execution.py:83-107, task_v07/dwell.py:41-61。
+- E2 PASS：witnesses.append(event) 与 events.extend(emitted)，未修改已有元素。 定位：swarm_sim/fast_dynamics/route_tracker.py:337-434。
+- E3 PASS：全仓 Python 的 .witnesses/.events 写入已核对。执行相关列表只有构造、deepcopy 赋值及追加；replay_viewer 的排序、诊断 RNG 的 events、测试假对象属于不同类型。已有测试读取或 deepcopy 切片，没有改 tracker 的旧元素。 定位：G3_event_writes_search.txt。
+- E4 PASS：同一新 event 字典加入 witnesses 与 emitted 后进入 events；deepcopy 使用共享 memo。新快照保留元素身份，S1 检验 is 共享。 定位：swarm_sim/fast_dynamics/route_tracker.py:194-201, swarm_sim/fast_dynamics/route_tracker.py:350-355, swarm_sim/fast_dynamics/route_tracker.py:433。
+- E5 PASS：tracker 构造及使用局限于 execute；dwell_trackers 只保存整数。循环局部 t 在回滚后读取前即重新绑定；events 不持有 tracker。Dwell 的内层引用封装在 wrapper 内，递归恢复。新增 snapshots 是私有事务引用，不导出。 定位：task_v07/execution.py:40-49, task_v07/execution.py:67-101。
+
+静态定位使用基线源码行号；全仓搜索原始输出保留。S1/S2 共 4 项通过；三夹具新旧路径分别触发 6、6、2 次回滚，积分步数与全部指定字段完全一致。
+
+G3 PASS：31 条单机、6 条联合重放，共 37 项全部与存档精确一致，包含监视同步长仿真（74.59 秒）；未使用超时降级。12 组原测试共 100 项通过。新增 4 项快照测试通过。诊断脚本编辑曾造成 5 项缺少 parity，已在新目录重跑全部通过，原始记录保留，不计为通过证据。详见 parity_results 的 rerun_note。

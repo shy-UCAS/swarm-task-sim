@@ -1,0 +1,68 @@
+..\Multi-UAV SimpleGC\replay_viewer\data.py:95:        return next((e["t"] for e in self.events if e.get("event") == "phase_start_sent"), 0.0)
+..\Multi-UAV SimpleGC\replay_viewer\data.py:159:                    replay.events.append(event)
+..\Multi-UAV SimpleGC\replay_viewer\data.py:162:        replay.events.sort(key=lambda e: e["t"])
+..\Multi-UAV SimpleGC\replay_viewer\data.py:166:    ends += [e["t"] for e in replay.events]
+..\Multi-UAV SimpleGC\replay_viewer\window.py:330:        self.event_times = [e["t"] for e in replay.events]
+..\Multi-UAV SimpleGC\replay_viewer\window.py:331:        for event in replay.events:
+..\Multi-UAV SimpleGC\replay_viewer\window.py:438:            event = d.events[index]
+..\Multi-UAV SimpleGC\task_v07\dwell.py:21:        self.events = []
+..\Multi-UAV SimpleGC\task_v07\dwell.py:33:        result.events = deepcopy(self.events, memo)
+..\Multi-UAV SimpleGC\task_v07\dwell.py:58:            self.events.append({'hold_start_us': self.since_us, 'hold_end_us': int(sample.t_us),
+..\Multi-UAV SimpleGC\task_v07\execution.py:26:        return ("route", tracker, dict(tracker.__dict__), len(tracker.witnesses), len(tracker.events))
+..\Multi-UAV SimpleGC\task_v07\execution.py:28:        return ("dwell", tracker, dict(tracker.__dict__), len(tracker.events), _snapshot_tracker(tracker.tracker))
+..\Multi-UAV SimpleGC\task_v07\execution.py:38:        del obj.witnesses[n_witnesses:]
+..\Multi-UAV SimpleGC\task_v07\execution.py:39:        del obj.events[n_events:]
+..\Multi-UAV SimpleGC\task_v07\execution.py:42:        del obj.events[n_events:]
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:36:    digest.update(json.dumps(result.events, sort_keys=True).encode())
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:84:        arrivals = [e for e in result.events if e["event"] == "phase_arrived"]
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:91:            release = next(e["t_us"] for e in result.events if e["event"] == "phase_released" and e["phase"] == phase["name"])
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:93:            self.assertGreaterEqual(release, max(e["t_us"] for e in result.events
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:103:        self.assertEqual(self.result.events, alternate.events)
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:118:        index = lambda r: {(e["event"], e.get("phase"), e.get("agent_id")): e["t_us"] for e in r.events}
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:128:        self.assertFalse(any(e["event"] == "phase_arrived" for e in result.events))
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:129:        self.assertFalse(any(e.get("phase") == "p01_transit" for e in result.events))
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:142:        resets = [e for e in result.events if e["event"] == "phase_confirmation_reset"]
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution.py:144:        release = next(e["t_us"] for e in result.events if e["event"] == "phase_released" and e["phase"] == "p01_transit")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_tracking.py:124:        self.assertEqual(len(tracker.witnesses), 9)
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_tracking.py:154:                for a, b in zip(tracker.witnesses, fine_tracker.witnesses):
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:87:                first_end = next(e["t_us"] for e in result.events if e["event"] == "phase_end")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:88:                second_release = next(e["t_us"] for e in result.events if e["event"] == "phase_released" and e["phase"] == "p01_transit")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:91:                    arrival = next(e for e in result.events if e["event"] == "phase_arrived" and e["phase"] == "p01_transit" and e["agent_id"] == agent)
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:92:                    held = next(e for e in result.events if e["event"] == "phase_hold_ended" and e["phase"] == "p01_transit" and e["agent_id"] == agent)
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:99:        start = next(e for e in result.events if e["event"] == "phase_started" and e["agent_id"] == "uav_02")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:102:        motion = next(e for e in result.events if e["event"] == "motion_started" and e["agent_id"] == "uav_02")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:112:        timeout = next(e for e in result.events if e["event"] == "phase_timeout")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:114:        self.assertFalse(any(e["event"] == "phase_completed" for e in result.events))
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:127:        resets = [e for e in result.events if e["event"] == "phase_confirmation_reset" and e["agent_id"] == "uav_01"]
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:129:        final = next(e for e in result.events if e["event"] == "phase_completed")
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:142:        self.assertFalse(any(e["event"] == "motion_started" for e in result.events))
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:143:        self.assertEqual(len([e for e in result.events if e["event"] == "route_completed"]), 2)
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:155:            self.assertEqual([e["event_seq"] for e in result.events], list(range(len(result.events))))
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:156:            self.assertEqual([e["t_us"] for e in result.events], sorted(e["t_us"] for e in result.events))
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:186:        transitions = {e["state"]: e["t_us"] for e in result.events if e["event"] == "test_reference_transition"}
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:191:        for event in result.events:
+..\Multi-UAV SimpleGC\tests\test_fast_dynamics_execution_m2.py:201:        self.assertFalse(any(e["event"] in ("phase_completed", "airborne_mission_completed") for e in result.events))
+..\Multi-UAV SimpleGC\tests\test_run_provenance.py:50:        self.events, self.sent = [], []
+..\Multi-UAV SimpleGC\tests\test_run_provenance.py:55:    def event(self, *args, **kwargs): self.events.append((args, kwargs))
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:61:        self.events = []
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:65:        result.events = deepcopy(self.events, memo)
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:70:        self.events.append({"method": "uniform", "bounds": [a, b], "value": value})
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:75:        self.events.append({"method": "choice", "choices": list(sequence), "value": value})
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:80:        self.events.append({"method": "random", "value": value})
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:136:        offset = max(0, len(rng_arg.events)-1)
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:146:            row["random_events"] = deepcopy(rng_arg.events[offset:])
+..\Multi-UAV SimpleGC\scripts\diagnose_v07_m3b_arc_counterfactual.py:209:    record.update(wall_s=time.perf_counter()-started, random_events=rng.events)
+..\Multi-UAV SimpleGC\tests\test_v07_m2_timing_rehearsal.py:151:                before = len(tracker.events); observe(tracker, sample, index)
+..\Multi-UAV SimpleGC\tests\test_v07_m2_timing_rehearsal.py:152:                events.extend(deepcopy(tracker.events[before:]))
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:183:        self.witnesses = []
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:185:        self.events = []
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:262:                "witnessed_node_count": self.next_node, "witnesses": list(self.witnesses),
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:354:            self.witnesses.append(event)
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:414:                    tick = max(segment.start_us, self.witnesses[primitive.node_index]["t_us"])
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:431:            emitted.append({"event": "route_completed", "t_us": self.witnesses[-1]["t_us"],
+..\Multi-UAV SimpleGC\swarm_sim\fast_dynamics\route_tracker.py:433:        self.events.extend(emitted)
+..\Multi-UAV SimpleGC\tests\test_v07_perf_tracker_snapshot.py:27:            for witness in obj.witnesses:
+..\Multi-UAV SimpleGC\tests\test_v07_perf_tracker_snapshot.py:28:                self.assertTrue(any(witness is event for event in obj.events))
+..\Multi-UAV SimpleGC\tests\test_v07_perf_tracker_snapshot.py:46:            if inside["lists"]["witnesses"] and len(inner.events) > len(inside["lists"]["events"]):
+..\Multi-UAV SimpleGC\scripts\verify_fast_dynamics_highspeed.py:154:        witnesses=t.witnesses
+..\Multi-UAV SimpleGC\scripts\verify_fast_dynamics_m01.py:85:    event_map = lambda r: {(e["event"], e.get("phase"), e.get("agent_id")): e["t_us"] for e in r.events}

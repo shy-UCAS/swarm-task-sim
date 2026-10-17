@@ -16,6 +16,33 @@ FROZEN_SHA256="94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193"
 CONFIG_PATH=Path(__file__).resolve().parents[1]/"configs/fast_dynamics/m3_r2_20261013_v1.json"
 
 
+_LEGACY_DEEPCOPY_TRANSACTIONS = False
+_TRANSACTION_STATS = {"steps": 0, "rollbacks": 0}
+
+
+def _snapshot_tracker(tracker):
+    from .dwell import DwellRouteTracker
+    if type(tracker) is RouteTracker:
+        return ("route", tracker, dict(tracker.__dict__), len(tracker.witnesses), len(tracker.events))
+    if type(tracker) is DwellRouteTracker:
+        return ("dwell", tracker, dict(tracker.__dict__), len(tracker.events), _snapshot_tracker(tracker.tracker))
+    raise TypeError(f"Unsupported tracker type for transaction snapshot: {type(tracker)!r}")
+
+
+def _restore_tracker(snap):
+    kind, obj, attrs = snap[0], snap[1], snap[2]
+    obj.__dict__.clear()
+    obj.__dict__.update(attrs)
+    if kind == "route":
+        n_witnesses, n_events = snap[3], snap[4]
+        del obj.witnesses[n_witnesses:]
+        del obj.events[n_events:]
+    else:
+        n_events, inner = snap[3], snap[4]
+        del obj.events[n_events:]
+        _restore_tracker(inner)
+
+
 def frozen_config():
     raw=CONFIG_PATH.read_bytes()
     if hashlib.sha256(raw).hexdigest()!=FROZEN_SHA256:
@@ -83,7 +110,11 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
         for i,t in enumerate(trackers):
             if active[i]:
                 desired[i]=t.command(engine.state.p[i],engine.state.v[i],engine.state.a[i])
-        original=deepcopy(trackers)
+        _TRANSACTION_STATS["steps"] += 1
+        if _LEGACY_DEEPCOPY_TRANSACTIONS:
+            original=deepcopy(trackers)
+        else:
+            snapshots=[_snapshot_tracker(t) for t in trackers]
         engine.step(desired,dt_us=boundary-engine.time_us)
         events=[(i,e) for i,t in enumerate(trackers) if active[i]
                 for e in t.observe_segment(engine.last_segment,agent_index=i)]
@@ -93,7 +124,12 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
             event_boundary=min(e["t_us"] for e in controls)
             if event_boundary<engine.time_us:
                 engine.truncate_last_step(event_boundary)
-                trackers=original
+                _TRANSACTION_STATS["rollbacks"] += 1
+                if _LEGACY_DEEPCOPY_TRANSACTIONS:
+                    trackers=original
+                else:
+                    for snap in snapshots:
+                        _restore_tracker(snap)
                 for i,t in enumerate(trackers):
                     if active[i]:
                         t.observe_segment(engine.last_segment,agent_index=i)
