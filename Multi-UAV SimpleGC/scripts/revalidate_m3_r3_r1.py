@@ -205,7 +205,17 @@ def startup(expected_head=None):
     head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=PROJECT,text=True).strip()
     if expected_head is not None:assert head==expected_head
     assert subprocess.check_output(['git','branch','--show-current'],cwd=PROJECT,text=True).strip()=='fe/m3-r3-p2-candidate'
-    assert not subprocess.check_output(['git','diff','c9955ca8d5408309556f5942b88916ca3eb9cd7c','--','swarm_sim','task_v07','configs'],cwd=PROJECT)
+    production_diff=subprocess.check_output(['git','diff','--name-only','c9955ca8d5408309556f5942b88916ca3eb9cd7c','--','swarm_sim','task_v07','configs'],cwd=PROJECT,text=True).splitlines()
+    if production_diff:
+        # R3 explicitly authorizes this exact accepted P2 file; all other R1
+        # production hashes remain unchanged. Existing tests stay unmodified.
+        from scripts.m3_r3_g5a import load_amendment
+        load_amendment()
+        p2='fa7518b7fa850771c9d863b23d8893b27a343d5f';relative='Multi-UAV SimpleGC/task_v07/unified/construction.py'
+        assert production_diff==[relative]
+        subprocess.run(['git','merge-base','--is-ancestor',p2,'HEAD'],cwd=PROJECT,check=True)
+        accepted=subprocess.check_output(['git','show',p2+':'+relative],cwd=PROJECT,text=True)
+        assert (PROJECT/'task_v07/unified/construction.py').read_text(encoding='utf-8').strip()==accepted.strip()
     plan=read(PLAN);assert digest(PLAN)==read(REPORT/'R0_revalidated_gate.json')['input_sha256']
     result=validate_inputs(plan)
     return dict(status='DRY_RUN_PASS',head=head,**result)

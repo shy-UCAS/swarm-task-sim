@@ -7,6 +7,7 @@ from scripts.audit_m3_r3_r0 import read,digest,atomic,REPORT,DATA,BASE,CONFIG_SH
 from scripts.run_m3_r3_r1 import PLAN,code_hashes
 from scripts.revalidate_m3_r3_r1 import export_baseline,tests,regression,normalized,validate_inputs,array_diff
 from swarm_sim.fast_dynamics.reference_r3 import CONFIG_SHA256
+from scripts.m3_r3_g5a import load_amendment,regression_g5a
 P2='fa7518b7fa850771c9d863b23d8893b27a343d5f'
 CONSTRUCTION='task_v07/unified/construction.py'
 
@@ -51,20 +52,18 @@ def launch(out):
     start=time.monotonic();deadline=start+plan['R3']['wall_limit_s'];before=git('rev-parse','HEAD')
     initial=code_hashes();hashes=initial;stop=None;reg=None;replays=[];checks={};scope=None
     locks={f['path']:digest(f['path']) for f in plan['input_files']}
-    atomic(out/'registration.json',dict(stage='R3',parent_commit=before,P2=P2,source_sha256=initial,input_plan_sha256=digest(PLAN),G2a_sha256=digest(REPORT/'gate_audit_G2a.json'),R2_gate_sha256=digest(REPORT/'R2_gate.json'),wall_limit_s=plan['R3']['wall_limit_s'],modules=plan['R3']['regression_modules'],probe_ids=[p['probe_id'] for p in plan['R1']['probes']]))
+    atomic(out/'registration.json',dict(stage='R3',parent_commit=before,P2=P2,source_sha256=initial,input_plan_sha256=digest(PLAN),G2a_sha256=digest(REPORT/'gate_audit_G2a.json'),G5a_sha256=digest(REPORT/'G5a_gate_amendment.json'),R2_gate_sha256=digest(REPORT/'R2_gate.json'),wall_limit_s=plan['R3']['wall_limit_s'],modules=plan['R3']['regression_modules'],probe_ids=[p['probe_id'] for p in plan['R1']['probes']]))
     dry=dict(stage='R3',status='INCOMPLETE',checks={})
     try:
-        baseproject=export_baseline(out/'baseline.zip',out/'baseline_checkout')
-        modules=plan['R3']['regression_modules'];base_modules=[m for m in modules if m not in ('test_m3_r3_reference','test_v07_fe_area_search_precheck')]
-        baseline=tests(baseproject,base_modules,out/'baseline_tests.txt',deadline)
-        for f in baseline['failures'].values():f['traceback']=f['traceback'].replace(str(baseproject),str(PROJECT)).replace(str(baseproject).replace('\\','\\\\'),str(PROJECT).replace('\\','\\\\'))
+        amendment=load_amendment();baseline=read(amendment['baseline_results_path'])
+        modules=plan['R3']['regression_modules'];known=amendment['known_signatures'];roots=amendment['checkout_roots']
         atomic(out/'baseline_results.json',baseline)
-        prior=read(DATA/'fast_dynamics/m3/m3_r3_r1_revalidate05/baseline_test_results.json');white=sorted(prior['failures'])
-        basegood=set(baseline['failures'])==set(white) and all(normalized(baseline['failures'][k]['traceback'])==normalized(prior['failures'][k]['traceback']) for k in white) and all(v in ('ok','FAIL','ERROR') for v in baseline['outcomes'].values())
-        dry=dict(stage='R3',status='PASS' if basegood else 'BLOCKED',baseline_commit=BASE,baseline_results=str(out/'baseline_results.json'),tests=baseline['count'],known_failures=white,checks=dict(exact_known_failures_only=basegood,frozen_r2_config=digest(PROJECT/'configs/fast_dynamics/m3_r2_20261013_v1.json')==CONFIG_SHA),candidate_only=['P2 ingress_issues scope','r3 selector and newly added tests'],r2_replay_evidence=str(REPORT/'R1_revalidated_gate_attempt05.json'))
-        atomic(ev/'baseline_gate_dryrun.json',dry);atomic(REPORT/'R3/baseline_gate_dryrun.json',dry)
-        print(json.dumps(dict(stage='R3_baseline',status=dry['status'],tests=baseline['count'],failures=list(baseline['failures']))),flush=True)
-        if not basegood:stop=dict(status='BLOCKED',reason='BASELINE_FAILURE_NOT_IN_CONFIRMED_FOUR',baseline_results=str(out/'baseline_results.json'))
+        dry=regression_g5a(baseline,baseline,known,roots)
+        dry.update(stage='R3',baseline_commit=BASE,baseline_source=amendment['baseline_results_path'],G5a_sha256=digest(REPORT/'G5a_gate_amendment.json'),reuse='Verified saved full 476-test FE baseline; no tests omitted',r2_replay_evidence=str(REPORT/'R1_revalidated_gate_attempt05.json'))
+        atomic(ev/'baseline_gate_dryrun.json',dry)
+        atomic(REPORT/'R3/baseline_gate_dryrun_G5a.json',dry)
+        print(json.dumps(dict(stage='R3_baseline_G5a',status=dry['status'],tests=baseline['count'],known=dry['baseline_known_failure'])),flush=True)
+        if dry['status']!='PASS':stop=dict(status='FAIL',reason='BASELINE_G5a_SIGNATURE_MISMATCH',details=dry)
         if not stop:
             with (out/'P2_merge.txt').open('x',encoding='utf-8') as f:
                 merged=subprocess.run(['git','merge','--no-ff','-m','# merge(m3-r3): 集成已验收 P2 到候选分支',P2],cwd=PROJECT,stdout=f,stderr=subprocess.STDOUT,timeout=max(1,deadline-time.monotonic()))
@@ -84,7 +83,7 @@ def launch(out):
         if not stop:
             candidate=tests(PROJECT,modules,out/'integration_tests.txt',deadline)
             atomic(out/'integration_results.json',candidate)
-            reg=regression(candidate,baseline,white);reg['name']='R3_REGRESSION_DELTA_ZERO';atomic(ev/'regression_delta.json',reg)
+            reg=regression_g5a(candidate,baseline,known,roots);reg['name']='R3_REGRESSION_DELTA_ZERO_G5a';atomic(ev/'regression_delta.json',reg)
             extras=sorted(p.stem for p in (PROJECT/'tests').glob('test_m3_r3*.py') if p.stem not in modules)
             added=tests(PROJECT,extras,out/'harness_tests.txt',deadline);atomic(ev/'harness_tests.json',added)
             checks.update(integration_regression=reg['status']=='PASS',harness_tests=added['returncode']==0 and all(v=='ok' for v in added['outcomes'].values()))
