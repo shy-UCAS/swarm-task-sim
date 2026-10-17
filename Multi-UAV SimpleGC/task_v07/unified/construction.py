@@ -18,15 +18,19 @@ def ingress_issues(spec, free, slots):
         normal = np.array([-heading[1], heading[0]])
         lateral = np.asarray([s["entry"] for s in block]) @ normal
         half = float(np.ptp(lateral))/2
+        alignment = free.cfg["alignment_length_m"]
         for slot in block:
             gate = np.asarray(slot["entry"], float)
             direction = np.asarray(slot["direction"], float)
-            start = gate-(free.cfg["alignment_length_m"]+half)*direction
-            for phase, a, b in (("ingress_line_outside_entry", start, gate),
-                                ("entry_to_work_start", gate, slot["work"][0])):
+            start = gate-(alignment+half)*direction
+            if spec["execution_method"] == "area_search":
+                second = ("entry_alignment_inner", gate, gate+alignment*direction)
+            else:
+                second = ("entry_to_work_start", gate, slot["work"][0])
+            for phase, a, b in (("ingress_line_outside_entry", start, gate), second):
                 for issue in free.segment_issues(a, b):
                     evidence.append(dict(slot=slot["slot_id"], phase=phase,
-                                         start_m=a.tolist(), end_m=np.asarray(b).tolist(), **issue))
+                                         start_m=np.asarray(a).tolist(), end_m=np.asarray(b).tolist(), **issue))
     return evidence
 
 
