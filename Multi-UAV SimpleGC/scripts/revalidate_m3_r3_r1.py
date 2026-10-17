@@ -2,7 +2,7 @@
 
 No production policy, old tests, historical gates, or datasets are edited.
 """
-import argparse, copy, hashlib, json, math, os, re, subprocess, sys, time, traceback, zipfile
+import argparse, copy, hashlib, json, math, os, re, shutil, subprocess, sys, time, traceback, zipfile
 from pathlib import Path
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
@@ -22,11 +22,16 @@ def parse_log(text):
     for i,m in enumerate(matches):
         chunk=text[m.end():matches[i+1].start() if i+1<len(matches) else len(text)]
         found=re.search(r'^(ok|FAIL|ERROR|skipped[^\n]*)(?:\n|$)',chunk,re.M)
-        if not found:raise ValueError('No test outcome: '+m[1])
-        outcomes[m[1]]=found[1]
+        if found:outcomes[m[1]]=found[1]
+        else:
+            sub=re.findall(r'^  test[^\n]+ \.\.\. (FAIL|ERROR|skipped[^\n]*)$',chunk,re.M)
+            if not sub:raise ValueError('No test outcome: '+m[1])
+            outcomes[m[1]]='ERROR' if 'ERROR' in sub else 'FAIL' if 'FAIL' in sub else sub[0]
     errors={}
-    for m in re.finditer(r'^(FAIL|ERROR): test\S+ \(([^)]+)\)\n-+\n(.*?)(?=\n={10,}|\n-{10,}\nRan |\Z)',text,re.M|re.S):
-        errors[m[2]]=dict(kind=m[1],traceback=m[3].strip())
+    for m in re.finditer(r'^(FAIL|ERROR): test\S+ \(([^)]+)\)([^\n]*)\n-+\n(.*?)(?=\n={10,}|\n-{10,}\nRan |\Z)',text,re.M|re.S):
+        detail=(m[3].strip()+'\n' if m[3].strip() else '')+m[4].strip()
+        if m[2] in errors:errors[m[2]]['traceback']+='\n'+detail
+        else:errors[m[2]]=dict(kind=m[1],traceback=detail)
     count=re.search(r'^Ran (\d+) tests? in',text,re.M)
     if not count or int(count[1])!=len(outcomes):raise ValueError('Missing/duplicate test IDs')
     return dict(count=len(outcomes),outcomes=outcomes,failures=errors)
@@ -171,8 +176,22 @@ def validate_inputs(plan):
 
 
 def export_baseline(archive,destination):
-    subprocess.run(['git','-C',str(PROJECT.parent),'archive','--format=zip','--output',str(archive),BASE,'Multi-UAV SimpleGC'],cwd=PROJECT,check=True)
+    subprocess.run(['git','-C',str(PROJECT.parent),'archive','--format=zip','--output',str(archive),BASE,'Multi-UAV SimpleGC','.github'],cwd=PROJECT,check=True)
     with zipfile.ZipFile(archive) as z:z.extractall(destination)
+    # Standalone temporary Git metadata: reads shared immutable objects only;
+    # no worktree registration and no writes to the source repository.
+    subprocess.run(['git','init','--quiet',str(destination)],cwd=PROJECT,check=True)
+    common=Path(subprocess.check_output(['git','rev-parse','--path-format=absolute','--git-common-dir'],cwd=PROJECT,text=True).strip())
+    (destination/'.git/objects/info/alternates').write_text((common/'objects').as_posix()+'\n',encoding='utf-8',newline='\n')
+    (destination/'.git/HEAD').write_text(BASE+'\n',encoding='ascii',newline='\n')
+    subprocess.run(['git','-C',str(destination),'read-tree',BASE],cwd=PROJECT,check=True)
+    fixture=Path('v07_dataset/attempt_20261014T014017Z_15a6bf38/family_s12_b0c036776dcaff71_s2r3_sk00/skeleton.json')
+    source=DATA/fixture;target=destination.parent/'SwarmData'/fixture
+    before=digest(source);target.parent.mkdir(parents=True,exist_ok=True)
+    if target.exists():assert digest(target)==before
+    else:shutil.copyfile(source,target)
+    assert digest(source)==digest(target)==before
+    atomic(destination/'baseline_environment.json',dict(commit=BASE,source_object_directory=str(common/'objects'),fixture_source=str(source),fixture_copy=str(target),fixture_sha256=before))
     return destination/'Multi-UAV SimpleGC'
 
 

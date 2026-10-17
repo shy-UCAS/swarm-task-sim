@@ -53,3 +53,32 @@ class R1GateTests(unittest.TestCase):
             self.assertEqual(digest(base/'configs/fast_dynamics/m3_r2_20261013_v1.json'),CONFIG_SHA)
             self.assertEqual(digest(base/'tests/test_v07_s2_revision_continuous.py'),digest(PROJECT/'tests/test_v07_s2_revision_continuous.py'))
             self.assertTrue((base/'swarm_sim/fast_dynamics/route_tracker.py').is_file())
+
+    def test_subtest_errors_remain_errors_and_count_parent_once(self):
+        from scripts.revalidate_m3_r3_r1 import DATA
+        log=DATA/'fast_dynamics/m3/m3_r3_r1_revalidate03/baseline_tests.txt'
+        result=parse_log(log.read_text())
+        key='test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_wrong_planned_phases_is_rejected_even_on_reuse_hit'
+        self.assertEqual(result['count'],200)
+        self.assertEqual(result['outcomes'][key],'ERROR')
+        self.assertIn('(reuse=False)',result['failures'][key]['traceback'])
+        self.assertIn('(reuse=True)',result['failures'][key]['traceback'])
+        self.assertIn('cannot find source Git baseline',result['failures'][key]['traceback'])
+
+    def test_isolated_environment_retains_git_workflow_and_fixture(self):
+        import json,os,subprocess,sys
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from scripts.revalidate_m3_r3_r1 import export_baseline,BASE
+        with TemporaryDirectory() as directory:
+            folder=Path(directory);base=export_baseline(folder/'baseline.zip',folder/'baseline_checkout')
+            self.assertTrue((base.parent/'.github/workflows/unit-tests.yml').is_file())
+            env=dict(os.environ,PYTHONPATH=str(base)+os.pathsep+str(base/'tests'),PYTHONSAFEPATH='1')
+            identity=subprocess.run([sys.executable,'-B','-c','from swarm_sim.fast_dynamics.artifacts import _git_revision; print(_git_revision())'],cwd=base,env=env,capture_output=True,text=True)
+            self.assertEqual(identity.returncode,0,identity.stderr)
+            self.assertEqual(identity.stdout.strip(),BASE)
+            modules=['test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_complete_public_chain_and_source_identity',
+                     'test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_actual_m2_public_export_load_audit_describe',
+                     'test_v07_m2_timing_rehearsal.M2Checks.test_A8_partial_finish_uses_conservative_budget']
+            run=subprocess.run([sys.executable,'-B','-m','unittest','-v',*modules],cwd=base,env=env,capture_output=True,text=True,timeout=120)
+            self.assertEqual(run.returncode,0,run.stdout+run.stderr)
