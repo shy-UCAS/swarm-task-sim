@@ -1,0 +1,20 @@
+Working directory: F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-m3r3\Multi-UAV SimpleGC
+Shell: PowerShell 7.6.5
+Conda environment: llm
+
+Initial test invocation: python -B -m unittest -v tests.test_m3_r3_r0_audit
+Result: ImportError / ModuleNotFoundError. No tests executed (loader error).
+Corrected invocation: PYTHONPATH=<project>;<project>\tests; python -B -m unittest -v test_m3_r3_r0_audit
+Result:
+test_candidate_unknown_is_a_failure_not_a_reduced_denominator ... ok
+test_complete_known_metrics_are_available ... ok
+test_false_gate_or_incomplete_registration_cannot_advance ... ok
+test_historical_hard_pass_does_not_prove_unknown_pattern_passed ... ok
+Ran 4 tests in 0.026s
+OK
+
+Audit invocation: python -B scripts/audit_m3_r3_r0.py --output F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData\fast_dynamics\m3\m3_r3_r0_20261017_audit01
+Result: verified=282; input_problems=0; missing_metrics=2; status=BLOCKED.
+Audit elapsed wall: 39.812999999994645 s.
+Audit script return code 2 is the intentional non-PASS stop; conda wrapper returned 1.
+This log transcribes actual tool output; raw computed audit evidence is in the external attempt.
