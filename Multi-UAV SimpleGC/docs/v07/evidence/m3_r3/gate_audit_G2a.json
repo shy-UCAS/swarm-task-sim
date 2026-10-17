@@ -1,0 +1,4202 @@
+{
+  "schema": "m3_r3_gate_audit_G2a_v1",
+  "status": "PASS",
+  "scope": "Gate classification and dry run of AVAILABLE frozen evidence; not future R1/R2/R3/R4 acceptance",
+  "current_commit": "b303c0b26f68cb07befef6842a4a4bf599bc6534",
+  "parent_plan_sha256": "50deb2ed20694508b9ecbe15fe234d56247f20db1bb6e35a1bd032746833a8e6",
+  "previous_rules_sha256": "56d05dbc4091df6caa9fb936f292fe099ae4ad891e90ba0dda586f6eada4e8a3",
+  "allowed_hard_categories": {
+    "a": "absolute physical/API/data/provenance/audit/role contracts; regression tests enforce those existing contracts",
+    "b": "r2 historical exact compatibility",
+    "c": "r3 fixed B2 probe exact reproduction",
+    "d": "original M3 tiers().hard with original N/A"
+  },
+  "gates": [
+    {
+      "stage": "R1",
+      "original_gate_id": "input_hash",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Input group hash equals frozen history; execution cannot mutate input",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "physical",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Original physical_checks all true; limits unchanged",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "ordered_nodes",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "All internal original node indices witnessed exactly once and in order",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "no_scene_violation",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "No original sampled forbidden/obstacle/world violation",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.bitwise_arrays",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.geometry_and_caps_exact",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.witnesses_exact",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.dwell_exact",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.observation_exact",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.low_speed_exact",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2.tracking_exact",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical A; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.bitwise_arrays",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.geometry_and_caps_exact",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.witnesses_exact",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.dwell_exact",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.observation_exact",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.low_speed_exact",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r3.tracking_exact",
+      "category": "c",
+      "disposition": "HARD",
+      "rule": "Exact comparison with historical B2; no tolerance added",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.absolute.probe_01_02_03_04_06_07",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Original reference tracking tube <= 0.5 m, no threshold change",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.approach.max_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.approach.p99_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.dwell.max_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.dwell.p99_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.departure.max_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.departure.p99_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.terminal_stop.max_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.probe_05.terminal_stop.p99_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "r3 <= r2 + 1e-9 m",
+      "source": "scripts/revalidate_m3_r3_r1.py::probe_worker",
+      "reason": "G-2a.1: changed corner geometry invalidates r2 numerical nonregression as acceptance; report all values"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "precision.absolute.probe_05",
+      "category": null,
+      "disposition": "KNOWN_LIMITATION",
+      "rule": "Absolute tracking tube 0.5 m; both arms historically exceed",
+      "source": "R1_validation_plan_amended.json",
+      "reason": "Explicit G-2a.1 exclusion; preserve measured ~1.785 m and absolute FAIL"
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "R1_REGRESSION_DELTA_ZERO",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "All original 209 tests execute; exact four known signatures only; any other failure/error/skip blocks",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "NEW_GATE_TESTS",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "All additional harness tests pass",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "legacy_audit",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Exact legacy IDs and source/log hashes, no module wildcard",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "source_unchanged",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Registered source hashes stable during execution",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "old_fail_evidence_unchanged",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Historical FAIL/BLOCKED evidence hashes unchanged",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "r2_config",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Frozen r2 config retains 94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "all14",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Seven prescribed r2 and seven r3 results complete and satisfy their applicable checks",
+      "source": "scripts/revalidate_m3_r3_r1.py::launch",
+      "reason": null
+    },
+    {
+      "stage": "R1",
+      "original_gate_id": "version_and_compatibility",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Explicit selector, artifact identity, original geometry and dwell API contracts",
+      "source": "tests/test_m3_r3_reference.py",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers().hard.passed",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": "Original M3 tiers, exact applicable/N/A semantics unchanged",
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.complete_and_quality_count",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 282,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.cohort_count",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 1,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.success",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.995,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.observation_success",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.995,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.truth.motion",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.98,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.truth.motion.equal_strip_lawnmower",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.truth.motion.equal_strip_rectangular_spiral",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": false,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.truth.motion.line_abreast",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.truth.motion.staggered_same_loop",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.observation.motion",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.98,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.observation.motion.equal_strip_lawnmower",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.observation.motion.equal_strip_rectangular_spiral",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": false,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.observation.motion.line_abreast",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "tiers.hard.observation.motion.staggered_same_loop",
+      "category": "d",
+      "disposition": "HARD",
+      "rule": {
+        "minimum": 0.95,
+        "applicable": true,
+        "zero_known": "N/A only for frozen reference-known total zero"
+      },
+      "source": "scripts/tune_fast_dynamics_m3.py::tiers",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "cohort_complete",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "All fixed 282 task identities present and comparable; original 70-task functionality subset first",
+      "source": "R0_validation_plan_amended.json; original task sections 3/5/8",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "reference_identity_preserved",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Mission/family/pattern and SITL reference identity/hash unchanged; cannot disguise missing known references as N/A",
+      "source": "R0_validation_plan_amended.json; original task sections 3/5/8",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "no_P0",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "No P0ContractError or invalid physical/export contract",
+      "source": "R0_validation_plan_amended.json; original task sections 3/5/8",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "source_unchanged",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Registered code/config/input fingerprints stable",
+      "source": "R0_validation_plan_amended.json; original task sections 3/5/8",
+      "reason": null
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "total_duration_abs_relative_median",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "Original r3 metric <= r2 + 1e-9 comparison retained numerically",
+      "source": "scripts/m3_r3_gates.py::evaluate",
+      "reason": "G-3 and G-2a: report values and worst 10 deteriorated tasks per metric; not acceptance"
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "total_duration_abs_relative_p95",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "Original r3 metric <= r2 + 1e-9 comparison retained numerically",
+      "source": "scripts/m3_r3_gates.py::evaluate",
+      "reason": "G-3 and G-2a: report values and worst 10 deteriorated tasks per metric; not acceptance"
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "observe_duration_abs_relative_median",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "Original r3 metric <= r2 + 1e-9 comparison retained numerically",
+      "source": "scripts/m3_r3_gates.py::evaluate",
+      "reason": "G-3 and G-2a: report values and worst 10 deteriorated tasks per metric; not acceptance"
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "turn_min_speed_abs_difference_median",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "Original r3 metric <= r2 + 1e-9 comparison retained numerically",
+      "source": "scripts/m3_r3_gates.py::evaluate",
+      "reason": "G-3 and G-2a: report values and worst 10 deteriorated tasks per metric; not acceptance"
+    },
+    {
+      "stage": "R2",
+      "original_gate_id": "lateral_task_p95_median_m",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "Original r3 metric <= r2 + 1e-9 comparison retained numerically",
+      "source": "scripts/m3_r3_gates.py::evaluate",
+      "reason": "G-3 and G-2a: report values and worst 10 deteriorated tasks per metric; not acceptance"
+    },
+    {
+      "stage": "R3",
+      "original_gate_id": "candidate_version_provenance",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Record distinct candidate version/config/source hashes; r2 identity unchanged",
+      "source": "Original task section 6; R0_validation_plan_amended.json.R3",
+      "reason": null
+    },
+    {
+      "stage": "R3",
+      "original_gate_id": "P2_scope",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "P2 algorithm change limited to construction.py::ingress_issues as authorized",
+      "source": "Original task section 6; R0_validation_plan_amended.json.R3",
+      "reason": null
+    },
+    {
+      "stage": "R3",
+      "original_gate_id": "integration_regression",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Run frozen 49-module P0/P1/P2/r3 integration suite; preserve exact known-test treatment",
+      "source": "Original task section 6; R0_validation_plan_amended.json.R3",
+      "reason": null
+    },
+    {
+      "stage": "R3",
+      "original_gate_id": "source_unchanged",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Source/config fingerprints stable in each validation run",
+      "source": "Original task section 6; R0_validation_plan_amended.json.R3",
+      "reason": null
+    },
+    {
+      "stage": "R3",
+      "original_gate_id": "default_r2_replay",
+      "category": "b",
+      "disposition": "HARD",
+      "rule": "Default r2 still reproduces historical archives exactly",
+      "source": "Original task section 6.7",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "original30_strict_pairs",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "All original 30 skeletons meet existing synchronous/sequential strict pair contracts and required M1 outcomes",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "no_P0ContractError",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "No P0ContractError",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "independent_audit",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "All existing independent audits pass",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "minimum_separation",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Every retained episode >= 2 m",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "no_forbidden_violation",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "No original forbidden-region violation",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "M1_required_role_conditions",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Preserve original role-specific M1 criteria and thresholds",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "source_unchanged",
+      "category": "a",
+      "disposition": "HARD",
+      "rule": "Registered source/config fingerprint stable during run",
+      "source": "Original task section 7; G-4; task_v07/expansion/contracts.py::validate_pair",
+      "reason": null
+    },
+    {
+      "stage": "R4",
+      "original_gate_id": "recovered8_strict_pairs",
+      "category": null,
+      "disposition": "DIAGNOSTIC",
+      "rule": "Report each of eight recovered P2 skeletons and first failed stage/reason",
+      "source": "G-4",
+      "reason": "Previously authorized G-4 keeps additional eight outcomes as measurement"
+    }
+  ],
+  "ambiguities": [],
+  "hard_failures": [],
+  "dryrun": {
+    "r2_against_r2": [
+      {
+        "probe_id": "probe_01",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_01\\r2\\result.json"
+      },
+      {
+        "probe_id": "probe_02",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_02\\r2\\result.json"
+      },
+      {
+        "probe_id": "probe_03",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_03\\r2\\result.json"
+      },
+      {
+        "probe_id": "probe_04",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_04\\r2\\result.json"
+      },
+      {
+        "probe_id": "probe_05",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {
+            "absolute_precision": "FAIL",
+            "relative_by_phase": null
+          }
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_05\\r2\\result.json"
+      },
+      {
+        "probe_id": "probe_06",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_06\\r2\\result.json"
+      },
+      {
+        "probe_id": "probe_07",
+        "result": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_07\\r2\\result.json"
+      }
+    ],
+    "attempt04": [
+      {
+        "probe_id": "probe_01",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_01\\r2\\result.json",
+        "sha256": "b1fef737fe79c0a6c250307316c7e090c4f6b8d8280f5191919652997491e016"
+      },
+      {
+        "probe_id": "probe_01",
+        "version": "r3",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true,
+            "precision": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_01\\r3\\result.json",
+        "sha256": "56e7399fa25169dac539d065ea29893b56eccfc7e6be45d79521954a58eb6ada"
+      },
+      {
+        "probe_id": "probe_02",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_02\\r2\\result.json",
+        "sha256": "e44cfbcd964e23bc146c14c6bc33bb6773b64741c124cb79fb79543c5d9e3381"
+      },
+      {
+        "probe_id": "probe_02",
+        "version": "r3",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true,
+            "precision": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_02\\r3\\result.json",
+        "sha256": "858bc0513ef50788ea0aa3b49118de20c0e85cd88bf20199ec30b550c9991b1d"
+      },
+      {
+        "probe_id": "probe_03",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_03\\r2\\result.json",
+        "sha256": "5f12639957ea77d73cfe43f630b98ddd948b9dbe7c9b98d04245bba7e0d5950b"
+      },
+      {
+        "probe_id": "probe_03",
+        "version": "r3",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true,
+            "precision": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_03\\r3\\result.json",
+        "sha256": "4acc9a2a447f32d5cf509a9c907d39af5883df97372353819d881a7b3832a6a5"
+      },
+      {
+        "probe_id": "probe_04",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_04\\r2\\result.json",
+        "sha256": "ce3df2d1aeea97b1273e92c30d798a3e2fa03f31d4199e2db764d3f6ec06cc9a"
+      },
+      {
+        "probe_id": "probe_04",
+        "version": "r3",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true,
+            "precision": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_04\\r3\\result.json",
+        "sha256": "5142a94d01debbc67e72224861039232d5b5662278b5c09ed442464672659836"
+      },
+      {
+        "probe_id": "probe_05",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {
+            "absolute_precision": "FAIL",
+            "relative_by_phase": null
+          }
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_05\\r2\\result.json",
+        "sha256": "c319c6fb6cb7368cef459a92afdc6900be9d3e247ded38cb6b874a38b864eaa7"
+      },
+      {
+        "probe_id": "probe_05",
+        "version": "r3",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {
+            "precision": false,
+            "absolute_precision": "FAIL",
+            "relative_by_phase": {
+              "approach": {
+                "baseline": {
+                  "frames": 3321,
+                  "max_m": 1.7847768233500276,
+                  "p99_m": 0.8546349531884775
+                },
+                "candidate": {
+                  "frames": 3296,
+                  "max_m": 1.7853429850690588,
+                  "p99_m": 0.4621354268927357
+                },
+                "passed": false
+              },
+              "dwell": {
+                "baseline": {
+                  "frames": 605,
+                  "max_m": 0.19074986319499798,
+                  "p99_m": 0.12216143397797305
+                },
+                "candidate": {
+                  "frames": 605,
+                  "max_m": 0.19208632339733323,
+                  "p99_m": 0.12302069734606644
+                },
+                "passed": false
+              },
+              "departure": {
+                "baseline": {
+                  "frames": 972,
+                  "max_m": 1.6077746776921857e-11,
+                  "p99_m": 8.8989275154825e-12
+                },
+                "candidate": {
+                  "frames": 972,
+                  "max_m": 1.6077746776921857e-11,
+                  "p99_m": 8.8989275154825e-12
+                },
+                "passed": true
+              },
+              "terminal_stop": {
+                "baseline": {
+                  "frames": 18,
+                  "max_m": 1.7849249178526083,
+                  "p99_m": 1.7842877961221466
+                },
+                "candidate": {
+                  "frames": 18,
+                  "max_m": 1.7849249178526083,
+                  "p99_m": 1.7842877961221466
+                },
+                "passed": true
+              }
+            }
+          }
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_05\\r3\\result.json",
+        "sha256": "2794838e78bb9ea10800695c8aae651cad587b2c1d68a69b8a0de0376ca3c25f"
+      },
+      {
+        "probe_id": "probe_06",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_06\\r2\\result.json",
+        "sha256": "8ff0ecf84eae4c8c4037afb69d0d31e64e4d769fb4cb29327df3c52949bb9ef7"
+      },
+      {
+        "probe_id": "probe_07",
+        "version": "r2",
+        "evaluation": {
+          "status": "PASS",
+          "hard_checks": {
+            "input_hash": true,
+            "bitwise_arrays": true,
+            "geometry_and_caps_exact": true,
+            "physical": true,
+            "ordered_nodes": true,
+            "no_scene_violation": true,
+            "witnesses_exact": true,
+            "dwell_exact": true,
+            "observation_exact": true,
+            "low_speed_exact": true,
+            "tracking_exact": true
+          },
+          "diagnostics": {}
+        },
+        "evidence": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_07\\r2\\result.json",
+        "sha256": "3f8f019766ee666d67e4252ed77dfd1526c59a6c2d27257a9ffd8f1183f96837"
+      }
+    ],
+    "R1_tests": {
+      "name": "R1_REGRESSION_DELTA_ZERO",
+      "status": "PASS",
+      "executed": 209,
+      "passed": 205,
+      "baseline_known_failure": 4,
+      "new_failure_count": 0,
+      "failures": [],
+      "new_tests": [
+        "test_m3_r3_reference.R3ReferenceTests.test_adjacent_curves_and_tiny_legs_preserve_order",
+        "test_m3_r3_reference.R3ReferenceTests.test_candidate_config_only_changes_policy",
+        "test_m3_r3_reference.R3ReferenceTests.test_curve_vertex_distance_formula_independently_sampled",
+        "test_m3_r3_reference.R3ReferenceTests.test_default_r2_and_explicit_r2_identical",
+        "test_m3_r3_reference.R3ReferenceTests.test_dwell_selects_r3_for_both_route_halves",
+        "test_m3_r3_reference.R3ReferenceTests.test_r3_artifact_identity_roundtrip_and_mixed_version_rejected",
+        "test_m3_r3_reference.R3ReferenceTests.test_real_r3_plant_retains_observation_dwell",
+        "test_m3_r3_reference.R3ReferenceTests.test_seven_angles_match_original_b2_primitive_values",
+        "test_m3_r3_reference.R3ReferenceTests.test_unknown_versions_rejected"
+      ],
+      "per_test": [
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_complete_public_chain_and_source_identity",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_grid_error_rejected_without_completion_marker",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_numerical_error_is_not_exported_as_task_failure",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_real_slow_crossing_is_eligible_semantic_failure",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_reconfirmation_discards_only_revoked_arrival_evidence",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_rehashed_export_velocity_cannot_disagree_with_support",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_rehashed_semantic_claim_cannot_replace_measured_outcome",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_runtime_configuration_cannot_be_relabeled",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_runtime_task_cannot_be_relabeled",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_short_timeout_stays_unknown_and_retained",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_simulation_clock_is_explicit_bounded_and_old_mapping_unchanged",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_timeout_cannot_be_relabeled_as_completed",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_unsupported_capability_cannot_be_rehashed_into_source",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_zero_duration_never_qualified",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_actual_m2_public_export_load_audit_describe",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_m1_and_m2_cannot_silently_mix",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_barrier_cannot_claim_a_revoked_confirmation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_false_label_is_recomputed_and_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_missing_mode_or_confirmation_epoch_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_wrong_planned_phases_is_rejected_even_on_reuse_hit",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_timeout_is_retained_unknown_not_fake_success",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_visible_facts_and_calibration_use_public_grid_not_dense_support",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_closed_loop_needs_actual_ordered_visits",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_disabling_or_nesting_reuse_does_not_leak_results",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_far_cross_track_point_is_not_route_completion",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_later_lap_cannot_replace_missing_first_loop",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_m2_reference_bounds_and_legacy_config_remain_distinct",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_only_consecutive_duplicate_points_are_cleaned",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_real_tasks_plan_only_their_compiled_phases_even_before_execution",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_same_tick_reset_revokes_previous_confirmation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_semantic_reuse_is_scoped_exact_and_returns_independent_values",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_aggregation_does_not_treat_unknown_or_frames_as_success",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_clock_inverse_uses_knots_not_global_scale",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_clock_natural_order_and_invalid_fallback",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_empty_speed_support_is_unavailable",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_family_split_is_fixed_and_order_duplicate_invariant",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_half_open_last_phase_is_measured_on_recorded_support",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_holdout_gate_rejects_before_any_file_open",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_interpolation_respects_missing_and_gaps",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_later_loop_not_matched_to_previous_leg",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_m2_02b_split_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_phase_duration_uses_barrier_and_reports_missing",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_route_extraction_preserves_two_laps_and_native_numbers",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_same_leg_arc_alignment_known_lateral_offset",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_speed_does_not_bridge_internal_missing_point",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_speed_from_positions_and_mapped_seconds",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_synchronous_minimum_detects_between_samples",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_synchronous_minimum_does_not_align_individual_progress",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_synchronous_minimum_does_not_bridge_long_gap",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_unknown_is_not_agreement",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_bounds_and_default_distance_break_exact_metric_ties",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_condition_metrics_are_reported_without_an_extra_rejection_rule",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_judgment_boundary_is_99_point_5_percent",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_motion_denominator_is_reference_known_and_candidate_unknown_fails",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_new_ranking_uses_total_then_observe_then_turn",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_per_pattern_threshold_is_not_hidden_by_overall_accuracy",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_quality_cannot_drop_a_timeout_from_the_denominator",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_rejected_candidate_does_not_stop_but_contract_error_does",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_subset_uses_identities_and_frozen_rank_not_measurements",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_time_targets_and_diagnostics_do_not_become_hard_gates",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_actual_velocity_is_not_clipped",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_constant_acceleration",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_constant_jerk_and_dense_boundary",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_constant_velocity",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_invalid_states_and_control_capabilities_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_jerk_and_acceleration_feasible_throughout_each_step",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_long_step_does_not_overshoot_acceleration_target",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.ResponseAndConvergenceTests.test_repeatability_and_step_halving_convergence",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.ResponseAndConvergenceTests.test_start_turn_stop_and_terminal_dwell_are_dynamic",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_agents_update_atomically_and_are_permutation_invariant",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_configuration_roundtrip_and_all_unknown_fields_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_dense_event_truncation_preserves_prefix_and_half_open_grid",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_half_open_integer_grid_boundaries",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_noncommensurate_output_uses_step_polynomial",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_state_snapshot_serialization_and_observer",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.DenseEventsTests.test_cli_retains_engine_failure_and_rejects_attempt_reuse",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.DenseEventsTests.test_near_endpoint_at_high_speed_is_not_arrival",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.DenseEventsTests.test_short_arrival_crossing_between_output_frames",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_frozen_input_and_successful_actual_execution",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_half_step_on_common_axis_and_actual_events",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_repeatability_and_agent_permutation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_timeout_is_real_truncation_not_label_rewrite",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_unimplemented_scope_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_waiting_agent_must_reconfirm_after_losing_arrival",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_worker_count_and_dispatch_order_do_not_change_trajectory",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ConfirmationTests.test_confirmed_exit_revokes_epoch_then_reconfirms",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ConfirmationTests.test_disjoint_done_intervals_do_not_release_barrier",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ConfirmationTests.test_short_valid_island_does_not_gain_missing_dwell",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_done_agent_actual_departure_invalidates_and_recovers",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_exact_adjacent_repeats_do_not_remove_tiny_legs_or_loop_return",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_explicit_legacy_config_dispatches_m1",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_half_step_preserves_phase_semantics_and_close_actual_trajectory",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_harness_descriptor_rejects_unknown_state_or_label_fields",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_nonintegral_stagger_is_exact_and_waiting_state_keeps_integrating",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_noop_zero_dwell_and_hold_finishes_without_motion_or_extra_frame",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_real_plant_two_three_four_agents_phase_and_final_hold",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_recon_fault_flies_altitude_excursion_then_recovers_original_target",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_timeout_applies_while_personal_done_waits_for_delayed_peer",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_timeout_wins_when_hold_would_finish_exactly_at_deadline",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_changed_bound_source_refused_before_generation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_changed_registration_refused_before_generation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_escape_refused_before_generation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_existing_bundle_refused_before_generation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_no_overwrite",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_count_is_significant",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_d4",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_euclidean_not_coordinatewise",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_matching_does_not_reuse_vehicle",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_matching_requires_augmenting_path",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_order_invariance",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_tolerance_closed_boundary",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_translation_ids_heading_ignored",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_unsupported_geometry_refused",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.GeometryTests.test_v2_platform_projection",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.IndependentVerifierTests.test_identity_verifier_detects_modified_frozen_file",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.IndependentVerifierTests.test_permutation_oracle_boundary_and_no_reuse",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.IndependentVerifierTests.test_permutation_oracle_rotation",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_duplicate_membership_refused",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_fixed_serialization_and_dedup",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_full_hash_is_not_family_id",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_insufficient_candidates_do_not_freeze",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_order_duplicates_rank_floor",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_rejected_only_component_not_candidate",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_rejected_sibling_can_exclude_accepted_task",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_short_id_collision_refused",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_task_status_not_execution_claim",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_holdout.SplitTests.test_transitive_near_and_old_contamination",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_continuous_minimum_detects_crossing_between_endpoints",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_delayed_turn_stop_is_not_missed_by_witness_time_window",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_fallback_is_only_frozen_fail_default_pass",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_freeze_allows_only_internal_and_rejects_modified_parameters",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_internal_requires_freeze_before_any_reference_file_open",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_registered_convergence_has_equal_distances_and_separated_goals",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_terminal_overrun_and_return_are_measured_beyond_route_endpoint",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_velocity_peak_between_step_endpoints_is_measured",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.BenchmarkCliTests.test_output_outside_the_selected_root_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.BenchmarkCliTests.test_output_root_writes_a_fresh_external_file",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.BenchmarkCliTests.test_repository_output_is_rejected_before_measuring",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_default_root_does_not_depend_on_the_repository_name",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_default_root_is_the_repository_parents_swarmdata_and_outside_the_repository",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_explicit_and_environment_roots_take_precedence",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_unusable_roots_are_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.JunctionTests.test_junction_target_into_the_repository_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.JunctionTests.test_root_that_is_a_junction_into_the_repository_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.JunctionTests.test_target_escaping_the_selected_root_through_a_junction_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_default_run_completes_the_full_m2_chain_under_the_default_root",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_existing_attempt_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_invalid_ids_are_rejected_before_io_in_both_output_modes",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_output_outside_the_selected_root_is_rejected_with_zero_artifacts",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_repository_target_is_rejected_before_any_artifact",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_run_id_with_path_fragments_is_rejected_with_zero_artifacts",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_selected_root_selects_a_fresh_external_attempt",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_valid_id_with_explicit_output_completes_the_public_chain",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunIdFragmentTests.test_path_fragments_are_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.RunIdFragmentTests.test_valid_prefix_stays_under_the_root",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_existing_and_repository_targets_are_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_target_outside_the_selected_root_is_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_target_under_the_environment_root_is_accepted",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_target_under_the_selected_root_is_accepted",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.VerifyFastDynamicsCliTests.test_custom_root_propagates_to_child_attempts",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.VerifyFastDynamicsCliTests.test_default_verify_is_not_self_rejected_by_the_policy",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_output_policy.VerifyFastDynamicsCliTests.test_repository_output_is_rejected_before_running_anything",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_closed_two_laps_not_complete_at_origin",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_far_cross_track_does_not_grant_completion",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_general_angle_curves_use_real_arclength",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_half_step_trajectory_and_event_convergence",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_noop_and_raw_positive_short_leg",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_offset_start_acquires_original_start",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_original_patrol_0070_completes_every_ordered_waypoint",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_reference_rejects_invalid_fields",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_reversal_stops_with_physical_state",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_right_angle_continuously_tracks",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_short_leg_visits_distinct_gates",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_straight_stops_without_editing_plant",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_dwell_snapshot_real_step",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_execute_old_new_exact",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_route_snapshot_real_step",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_unknown_tracker_rejected",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A10_rehearsal_observed_roles",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A11_independent_completeness_and_frame_count",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A1_random_schedules",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A2_A3_independent_draws_and_pair_conditions",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A4_overlay_threshold",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A5_vertical_default_is_exact_baseline",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A6_relaxed_stop_is_exact_prefix",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A7_observation_hold_unchanged",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A8_partial_finish_uses_conservative_budget",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A9_last_failure_and_history",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_115_percent_filter_then_seeded_order",
+          "baseline": "FAIL",
+          "candidate": "FAIL",
+          "classification": "BASELINE_KNOWN_FAILURE"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_circle_nominal_duration_and_original_disk",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_each_group_has_its_own_115_percent_bound",
+          "baseline": "FAIL",
+          "candidate": "FAIL",
+          "classification": "BASELINE_KNOWN_FAILURE"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_five_calibration_round_limit_and_zero_flights_for_empty_pool",
+          "baseline": "ERROR",
+          "candidate": "ERROR",
+          "classification": "BASELINE_KNOWN_FAILURE"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_hover_uses_exported_samples_and_releases_original_route",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_nominal_spacing_includes_stationary_middle_dwell",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_one_group_transit_quantile_maps_into_each_feasible_chord_interval",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_real_frozen_plant_hover_has_measured_stationary_interval",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_uniform_parameters_are_private_reproducible_and_noncollapsed",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_variable_observation_dwell_preserves_eighty_percent_criterion",
+          "baseline": "ERROR",
+          "candidate": "ERROR",
+          "classification": "BASELINE_KNOWN_FAILURE"
+        },
+        {
+          "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_work_point_spacing_cannot_be_satisfied_by_far_retreat_endpoints",
+          "baseline": "ok",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_adjacent_curves_and_tiny_legs_preserve_order",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_candidate_config_only_changes_policy",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_curve_vertex_distance_formula_independently_sampled",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_default_r2_and_explicit_r2_identical",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_dwell_selects_r3_for_both_route_halves",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_r3_artifact_identity_roundtrip_and_mixed_version_rejected",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_real_r3_plant_retains_observation_dwell",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_seven_angles_match_original_b2_primitive_values",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        },
+        {
+          "test_id": "test_m3_r3_reference.R3ReferenceTests.test_unknown_versions_rejected",
+          "baseline": "NEW_R3_TEST",
+          "candidate": "ok",
+          "classification": "PASS"
+        }
+      ]
+    },
+    "R2_original_tiers": {
+      "hard": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "complete_and_quality_count",
+            "value": 282,
+            "minimum": 282,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "cohort_count",
+            "value": 1,
+            "minimum": 1,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "success",
+            "value": 1.0,
+            "minimum": 0.995,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "observation_success",
+            "value": 1.0,
+            "minimum": 0.995,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "truth.motion",
+            "value": 1.0,
+            "minimum": 0.98,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "truth.motion.equal_strip_lawnmower",
+            "value": 1.0,
+            "minimum": 0.95,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "truth.motion.equal_strip_rectangular_spiral",
+            "value": null,
+            "minimum": 0.95,
+            "applicable": false,
+            "passed": null
+          },
+          {
+            "name": "truth.motion.line_abreast",
+            "value": 1.0,
+            "minimum": 0.95,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "truth.motion.staggered_same_loop",
+            "value": 1.0,
+            "minimum": 0.95,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "observation.motion",
+            "value": 1.0,
+            "minimum": 0.98,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "observation.motion.equal_strip_lawnmower",
+            "value": 1.0,
+            "minimum": 0.95,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "observation.motion.equal_strip_rectangular_spiral",
+            "value": null,
+            "minimum": 0.95,
+            "applicable": false,
+            "passed": null
+          },
+          {
+            "name": "observation.motion.line_abreast",
+            "value": 1.0,
+            "minimum": 0.95,
+            "applicable": true,
+            "passed": true
+          },
+          {
+            "name": "observation.motion.staggered_same_loop",
+            "value": 1.0,
+            "minimum": 0.95,
+            "applicable": true,
+            "passed": true
+          }
+        ]
+      },
+      "targets": [
+        {
+          "name": "total",
+          "values": [
+            0.0157049968819699,
+            0.07934581069684277,
+            0.125700650136424
+          ],
+          "maximum_allowed": [
+            0.05,
+            0.15,
+            0.3
+          ],
+          "missing": 0,
+          "passed": true
+        },
+        {
+          "name": "p00_approach",
+          "values": [
+            0.06164601668369635,
+            0.18815792262665548,
+            0.23120513930781594
+          ],
+          "maximum_allowed": [
+            0.1,
+            0.2,
+            0.35
+          ],
+          "missing": 0,
+          "passed": true
+        },
+        {
+          "name": "p01_observe",
+          "values": [
+            0.02074701727528907,
+            0.055568814639526336,
+            0.08461066554724896
+          ],
+          "maximum_allowed": [
+            0.1,
+            0.2,
+            0.35
+          ],
+          "missing": 0,
+          "passed": true
+        },
+        {
+          "name": "p01_patrol",
+          "values": [
+            0.017594546620576336,
+            0.03409058359206278,
+            0.05735250169596903
+          ],
+          "maximum_allowed": [
+            0.1,
+            0.2,
+            0.35
+          ],
+          "missing": 0,
+          "passed": true
+        },
+        {
+          "name": "p01_transit",
+          "values": [
+            0.04860125543930237,
+            0.09029097755661303,
+            0.09759063836638138
+          ],
+          "maximum_allowed": [
+            0.1,
+            0.2,
+            0.35
+          ],
+          "missing": 0,
+          "passed": true
+        },
+        {
+          "name": "p02_return",
+          "values": [
+            0.019347820057116393,
+            0.08267187272021917,
+            0.1373340728159513
+          ],
+          "maximum_allowed": [
+            0.1,
+            0.2,
+            0.35
+          ],
+          "missing": 0,
+          "passed": true
+        }
+      ],
+      "diagnostics_only": true,
+      "aggregate": {
+        "tasks": 282,
+        "families": 98,
+        "success": {
+          "total": 282,
+          "not_applicable": 0,
+          "agree": 282,
+          "disagree": 0,
+          "unknown": 0,
+          "known_rate": 1.0,
+          "all_task_rate": 1.0,
+          "family_equal_known_rate": 1.0
+        },
+        "observation_success": {
+          "total": 282,
+          "not_applicable": 0,
+          "agree": 282,
+          "disagree": 0,
+          "unknown": 0,
+          "known_rate": 1.0,
+          "all_task_rate": 1.0,
+          "family_equal_known_rate": 1.0
+        },
+        "motion_slots": {
+          "truth": {
+            "total": 282,
+            "not_applicable": 0,
+            "agree": 226,
+            "disagree": 0,
+            "unknown": 56,
+            "known_rate": 1.0,
+            "all_task_rate": 0.8014184397163121,
+            "family_equal_known_rate": 1.0
+          },
+          "observation": {
+            "total": 282,
+            "not_applicable": 0,
+            "agree": 226,
+            "disagree": 0,
+            "unknown": 56,
+            "known_rate": 1.0,
+            "all_task_rate": 0.8014184397163121,
+            "family_equal_known_rate": 1.0
+          }
+        },
+        "motion_reference_known": {
+          "truth": {
+            "total": 226,
+            "not_applicable": 56,
+            "agree": 226,
+            "disagree": 0,
+            "unknown": 0,
+            "known_rate": 1.0,
+            "all_task_rate": 1.0,
+            "family_equal_known_rate": 1.0
+          },
+          "observation": {
+            "total": 226,
+            "not_applicable": 56,
+            "agree": 226,
+            "disagree": 0,
+            "unknown": 0,
+            "known_rate": 1.0,
+            "all_task_rate": 1.0,
+            "family_equal_known_rate": 1.0
+          }
+        },
+        "quality_eligible": 282,
+        "duration_relative_error": {
+          "task": {
+            "n": 282,
+            "median": -0.00506346733506219,
+            "p90": 0.015947064884181416,
+            "p95": 0.01951224829854882,
+            "minimum": -0.125700650136424,
+            "maximum": 0.04991461958090102
+          },
+          "missing": 0,
+          "not_applicable": 0,
+          "family_median": {
+            "n": 98,
+            "median": -0.0017476416210265955,
+            "p90": 0.012900575304817957,
+            "p95": 0.016910346996014364,
+            "minimum": -0.051672971899001545,
+            "maximum": 0.026231135466103235
+          }
+        },
+        "duration_absolute_relative_error": {
+          "task": {
+            "n": 282,
+            "median": 0.0157049968819699,
+            "p90": 0.06785989039588458,
+            "p95": 0.07934581069684277,
+            "minimum": 0.00021595124734212365,
+            "maximum": 0.125700650136424
+          },
+          "missing": 0,
+          "not_applicable": 0,
+          "family_median": {
+            "n": 98,
+            "median": 0.014604345764392391,
+            "p90": 0.034604314293182024,
+            "p95": 0.04311053794143564,
+            "minimum": 0.0013888212684791098,
+            "maximum": 0.054202917209690005
+          }
+        },
+        "lateral_task_p95_m": {
+          "task": {
+            "n": 282,
+            "median": 0.40636257193666003,
+            "p90": 0.5251539750948194,
+            "p95": 0.5733908958527788,
+            "minimum": 0.11917373782061214,
+            "maximum": 0.6307362362305184
+          },
+          "missing": 0,
+          "not_applicable": 0,
+          "family_median": {
+            "n": 98,
+            "median": 0.3951760120900099,
+            "p90": 0.4731742116906459,
+            "p95": 0.4760440831529323,
+            "minimum": 0.23529246530547596,
+            "maximum": 0.507453771780711
+          }
+        },
+        "lateral_matched_fraction": {
+          "task": {
+            "n": 282,
+            "median": 0.9909659169614213,
+            "p90": 0.9987325875959145,
+            "p95": 0.9991989377218939,
+            "minimum": 0.9156191727729237,
+            "maximum": 0.9997826050866814
+          },
+          "missing": 0,
+          "not_applicable": 0,
+          "family_median": {
+            "n": 98,
+            "median": 0.9896974371317907,
+            "p90": 0.9959027388431737,
+            "p95": 0.997301053365619,
+            "minimum": 0.971587336757904,
+            "maximum": 0.9982494914730574
+          }
+        },
+        "separation_difference_m": {
+          "task": {
+            "n": 282,
+            "median": 0.01813605879568314,
+            "p90": 0.37745845116694865,
+            "p95": 0.4610905704163308,
+            "minimum": -0.28042972430427504,
+            "maximum": 1.446040724041497
+          },
+          "missing": 0,
+          "not_applicable": 0,
+          "family_median": {
+            "n": 98,
+            "median": 0.019276289035105698,
+            "p90": 0.3629517276653183,
+            "p95": 0.4437292398273163,
+            "minimum": -0.11906931634661433,
+            "maximum": 0.6532978791615491
+          }
+        },
+        "separation_absolute_difference_m": {
+          "task": {
+            "n": 282,
+            "median": 0.0424428995708519,
+            "p90": 0.37745845116694865,
+            "p95": 0.4610905704163308,
+            "minimum": 7.408602712999368e-05,
+            "maximum": 1.446040724041497
+          },
+          "missing": 0,
+          "not_applicable": 0,
+          "family_median": {
+            "n": 98,
+            "median": 0.044898456286063926,
+            "p90": 0.3629517276653183,
+            "p95": 0.4437292398273163,
+            "minimum": 0.0006958432900550093,
+            "maximum": 0.6532978791615491
+          }
+        },
+        "phase_absolute_relative_error": {
+          "p00_approach": {
+            "task": {
+              "n": 282,
+              "median": 0.06164601668369635,
+              "p90": 0.160050071562283,
+              "p95": 0.18815792262665548,
+              "minimum": 0.008335011632919172,
+              "maximum": 0.23120513930781594
+            },
+            "missing": 0,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 0.056500061448902746,
+              "p90": 0.1223355289640223,
+              "p95": 0.1467328240847465,
+              "minimum": 0.014116138999866938,
+              "maximum": 0.16935099618672272
+            }
+          },
+          "p01_observe": {
+            "task": {
+              "n": 98,
+              "median": 0.02074701727528907,
+              "p90": 0.04926519442360972,
+              "p95": 0.055568814639526336,
+              "minimum": 0.0008576190977238,
+              "maximum": 0.08461066554724896
+            },
+            "missing": 0,
+            "not_applicable": 184,
+            "family_median": {
+              "n": 98,
+              "median": 0.02074701727528907,
+              "p90": 0.04926519442360972,
+              "p95": 0.055568814639526336,
+              "minimum": 0.0008576190977238,
+              "maximum": 0.08461066554724896
+            }
+          },
+          "p01_patrol": {
+            "task": {
+              "n": 90,
+              "median": 0.017594546620576336,
+              "p90": 0.030138928283667224,
+              "p95": 0.03409058359206278,
+              "minimum": 0.0007087390825707382,
+              "maximum": 0.05735250169596903
+            },
+            "missing": 0,
+            "not_applicable": 192,
+            "family_median": {
+              "n": 90,
+              "median": 0.017594546620576336,
+              "p90": 0.030138928283667224,
+              "p95": 0.03409058359206278,
+              "minimum": 0.0007087390825707382,
+              "maximum": 0.05735250169596903
+            }
+          },
+          "p01_transit": {
+            "task": {
+              "n": 94,
+              "median": 0.04860125543930237,
+              "p90": 0.07940849003787386,
+              "p95": 0.09029097755661303,
+              "minimum": 0.016819489585123804,
+              "maximum": 0.09759063836638138
+            },
+            "missing": 0,
+            "not_applicable": 188,
+            "family_median": {
+              "n": 94,
+              "median": 0.04860125543930237,
+              "p90": 0.07940849003787386,
+              "p95": 0.09029097755661303,
+              "minimum": 0.016819489585123804,
+              "maximum": 0.09759063836638138
+            }
+          },
+          "p02_return": {
+            "task": {
+              "n": 135,
+              "median": 0.019347820057116393,
+              "p90": 0.06147435220145955,
+              "p95": 0.08267187272021917,
+              "minimum": 6.805272439020577e-06,
+              "maximum": 0.1373340728159513
+            },
+            "missing": 0,
+            "not_applicable": 147,
+            "family_median": {
+              "n": 47,
+              "median": 0.016173912892081366,
+              "p90": 0.05195622024418257,
+              "p95": 0.05953683019817101,
+              "minimum": 0.002794504827802353,
+              "maximum": 0.06908404000192357
+            }
+          }
+        },
+        "cruise_speed_m_s": {
+          "reference": {
+            "task": {
+              "n": 282,
+              "median": 2.4926148661832634,
+              "p90": 2.979833594627911,
+              "p95": 2.9941193737434872,
+              "minimum": 1.973776269898782,
+              "maximum": 3.0090762897570853
+            },
+            "missing": 0,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 2.4926144061143596,
+              "p90": 2.978725924766624,
+              "p95": 2.9902389262174585,
+              "minimum": 1.9943228476986414,
+              "maximum": 2.9985137356698757
+            }
+          },
+          "candidate": {
+            "task": {
+              "n": 282,
+              "median": 2.4999999079445923,
+              "p90": 2.9999999998613402,
+              "p95": 2.9999999999946345,
+              "minimum": 1.9999813822773422,
+              "maximum": 2.999999999999986
+            },
+            "missing": 0,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 2.4999996030113096,
+              "p90": 2.999999993759394,
+              "p95": 2.999999999943959,
+              "minimum": 1.9999997883548706,
+              "maximum": 2.9999999999988756
+            }
+          },
+          "difference": {
+            "task": {
+              "n": 282,
+              "median": 0.003863173540837206,
+              "p90": 0.044515067943893274,
+              "p95": 0.07629984535106275,
+              "minimum": -0.022143227035102298,
+              "maximum": 0.24916446927330327
+            },
+            "missing": 0,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 0.003870142162593848,
+              "p90": 0.025421512247559792,
+              "p95": 0.04555478150931079,
+              "minimum": -0.012573164731296771,
+              "maximum": 0.1518554704799442
+            }
+          },
+          "absolute_difference": {
+            "task": {
+              "n": 282,
+              "median": 0.00690629474610005,
+              "p90": 0.044515067943893274,
+              "p95": 0.07629984535106275,
+              "minimum": 0.00015929219424060115,
+              "maximum": 0.24916446927330327
+            },
+            "missing": 0,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 0.00735729442556321,
+              "p90": 0.025421512247559792,
+              "p95": 0.04555478150931079,
+              "minimum": 0.0015724291731311624,
+              "maximum": 0.1518554704799442
+            }
+          },
+          "relative_error": {
+            "task": {
+              "n": 282,
+              "median": 0.0018980849519076907,
+              "p90": 0.015559513207513226,
+              "p95": 0.02811056297970164,
+              "minimum": -0.010950375634499328,
+              "maximum": 0.09057870315176197
+            },
+            "missing": 0,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 0.0019325164697308339,
+              "p90": 0.010273222011963233,
+              "p95": 0.017032275733072085,
+              "minimum": -0.0062473081760407905,
+              "maximum": 0.05331824875993879
+            }
+          }
+        },
+        "turn_minimum_speed_m_s": {
+          "reference": {
+            "task": {
+              "n": 188,
+              "median": 1.1860931069600866,
+              "p90": 1.4555455124824381,
+              "p95": 1.5416947690001572,
+              "minimum": 0.8942870915526966,
+              "maximum": 1.5618866467759644
+            },
+            "missing": 94,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 1.1994691810433915,
+              "p90": 1.4434731660692623,
+              "p95": 1.5091960706360878,
+              "minimum": 0.9045897830197968,
+              "maximum": 1.5482985481462959
+            }
+          },
+          "candidate": {
+            "task": {
+              "n": 188,
+              "median": 0.3985181173148999,
+              "p90": 0.4003369951359133,
+              "p95": 0.40037691204519743,
+              "minimum": 0.3959660287527335,
+              "maximum": 0.4004647648152534
+            },
+            "missing": 94,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 0.3983774622382765,
+              "p90": 0.40031524367695204,
+              "p95": 0.400349468555463,
+              "minimum": 0.3959660287527335,
+              "maximum": 0.4004187119281408
+            }
+          },
+          "difference": {
+            "task": {
+              "n": 188,
+              "median": -0.7874061877393959,
+              "p90": -0.6392786415373811,
+              "p95": -0.5504600241470475,
+              "minimum": -1.1614681395664381,
+              "maximum": -0.4979477991781148
+            },
+            "missing": 94,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": -0.800938737350423,
+              "p90": -0.6126050876509247,
+              "p95": -0.5901739925966796,
+              "minimum": -1.1478798362181553,
+              "maximum": -0.5086237542670633
+            }
+          },
+          "absolute_difference": {
+            "task": {
+              "n": 188,
+              "median": 0.7874061877393959,
+              "p90": 1.0551622476916214,
+              "p95": 1.141345514086388,
+              "minimum": 0.4979477991781148,
+              "maximum": 1.1614681395664381
+            },
+            "missing": 94,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": 0.800938737350423,
+              "p90": 1.04368110537285,
+              "p95": 1.1088567916078935,
+              "minimum": 0.5086237542670633,
+              "maximum": 1.1478798362181553
+            }
+          },
+          "relative_error": {
+            "task": {
+              "n": 188,
+              "median": -0.6638494171314215,
+              "p90": -0.6173249111623424,
+              "p95": -0.5814322733061237,
+              "minimum": -0.7436315189478907,
+              "maximum": -0.5568097805298275
+            },
+            "missing": 94,
+            "not_applicable": 0,
+            "family_median": {
+              "n": 98,
+              "median": -0.6673255046859119,
+              "p90": -0.6057324560024651,
+              "p95": -0.596031672315929,
+              "minimum": -0.7413626184307541,
+              "maximum": -0.5622700629771895
+            }
+          }
+        },
+        "conditions": {
+          "truth": {
+            "coverage": {
+              "total": 98,
+              "not_applicable": 184,
+              "agree": 98,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "entered": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "max_gap": {
+              "total": 90,
+              "not_applicable": 192,
+              "agree": 90,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "no_dwell": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "no_loop": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "opposite_exit": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "return_to_launch": {
+              "total": 282,
+              "not_applicable": 0,
+              "agree": 282,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "straight": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            }
+          },
+          "observation": {
+            "coverage": {
+              "total": 98,
+              "not_applicable": 184,
+              "agree": 98,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "entered": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "max_gap": {
+              "total": 90,
+              "not_applicable": 192,
+              "agree": 90,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "no_dwell": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "no_loop": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "opposite_exit": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "return_to_launch": {
+              "total": 282,
+              "not_applicable": 0,
+              "agree": 282,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            },
+            "straight": {
+              "total": 94,
+              "not_applicable": 188,
+              "agree": 94,
+              "disagree": 0,
+              "unknown": 0,
+              "known_rate": 1.0,
+              "all_task_rate": 1.0,
+              "family_equal_known_rate": 1.0
+            }
+          }
+        }
+      }
+    },
+    "R2_reference_identity": {
+      "cohort_complete": true,
+      "reference_identity_preserved": true,
+      "original_m3_hard": true,
+      "success": true,
+      "observation_success": true,
+      "truth.motion_overall": true,
+      "observation.motion_overall": true,
+      "truth.motion.equal_strip_lawnmower": true,
+      "observation.motion.equal_strip_lawnmower": true,
+      "truth.motion.equal_strip_rectangular_spiral": true,
+      "observation.motion.equal_strip_rectangular_spiral": true,
+      "truth.motion.line_abreast": true,
+      "observation.motion.line_abreast": true,
+      "truth.motion.staggered_same_loop": true,
+      "observation.motion.staggered_same_loop": true
+    },
+    "R4_existing_r2_30": {
+      "original30_complete": true,
+      "original30_strict_pairs": true,
+      "minimum_separation": true,
+      "independent_audit": true,
+      "M1_role_conditions": true,
+      "source_unchanged": true
+    },
+    "R3": "No integrated candidate exists yet; use available R1 r2 compatibility and contract regression evidence for dry run, actual P2 integration tests remain pending",
+    "pending": [
+      {
+        "stage": "R1",
+        "probe_id": "probe_06",
+        "version": "r3",
+        "reason": "Not executed after prior authorized stop"
+      },
+      {
+        "stage": "R1",
+        "probe_id": "probe_07",
+        "version": "r3",
+        "reason": "Not executed after prior authorized stop"
+      }
+    ]
+  },
+  "execution_controls": {
+    "existing_budgets": {
+      "R1": 7200,
+      "R2": 28800,
+      "R3": 7200,
+      "R4": 21600
+    },
+    "no_new_sitl": true,
+    "no_holdout_access": true,
+    "no_production_freeze": true,
+    "stop_on_merge_conflict": true,
+    "scope": "Existing execution/authorization controls preserved; not numerical acceptance gates"
+  },
+  "original_fail_files_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R1_revalidated_gate_attempt04.json": "2acfd968e417527b71146e467cf17f465cc3bcdfcd5bbe8565d6d34669bc3bf9",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R1_revalidation_attempt04_report.md": "b8a1fa0a90507cdce050b4ef99d38f79b74a371f591d26cfe5902fde4f0e9540",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\summary.json": "2acfd968e417527b71146e467cf17f465cc3bcdfcd5bbe8565d6d34669bc3bf9"
+  },
+  "remaining_R1_harness_repairs_new_authorization": 2,
+  "complete_inputs": {
+    "R1_probes": [
+      {
+        "probe_id": "probe_01",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_1b876e6b8b6f70c6_ext_008_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_03",
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_008_regular",
+        "probe_kind": "feint",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_01\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_01\\B2"
+        }
+      },
+      {
+        "probe_id": "probe_02",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_38bedc9d791d547b_ext_008_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_05",
+        "skeleton_id": "family_s15_38bedc9d791d547b_ext_008_regular",
+        "probe_kind": "feint",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_02\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_02\\B2"
+        }
+      },
+      {
+        "probe_id": "probe_03",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_c713f51898e81011_ext_003_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_01",
+        "skeleton_id": "family_s15_c713f51898e81011_ext_003_regular",
+        "probe_kind": "feint",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_03\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_03\\B2"
+        }
+      },
+      {
+        "probe_id": "probe_04",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_1b876e6b8b6f70c6_ext_005_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_01",
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_005_regular",
+        "probe_kind": "transit_control",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_04\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_04\\B2"
+        }
+      },
+      {
+        "probe_id": "probe_05",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_1c267d4d7000043d_ext_006_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_01",
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_006_regular",
+        "probe_kind": "observation_control",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_05\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_05\\B2"
+        }
+      },
+      {
+        "probe_id": "probe_06",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_1b876e6b8b6f70c6_ext_007_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_01",
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_007_regular",
+        "probe_kind": "monitoring",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_06\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_06\\B2"
+        }
+      },
+      {
+        "probe_id": "probe_07",
+        "episode": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z\\family_s15_1b876e6b8b6f70c6_ext_007_regular\\synchronous",
+        "group_id": "task_group_01",
+        "agent_id": "uav_02",
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_007_regular",
+        "probe_kind": "monitoring",
+        "historical_arms": {
+          "A": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_07\\A",
+          "B2": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\fe_corner_dwell_b_20261017T152914Z\\probe_07\\B2"
+        }
+      }
+    ],
+    "R1_modules": [
+      "test_fast_dynamics_artifacts",
+      "test_fast_dynamics_artifacts_m2",
+      "test_fast_dynamics_calibration",
+      "test_fast_dynamics_calibration_search",
+      "test_fast_dynamics_core",
+      "test_fast_dynamics_execution",
+      "test_fast_dynamics_execution_m2",
+      "test_fast_dynamics_holdout",
+      "test_fast_dynamics_m3_postfreeze",
+      "test_fast_dynamics_output_policy",
+      "test_fast_dynamics_tracking",
+      "test_v07_perf_tracker_snapshot",
+      "test_v07_m2_timing_rehearsal",
+      "test_v07_s2_revision_continuous",
+      "test_m3_r3_reference"
+    ],
+    "R2": {
+      "mission_ids": [
+        "patrol_0009_v00",
+        "patrol_0011_v00",
+        "patrol_0017_v00",
+        "patrol_0022_v00",
+        "patrol_0024_v00",
+        "patrol_0025_v00",
+        "patrol_0026_v00",
+        "patrol_0029_v00",
+        "patrol_0030_v00",
+        "patrol_0032_v00",
+        "patrol_0035_v00",
+        "patrol_0036_v00",
+        "patrol_0038_v00",
+        "patrol_0041_v00",
+        "patrol_0042_v00",
+        "patrol_0043_v00",
+        "patrol_0044_v00",
+        "patrol_0045_v00",
+        "patrol_0046_v00",
+        "patrol_0049_v00",
+        "patrol_0050_v00",
+        "patrol_0051_v00",
+        "patrol_0055_v00",
+        "patrol_0056_v00",
+        "patrol_0059_v00",
+        "patrol_0061_v00",
+        "patrol_0062_v00",
+        "patrol_0063_v00",
+        "patrol_0064_v00",
+        "patrol_0065_v00",
+        "patrol_0066_v00",
+        "patrol_0068_v00",
+        "patrol_0069_v00",
+        "patrol_0070_v00",
+        "patrol_0073_v00",
+        "patrol_0074_v00",
+        "patrol_0075_v00",
+        "patrol_0076_v00",
+        "patrol_0077_v00",
+        "patrol_0078_v00",
+        "patrol_0079_v00",
+        "patrol_0081_v00",
+        "patrol_0083_v00",
+        "patrol_0084_v00",
+        "patrol_0085_v00",
+        "patrol_0088_v00",
+        "patrol_0089_v00",
+        "patrol_0090_v00",
+        "patrol_0091_v00",
+        "patrol_0095_v00",
+        "patrol_0097_v00",
+        "patrol_0099_v00",
+        "patrol_0100_v00",
+        "patrol_0102_v00",
+        "patrol_0105_v00",
+        "patrol_0106_v00",
+        "patrol_0107_v00",
+        "patrol_0108_v00",
+        "patrol_0109_v00",
+        "patrol_0110_v00",
+        "patrol_0111_v00",
+        "patrol_0112_v00",
+        "patrol_0113_v00",
+        "patrol_0114_v00",
+        "patrol_0115_v00",
+        "patrol_0117_v00",
+        "patrol_0118_v00",
+        "patrol_0119_v00",
+        "patrol_0120_v00",
+        "patrol_0122_v00",
+        "patrol_0123_v00",
+        "patrol_0124_v00",
+        "patrol_0126_v00",
+        "patrol_0128_v00",
+        "patrol_0129_v00",
+        "patrol_0130_v00",
+        "patrol_0131_v00",
+        "patrol_0132_v00",
+        "patrol_0133_v00",
+        "patrol_0135_v00",
+        "patrol_0136_v00",
+        "patrol_0138_v00",
+        "patrol_0142_v00",
+        "patrol_0144_v00",
+        "patrol_0145_v00",
+        "patrol_0146_v00",
+        "patrol_0148_v00",
+        "patrol_0149_v00",
+        "patrol_0150_v00",
+        "patrol_0151_v00",
+        "rapid_passage_0009_v00",
+        "rapid_passage_0011_v00",
+        "rapid_passage_0016_v00",
+        "rapid_passage_0022_v00",
+        "rapid_passage_0024_v00",
+        "rapid_passage_0025_v00",
+        "rapid_passage_0026_v00",
+        "rapid_passage_0029_v00",
+        "rapid_passage_0030_v00",
+        "rapid_passage_0031_v00",
+        "rapid_passage_0032_v00",
+        "rapid_passage_0033_v00",
+        "rapid_passage_0035_v00",
+        "rapid_passage_0036_v00",
+        "rapid_passage_0038_v00",
+        "rapid_passage_0041_v00",
+        "rapid_passage_0042_v00",
+        "rapid_passage_0043_v00",
+        "rapid_passage_0044_v00",
+        "rapid_passage_0045_v00",
+        "rapid_passage_0046_v00",
+        "rapid_passage_0050_v00",
+        "rapid_passage_0051_v00",
+        "rapid_passage_0054_v00",
+        "rapid_passage_0055_v00",
+        "rapid_passage_0056_v00",
+        "rapid_passage_0059_v00",
+        "rapid_passage_0061_v00",
+        "rapid_passage_0062_v00",
+        "rapid_passage_0063_v00",
+        "rapid_passage_0064_v00",
+        "rapid_passage_0065_v00",
+        "rapid_passage_0066_v00",
+        "rapid_passage_0068_v00",
+        "rapid_passage_0069_v00",
+        "rapid_passage_0070_v00",
+        "rapid_passage_0071_v00",
+        "rapid_passage_0073_v00",
+        "rapid_passage_0074_v00",
+        "rapid_passage_0075_v00",
+        "rapid_passage_0076_v00",
+        "rapid_passage_0077_v00",
+        "rapid_passage_0078_v00",
+        "rapid_passage_0079_v00",
+        "rapid_passage_0081_v00",
+        "rapid_passage_0083_v00",
+        "rapid_passage_0084_v00",
+        "rapid_passage_0085_v00",
+        "rapid_passage_0088_v00",
+        "rapid_passage_0089_v00",
+        "rapid_passage_0090_v00",
+        "rapid_passage_0091_v00",
+        "rapid_passage_0092_v00",
+        "rapid_passage_0095_v00",
+        "rapid_passage_0097_v00",
+        "rapid_passage_0099_v00",
+        "rapid_passage_0100_v00",
+        "rapid_passage_0102_v00",
+        "rapid_passage_0105_v00",
+        "rapid_passage_0106_v00",
+        "rapid_passage_0107_v00",
+        "rapid_passage_0108_v00",
+        "rapid_passage_0109_v00",
+        "rapid_passage_0110_v00",
+        "rapid_passage_0112_v00",
+        "rapid_passage_0113_v00",
+        "rapid_passage_0114_v00",
+        "rapid_passage_0115_v00",
+        "rapid_passage_0117_v00",
+        "rapid_passage_0118_v00",
+        "rapid_passage_0119_v00",
+        "rapid_passage_0120_v00",
+        "rapid_passage_0122_v00",
+        "rapid_passage_0123_v00",
+        "rapid_passage_0124_v00",
+        "rapid_passage_0126_v00",
+        "rapid_passage_0128_v00",
+        "rapid_passage_0129_v00",
+        "rapid_passage_0130_v00",
+        "rapid_passage_0131_v00",
+        "rapid_passage_0132_v00",
+        "rapid_passage_0133_v00",
+        "rapid_passage_0135_v00",
+        "rapid_passage_0136_v00",
+        "rapid_passage_0138_v00",
+        "rapid_passage_0139_v00",
+        "rapid_passage_0142_v00",
+        "rapid_passage_0144_v00",
+        "rapid_passage_0145_v00",
+        "rapid_passage_0146_v00",
+        "rapid_passage_0148_v00",
+        "rapid_passage_0149_v00",
+        "rapid_passage_0150_v00",
+        "rapid_passage_0151_v00",
+        "reconnaissance_0009_v00",
+        "reconnaissance_0011_v00",
+        "reconnaissance_0016_v00",
+        "reconnaissance_0017_v00",
+        "reconnaissance_0022_v00",
+        "reconnaissance_0024_v00",
+        "reconnaissance_0025_v00",
+        "reconnaissance_0026_v00",
+        "reconnaissance_0029_v00",
+        "reconnaissance_0030_v00",
+        "reconnaissance_0031_v00",
+        "reconnaissance_0032_v00",
+        "reconnaissance_0033_v00",
+        "reconnaissance_0035_v00",
+        "reconnaissance_0036_v00",
+        "reconnaissance_0038_v00",
+        "reconnaissance_0041_v00",
+        "reconnaissance_0042_v00",
+        "reconnaissance_0043_v00",
+        "reconnaissance_0044_v00",
+        "reconnaissance_0045_v00",
+        "reconnaissance_0046_v00",
+        "reconnaissance_0049_v00",
+        "reconnaissance_0050_v00",
+        "reconnaissance_0051_v00",
+        "reconnaissance_0054_v00",
+        "reconnaissance_0055_v00",
+        "reconnaissance_0056_v00",
+        "reconnaissance_0059_v00",
+        "reconnaissance_0061_v00",
+        "reconnaissance_0062_v00",
+        "reconnaissance_0063_v00",
+        "reconnaissance_0064_v00",
+        "reconnaissance_0065_v00",
+        "reconnaissance_0066_v00",
+        "reconnaissance_0068_v00",
+        "reconnaissance_0069_v00",
+        "reconnaissance_0070_v00",
+        "reconnaissance_0071_v00",
+        "reconnaissance_0073_v00",
+        "reconnaissance_0074_v00",
+        "reconnaissance_0075_v00",
+        "reconnaissance_0076_v00",
+        "reconnaissance_0077_v00",
+        "reconnaissance_0078_v00",
+        "reconnaissance_0079_v00",
+        "reconnaissance_0081_v00",
+        "reconnaissance_0083_v00",
+        "reconnaissance_0084_v00",
+        "reconnaissance_0085_v00",
+        "reconnaissance_0088_v00",
+        "reconnaissance_0089_v00",
+        "reconnaissance_0090_v00",
+        "reconnaissance_0091_v00",
+        "reconnaissance_0092_v00",
+        "reconnaissance_0095_v00",
+        "reconnaissance_0097_v00",
+        "reconnaissance_0099_v00",
+        "reconnaissance_0100_v00",
+        "reconnaissance_0102_v00",
+        "reconnaissance_0105_v00",
+        "reconnaissance_0106_v00",
+        "reconnaissance_0107_v00",
+        "reconnaissance_0108_v00",
+        "reconnaissance_0109_v00",
+        "reconnaissance_0110_v00",
+        "reconnaissance_0111_v00",
+        "reconnaissance_0112_v00",
+        "reconnaissance_0113_v00",
+        "reconnaissance_0114_v00",
+        "reconnaissance_0115_v00",
+        "reconnaissance_0117_v00",
+        "reconnaissance_0118_v00",
+        "reconnaissance_0119_v00",
+        "reconnaissance_0120_v00",
+        "reconnaissance_0122_v00",
+        "reconnaissance_0123_v00",
+        "reconnaissance_0124_v00",
+        "reconnaissance_0126_v00",
+        "reconnaissance_0128_v00",
+        "reconnaissance_0129_v00",
+        "reconnaissance_0130_v00",
+        "reconnaissance_0131_v00",
+        "reconnaissance_0132_v00",
+        "reconnaissance_0133_v00",
+        "reconnaissance_0135_v00",
+        "reconnaissance_0136_v00",
+        "reconnaissance_0138_v00",
+        "reconnaissance_0139_v00",
+        "reconnaissance_0142_v00",
+        "reconnaissance_0144_v00",
+        "reconnaissance_0145_v00",
+        "reconnaissance_0146_v00",
+        "reconnaissance_0148_v00",
+        "reconnaissance_0149_v00",
+        "reconnaissance_0150_v00",
+        "reconnaissance_0151_v00",
+        "reconnaissance_0155_v00"
+      ],
+      "functionality_mission_ids": [
+        "patrol_0024_v00",
+        "patrol_0029_v00",
+        "patrol_0032_v00",
+        "patrol_0038_v00",
+        "patrol_0044_v00",
+        "patrol_0049_v00",
+        "patrol_0050_v00",
+        "patrol_0051_v00",
+        "patrol_0055_v00",
+        "patrol_0064_v00",
+        "patrol_0065_v00",
+        "patrol_0068_v00",
+        "patrol_0070_v00",
+        "patrol_0081_v00",
+        "patrol_0083_v00",
+        "patrol_0084_v00",
+        "patrol_0109_v00",
+        "patrol_0113_v00",
+        "patrol_0132_v00",
+        "patrol_0133_v00",
+        "patrol_0138_v00",
+        "patrol_0148_v00",
+        "patrol_0150_v00",
+        "rapid_passage_0024_v00",
+        "rapid_passage_0029_v00",
+        "rapid_passage_0032_v00",
+        "rapid_passage_0038_v00",
+        "rapid_passage_0044_v00",
+        "rapid_passage_0050_v00",
+        "rapid_passage_0051_v00",
+        "rapid_passage_0054_v00",
+        "rapid_passage_0055_v00",
+        "rapid_passage_0064_v00",
+        "rapid_passage_0065_v00",
+        "rapid_passage_0068_v00",
+        "rapid_passage_0070_v00",
+        "rapid_passage_0081_v00",
+        "rapid_passage_0083_v00",
+        "rapid_passage_0084_v00",
+        "rapid_passage_0109_v00",
+        "rapid_passage_0113_v00",
+        "rapid_passage_0132_v00",
+        "rapid_passage_0133_v00",
+        "rapid_passage_0138_v00",
+        "rapid_passage_0148_v00",
+        "rapid_passage_0150_v00",
+        "reconnaissance_0024_v00",
+        "reconnaissance_0029_v00",
+        "reconnaissance_0032_v00",
+        "reconnaissance_0038_v00",
+        "reconnaissance_0044_v00",
+        "reconnaissance_0049_v00",
+        "reconnaissance_0050_v00",
+        "reconnaissance_0051_v00",
+        "reconnaissance_0054_v00",
+        "reconnaissance_0055_v00",
+        "reconnaissance_0064_v00",
+        "reconnaissance_0065_v00",
+        "reconnaissance_0068_v00",
+        "reconnaissance_0070_v00",
+        "reconnaissance_0081_v00",
+        "reconnaissance_0083_v00",
+        "reconnaissance_0084_v00",
+        "reconnaissance_0109_v00",
+        "reconnaissance_0113_v00",
+        "reconnaissance_0132_v00",
+        "reconnaissance_0133_v00",
+        "reconnaissance_0138_v00",
+        "reconnaissance_0148_v00",
+        "reconnaissance_0150_v00"
+      ],
+      "wall_limit_s": 28800,
+      "reuse_functionality_results_in_full_cohort": true,
+      "workers": 4
+    },
+    "R3": {
+      "p2_commit": "fa7518b7fa850771c9d863b23d8893b27a343d5f",
+      "wall_limit_s": 7200,
+      "regression_modules": [
+        "test_fast_dynamics_artifacts",
+        "test_fast_dynamics_artifacts_m2",
+        "test_fast_dynamics_calibration",
+        "test_fast_dynamics_calibration_search",
+        "test_fast_dynamics_core",
+        "test_fast_dynamics_execution",
+        "test_fast_dynamics_execution_m2",
+        "test_fast_dynamics_holdout",
+        "test_fast_dynamics_m3_postfreeze",
+        "test_fast_dynamics_output_policy",
+        "test_fast_dynamics_tracking",
+        "test_m3_r3_reference",
+        "test_v07_fe_area_search_precheck",
+        "test_v07_fe_monitoring_retreat",
+        "test_v07_m1_criteria",
+        "test_v07_m2_timing_rehearsal",
+        "test_v07_m3_f2b",
+        "test_v07_m3_fix_connections",
+        "test_v07_m3_fix_entry",
+        "test_v07_m3_fix_patrol_entry",
+        "test_v07_m3_geometry",
+        "test_v07_m3_integration",
+        "test_v07_m3b_geometry",
+        "test_v07_perf_tracker_snapshot",
+        "test_v07_perf_visibility_broadphase",
+        "test_v07_s2",
+        "test_v07_s2_abort",
+        "test_v07_s2_area_expansion",
+        "test_v07_s2_expansion",
+        "test_v07_s2_fact_repairs",
+        "test_v07_s2_final_helpers",
+        "test_v07_s2_formation_invariants",
+        "test_v07_s2_groups",
+        "test_v07_s2_infrastructure",
+        "test_v07_s2_precision",
+        "test_v07_s2_revision_abort_reference",
+        "test_v07_s2_revision_approach",
+        "test_v07_s2_revision_continuous",
+        "test_v07_s2_revision_interval",
+        "test_v07_s2_revision_process_choice",
+        "test_v07_s2_revision_public_shape",
+        "test_v07_s2_revision_retreat",
+        "test_v07_s2_search_revision",
+        "test_v07_s2_sector",
+        "test_v07_s2_solo_spacing",
+        "test_v07_scene",
+        "test_v07_scene_batch",
+        "test_v07_scene_s11",
+        "test_v07_scene_s15"
+      ]
+    },
+    "R4_skeletons": [
+      {
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_005_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_006_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_007_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_008_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_009_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_001_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_005_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_006_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_007_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_008_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_1c267d4d7000043d_ext_009_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_38bedc9d791d547b_ext_005_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_38bedc9d791d547b_ext_006_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_38bedc9d791d547b_ext_007_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_38bedc9d791d547b_ext_008_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_38bedc9d791d547b_ext_009_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_5024cb2ccea653ae_ext_001_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_5024cb2ccea653ae_ext_006_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_79c93b22d09e8a7a_ext_000_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_79c93b22d09e8a7a_ext_001_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_79c93b22d09e8a7a_ext_002_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_79c93b22d09e8a7a_ext_003_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_79c93b22d09e8a7a_ext_004_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_7b73a7fc210d4c8f_ext_001_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_8e012bf033eb6821_ext_001_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_000_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_001_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_002_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_003_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_004_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_006_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_c713f51898e81011_ext_000_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_c713f51898e81011_ext_001_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_c713f51898e81011_ext_002_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_c713f51898e81011_ext_003_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_c713f51898e81011_ext_004_regular",
+        "sources": [
+          "FE_INT_30"
+        ],
+        "historical_attempt": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_dataset\\attempt_s15sim_20261017T071447Z"
+      },
+      {
+        "skeleton_id": "family_s15_ef1ed9ff0b0e7013_ext_001_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      },
+      {
+        "skeleton_id": "family_s15_f2adfbfae12fbbad_ext_006_regular",
+        "sources": [
+          "P2_RECOVERED_8"
+        ]
+      }
+    ]
+  }
+}

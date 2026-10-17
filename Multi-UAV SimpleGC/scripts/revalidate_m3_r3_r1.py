@@ -10,6 +10,8 @@ import numpy as np
 from scripts.audit_m3_r3_r0 import read,digest,atomic,REPORT,DATA,BASE,CONFIG_SHA
 from scripts.run_m3_r3_r1 import PLAN,code_hashes,capture
 from scripts.m3_r3_support import d0b_oracle
+from scripts.audit_m3_r3_G2a import classify_probe
+G2A_AUDIT=REPORT/'gate_audit_G2a.json'
 OLD=DATA/'fast_dynamics/m3/m3_r3_r1_attempt01'
 OUT=DATA/'fast_dynamics/m3/m3_r3_r1_revalidate01'
 AUDIT=REPORT/'R1_revalidation'
@@ -155,6 +157,10 @@ def probe_worker(pid,version,out):
                 precision['relative_by_phase']=comparisons;checks['precision']=all(x['passed'] for x in comparisons.values())
             precision['gate_mode']='ABSOLUTE' if bt['absolute_status']=='PASS' else 'G2_PHASE_NONREGRESSION'
         result=dict(probe_id=pid,version=version,status='PASS' if all(checks.values()) else 'FAIL',checks=checks,first_array_differences=diffs,metrics=metrics,precision=precision,input_group_sha256=input_sha,historical_result=str(history/'result.json'))
+        authorized=read(G2A_AUDIT);assert authorized['status']=='PASS' and not authorized['ambiguities']
+        classified=classify_probe(result)
+        result.update(status=classified['status'],checks=classified['hard_checks'],diagnostics_G2a=classified['diagnostics'],gate_audit_sha256=digest(G2A_AUDIT))
+        if pid=='probe_05':result['precision']['gate_mode']='DIAGNOSTIC_G2a'
         atomic(out/'result.json',result)
         return 0 if result['status']=='PASS' else 2
     except Exception as e:
@@ -211,7 +217,10 @@ def launch(expected_head):
     assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=PROJECT,text=True).strip()==expected_head
     plan=read(PLAN);assert digest(PLAN)==read(REPORT/'R0_revalidated_gate.json')['input_sha256']
     OUT.mkdir();AUDIT.mkdir(parents=True);start=time.monotonic();deadline=start+plan['R1']['wall_limit_s']
-    protected={str(p):digest(p) for p in (REPORT/'R1_report.md',REPORT/'R1_gate.json',REPORT/'R1/gate.json')}
+    preserved=[REPORT/'R1_report.md',REPORT/'R1_gate.json',REPORT/'R1/gate.json',REPORT/'R1_revalidated_gate_attempt04.json',REPORT/'R1_revalidation_attempt04_report.md']
+    preserved.extend(p for p in (REPORT/'R1_revalidation/attempt04').rglob('*') if p.is_file())
+    protected={str(p):digest(p) for p in preserved}
+    g2a=read(G2A_AUDIT);assert g2a['status']=='PASS' and not g2a['ambiguities']
     hashes=code_hashes();results=[];reg=None;stop=None;baseline_dryrun={}
     amended=dict(schema='m3-r3-user-gates-g1-g5-v1',parent_plan_sha256=digest(PLAN),baseline_commit=BASE,
         R1=dict(original_test_count=209,baseline_test_count=200,additional_test_modules=['test_m3_r3_r1_revalidation'],whitelist='R1_legacy_failures.json exact IDs and exact normalized traces only',
@@ -223,7 +232,7 @@ def launch(expected_head):
         R4=dict(hard=['original30 strict pairs','no P0ContractError','independent audits','retained episode separation >=2m','no forbidden violations','source hashes unchanged'],additional8='REPORT_ONLY first failure stage/reason'),
         budgets={s:plan[s].get('wall_limit_s') for s in ('R1','R2','R3','R4')})
     assert read(REPORT/'R1_validation_plan_amended.json')==amended
-    atomic(OUT/'registration.json',dict(parent_commit=expected_head,plan_sha256=digest(REPORT/'R1_validation_plan_amended.json'),source_sha256=hashes,old_evidence_sha256=protected,probes=plan['R1']['probes'],wall_limit_s=plan['R1']['wall_limit_s']))
+    atomic(OUT/'registration.json',dict(parent_commit=expected_head,gate_audit_sha256=digest(G2A_AUDIT),additional_test_modules=['test_m3_r3_r1_revalidation','test_m3_r3_G2a'],plan_sha256=digest(REPORT/'R1_validation_plan_amended.json'),source_sha256=hashes,old_evidence_sha256=protected,probes=plan['R1']['probes'],wall_limit_s=plan['R1']['wall_limit_s']))
     try:
         oldbaseline,white=legacy_audit()
         startup(expected_head)
@@ -238,14 +247,14 @@ def launch(expected_head):
         assert baseline['count']==200 and set(baseline['failures'])==set(white)
         assert all(normalized(baseline['failures'][k]['traceback'])==normalized(oldbaseline['failures'][k]['traceback']) for k in white)
         atomic(OUT/'baseline_test_results.json',baseline)
-        baseline_dryrun=dict(stage='R1',status='BASELINE_EVALUATED',test_results=str(OUT/'baseline_test_results.json'),legacy_failures=white,tests=200,probes=[],hard_checks=dict(frozen_r2_sha=digest(PROJECT/'configs/fast_dynamics/m3_r2_20261013_v1.json')==CONFIG_SHA),unexecuted_candidate_only=['r3 B2 equality','r3 selector tests'],policy='G1/G2 baseline failure switches to relative criterion; absolute values retained')
+        baseline_dryrun=dict(stage='R1',status='BASELINE_EVALUATED',test_results=str(OUT/'baseline_test_results.json'),legacy_failures=white,tests=200,probes=[],hard_checks=dict(frozen_r2_sha=digest(PROJECT/'configs/fast_dynamics/m3_r2_20261013_v1.json')==CONFIG_SHA),unexecuted_candidate_only=['r3 B2 equality','r3 selector tests'],policy='G-2a: probe_05 absolute and relative precision diagnostic; all other original hard contracts retained')
         # All r2 replays precede r3, so the dry run is complete before candidate evaluation.
         for version in ('r2','r3'):
             if version=='r3':
                 atomic(AUDIT/'baseline_gate_dryrun.json',baseline_dryrun)
                 candidate=tests(PROJECT,plan['R1']['unit_modules'],OUT/'unit_tests.txt',deadline)
                 reg=regression(candidate,baseline,white);atomic(AUDIT/'regression_delta.json',reg)
-                extra=tests(PROJECT,['test_m3_r3_r1_revalidation'],OUT/'gate_unit_tests.txt',deadline)
+                extra=tests(PROJECT,['test_m3_r3_r1_revalidation','test_m3_r3_G2a'],OUT/'gate_unit_tests.txt',deadline)
                 atomic(AUDIT/'gate_unit_tests.json',extra)
                 if extra['returncode'] or any(v!='ok' for v in extra['outcomes'].values()):
                     stop=dict(status='FAIL',reason='NEW_GATE_TESTS');break
@@ -266,7 +275,7 @@ def launch(expected_head):
     stable=hashes==code_hashes();historical_unchanged=all(digest(p)==h for p,h in protected.items())
     checks=dict(legacy_audit=(REPORT/'R1_legacy_failures.json').exists(),regression=reg is not None and reg['status']=='PASS',all14=len(results)==14 and all(r['status']=='PASS' for r in results),source_unchanged=stable,old_fail_evidence_unchanged=historical_unchanged,r2_config=digest(PROJECT/'configs/fast_dynamics/m3_r2_20261013_v1.json')==CONFIG_SHA)
     status='PASS' if all(checks.values()) and not stop else (stop or {}).get('status','FAIL')
-    gate=dict(stage='R1',status=status,result='R1_REVALIDATED_PASS' if status=='PASS' else 'R1_REVALIDATION_'+status,required_checks=checks,regression=reg,
+    gate=dict(stage='R1',status=status,gate_audit_sha256=digest(G2A_AUDIT),result='R1_REVALIDATED_PASS' if status=='PASS' else 'R1_REVALIDATION_'+status,required_checks=checks,regression=reg,
         stop=stop,probes=[{k:r[k] for k in ('probe_id','version','status','checks','precision') if k in r} for r in results],
         elapsed_wall_s=time.monotonic()-start,plan_sha256=digest(REPORT/'R1_validation_plan_amended.json'),evidence_paths=[str(OUT),str(AUDIT)],next_stage='R2' if status=='PASS' else None)
     atomic(OUT/'summary.json',gate);atomic(GATE,gate)
