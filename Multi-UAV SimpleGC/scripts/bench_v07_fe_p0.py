@@ -76,8 +76,9 @@ def compare_plans(left, right):
         if a.exists() != b.exists():
             difference = {"path": name, "old_exists": a.exists(), "new_exists": b.exists()}
         elif not a.exists():
-            # A genuinely empty pool has no selected candidate on either side.
-            difference = None
+            # Only a genuinely empty pool may omit selected-candidate files.
+            difference = (None if name in ("selected_skeleton.json", "selected_checks.json") else
+                          {"path": name, "error": "Required planning output missing on both sides"})
         else:
             if name.endswith(".jsonl"):
                 x = [json.loads(line) for line in a.read_text(encoding="utf-8").splitlines() if line.strip()]
