@@ -1,0 +1,298 @@
+{
+  "status": "BLOCKED",
+  "stage": "R3",
+  "baseline": "81f804a969192790d89100528e3f802bc06446b1",
+  "tests_executed": 476,
+  "passed": 458,
+  "FAIL": 6,
+  "ERROR": 12,
+  "previously_authorized": 4,
+  "additional_unexempt": 14,
+  "candidate_full_suite_executed": false,
+  "P2_merged": false,
+  "R4_executed": false,
+  "reason": "Existing FE baseline failures include M1, independent-audit and P0 contract tests. G-2a does not authorize lowering those contracts or extending the four-ID exemption. Do not label as r3-introduced regressions without candidate comparison.",
+  "gate_logic_unchanged": true,
+  "harness_repairs_used_of_latest_two": 1,
+  "production_unchanged_this_authorization": true,
+  "attempt04_evidence_unchanged": true,
+  "evidence_sha256": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r3_attempt01\\baseline_tests.txt": "d4f99f6303569f20730029b91e9e963bd1c0834a52d5831c0021ab6ab063a737",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r3_attempt02\\baseline_tests.txt": "0212f10301575b8a5053bdb61d4442558c2b97cf1c7732eb77feba33c2341194",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r3_attempt02\\baseline_results.json": "6c1aca386cac7e7131496b4b87ab782ed2332288f89994d6508dc5420cfadb7f",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r3_attempt02\\registration.json": "934bf50138571cd2bbf976ba7f9157014fb723eb5cfd38f546688d8361d74ea2",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r3_attempt02\\gate.json": "d7705fba15ae5af3e9e88c20597693666a2a6b108b0a0342ec76109b5818880a"
+  },
+  "failures": [
+    {
+      "test_id": "test_v07_s2_abort.AbortEvidenceTests.test_full_abort_labels_and_independent_audit",
+      "module": "test_v07_s2_abort",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "4635cb0b1d5a2dd6411c66200371ef1335201aa7ba0983d2ecb7b7c7a018ae51",
+        "baseline_checkout": "4635cb0b1d5a2dd6411c66200371ef1335201aa7ba0983d2ecb7b7c7a018ae51",
+        "candidate": "4635cb0b1d5a2dd6411c66200371ef1335201aa7ba0983d2ecb7b7c7a018ae51"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_abort.py\", line 34, in test_full_abort_labels_and_independent_audit\n    self.assertTrue(labels['agents'][a]['result']['conditions']['own_endpoint_hold'])\n                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nKeyError: 'own_endpoint_hold'"
+    },
+    {
+      "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_mid_chord_prefix_is_unknown_and_never_success",
+      "module": "test_v07_s2_expansion",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "baseline_checkout": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "candidate": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_expansion.py\", line 133, in test_mid_chord_prefix_is_unknown_and_never_success\n    self.assertIsNone(conditions[\"exited_warning\"]); self.assertIsNone(conditions[\"chord_length\"])\n                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nKeyError: 'exited_warning'"
+    },
+    {
+      "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_small_entry_exit_azimuth_difference_fails",
+      "module": "test_v07_s2_expansion",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "baseline_checkout": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "candidate": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_expansion.py\", line 107, in test_small_entry_exit_azimuth_difference_fails\n    self.assertTrue(conditions[\"chord_length\"])\n                    ~~~~~~~~~~^^^^^^^^^^^^^^^^\nKeyError: 'chord_length'"
+    },
+    {
+      "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_stop_and_loop_inside_warning_fail",
+      "module": "test_v07_s2_expansion",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "baseline_checkout": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "candidate": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_expansion.py\", line 115, in test_stop_and_loop_inside_warning_fail\n    self.assertFalse(labels[\"agents\"][\"a\"][\"result\"][\"conditions\"][\"no_stop_in_warning\"])\n                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\nKeyError: 'no_stop_in_warning'"
+    },
+    {
+      "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_two_sided_crossing_succeeds_with_measured_facts",
+      "module": "test_v07_s2_expansion",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "baseline_checkout": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427",
+        "candidate": "3c531f842d21616ed7e02da559f3bb271b93a1cca51c2a66ccc48b0cf5c88427"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_expansion.py\", line 99, in test_two_sided_crossing_succeeds_with_measured_facts\n    self.assertTrue(group[\"result\"][\"conditions\"][\"multi_direction_span\"])\n                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nKeyError: 'multi_direction_span'"
+    },
+    {
+      "test_id": "test_v07_s2_fact_repairs.P0FactRepairTests.test_feint_exact_contour_depth_and_fraction",
+      "module": "test_v07_s2_fact_repairs",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "9b4eb5a60b47fa412f0d085da9996abdc8b76e2e701ca51f9f08fc898e9a489c",
+        "baseline_checkout": "9b4eb5a60b47fa412f0d085da9996abdc8b76e2e701ca51f9f08fc898e9a489c",
+        "candidate": "9b4eb5a60b47fa412f0d085da9996abdc8b76e2e701ca51f9f08fc898e9a489c"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_fact_repairs.py\", line 40, in test_feint_exact_contour_depth_and_fraction\n    self.assertTrue(result['result']['conditions']['depth_in_band'])\n                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nKeyError: 'depth_in_band'"
+    },
+    {
+      "test_id": "test_v07_s2_groups.GroupEvidenceTests.test_independent_group_audit_and_condition_coverage",
+      "module": "test_v07_s2_groups",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "cf2b8d4f5f0a99c031cc634851017cae2c450c415fe5cd605ffc564fdc1717c4",
+        "baseline_checkout": "cf2b8d4f5f0a99c031cc634851017cae2c450c415fe5cd605ffc564fdc1717c4",
+        "candidate": "cf2b8d4f5f0a99c031cc634851017cae2c450c415fe5cd605ffc564fdc1717c4"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_groups.py\", line 55, in test_independent_group_audit_and_condition_coverage\n    audited = audit_groups(path)\n              ^^^^^^^^^^^^^^^^^^\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\scripts\\audit_v07_s2_groups.py\", line 35, in audit_groups\n    return audit_episode(root)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\scripts\\audit_v07_m1.py\", line 206, in audit_episode\n    source = _read(root / \"source.json\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\scripts\\audit_v07_s2_exact.py\", line 15, in _read\n    return json.loads(Path(path).read_text(encoding=\"utf-8-sig\"))\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\shy\\\\AppData\\\\Local\\\\Temp\\\\tmp00ge2g4o\\\\source.json'"
+    },
+    {
+      "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_one_missing_warning_entry_does_not_use_known_subset",
+      "module": "test_v07_s2_revision_approach",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "d993a4490ad1553da8dce574351de2e9b0600f411af926e3ec72bc57688243f4",
+        "baseline_checkout": "d993a4490ad1553da8dce574351de2e9b0600f411af926e3ec72bc57688243f4",
+        "candidate": "d993a4490ad1553da8dce574351de2e9b0600f411af926e3ec72bc57688243f4"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_approach.py\", line 80, in test_one_missing_warning_entry_does_not_use_known_subset\n    self.assertIsNone(group['result']['conditions']['multi_direction_span'])\n                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nKeyError: 'multi_direction_span'"
+    },
+    {
+      "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_warning_entry_is_separate_from_role_core_event",
+      "module": "test_v07_s2_revision_approach",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "d993a4490ad1553da8dce574351de2e9b0600f411af926e3ec72bc57688243f4",
+        "baseline_checkout": "d993a4490ad1553da8dce574351de2e9b0600f411af926e3ec72bc57688243f4",
+        "candidate": "d993a4490ad1553da8dce574351de2e9b0600f411af926e3ec72bc57688243f4"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_approach.py\", line 68, in test_warning_entry_is_separate_from_role_core_event\n    self.assertFalse(group['result']['conditions']['multi_direction_span'])\n                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nKeyError: 'multi_direction_span'"
+    },
+    {
+      "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_five_calibration_round_limit_and_zero_flights_for_empty_pool",
+      "module": "test_v07_s2_revision_continuous",
+      "kind": "ERROR",
+      "classification": "PREVIOUSLY_AUTHORIZED_FOUR",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": true,
+      "source_sha256": {
+        "FE": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "baseline_checkout": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "candidate": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_continuous.py\", line 193, in test_five_calibration_round_limit_and_zero_flights_for_empty_pool\n    with TemporaryDirectory() as directory, patch('task_v07.expansion.candidate_search.episode_candidate_pool',return_value=(pool,dict(search))), \\\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\unittest\\mock.py\", line 1458, in __enter__\n    original, local = self.get_original()\n                      ^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\unittest\\mock.py\", line 1431, in get_original\n    raise AttributeError(\nAttributeError: <module 'scripts.run_v07_s2_episode_batch' from 'F:\\\\CASIA\\\\Drone Swarm Situational Awareness Algorithm\\\\Simulation-fe-m3r3\\\\Multi-UAV SimpleGC\\\\scripts\\\\run_v07_s2_episode_batch.py'> does not have the attribute 'calibrate_episode'"
+    },
+    {
+      "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_variable_observation_dwell_preserves_eighty_percent_criterion",
+      "module": "test_v07_s2_revision_continuous",
+      "kind": "ERROR",
+      "classification": "PREVIOUSLY_AUTHORIZED_FOUR",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": true,
+      "source_sha256": {
+        "FE": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "baseline_checkout": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "candidate": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_continuous.py\", line 132, in test_variable_observation_dwell_preserves_eighty_percent_criterion\n    self.assertFalse(labels['agents']['a']['result']['conditions']['minimum_dwell'])\n                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nKeyError: 'minimum_dwell'"
+    },
+    {
+      "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_overlay_rejection_changes_combination_and_caps_five_solo_rounds",
+      "module": "test_v07_s2_solo_spacing",
+      "kind": "ERROR",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "07f2d7a55b41dbc84d1f4dd36dbd6322c856920e7e66a595ba96bf10d5650667",
+        "baseline_checkout": "07f2d7a55b41dbc84d1f4dd36dbd6322c856920e7e66a595ba96bf10d5650667",
+        "candidate": "07f2d7a55b41dbc84d1f4dd36dbd6322c856920e7e66a595ba96bf10d5650667"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_solo_spacing.py\", line 86, in test_overlay_rejection_changes_combination_and_caps_five_solo_rounds\n    with TemporaryDirectory() as tmp, patch('task_v07.expansion.candidate_search.episode_candidate_pool',return_value=(pool,search)), \\\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\unittest\\mock.py\", line 1458, in __enter__\n    original, local = self.get_original()\n                      ^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\unittest\\mock.py\", line 1431, in get_original\n    raise AttributeError(\nAttributeError: <module 'scripts.run_v07_s2_episode_batch' from 'F:\\\\CASIA\\\\Drone Swarm Situational Awareness Algorithm\\\\Simulation-fe-m3r3\\\\Multi-UAV SimpleGC\\\\scripts\\\\run_v07_s2_episode_batch.py'> does not have the attribute 'calibrate_episode'"
+    },
+    {
+      "test_id": "test_v07_s2_fact_repairs.P0FactRepairTests.test_monitoring_measured_end_does_not_erase_terminal_hold",
+      "module": "test_v07_s2_fact_repairs",
+      "kind": "FAIL",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "9b4eb5a60b47fa412f0d085da9996abdc8b76e2e701ca51f9f08fc898e9a489c",
+        "baseline_checkout": "9b4eb5a60b47fa412f0d085da9996abdc8b76e2e701ca51f9f08fc898e9a489c",
+        "candidate": "9b4eb5a60b47fa412f0d085da9996abdc8b76e2e701ca51f9f08fc898e9a489c"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_fact_repairs.py\", line 61, in test_monitoring_measured_end_does_not_erase_terminal_hold\n    self.assertEqual(result['observed']['work_end_s'],(1000+count)/10.)\nAssertionError: 1396.7 != 1356.6"
+    },
+    {
+      "test_id": "test_v07_s2_infrastructure.ViewTests.test_balanced_minimum_pairs_and_extended_without_copy",
+      "module": "test_v07_s2_infrastructure",
+      "kind": "FAIL",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "85e073d37b8c35db3404a7cce71415414e5f2ca36305cd0ab324cbf2deb76b12",
+        "baseline_checkout": "85e073d37b8c35db3404a7cce71415414e5f2ca36305cd0ab324cbf2deb76b12",
+        "candidate": "85e073d37b8c35db3404a7cce71415414e5f2ca36305cd0ab324cbf2deb76b12"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_infrastructure.py\", line 363, in test_balanced_minimum_pairs_and_extended_without_copy\n    self.assertEqual(result[\"counts\"], {\"primary\": 10, \"extended\": 8, \"aborted\": 0, \"failed\": 0, \"pending\": 0})\nAssertionError: {'primary': 0, 'extended': 18, 'aborted': 0, 'failed': 0, 'pending': 0} != {'primary': 10, 'extended': 8, 'aborted': 0, 'failed': 0, 'pending': 0}\n- {'aborted': 0, 'extended': 18, 'failed': 0, 'pending': 0, 'primary': 0}\n?                            -\n\n+ {'aborted': 0, 'extended': 8, 'failed': 0, 'pending': 0, 'primary': 10}\n?                                                                     +"
+    },
+    {
+      "test_id": "test_v07_s2_infrastructure.ViewTests.test_pair_mismatch_and_escape_paths_are_p0",
+      "module": "test_v07_s2_infrastructure",
+      "kind": "FAIL",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "85e073d37b8c35db3404a7cce71415414e5f2ca36305cd0ab324cbf2deb76b12",
+        "baseline_checkout": "85e073d37b8c35db3404a7cce71415414e5f2ca36305cd0ab324cbf2deb76b12",
+        "candidate": "85e073d37b8c35db3404a7cce71415414e5f2ca36305cd0ab324cbf2deb76b12"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_infrastructure.py\", line 397, in test_pair_mismatch_and_escape_paths_are_p0\n    with self.assertRaises(P0ContractError):\nAssertionError: P0ContractError not raised"
+    },
+    {
+      "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_115_percent_filter_then_seeded_order",
+      "module": "test_v07_s2_revision_continuous",
+      "kind": "FAIL",
+      "classification": "PREVIOUSLY_AUTHORIZED_FOUR",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": true,
+      "source_sha256": {
+        "FE": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "baseline_checkout": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "candidate": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_continuous.py\", line 79, in test_115_percent_filter_then_seeded_order\n    self.assertEqual({c['cost'] for c in selected},{100,114.9,115})\nAssertionError: Items in the first set but not the second:\n115.1"
+    },
+    {
+      "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_each_group_has_its_own_115_percent_bound",
+      "module": "test_v07_s2_revision_continuous",
+      "kind": "FAIL",
+      "classification": "PREVIOUSLY_AUTHORIZED_FOUR",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": true,
+      "source_sha256": {
+        "FE": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "baseline_checkout": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e",
+        "candidate": "e5a34cdee5a9d43c2fc03173137e29919e9aff9ac1be530684d27652e2e5a40e"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_continuous.py\", line 103, in test_each_group_has_its_own_115_percent_bound\n    self.assertEqual([c['index'] for c in selected],[2])\nAssertionError: Lists differ: [3, 2] != [2]\n\nFirst differing element 0:\n3\n2\n\nFirst list contains 1 additional elements.\nFirst extra element 1:\n2\n\n- [3, 2]\n+ [2]"
+    },
+    {
+      "test_id": "test_v07_s2_revision_retreat.RevisionRetreatTests.test_expanded_request_selects_minimum_without_mutating_descriptor",
+      "module": "test_v07_s2_revision_retreat",
+      "kind": "FAIL",
+      "classification": "UNEXEMPT_BASELINE_FAILURE_REQUIRES_REVIEW",
+      "same_ID_and_kind_in_attempt01": true,
+      "authorized_signature_matches": null,
+      "source_sha256": {
+        "FE": "eadd21717fe683da3f2f37ea3a18bb593e27084b3bc973f7216e355d8150c0ca",
+        "baseline_checkout": "eadd21717fe683da3f2f37ea3a18bb593e27084b3bc973f7216e355d8150c0ca",
+        "candidate": "eadd21717fe683da3f2f37ea3a18bb593e27084b3bc973f7216e355d8150c0ca"
+      },
+      "original_test_unchanged": true,
+      "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\tests\\test_v07_s2_revision_retreat.py\", line 34, in test_expanded_request_selects_minimum_without_mutating_descriptor\n    self.assertEqual(parameters['retreat_warning_minimum_m'], 100.)\nAssertionError: 50.0 != 100.0"
+    }
+  ]
+}
