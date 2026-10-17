@@ -23,3 +23,7 @@ G3 PASS：31 条单机、6 条联合重放，共 37 项全部与存档精确一�
 ## G1 预检
 
 SKIPPED：max(saved_within)=1.2246%，saved_family=9.0138%，低于 15%。A 组同进程三骨架规划合计 53.45 秒，B 组单进程 52.46 秒。未实现 visibility_cache.py、_from_blueprint 或 FreeSpace 缓存接入；对应缓存单元测试不适用。预检的三个指定规划样本与 base 完全一致。原始记录与决策见 FE_P0_G1_precheck.json。
+
+## G2 保守几何预筛选
+
+PASS：四组场景每组 20000 线段与 5000 点，共 100000 次布尔对照一致；圆相切、多边形边界 ±1e-7、正/负/零 buffer 与重叠障碍物通过。真实有效 view（margin=0）与原 scene（margin=35）的 vertices/adjacency 完全相同。参考 free 与 _visible_uncached 从基线逐字复制，仅改函数名，并已核对字面内容一致。三个指定真实规划样本的五类输出精确一致。世界检查、端点顺序、障碍物顺序、原判据与 path 算法保持不变。exact_calls/skipped 仅计障碍物查询，不含世界检查。
