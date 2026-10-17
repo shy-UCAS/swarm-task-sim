@@ -20,7 +20,7 @@ GATE=REPORT/'R1_revalidated_gate.json'
 
 def parse_log(text):
     outcomes={}
-    matches=list(re.finditer(r'^test\S+ \(([^)]+)\) \.\.\. ',text,re.M))
+    matches=list(re.finditer(r'^test\S+ \(([^)]+)\)(?:\n[^\n]*)? \.\.\. ',text,re.M))
     for i,m in enumerate(matches):
         chunk=text[m.end():matches[i+1].start() if i+1<len(matches) else len(text)]
         found=re.search(r'^(ok|FAIL|ERROR|skipped[^\n]*)(?:\n|$)',chunk,re.M)
