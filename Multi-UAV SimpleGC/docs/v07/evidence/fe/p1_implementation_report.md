@@ -31,8 +31,31 @@ M2 指定回归包含原有短仿真 fixture；未启动真实骨架单机预演
 朝内方向过滤仅对带外向参考的 slot 生效，以及退化末段拒绝。
 统计脚本用旧 attempt 自比较验证相同已完成集合接受率相等，且正确标注未完成项。
 
-## 下一阶段
+## 快速检查结果
 
-FE-P1a 提交后，以干净工作区运行七个指定骨架的 planning-only 快速检查。
-调用原 run_v07_s15_yield.py，墙钟上限 720 秒；按指令三条停止条件评估。
-快速检查表 A–E 将写入 p1_monitoring_quickcheck.md/json，并随 FE-P1b 提交。
+FE-P1a：01eb76c400fa79e4534a859d2f3a4165bd453b79。
+本次 attempt：SwarmData/v07_dataset/attempt_s15yield_20261017T053528Z。
+墙钟 293.563 秒；7/7 完成且均有候选，运行期间源码哈希稳定，未完成数 0。
+
+- 所选候选的 8 个监视组，组内最小终点距离范围 20.303519–28.022777 m；
+  全部不低于 2 m 且不低于 0.99 倍 lateral_spacing_m。
+- 监视接受率：旧 1290/1600（80.625%），新 1239/1600（77.4375%），
+  下降 3.1875 个百分点，未低于旧接受率的一半。
+- 非监视角色 terminal_endpoint_spacing 触发 0。
+- 监视拒绝提案中，terminal_endpoint_spacing 涉及 54 个提案；
+  retreat_endpoint_invalid 涉及 6 个，inward_rotation_skipped 涉及 86 个。
+  递归出现次数与提案去重数分开列在表 D，避免重复证据导致计数歧义。
+- 所有停止条件均未触发，判定 PASS；低间距诊断项 0。
+- 候选数存在下降：79c93b22…ext_004 从 5 降至 1，
+  c713f518…ext_002 从 173 降至 149；完整比较见表 A。
+  不据此扩大修复范围，也不把规划 PASS 表述为完整仿真 PASS。
+
+统计表：p1_monitoring_quickcheck.md/json。
+独立重算所有 10 个组选中候选终点距离，与统计表一致；
+来源文件 SHA256 和执行稳定性见 p1_run_validation.json。
+
+## 交付边界
+
+FE-P1b 保存快速检查证据。只推送 fe/monitoring-retreat，核对远端提交后停止。
+未合并任何分支；未启动真实骨架的单机预演、联合仿真试点或批量生产。
+原 Simulation-v07scene 保持 v07-s15 @ 09279c2 且工作区干净。
