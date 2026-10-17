@@ -154,6 +154,12 @@ def plan_checks(scene, spec, bundle, template, free=None, initial_states=None):
                           "warning_intervals_route_m": visits, "first_warning_entry": entry,
                           "retreat_clearances_m": clearances, "segment_count": len(points)-1}
         issues.extend({"agent_id": agent, **issue} for issue in local)
+    if spec["execution_method"] != "intrusion":
+        required = load_generator()["overlay"]["min_separation_m"]
+        ends = [np.asarray(template["references"][a]["endpoint_enu_m"][:2], float) for a in sorted(spec["members"])]
+        spacing = min((float(np.linalg.norm(a-b)) for a, b in combinations(ends, 2)), default=float("inf"))
+        if spacing < required-TOL:
+            issues.append({"code": "terminal_endpoint_spacing", "measured_m": spacing, "required_m": required})
     if spec["execution_method"] == "area_search":
         from .operation_shapes import nominal_coverage
         fraction, size = nominal_coverage(template["survey"], [r["work_points_enu_m"] for r in template["references"].values()])

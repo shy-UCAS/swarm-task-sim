@@ -34,12 +34,17 @@ def retreat_endpoint(free, slot, clearance):
     """Use the first legal direction in the approved deterministic sequence."""
     minimum = load_generator()["retreat"]["warning_clearance_m"]
     nominal = np.asarray(slot["exit_direction"], float)
+    outward = slot.get("exit_outward_normal")
+    outward = None if outward is None else np.asarray(outward, float)
     work_end = np.asarray(slot["work"][-1], float)
     warning = offset_geometry(free.target["geometry"], free.offsets["warning"])
     rejected=[]
     for degrees in (0.,30.,-30.,60.,-60.,90.,-90.):
         angle=math.radians(degrees); c,s=math.cos(angle),math.sin(angle)
         direction=np.array([c*nominal[0]-s*nominal[1],s*nominal[0]+c*nominal[1]])
+        if outward is not None and float(direction @ outward) < -TOL:
+            rejected.append({"slot": slot["slot_id"], "rotation_deg": degrees, "reason": "inward_rotation_skipped"})
+            continue
         interval = line_interval(offset_geometry(warning, clearance), work_end, direction)
         if interval is None or interval[1] <= 0:
             rejected.append({"slot":slot["slot_id"],"rotation_deg":degrees,"reason":"ray_unavailable"})

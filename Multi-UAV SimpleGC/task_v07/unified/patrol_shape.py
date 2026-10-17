@@ -131,22 +131,34 @@ def patrol_shape(spec,free,rng,draw,*,force_form=None):
         angle=start+spec["public_split"]["relative_bearings_rad"][side]
         paths,normal,last_normal=parallel_paths(base,block,(block[0]+block[-1])/2,angle,sign*span,free.cfg["chord_error_m"])
         heading=sign*np.array([-normal[1],normal[0]])
-        for j,(radius,path) in enumerate(zip(block,paths)):
-            forward=[p.tolist() for p in path]
+        outward_normal=normal if not full and traversals%2==0 else last_normal
+        works=[]
+        for path in paths:
             work=list(path)
             if not full:
                 for turn in range(1,traversals): work.extend((path[::-1] if turn%2 else path)[1:])
+            works.append(work)
+        if len(works[0]) < 2:
+            raise GeometryRejected("patrol_tail_undefined")
+        tail=np.asarray(works[0][-1],float)-np.asarray(works[0][-2],float)
+        tail_length=float(np.linalg.norm(tail))
+        if tail_length <= 1e-9:
+            raise GeometryRejected("patrol_tail_undefined")
+        exit_direction=tail/tail_length
+        for j,(radius,path,work) in enumerate(zip(block,paths,works)):
+            forward=[p.tolist() for p in path]
             hit=line_interval(warning,path[0],heading)
             if hit is None or hit[0]>=0: raise GeometryRejected("patrol_tangent_gate_unavailable")
             gate=path[0]+hit[0]*heading
-            outward=normal if not full and traversals%2==0 else last_normal
             fields={"patrol_lane_index":ordinal,"patrol_offset_m":radius,"patrol_rotation_sign":sign,
                     "patrol_form":draw["patrol_form"],"patrol_forward_points_m":forward,
                     "patrol_reference_offset_m":(block[0]+block[-1])/2,
                     "patrol_reference_lane_offset_m":-sign*(radius-(block[0]+block[-1])/2)}
             slots.append({"split_index":side,"slot_id":f"{side}:{j}","entry":gate.tolist(),
                           "direction":heading.tolist(),"work":[p.tolist() for p in work],
-                          "exit_direction":outward.tolist(),"entry_to_work":"shared_tangent_parallel_lane",
+                          "exit_direction":exit_direction.tolist(),
+                          "exit_outward_normal":np.asarray(outward_normal,float).tolist(),
+                          "entry_to_work":"shared_tangent_parallel_lane",
                           "reference_fields":fields});ordinal+=1
     return {"kind":"monitoring","slots":slots,"draw":draw,
             "template_fields":{"monitoring":{"form":draw["patrol_form"],"planned_laps":laps,
