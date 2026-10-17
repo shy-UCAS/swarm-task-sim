@@ -1,0 +1,3616 @@
+{
+  "stage": "R4",
+  "status": "PASS",
+  "required_checks": {
+    "baseline_gate_dryrun": true,
+    "regression_delta_zero": true,
+    "harness_tests": true,
+    "original_30_strict_pairs": true,
+    "physical_and_audits": true,
+    "no_P0": true,
+    "source_unchanged": true,
+    "all_registered_jobs_accounted": true,
+    "input_hashes_unchanged": true
+  },
+  "stop": null,
+  "original_pairs": 30,
+  "original_denominator": 30,
+  "recovered_pairs": 8,
+  "recovered_denominator": 8,
+  "recovered_results": [
+    {
+      "skeleton_id": "family_s15_1c267d4d7000043d_ext_001_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 260.01600000000326
+    },
+    {
+      "skeleton_id": "family_s15_5024cb2ccea653ae_ext_001_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 483.43700000000536
+    },
+    {
+      "skeleton_id": "family_s15_5024cb2ccea653ae_ext_006_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 727.6560000000027
+    },
+    {
+      "skeleton_id": "family_s15_7b73a7fc210d4c8f_ext_001_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 663.4539999999979
+    },
+    {
+      "skeleton_id": "family_s15_8e012bf033eb6821_ext_001_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 348.82799999999406
+    },
+    {
+      "skeleton_id": "family_s15_aa4c66be8e85d64d_ext_006_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 557.9379999999946
+    },
+    {
+      "skeleton_id": "family_s15_ef1ed9ff0b0e7013_ext_001_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 290.2649999999994
+    },
+    {
+      "skeleton_id": "family_s15_f2adfbfae12fbbad_ext_006_regular",
+      "status": "PASS",
+      "paired": true,
+      "first_failure": null,
+      "elapsed_wall_s": 1604.0160000000033
+    }
+  ],
+  "completed_skeletons": 38,
+  "unfinished": [],
+  "regression": {
+    "name": "G5a_REGRESSION_DELTA_ZERO",
+    "status": "PASS",
+    "executed": 492,
+    "passed": 474,
+    "baseline_known_failure": 18,
+    "unexpected_known_passes": [],
+    "new_failure_count": 0,
+    "failures": [],
+    "per_test": [
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_complete_public_chain_and_source_identity",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_grid_error_rejected_without_completion_marker",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_numerical_error_is_not_exported_as_task_failure",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_real_slow_crossing_is_eligible_semantic_failure",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_reconfirmation_discards_only_revoked_arrival_evidence",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_rehashed_export_velocity_cannot_disagree_with_support",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_rehashed_semantic_claim_cannot_replace_measured_outcome",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_runtime_configuration_cannot_be_relabeled",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_runtime_task_cannot_be_relabeled",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_short_timeout_stays_unknown_and_retained",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_simulation_clock_is_explicit_bounded_and_old_mapping_unchanged",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_timeout_cannot_be_relabeled_as_completed",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_unsupported_capability_cannot_be_rehashed_into_source",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts.FastDynamicsArtifactsTests.test_zero_duration_never_qualified",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_actual_m2_public_export_load_audit_describe",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_m1_and_m2_cannot_silently_mix",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_barrier_cannot_claim_a_revoked_confirmation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_false_label_is_recomputed_and_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_missing_mode_or_confirmation_epoch_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_rehashed_wrong_planned_phases_is_rejected_even_on_reuse_hit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_timeout_is_retained_unknown_not_fake_success",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2PublicChainTests.test_visible_facts_and_calibration_use_public_grid_not_dense_support",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_closed_loop_needs_actual_ordered_visits",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_disabling_or_nesting_reuse_does_not_leak_results",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_far_cross_track_point_is_not_route_completion",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_later_lap_cannot_replace_missing_first_loop",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_m2_reference_bounds_and_legacy_config_remain_distinct",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_only_consecutive_duplicate_points_are_cleaned",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_real_tasks_plan_only_their_compiled_phases_even_before_execution",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_same_tick_reset_revokes_previous_confirmation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_artifacts_m2.M2WindowTests.test_semantic_reuse_is_scoped_exact_and_returns_independent_values",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_aggregation_does_not_treat_unknown_or_frames_as_success",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_clock_inverse_uses_knots_not_global_scale",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_clock_natural_order_and_invalid_fallback",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_empty_speed_support_is_unavailable",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_family_split_is_fixed_and_order_duplicate_invariant",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_half_open_last_phase_is_measured_on_recorded_support",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_holdout_gate_rejects_before_any_file_open",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_interpolation_respects_missing_and_gaps",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_later_loop_not_matched_to_previous_leg",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_m2_02b_split_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_phase_duration_uses_barrier_and_reports_missing",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_route_extraction_preserves_two_laps_and_native_numbers",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_same_leg_arc_alignment_known_lateral_offset",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_speed_does_not_bridge_internal_missing_point",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_speed_from_positions_and_mapped_seconds",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_synchronous_minimum_detects_between_samples",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_synchronous_minimum_does_not_align_individual_progress",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_synchronous_minimum_does_not_bridge_long_gap",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration.CalibrationTests.test_unknown_is_not_agreement",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_bounds_and_default_distance_break_exact_metric_ties",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_condition_metrics_are_reported_without_an_extra_rejection_rule",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_judgment_boundary_is_99_point_5_percent",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_motion_denominator_is_reference_known_and_candidate_unknown_fails",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_new_ranking_uses_total_then_observe_then_turn",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_per_pattern_threshold_is_not_hidden_by_overall_accuracy",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_quality_cannot_drop_a_timeout_from_the_denominator",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_rejected_candidate_does_not_stop_but_contract_error_does",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_subset_uses_identities_and_frozen_rank_not_measurements",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_calibration_search.SearchGateTests.test_time_targets_and_diagnostics_do_not_become_hard_gates",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_actual_velocity_is_not_clipped",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_constant_acceleration",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_constant_jerk_and_dense_boundary",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_constant_velocity",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_invalid_states_and_control_capabilities_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_jerk_and_acceleration_feasible_throughout_each_step",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.AnalyticDynamicsTests.test_long_step_does_not_overshoot_acceleration_target",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.ResponseAndConvergenceTests.test_repeatability_and_step_halving_convergence",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.ResponseAndConvergenceTests.test_start_turn_stop_and_terminal_dwell_are_dynamic",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_agents_update_atomically_and_are_permutation_invariant",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_configuration_roundtrip_and_all_unknown_fields_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_dense_event_truncation_preserves_prefix_and_half_open_grid",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_half_open_integer_grid_boundaries",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_noncommensurate_output_uses_step_polynomial",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_core.TimeAndContractTests.test_state_snapshot_serialization_and_observer",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.DenseEventsTests.test_cli_retains_engine_failure_and_rejects_attempt_reuse",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.DenseEventsTests.test_near_endpoint_at_high_speed_is_not_arrival",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.DenseEventsTests.test_short_arrival_crossing_between_output_frames",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_frozen_input_and_successful_actual_execution",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_half_step_on_common_axis_and_actual_events",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_repeatability_and_agent_permutation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_timeout_is_real_truncation_not_label_rewrite",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_unimplemented_scope_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_waiting_agent_must_reconfirm_after_losing_arrival",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution.MissionExecutionTests.test_worker_count_and_dispatch_order_do_not_change_trajectory",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ConfirmationTests.test_confirmed_exit_revokes_epoch_then_reconfirms",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ConfirmationTests.test_disjoint_done_intervals_do_not_release_barrier",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ConfirmationTests.test_short_valid_island_does_not_gain_missing_dwell",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_done_agent_actual_departure_invalidates_and_recovers",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_exact_adjacent_repeats_do_not_remove_tiny_legs_or_loop_return",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_explicit_legacy_config_dispatches_m1",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_half_step_preserves_phase_semantics_and_close_actual_trajectory",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_harness_descriptor_rejects_unknown_state_or_label_fields",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_nonintegral_stagger_is_exact_and_waiting_state_keeps_integrating",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_noop_zero_dwell_and_hold_finishes_without_motion_or_extra_frame",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_real_plant_two_three_four_agents_phase_and_final_hold",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_recon_fault_flies_altitude_excursion_then_recovers_original_target",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_timeout_applies_while_personal_done_waits_for_delayed_peer",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_execution_m2.ExecutionM2Tests.test_timeout_wins_when_hold_would_finish_exactly_at_deadline",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_changed_bound_source_refused_before_generation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_changed_registration_refused_before_generation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_escape_refused_before_generation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_existing_bundle_refused_before_generation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.ArtifactTests.test_no_overwrite",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_count_is_significant",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_d4",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_euclidean_not_coordinatewise",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_matching_does_not_reuse_vehicle",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_matching_requires_augmenting_path",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_order_invariance",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_tolerance_closed_boundary",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_translation_ids_heading_ignored",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_unsupported_geometry_refused",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.GeometryTests.test_v2_platform_projection",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.IndependentVerifierTests.test_identity_verifier_detects_modified_frozen_file",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.IndependentVerifierTests.test_permutation_oracle_boundary_and_no_reuse",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.IndependentVerifierTests.test_permutation_oracle_rotation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_duplicate_membership_refused",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_fixed_serialization_and_dedup",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_full_hash_is_not_family_id",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_insufficient_candidates_do_not_freeze",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_order_duplicates_rank_floor",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_rejected_only_component_not_candidate",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_rejected_sibling_can_exclude_accepted_task",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_short_id_collision_refused",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_task_status_not_execution_claim",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_holdout.SplitTests.test_transitive_near_and_old_contamination",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_continuous_minimum_detects_crossing_between_endpoints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_delayed_turn_stop_is_not_missed_by_witness_time_window",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_fallback_is_only_frozen_fail_default_pass",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_freeze_allows_only_internal_and_rejects_modified_parameters",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_internal_requires_freeze_before_any_reference_file_open",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_registered_convergence_has_equal_distances_and_separated_goals",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_terminal_overrun_and_return_are_measured_beyond_route_endpoint",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_m3_postfreeze.PostFreezeTests.test_velocity_peak_between_step_endpoints_is_measured",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.BenchmarkCliTests.test_output_outside_the_selected_root_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.BenchmarkCliTests.test_output_root_writes_a_fresh_external_file",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.BenchmarkCliTests.test_repository_output_is_rejected_before_measuring",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_default_root_does_not_depend_on_the_repository_name",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_default_root_is_the_repository_parents_swarmdata_and_outside_the_repository",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_explicit_and_environment_roots_take_precedence",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.DefaultRootTests.test_unusable_roots_are_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.JunctionTests.test_junction_target_into_the_repository_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.JunctionTests.test_root_that_is_a_junction_into_the_repository_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.JunctionTests.test_target_escaping_the_selected_root_through_a_junction_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_default_run_completes_the_full_m2_chain_under_the_default_root",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_existing_attempt_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_invalid_ids_are_rejected_before_io_in_both_output_modes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_output_outside_the_selected_root_is_rejected_with_zero_artifacts",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_repository_target_is_rejected_before_any_artifact",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_run_id_with_path_fragments_is_rejected_with_zero_artifacts",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_selected_root_selects_a_fresh_external_attempt",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunFastDynamicsCliTests.test_valid_id_with_explicit_output_completes_the_public_chain",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunIdFragmentTests.test_path_fragments_are_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.RunIdFragmentTests.test_valid_prefix_stays_under_the_root",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_existing_and_repository_targets_are_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_target_outside_the_selected_root_is_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_target_under_the_environment_root_is_accepted",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.TargetOwnershipTests.test_target_under_the_selected_root_is_accepted",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.VerifyFastDynamicsCliTests.test_custom_root_propagates_to_child_attempts",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.VerifyFastDynamicsCliTests.test_default_verify_is_not_self_rejected_by_the_policy",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_output_policy.VerifyFastDynamicsCliTests.test_repository_output_is_rejected_before_running_anything",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_closed_two_laps_not_complete_at_origin",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_far_cross_track_does_not_grant_completion",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_general_angle_curves_use_real_arclength",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_half_step_trajectory_and_event_convergence",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_noop_and_raw_positive_short_leg",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_offset_start_acquires_original_start",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_original_patrol_0070_completes_every_ordered_waypoint",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_reference_rejects_invalid_fields",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_reversal_stops_with_physical_state",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_right_angle_continuously_tracks",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_short_leg_visits_distinct_gates",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_fast_dynamics_tracking.ContinuousRouteTests.test_straight_stops_without_editing_plant",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_adjacent_curves_and_tiny_legs_preserve_order",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_candidate_config_only_changes_policy",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_curve_vertex_distance_formula_independently_sampled",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_default_r2_and_explicit_r2_identical",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_dwell_selects_r3_for_both_route_halves",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_r3_artifact_identity_roundtrip_and_mixed_version_rejected",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_real_r3_plant_retains_observation_dwell",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_seven_angles_match_original_b2_primitive_values",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_m3_r3_reference.R3ReferenceTests.test_unknown_versions_rejected",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_area_multiple_splits_actual_segment_endpoints",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_area_single_split_actual_segment_endpoints",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_area_uses_configured_alignment",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_non_area_populated_evidence_exact_order",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_non_area_real_geometry_exact_equality",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_real_multi_pool_and_deterministic_recovery",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_area_search_precheck.AreaSearchPrecheckTests.test_small_multi_fixture_pool_contracts",
+        "baseline": "NEW_TEST",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_monitoring_retreat.MonitoringRetreatTests.test_T1_full_single_stock_three_lanes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_monitoring_retreat.MonitoringRetreatTests.test_T2_arc_even_and_odd_reversals",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_monitoring_retreat.MonitoringRetreatTests.test_T3_full_multiple_stocks",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_monitoring_retreat.MonitoringRetreatTests.test_T4_terminal_spacing_one_metre_reject_two_metres_accept",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_monitoring_retreat.MonitoringRetreatTests.test_degenerate_tail_rejected_before_indexing",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_fe_monitoring_retreat.MonitoringRetreatTests.test_inward_fallback_is_skipped_only_with_outward_reference",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_G1_shared_coverage",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_G2_G3_groups_and_G4_G5_views_approach",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_G5_measured_headings_do_not_gate_success",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_P1_P3_prefixes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_T1_T13_role_matrix_and_audit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_dwell_erratum_and_audit_rejects_mutations",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_event_times_and_diagnostics",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m1_criteria.CriteriaQ0.test_performance_and_cross_negation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A10_rehearsal_observed_roles",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A11_independent_completeness_and_frame_count",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A1_random_schedules",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A2_A3_independent_draws_and_pair_conditions",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A4_overlay_threshold",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A5_vertical_default_is_exact_baseline",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A6_relaxed_stop_is_exact_prefix",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A7_observation_hold_unchanged",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A8_partial_finish_uses_conservative_budget",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m2_timing_rehearsal.M2Checks.test_A9_last_failure_and_history",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_f2b.F2bRegressionTests.test_A1_extra_fifty_metres_can_be_blocked_while_final_route_is_legal",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_f2b.F2bRegressionTests.test_A2_obstacle_in_required_ingress_is_still_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_f2b.F2bRegressionTests.test_A3_existing_route_and_ingress_constraints_are_preserved",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_neighbor_warning_rejects_radial_endpoint_during_shape_precheck",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_precheck_does_not_consume_connection_random_draws",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_rejected_ingress_stays_in_twenty_shape_attempt_budget",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F2_whole_ingress_checked_on_both_sides_of_gate",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_connections.ShapeConnectionRegressionTests.test_F3_first_legal_rotated_exit_avoids_neighbor_warning",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_entry.EntryRepairTests.test_F1_exterior_detour_has_ten_metre_clearance_and_one_visit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_entry.EntryRepairTests.test_F1_formal_entry_uses_anchor_even_after_an_earlier_visit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_entry.EntryRepairTests.test_F1_missing_anchor_cannot_bypass_production_check",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_entry.EntryRepairTests.test_F4_large_inside_lane_retains_actual_hundred_metre_alignment",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_fix_patrol_entry.PatrolEntryRegressionTests.test_F2_blocked_unused_entrance_does_not_reject_clear_full_patrol",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.AssignmentTests.test_G2_physical_slots_survive_column_and_slot_permutation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.ConnectionTests.test_G10_clean_forward_joins_preserves_bends_and_endpoint",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.ConnectionTests.test_G4_G5_full_route_witnesses",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.ConnectionTests.test_G6_multiple_visits_and_same_boundary_join",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.ConnectionTests.test_G7_shared_connection_has_truthful_metadata",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.FreeSpaceTests.test_G3_exact_circle_and_polygon_offsets",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.FreeSpaceTests.test_G3_feasible_chord_intervals",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.FreeSpaceTests.test_G4_full_segment_detects_inner_zone",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.FreeSpaceTests.test_G5_obstacle_and_world_segment_checks",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.FreeSpaceTests.test_G6_empty_domain_and_arcs_are_finite",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.FreeSpaceTests.test_zero_width_reference_corridor_keeps_configured_pad",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.SpecTests.test_G1_registered_group_not_reassigned",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.SpecTests.test_G1_spec_without_geometry_or_execution",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_geometry.SpecTests.test_G2_column_permutation_does_not_change_spec",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_integration.UnifiedIntegrationTests.test_G11_default_dispatch_is_unified_and_legacy_is_explicit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_integration.UnifiedIntegrationTests.test_G11_unsupported_and_P0_are_not_swallowed",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_integration.UnifiedIntegrationTests.test_G2_G7_G8_transit_routes_survive_column_permutation_and_feed_M2",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3_integration.UnifiedIntegrationTests.test_G8_straight_bend_and_multi_are_real_shapes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_all_six_default_paths_are_isolated_from_legacy",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_feint_continuous_turn_single_alert_visit_no_dwell",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_intrusion_exact_signed_endpoints_and_family_spacing",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_observation_keeps_true_intermediate_dwell_after_join_cleanup",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_patrol_arc_reversals_preserve_group_unique_lanes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_patrol_full_preserves_group_unique_continuous_lanes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_patrol_polygon_offsets_and_finite_short_arc_rejection",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_search_sector_coverage_and_complete_route",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_m3b_geometry.M3bGeometryTests.test_six_execution_methods_use_the_shared_exclusion_policy",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_dwell_snapshot_real_step",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_execute_old_new_exact",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_route_snapshot_real_step",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_tracker_snapshot.SnapshotTests.test_unknown_tracker_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_visibility_broadphase.BroadphaseTests.test_random_exact_predicates",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_visibility_broadphase.BroadphaseTests.test_real_graphs_exact",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_perf_visibility_broadphase.BroadphaseTests.test_tangencies_and_expanded_polygon_boundaries",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.ExecutorTests.test_frozen_engine_short_route_and_real_wait",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.LoaderAndSurveyTests.test_independent_endpoint_and_waypoint_contracts",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.LoaderAndSurveyTests.test_observation_loader_pair_whitelist_and_column_alignment",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.LoaderAndSurveyTests.test_scan_start_requires_actual_effective_motion_and_preserves_raw_event",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.S12Tests.test_all_types_fail_then_skip",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.S12Tests.test_failed_type_falls_back_before_skip",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.S12Tests.test_new_checker_rejects_overlap",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.S12Tests.test_nonoverlap_and_reproducibility",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_assigned_and_observed_are_independent",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_chain_does_not_form_synchronous_batch",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_column_permutation_preserves_id_labels_and_separation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_delays_come_from_measured_times",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_highfrequency_grid_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_measured_minimum_uses_actual_state_not_endpoints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_missing_event_unknown_not_planned",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_no_matplotlib_dependency",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_one_incomplete_agent_not_copied_group_success",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2.SemanticTests.test_prefix_does_not_inherit_future_success",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_abort.AbortEvidenceTests.test_complete_approach_withdrawal_is_observed_and_prefix_cannot_claim_it",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_abort.AbortEvidenceTests.test_frozen_engine_route_switch_preserves_exact_prefix",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_abort.AbortEvidenceTests.test_full_abort_labels_and_independent_audit",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'own_endpoint_hold'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_abort.AbortEvidenceTests.test_prefix_requires_bit_exact_state_and_identity",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_abort.AbortEvidenceTests.test_protected_entry_cannot_be_called_abort_withdrawal",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_area_expansion.AreaExpansionTests.test_all_members_have_work_and_all_strips_covered",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_area_expansion.AreaExpansionTests.test_first_scan_entry_counts_early_approach_crossing",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_area_expansion.AreaExpansionTests.test_length_balance_does_not_split_by_strip_count",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_area_expansion.AreaExpansionTests.test_opposite_final_approaches_have_opposite_headings",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.GeometryToleranceTests.test_exactly_tangent_planner_edge_passes_and_closer_edge_fails",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.GeometryToleranceTests.test_retreat_exactly_on_200m_boundary_passes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.OffsetLaneTests.test_outer_lane_keeps_distance_from_sharp_corner",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.OffsetLaneTests.test_right_angle_lanes_keep_parallel_offset",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.PlanningIntervalInterceptTests.test_overlapping_routes_intercepted_before_simulation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.PlanningIntervalInterceptTests.test_spread_close_observation_points_have_minimum_separation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_alert_entry_violates_explicit_policy",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_mid_chord_prefix_is_unknown_and_never_success",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'exited_warning'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_role_kind_keeps_vertical_slice_branches",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_small_entry_exit_azimuth_difference_fails",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'chord_length'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_stop_and_loop_inside_warning_fail",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'no_stop_in_warning'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitCriterionTests.test_two_sided_crossing_succeeds_with_measured_facts",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'multi_direction_span'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitPlannerTests.test_band_too_narrow_is_geometry_infeasible",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitPlannerTests.test_same_and_multi_direction_routes_meet_planning_constraints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_expansion.TransitPlannerTests.test_same_direction_lanes_do_not_share_waypoints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_fact_repairs.FullRouteGateTests.test_crossing_routes_with_distinct_endpoints_never_reach_paired_flight",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_fact_repairs.P0FactRepairTests.test_feint_exact_contour_depth_and_fraction",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'depth_in_band'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_fact_repairs.P0FactRepairTests.test_monitoring_measured_end_does_not_erase_terminal_hold",
+        "baseline": "FAIL",
+        "candidate": "FAIL",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "FAIL",
+          "exception_type": "AssertionError",
+          "last_line": "AssertionError: 1396.7 != 1356.6"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_final_helpers.FinalHelperTests.test_abort_view_requires_observed_withdrawal",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_final_helpers.FinalHelperTests.test_all_missing_skeletons_keep_exact_960_not_run_items",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_final_helpers.FinalHelperTests.test_member_identity_takes_precedence_over_group_name",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_final_helpers.FinalHelperTests.test_partial_members_are_intersected_and_not_silently_merged",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_final_helpers.FinalHelperTests.test_rejects_errors_and_diagnostics_never_enter_training_views",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_formation_invariants.DiagnosticIsolationTests.test_diagnostics_are_excluded_on_both_sides_of_cross_negation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_formation_invariants.DiagnosticIsolationTests.test_diagnostics_never_enter_any_view_or_success_statistics",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_formation_invariants.FormationSplitInvariantTests.test_numeric_slot_split_ignores_role_column_and_batch",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_formation_invariants.FormationSplitInvariantTests.test_two_members_form_two_singletons",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupEvidenceTests.test_cross_group_collision_is_generation_error_not_role_failure",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupEvidenceTests.test_group_semantics_are_id_aligned_under_column_permutation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupEvidenceTests.test_independent_group_audit_and_condition_coverage",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "FileNotFoundError",
+          "last_line": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\shy\\\\AppData\\\\Local\\\\Temp\\\\<TMP>\\\\source.json'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupEvidenceTests.test_role_composition_mismatch_is_p0",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupEvidenceTests.test_single_shared_target_rule_also_holds_before_core_events",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupTimingTests.test_full_clock_gate_checks_cross_group_mid_route_and_waiting",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupTimingTests.test_intrusion_half_work_cutoff_uses_own_measured_hold_completion",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_groups.GroupTimingTests.test_offsets_shift_each_group_without_changing_its_batches",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ContractTests.test_bad_waypoints_and_delays_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ContractTests.test_family_mutation_is_p0",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ContractTests.test_model_input_whitelist_nested_scene_and_permutation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ContractTests.test_route_contract_and_paired_non_time_invariance",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ContractTests.test_route_interface_never_silently_returns_placeholder",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.EvaluationTests.test_cross_negation_all_ordered_combinations_without_subject_labels",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.EvaluationTests.test_evaluation_id_aligned_column_permutation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.EvaluationTests.test_missing_event_and_future_claim",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.EvaluationTests.test_prefix_physically_excludes_future_and_is_read_only",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.EvaluationTests.test_truncation_hook_for_each_role_and_missing_criterion",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_circle_and_polygon_each_layer_micrometre_inside_outside",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_generic_forbidden_layer_policy_uses_all_facilities",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_geometry_id_alignment_and_separation_not_task_result",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_high_frequency_input_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_independent_all_frame_audit_and_corruption",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_independent_audit_rejects_missing_fields_and_bad_grid",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_independent_auditor_cannot_import_authority",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_supplied_polyline_crossing_and_retreat_clearance",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.GeometryTests.test_zero_margin_polygon_intersection_still_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_all_descriptors_are_private_and_unexecuted",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_both_approaches_and_unit_counts_are_sampled",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_columns_do_not_follow_group_order_and_are_reproducible",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_common_draws_equal_across_intents_and_family_speed_immutable",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_merge_keeps_first_method_and_does_not_split_temporal_batches",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_merge_rejects_duplicate_member",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_requested_units_capped_at_two_members_per_unit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.SamplingTests.test_worker_count_and_result_order_do_not_change_bytes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ViewTests.test_balanced_minimum_pairs_and_extended_without_copy",
+        "baseline": "FAIL",
+        "candidate": "FAIL",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "FAIL",
+          "exception_type": "AssertionError",
+          "last_line": "?                                                                     +"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ViewTests.test_failure_abort_and_pending_not_in_primary",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ViewTests.test_missing_intent_leaves_all_success_in_extended",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ViewTests.test_pair_mismatch_and_escape_paths_are_p0",
+        "baseline": "FAIL",
+        "candidate": "FAIL",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "FAIL",
+          "exception_type": "AssertionError",
+          "last_line": "AssertionError: P0ContractError not raised"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ViewTests.test_pending_metrics_are_null_not_zero_success_rates",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_infrastructure.ViewTests.test_task_success_with_wrong_timing_not_pair",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_circle_each_layer_one_micrometre_inside_outside",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_convex_polygon_flat_and_round_boundaries_both_windings",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_depth_is_exact_inside_and_outside_source_contour",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_exact_visibility_never_cuts_analytic_offset",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_frame_and_event_facts_use_exact_layers",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_point_strip_obstacle_and_world_queries_share_authority",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_task_predicates_do_not_import_tessellated_shapes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.ExactGeometryTests.test_two_frozen_p0_witness_frames",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.IndependentAuditTests.test_independent_audit_detects_even_one_corrupt_frame",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.IndependentAuditTests.test_independent_auditor_does_not_reuse_label_geometry",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.RevisedOutcomeAndTimingTests.test_below_two_excludes_without_rewriting_role_result",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.RevisedOutcomeAndTimingTests.test_random_batches_positive_sizes_gaps_jitter_and_replay",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.RevisedOutcomeAndTimingTests.test_spacing_two_or_more_is_only_diagnostic",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.RevisedOutcomeAndTimingTests.test_timeout_missing_event_unknown_but_role_failure_known",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_precision.RevisedOutcomeAndTimingTests.test_timing_assignment_saved_at_all_three_levels",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_abort_reference.AbortReferenceTests.test_all_same_map_plans_failed_records_not_run_mapping",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_abort_reference.AbortReferenceTests.test_existing_reference_kept",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_abort_reference.AbortReferenceTests.test_generation_error_is_not_a_planning_fallback_trigger",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_abort_reference.AbortReferenceTests.test_planning_failure_falls_back_in_same_map_id_order_including_other_family",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_exact_hundred_metres_interpolates_the_backtrack_endpoint",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_insufficient_observed_path_is_unknown",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_missing_member_makes_whole_group_span_unknown",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_one_missing_warning_entry_does_not_use_known_subset",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'multi_direction_span'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_warning_entry_is_separate_from_role_core_event",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'multi_direction_span'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_approach.WarningIngressGeometryTests.test_same_side_corridor_precedes_free_deployment",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_115_percent_filter_then_seeded_order",
+        "baseline": "FAIL",
+        "candidate": "FAIL",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "FAIL",
+          "exception_type": "AssertionError",
+          "last_line": "115.1"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_circle_nominal_duration_and_original_disk",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_each_group_has_its_own_115_percent_bound",
+        "baseline": "FAIL",
+        "candidate": "FAIL",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "FAIL",
+          "exception_type": "AssertionError",
+          "last_line": "+ [2]"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_every_registered_candidate_is_counted_without_calibration",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_five_calibration_round_limit_and_zero_flights_for_empty_pool",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "AttributeError",
+          "last_line": "AttributeError: <module 'scripts.run_v07_s2_episode_batch' from '<ROOT>\\\\Multi-UAV SimpleGC\\\\scripts\\\\run_v07_s2_episode_batch.py'> does not have the attribute 'calibrate_episode'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_hover_uses_exported_samples_and_releases_original_route",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_nominal_spacing_includes_stationary_middle_dwell",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_one_group_transit_quantile_maps_into_each_feasible_chord_interval",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_real_frozen_plant_hover_has_measured_stationary_interval",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_uniform_parameters_are_private_reproducible_and_noncollapsed",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_variable_observation_dwell_preserves_eighty_percent_criterion",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "KeyError",
+          "last_line": "KeyError: 'minimum_dwell'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_continuous.ContinuousRevisionTests.test_work_point_spacing_cannot_be_satisfied_by_far_retreat_endpoints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_interval.RevisionIntervalTests.test_ten_metre_threshold_applies_to_both_plans_and_old_default_stays_six",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_process_choice.RevisionProcessChoiceTests.test_prefer_retained_multi_but_always_compare_registered_multi_if_none_survives",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_public_shape.PublicApproachTests.test_allowed_counts_angles_and_full_member_partition",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_public_shape.PublicApproachTests.test_key_excludes_intent_role_target_column_and_extended_ordinal",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_public_shape.PublicApproachTests.test_live_planner_context_uses_public_slot_not_private_extended_ordinal",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_public_shape.PublicApproachTests.test_member_set_and_slot_change_stream_and_same_direction_has_one_stock",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_retreat.RevisionRetreatTests.test_expanded_request_selects_minimum_without_mutating_descriptor",
+        "baseline": "FAIL",
+        "candidate": "FAIL",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "FAIL",
+          "exception_type": "AssertionError",
+          "last_line": "AssertionError: 50.0 != 100.0"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_revision_retreat.RevisionRetreatTests.test_hundred_metre_boundary_and_legacy_default",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_revision_retreat.RevisionRetreatTests.test_other_warnings_and_obstacle_margin_still_apply",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_collection_may_overlap_other_warning_but_not_alert",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_combination_order_is_bounded_unique_and_reproducible",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_empty_first_group_does_not_censor_other_group_budgets",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_failed_random_proposal_does_not_prove_geometric_infeasibility",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_geometric_witness_has_limited_scope",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_near_collection_keeps_exact_clearance_and_hundred_metre_heading",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_search_revision.SearchEvidenceTests.test_six_registered_phase_counterexamples_pass_original_two_mode_gate",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SectorGeometryTests.test_analytic_offset_polygon_line_endpoints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SectorGeometryTests.test_circle_sector_exact_area_and_micro_boundaries",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SectorGeometryTests.test_clearance_proof_rejects_obstacle_inside_sector",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SectorGeometryTests.test_sector_line_is_clipped_to_outer_inner_and_angle",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SectorGeometryTests.test_two_maps_survey_scale_pitch_grid_and_exact_withdrawal",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SurveyEvidenceAndRuntimeTests.test_budget_uses_full_measured_finish_plus_delay",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SurveyEvidenceAndRuntimeTests.test_frozen_plant_can_complete_after_old_600_second_limit",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SurveyEvidenceAndRuntimeTests.test_independent_audit_detects_corrupt_retreat_event",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SurveyEvidenceAndRuntimeTests.test_scan_finished_without_withdrawal_is_role_failure",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_sector.SurveyEvidenceAndRuntimeTests.test_variable_lane_count_scan_duration_and_retreat_prefix",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_finished_agents_remain_present_until_last_route_ends",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_overlay_rejection_changes_combination_and_caps_five_solo_rounds",
+        "baseline": "ERROR",
+        "candidate": "ERROR",
+        "classification": "BASELINE_KNOWN_FAILURE",
+        "signature": {
+          "kind": "ERROR",
+          "exception_type": "AttributeError",
+          "last_line": "AttributeError: <module 'scripts.run_v07_s2_episode_batch' from '<ROOT>\\\\Multi-UAV SimpleGC\\\\scripts\\\\run_v07_s2_episode_batch.py'> does not have the attribute 'calibrate_episode'"
+        }
+      },
+      {
+        "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_prediction_comparison_aligns_physical_ids",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_quick_b_selection_prefers_multiple_groups_then_identifier",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_real_delay_and_full_route_hold_without_duplicate_settle",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_s2_solo_spacing.SoloSpacingTests.test_saved_solo_validation_rejects_missing_grid_or_wrong_id",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_circle_expansion_adds_distance_to_contour",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_enclosing_tessellation_covers_finer_true_contour",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_expansion_rejects_invalid_distances_and_points",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_expansions_are_nested_and_compose",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_oblique_convex_offset_encloses_exact_round_corners",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_polygon_expansion_is_round_euclidean_offset",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.BufferTests.test_random_convex_offset_boundaries_preserve_analytic_margin",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.CheckerTests.test_angular_bins_and_wraparound",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.CheckerTests.test_every_entry_facility_pair_and_approach_is_recorded",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.CheckerTests.test_geometry_rejects_bad_offsets_and_boundary_violations",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.CheckerTests.test_oblique_candidate_routes_have_full_thirty_meter_clearance",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.CheckerTests.test_small_angular_coverage_does_not_create_rejection_reason",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_bad_id_units_and_layer_associations_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_core_and_test_modules_do_not_import_matplotlib",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_invalid_config_and_seeds_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_json_schema_agrees_with_generated_maps",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_nonfinite_geometry_and_nonconvex_contours_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_public_contract_has_no_semantic_or_audit_fields_recursively",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_reproducibility_in_separate_interpreter",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_same_seed_is_byte_identical_including_initial_states",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_sample_ranges_and_family_membership",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_seed_stream_is_independent_of_batch_order",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.SamplingContractTests.test_unknown_fields_rejected_at_all_levels",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_boundary_crossing_obstacle_detours_inside_world",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_circle_path_never_cuts_the_exact_safety_buffer",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_empty_map_returns_straight_shortest_path",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_invalid_endpoints_have_no_route",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_overlapping_obstacles_use_union_boundary",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_polygon_path_respects_thirty_meter_margin",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_protection_zones_never_become_obstacles",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_random_endpoint_paths_are_clear",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_rectangle_path_is_the_analytic_shortest_path",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene.VisibilityTests.test_world_spanning_wall_cannot_be_bypassed_at_boundary",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_attempt_rejects_traversal_and_repository_output",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_attempts_never_overwrite_existing_content",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_bad_budget_does_not_create_attempt",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_rejection_counts_deduplicate_family_reason_and_accepted_stats_only",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_renderer_callback_and_timing_accounting",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_saved_json_reconstructs_byte_for_byte_from_family_seed",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_batch.BatchTests.test_single_seed_rebuild_uses_a_new_attempt",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.RouteDiagnosticTests.test_blocked_fraction_and_detour_deviation_ignore_rejected_routes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.RouteDiagnosticTests.test_cross_track_distance_is_maximum_over_polyline",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.RouteDiagnosticTests.test_cross_track_distance_is_rotation_translation_invariant",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.RouteDiagnosticTests.test_diagnostics_are_not_acceptance_gates",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.RouteDiagnosticTests.test_gallery_quota_selects_multi_facility_and_entry_blockers",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.RouteDiagnosticTests.test_raw_obstacle_and_safety_margin_blockers_are_distinct",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_complete_contours_entries_and_layout_constraints",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_entry_blockers_between_entry_and_warning_actually_block",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_invalid_budgets_and_revision_rejected",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_new_attempt_saved_bytes_rebuild_and_maps_match_facility_counts",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_new_sampling_metadata_stays_out_of_public_scene",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_no_obstacles_is_recorded_as_sampling_rejection_not_public_json",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_original_geometry_gates_reject_intruding_obstacle",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_original_s1_revision_remains_byte_reproducible",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_radars_are_legal_and_initial_conditions_stay_common",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_same_seed_policy_reconstructs_bytes",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_skip_budget_does_not_resample_successful_obstacles",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s11.SamplingS11Tests.test_weighted_facility_count_distribution",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.ExactLayoutTests.test_1000_r2_pairs_imply_ordered_r1_lower_bound",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.ExactLayoutTests.test_200_bisections_attain_minimal_translation",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.ExactLayoutTests.test_hand_calculated_distances",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.ExactLayoutTests.test_r2_boundary_independent_checker",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.LegacyRevisionTests.test_15_prechange_hash_pairs",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.SamplingS15Tests.test_each_layout_20_families_pass_all_s15_checks",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.SamplingS15Tests.test_layout_exhaustion_retains_reason_without_public_schema",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.SamplingS15Tests.test_map_size_and_exact_350m_clearance",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      },
+      {
+        "test_id": "test_v07_scene_s15.SamplingS15Tests.test_policy_forwarding_and_reconstruction",
+        "baseline": "ok",
+        "candidate": "ok",
+        "classification": "PASS",
+        "signature": null
+      }
+    ]
+  },
+  "elapsed_wall_s": 4459.889999999999,
+  "code_commit": "9ad8dd0c8f5bb31b5b708d1a1892fa2b71c4b101",
+  "evidence_paths": [
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r4_attempt01",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R4\\m3_r3_r4_attempt01"
+  ],
+  "next_stage": null,
+  "formal_freeze": false
+}
