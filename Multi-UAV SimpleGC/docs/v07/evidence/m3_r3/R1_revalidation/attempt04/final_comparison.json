@@ -1,0 +1,4968 @@
+{
+  "stage": "R1",
+  "status": "FAIL",
+  "classification": "RESEARCH_GATE_FAILURE_NOT_HARNESS_ERROR",
+  "stop": "probe_05 r3 phase precision nonregression",
+  "harness_repairs_used": 3,
+  "harness_repairs_allowed": 3,
+  "execution_commit": "749190bca027836d36b1405f49e87ae782d0fdb0",
+  "plan_sha256": "56d05dbc4091df6caa9fb936f292fe099ae4ad891e90ba0dda586f6eada4e8a3",
+  "baseline_test_count": 200,
+  "baseline_passed": 196,
+  "regression": {
+    "name": "R1_REGRESSION_DELTA_ZERO",
+    "status": "PASS",
+    "executed": 209,
+    "passed": 205,
+    "baseline_known_failure": 4,
+    "new_failure_count": 0
+  },
+  "new_gate_tests": 11,
+  "r2_bitwise_verified": 7,
+  "r3_B2_bitwise_verified": 5,
+  "r3_complete_gate_passed": 4,
+  "r3_not_run": [
+    "probe_06",
+    "probe_07"
+  ],
+  "probe05_phases": [
+    {
+      "phase": "approach",
+      "r2_max_m": 1.7847768233500276,
+      "r3_max_m": 1.7853429850690588,
+      "max_delta_m": 0.0005661617190311219,
+      "r2_p99_m": 0.8546349531884775,
+      "r3_p99_m": 0.4621354268927357,
+      "p99_delta_m": -0.3924995262957418,
+      "passed": false
+    },
+    {
+      "phase": "dwell",
+      "r2_max_m": 0.19074986319499798,
+      "r3_max_m": 0.19208632339733323,
+      "max_delta_m": 0.0013364602023352434,
+      "r2_p99_m": 0.12216143397797305,
+      "r3_p99_m": 0.12302069734606644,
+      "p99_delta_m": 0.0008592633680933881,
+      "passed": false
+    },
+    {
+      "phase": "departure",
+      "r2_max_m": 1.6077746776921857e-11,
+      "r3_max_m": 1.6077746776921857e-11,
+      "max_delta_m": 0.0,
+      "r2_p99_m": 8.8989275154825e-12,
+      "r3_p99_m": 8.8989275154825e-12,
+      "p99_delta_m": 0.0,
+      "passed": true
+    },
+    {
+      "phase": "terminal_stop",
+      "r2_max_m": 1.7849249178526083,
+      "r3_max_m": 1.7849249178526083,
+      "max_delta_m": 0.0,
+      "r2_p99_m": 1.7842877961221466,
+      "r3_p99_m": 1.7842877961221466,
+      "p99_delta_m": 0.0,
+      "passed": true
+    }
+  ],
+  "probes": [
+    {
+      "probe_id": "probe_01",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.13029655516249294,
+          "p99_m": 0.023483221421057323,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 1434947985
+            },
+            "phases": {
+              "approach": {
+                "frames": 14350,
+                "max_m": 0.13029655516249294,
+                "p99_m": 0.023314249270811452
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.03712247129861491,
+                "p99_m": 0.035669364246694625
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_008_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_03",
+          "role": "feint",
+          "execution_method": "feint",
+          "cruise_speed_m_s": 4.632649197420282,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 19,
+          "route_length_km": 6.3968231602114995,
+          "motion_window_start_frame": 0,
+          "motion_window_end_frame": 14350,
+          "motion_window_duration_s": 1435.1000000000001,
+          "range_km": 6.3972974337760515,
+          "low_speed_event_count": 20,
+          "events_per_km": 3.1263201698900613,
+          "low_speed_time_share": 0.025433767681694655,
+          "speed_over_cruise_p10": 0.9999998967848457,
+          "speed_over_cruise_p50": 0.9999999999999998,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 0.2,
+              "end_s": 20.5,
+              "duration_s": 20.3,
+              "minimum_frame": 200,
+              "minimum_time_s": 20.0,
+              "minimum_speed_m_s": 3.520172986977758e-07,
+              "position_xy_m": [
+                3949.9999995264557,
+                2708.180787547844
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 103.53789217558725,
+              "vertex_turn_deg": 23.036899999716958
+            },
+            {
+              "start_s": 43.8,
+              "end_s": 44.5,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 442,
+              "minimum_time_s": 44.2,
+              "minimum_speed_m_s": 0.5456737473317028,
+              "position_xy_m": [
+                3849.753609273564,
+                2681.3293720581987
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 0.24696455857479732,
+              "vertex_turn_deg": 23.036899999716958
+            },
+            {
+              "start_s": 45.8,
+              "end_s": 46.7,
+              "duration_s": 0.9,
+              "minimum_frame": 464,
+              "minimum_time_s": 46.4,
+              "minimum_speed_m_s": 0.5193250857285895,
+              "position_xy_m": [
+                3847.2868143036762,
+                2681.749150413696
+              ],
+              "nearest_vertex_index": 2,
+              "distance_to_vertex_m": 0.2491052646038,
+              "vertex_turn_deg": 8.015695139911243
+            },
+            {
+              "start_s": 430.8,
+              "end_s": 431.5,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 4312,
+              "minimum_time_s": 431.2,
+              "minimum_speed_m_s": 0.5521578651331426,
+              "position_xy_m": [
+                2141.393798139547,
+                3171.921834045601
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 0.2527099602787247,
+              "vertex_turn_deg": 4.781390279852784
+            },
+            {
+              "start_s": 434.3,
+              "end_s": 435.1,
+              "duration_s": 0.8,
+              "minimum_frame": 4348,
+              "minimum_time_s": 434.8,
+              "minimum_speed_m_s": 0.554272176412262,
+              "position_xy_m": [
+                2132.846337031495,
+                3173.5806561107224
+              ],
+              "nearest_vertex_index": 4,
+              "distance_to_vertex_m": 0.2839698173570654,
+              "vertex_turn_deg": 11.249999999978419
+            },
+            {
+              "start_s": 437.0,
+              "end_s": 437.8,
+              "duration_s": 0.8,
+              "minimum_frame": 4375,
+              "minimum_time_s": 437.5,
+              "minimum_speed_m_s": 0.5386780988444098,
+              "position_xy_m": [
+                2128.243831191572,
+                3173.550701760057
+              ],
+              "nearest_vertex_index": 5,
+              "distance_to_vertex_m": 0.27243077100557184,
+              "vertex_turn_deg": 1.4593865258316117
+            },
+            {
+              "start_s": 522.7,
+              "end_s": 523.5,
+              "duration_s": 0.8,
+              "minimum_frame": 5232,
+              "minimum_time_s": 523.2,
+              "minimum_speed_m_s": 0.5542127348456884,
+              "position_xy_m": [
+                1739.1222567377106,
+                3163.6103927201966
+              ],
+              "nearest_vertex_index": 6,
+              "distance_to_vertex_m": 0.2817735144334912,
+              "vertex_turn_deg": 9.238543287649675
+            },
+            {
+              "start_s": 547.7,
+              "end_s": 548.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 5481,
+              "minimum_time_s": 548.1,
+              "minimum_speed_m_s": 0.5599172133324417,
+              "position_xy_m": [
+                1633.054999066639,
+                3143.5496935059364
+              ],
+              "nearest_vertex_index": 7,
+              "distance_to_vertex_m": 0.24130469678431782,
+              "vertex_turn_deg": 0.552070186497673
+            },
+            {
+              "start_s": 600.0,
+              "end_s": 600.8000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 6005,
+              "minimum_time_s": 600.5,
+              "minimum_speed_m_s": 0.5471608947101243,
+              "position_xy_m": [
+                1402.74248879925,
+                3097.7089880999233
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.26987746208254737,
+              "vertex_turn_deg": 11.250000000036655
+            },
+            {
+              "start_s": 652.2,
+              "end_s": 653.0,
+              "duration_s": 0.8,
+              "minimum_frame": 6527,
+              "minimum_time_s": 652.7,
+              "minimum_speed_m_s": 0.5578758978236177,
+              "position_xy_m": [
+                1186.5929148753467,
+                3008.11634423591
+              ],
+              "nearest_vertex_index": 9,
+              "distance_to_vertex_m": 0.2869088665253495,
+              "vertex_turn_deg": 11.249999999979009
+            },
+            {
+              "start_s": 704.4,
+              "end_s": 705.1,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 7048,
+              "minimum_time_s": 704.8,
+              "minimum_speed_m_s": 0.5525998348959333,
+              "position_xy_m": [
+                992.1171913507927,
+                2878.1120975356666
+              ],
+              "nearest_vertex_index": 10,
+              "distance_to_vertex_m": 0.24887619841723296,
+              "vertex_turn_deg": 11.249999999979236
+            },
+            {
+              "start_s": 756.5,
+              "end_s": 757.3000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 7570,
+              "minimum_time_s": 757.0,
+              "minimum_speed_m_s": 0.5467292475232053,
+              "position_xy_m": [
+                826.7034164741942,
+                2712.625333681779
+              ],
+              "nearest_vertex_index": 11,
+              "distance_to_vertex_m": 0.2658136580470912,
+              "vertex_turn_deg": 11.250000000036655
+            },
+            {
+              "start_s": 808.7,
+              "end_s": 809.5,
+              "duration_s": 0.8,
+              "minimum_frame": 8092,
+              "minimum_time_s": 809.2,
+              "minimum_speed_m_s": 0.5476256333040141,
+              "position_xy_m": [
+                696.6720153839183,
+                2517.934534223642
+              ],
+              "nearest_vertex_index": 12,
+              "distance_to_vertex_m": 0.26446112036425357,
+              "vertex_turn_deg": 9.255586105757825
+            },
+            {
+              "start_s": 987.1,
+              "end_s": 988.9,
+              "duration_s": 1.8,
+              "minimum_frame": 9877,
+              "minimum_time_s": 987.7,
+              "minimum_speed_m_s": 0.21748567905663202,
+              "position_xy_m": [
+                357.4929701431773,
+                1773.2843229566633
+              ],
+              "nearest_vertex_index": 13,
+              "distance_to_vertex_m": 0.06155101208117979,
+              "vertex_turn_deg": 121.59401810750441
+            },
+            {
+              "start_s": 1218.7,
+              "end_s": 1219.5,
+              "duration_s": 0.8,
+              "minimum_frame": 12191,
+              "minimum_time_s": 1219.1,
+              "minimum_speed_m_s": 0.5527649242484902,
+              "position_xy_m": [
+                1410.068617719982,
+                1904.4483768089735
+              ],
+              "nearest_vertex_index": 14,
+              "distance_to_vertex_m": 0.23824916632532125,
+              "vertex_turn_deg": 22.499999999999137
+            },
+            {
+              "start_s": 1221.8,
+              "end_s": 1222.6999999999998,
+              "duration_s": 0.9,
+              "minimum_frame": 12223,
+              "minimum_time_s": 1222.3,
+              "minimum_speed_m_s": 0.5238391347420608,
+              "position_xy_m": [
+                1415.940921540508,
+                1907.9508632181066
+              ],
+              "nearest_vertex_index": 15,
+              "distance_to_vertex_m": 0.24257815286681805,
+              "vertex_turn_deg": 45.0000000000016
+            },
+            {
+              "start_s": 1225.0,
+              "end_s": 1225.8999999999999,
+              "duration_s": 0.9,
+              "minimum_frame": 12256,
+              "minimum_time_s": 1225.6,
+              "minimum_speed_m_s": 0.5183980322722432,
+              "position_xy_m": [
+                1417.558990276336,
+                1914.637404691884
+              ],
+              "nearest_vertex_index": 16,
+              "distance_to_vertex_m": 0.28453509432541885,
+              "vertex_turn_deg": 44.999999999998415
+            },
+            {
+              "start_s": 1228.3,
+              "end_s": 1229.1,
+              "duration_s": 0.8,
+              "minimum_frame": 12288,
+              "minimum_time_s": 1228.8,
+              "minimum_speed_m_s": 0.5146101447805883,
+              "position_xy_m": [
+                1414.0027085711065,
+                1920.4684571155963
+              ],
+              "nearest_vertex_index": 17,
+              "distance_to_vertex_m": 0.27739914990944986,
+              "vertex_turn_deg": 45.000000000001585
+            },
+            {
+              "start_s": 1234.9,
+              "end_s": 1235.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 12354,
+              "minimum_time_s": 1235.4,
+              "minimum_speed_m_s": 0.5478506424867815,
+              "position_xy_m": [
+                1391.8783523654372,
+                1926.4414261658358
+              ],
+              "nearest_vertex_index": 18,
+              "distance_to_vertex_m": 0.2576320201948384,
+              "vertex_turn_deg": 11.465463320742364
+            },
+            {
+              "start_s": 1237.3,
+              "end_s": 1238.1999999999998,
+              "duration_s": 0.9,
+              "minimum_frame": 12379,
+              "minimum_time_s": 1237.9,
+              "minimum_speed_m_s": 0.5288717560045699,
+              "position_xy_m": [
+                1388.3156983177075,
+                1926.6288080039221
+              ],
+              "nearest_vertex_index": 19,
+              "distance_to_vertex_m": 0.2691740104366754,
+              "vertex_turn_deg": 11.465463320746075
+            }
+          ]
+        },
+        "motion_s": 1435.1000000000001,
+        "dwell": {
+          "detected": true,
+          "frame_index": 12122,
+          "confirm_frame_index": 12322,
+          "t_s": 1212.2,
+          "t_confirm": 1232.2,
+          "total_duration_s": 25.6,
+          "union_frame_intervals": [
+            [
+              12122,
+              12378
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_01\\r2\\result.json",
+        "sha256": "b1fef737fe79c0a6c250307316c7e090c4f6b8d8280f5191919652997491e016"
+      },
+      "r3": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true,
+          "precision": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.2397823232807004,
+          "p99_m": 0.07664802762858076,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 1422212023
+            },
+            "phases": {
+              "approach": {
+                "frames": 14223,
+                "max_m": 0.2397823232807004,
+                "p99_m": 0.07666341299253877
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.041836384739520525,
+                "p99_m": 0.04053070737133273
+              }
+            }
+          },
+          "gate_mode": "ABSOLUTE"
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_008_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_03",
+          "role": "feint",
+          "execution_method": "feint",
+          "cruise_speed_m_s": 4.632649197420282,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 19,
+          "route_length_km": 6.3968231602114995,
+          "motion_window_start_frame": 0,
+          "motion_window_end_frame": 14223,
+          "motion_window_duration_s": 1422.4,
+          "range_km": 6.396406939327464,
+          "low_speed_event_count": 2,
+          "events_per_km": 0.3126755409671114,
+          "low_speed_time_share": 0.015607424071991002,
+          "speed_over_cruise_p10": 0.9999999805563529,
+          "speed_over_cruise_p50": 0.9999999999999998,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 0.2,
+              "end_s": 20.5,
+              "duration_s": 20.3,
+              "minimum_frame": 200,
+              "minimum_time_s": 20.0,
+              "minimum_speed_m_s": 3.520172986977758e-07,
+              "position_xy_m": [
+                3949.9999995264557,
+                2708.180787547844
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 103.53789217558725,
+              "vertex_turn_deg": 23.036899999716958
+            },
+            {
+              "start_s": 976.3,
+              "end_s": 978.2,
+              "duration_s": 1.9000000000000001,
+              "minimum_frame": 9769,
+              "minimum_time_s": 976.9,
+              "minimum_speed_m_s": 0.4242742717392045,
+              "position_xy_m": [
+                357.60840461226803,
+                1773.4086696852103
+              ],
+              "nearest_vertex_index": 13,
+              "distance_to_vertex_m": 0.20663815436366106,
+              "vertex_turn_deg": 121.59401810750441
+            }
+          ]
+        },
+        "motion_s": 1422.4,
+        "dwell": {
+          "detected": true,
+          "frame_index": 12010,
+          "confirm_frame_index": 12210,
+          "t_s": 1201.0,
+          "t_confirm": 1221.0,
+          "total_duration_s": 25.3,
+          "union_frame_intervals": [
+            [
+              12010,
+              12263
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_01\\r3\\result.json",
+        "sha256": "56e7399fa25169dac539d065ea29893b56eccfc7e6be45d79521954a58eb6ada"
+      }
+    },
+    {
+      "probe_id": "probe_02",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.12794642240615955,
+          "p99_m": 0.014623494708211553,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 1121295904
+            },
+            "phases": {
+              "approach": {
+                "frames": 11213,
+                "max_m": 0.12794642240615955,
+                "p99_m": 0.014239643665680085
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.034763710166274754,
+                "p99_m": 0.03309973393202608
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_38bedc9d791d547b_ext_008_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_05",
+          "role": "feint",
+          "execution_method": "feint",
+          "cruise_speed_m_s": 5.142529797533503,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 11,
+          "route_length_km": 5.554269099874588,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 11214,
+          "motion_window_duration_s": 1101.0,
+          "range_km": 5.5537562545658865,
+          "low_speed_event_count": 11,
+          "events_per_km": 1.9806414786310824,
+          "low_speed_time_share": 0.00826521344232516,
+          "speed_over_cruise_p10": 0.9999999999999988,
+          "speed_over_cruise_p50": 1.0,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 53.6,
+              "end_s": 54.4,
+              "duration_s": 0.8,
+              "minimum_frame": 541,
+              "minimum_time_s": 54.1,
+              "minimum_speed_m_s": 0.5523290255488721,
+              "position_xy_m": [
+                4148.246263044444,
+                215.4504850180407
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 0.2639173227663518,
+              "vertex_turn_deg": 6.276954945998889
+            },
+            {
+              "start_s": 106.8,
+              "end_s": 107.6,
+              "duration_s": 0.8,
+              "minimum_frame": 1073,
+              "minimum_time_s": 107.3,
+              "minimum_speed_m_s": 0.562731094493238,
+              "position_xy_m": [
+                4119.324315757768,
+                478.13828551666063
+              ],
+              "nearest_vertex_index": 2,
+              "distance_to_vertex_m": 0.2864077804994415,
+              "vertex_turn_deg": 4.973045053979569
+            },
+            {
+              "start_s": 113.3,
+              "end_s": 114.1,
+              "duration_s": 0.8,
+              "minimum_frame": 1138,
+              "minimum_time_s": 113.8,
+              "minimum_speed_m_s": 0.5631789629729956,
+              "position_xy_m": [
+                4114.561833468264,
+                501.9731252686404
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 0.28652591093652935,
+              "vertex_turn_deg": 3.495205471166619
+            },
+            {
+              "start_s": 345.1,
+              "end_s": 345.90000000000003,
+              "duration_s": 0.8,
+              "minimum_frame": 3456,
+              "minimum_time_s": 345.6,
+              "minimum_speed_m_s": 0.5668982415635958,
+              "position_xy_m": [
+                3813.474848155302,
+                1645.9043695764046
+              ],
+              "nearest_vertex_index": 4,
+              "distance_to_vertex_m": 0.2900853313963736,
+              "vertex_turn_deg": 3.1669501369626984
+            },
+            {
+              "start_s": 666.1,
+              "end_s": 667.0,
+              "duration_s": 0.9,
+              "minimum_frame": 6666,
+              "minimum_time_s": 666.6,
+              "minimum_speed_m_s": 0.499500148322148,
+              "position_xy_m": [
+                3308.440887192167,
+                3207.8309017046886
+              ],
+              "nearest_vertex_index": 5,
+              "distance_to_vertex_m": 0.2460939379317346,
+              "vertex_turn_deg": 72.84657842838354
+            },
+            {
+              "start_s": 876.9,
+              "end_s": 877.7,
+              "duration_s": 0.8,
+              "minimum_frame": 8774,
+              "minimum_time_s": 877.4,
+              "minimum_speed_m_s": 0.5422619766086182,
+              "position_xy_m": [
+                2234.1660712071284,
+                3193.4226537040945
+              ],
+              "nearest_vertex_index": 6,
+              "distance_to_vertex_m": 0.27120858379598894,
+              "vertex_turn_deg": 22.49999999999934
+            },
+            {
+              "start_s": 880.2,
+              "end_s": 881.0,
+              "duration_s": 0.8,
+              "minimum_frame": 8807,
+              "minimum_time_s": 880.7,
+              "minimum_speed_m_s": 0.5212029257413688,
+              "position_xy_m": [
+                2227.493993281323,
+                3190.3605524751274
+              ],
+              "nearest_vertex_index": 7,
+              "distance_to_vertex_m": 0.28760575122027565,
+              "vertex_turn_deg": 45.00000000000025
+            },
+            {
+              "start_s": 883.4,
+              "end_s": 884.3000000000001,
+              "duration_s": 0.9,
+              "minimum_frame": 8839,
+              "minimum_time_s": 883.9,
+              "minimum_speed_m_s": 0.5239825356378846,
+              "position_xy_m": [
+                2224.966158082502,
+                3183.5087053424704
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.24582555127433978,
+              "vertex_turn_deg": 44.999999999999766
+            },
+            {
+              "start_s": 886.7,
+              "end_s": 887.6,
+              "duration_s": 0.9,
+              "minimum_frame": 8872,
+              "minimum_time_s": 887.2,
+              "minimum_speed_m_s": 0.5210095285903696,
+              "position_xy_m": [
+                2228.046402835265,
+                3176.8317165800727
+              ],
+              "nearest_vertex_index": 9,
+              "distance_to_vertex_m": 0.25339932001117565,
+              "vertex_turn_deg": 45.00000000000015
+            },
+            {
+              "start_s": 893.4,
+              "end_s": 894.1,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8938,
+              "minimum_time_s": 893.8,
+              "minimum_speed_m_s": 0.5512512182679297,
+              "position_xy_m": [
+                2250.9637024530202,
+                3167.8188181056444
+              ],
+              "nearest_vertex_index": 10,
+              "distance_to_vertex_m": 0.25946564462095356,
+              "vertex_turn_deg": 11.432514489860552
+            },
+            {
+              "start_s": 895.8,
+              "end_s": 896.7,
+              "duration_s": 0.9,
+              "minimum_frame": 8963,
+              "minimum_time_s": 896.3,
+              "minimum_speed_m_s": 0.5375338271795282,
+              "position_xy_m": [
+                2254.696218107822,
+                3167.1928463241966
+              ],
+              "nearest_vertex_index": 11,
+              "distance_to_vertex_m": 0.23843860711465376,
+              "vertex_turn_deg": 11.432514489863472
+            }
+          ]
+        },
+        "motion_s": 1101.0,
+        "dwell": {
+          "detected": true,
+          "frame_index": 8710,
+          "confirm_frame_index": 8910,
+          "t_s": 871.0,
+          "t_confirm": 891.0,
+          "total_duration_s": 24.3,
+          "union_frame_intervals": [
+            [
+              8710,
+              8953
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_02\\r2\\result.json",
+        "sha256": "e44cfbcd964e23bc146c14c6bc33bb6773b64741c124cb79fb79543c5d9e3381"
+      },
+      "r3": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true,
+          "precision": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.2513904118311503,
+          "p99_m": 0.06701488962314373,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 1112090386
+            },
+            "phases": {
+              "approach": {
+                "frames": 11121,
+                "max_m": 0.2513904118311503,
+                "p99_m": 0.06714897088108844
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.035669757032040256,
+                "p99_m": 0.0340319394184054
+              }
+            }
+          },
+          "gate_mode": "ABSOLUTE"
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_38bedc9d791d547b_ext_008_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_05",
+          "role": "feint",
+          "execution_method": "feint",
+          "cruise_speed_m_s": 5.142529797533503,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 11,
+          "route_length_km": 5.554269099874588,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 11122,
+          "motion_window_duration_s": 1091.8,
+          "range_km": 5.553119653864378,
+          "low_speed_event_count": 0,
+          "events_per_km": 0.0,
+          "low_speed_time_share": 0.0,
+          "speed_over_cruise_p10": 0.9999999999999991,
+          "speed_over_cruise_p50": 1.0,
+          "empty_motion_window": false,
+          "events": []
+        },
+        "motion_s": 1091.8,
+        "dwell": {
+          "detected": true,
+          "frame_index": 8633,
+          "confirm_frame_index": 8833,
+          "t_s": 863.3,
+          "t_confirm": 883.3,
+          "total_duration_s": 24.2,
+          "union_frame_intervals": [
+            [
+              8633,
+              8875
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_02\\r3\\result.json",
+        "sha256": "858bc0513ef50788ea0aa3b49118de20c0e85cd88bf20199ec30b550c9991b1d"
+      }
+    },
+    {
+      "probe_id": "probe_03",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.12369702790131203,
+          "p99_m": 0.012621596679241318,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 1786492565
+            },
+            "phases": {
+              "approach": {
+                "frames": 17865,
+                "max_m": 0.12369702790131203,
+                "p99_m": 0.012561723512481408
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.02864863488543544,
+                "p99_m": 0.026994333920848136
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_c713f51898e81011_ext_003_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "feint",
+          "execution_method": "feint",
+          "cruise_speed_m_s": 4.45271288532311,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 14,
+          "route_length_km": 7.75318614877084,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 17866,
+          "motion_window_duration_s": 1766.2,
+          "range_km": 7.752639411223415,
+          "low_speed_event_count": 14,
+          "events_per_km": 1.8058366005946758,
+          "low_speed_time_share": 0.007077341184463821,
+          "speed_over_cruise_p10": 0.9999999999999992,
+          "speed_over_cruise_p50": 0.9999999999999998,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 43.8,
+              "end_s": 44.800000000000004,
+              "duration_s": 1.0,
+              "minimum_frame": 443,
+              "minimum_time_s": 44.3,
+              "minimum_speed_m_s": 0.4872242867259157,
+              "position_xy_m": [
+                597.6677821223373,
+                5849.844569736381
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 0.2182009980493918,
+              "vertex_turn_deg": 79.10948978799772
+            },
+            {
+              "start_s": 953.2,
+              "end_s": 954.0,
+              "duration_s": 0.8,
+              "minimum_frame": 9537,
+              "minimum_time_s": 953.7,
+              "minimum_speed_m_s": 0.5613471279118392,
+              "position_xy_m": [
+                4566.165195624332,
+                5086.439047434086
+              ],
+              "nearest_vertex_index": 2,
+              "distance_to_vertex_m": 0.2881380050205733,
+              "vertex_turn_deg": 0.3594897879690633
+            },
+            {
+              "start_s": 957.9,
+              "end_s": 958.7,
+              "duration_s": 0.8,
+              "minimum_frame": 9584,
+              "minimum_time_s": 958.4,
+              "minimum_speed_m_s": 0.5480128874710514,
+              "position_xy_m": [
+                4579.831273110929,
+                5083.694926047976
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 0.2540667371441539,
+              "vertex_turn_deg": 11.250000000035383
+            },
+            {
+              "start_s": 962.4,
+              "end_s": 963.2,
+              "duration_s": 0.8,
+              "minimum_frame": 9629,
+              "minimum_time_s": 962.9,
+              "minimum_speed_m_s": 0.5464684498612605,
+              "position_xy_m": [
+                4591.595347471028,
+                5078.7717825325735
+              ],
+              "nearest_vertex_index": 4,
+              "distance_to_vertex_m": 0.2607271084562807,
+              "vertex_turn_deg": 9.281407320764087
+            },
+            {
+              "start_s": 1040.3,
+              "end_s": 1041.1,
+              "duration_s": 0.8,
+              "minimum_frame": 10408,
+              "minimum_time_s": 1040.8,
+              "minimum_speed_m_s": 0.5479927505795189,
+              "position_xy_m": [
+                4880.281208267508,
+                4899.8784951839625
+              ],
+              "nearest_vertex_index": 5,
+              "distance_to_vertex_m": 0.26326253135035427,
+              "vertex_turn_deg": 1.9685926792144008
+            },
+            {
+              "start_s": 1043.8,
+              "end_s": 1044.6,
+              "duration_s": 0.8,
+              "minimum_frame": 10443,
+              "minimum_time_s": 1044.3,
+              "minimum_speed_m_s": 0.5484307756971084,
+              "position_xy_m": [
+                4887.096683117885,
+                4895.284431263721
+              ],
+              "nearest_vertex_index": 6,
+              "distance_to_vertex_m": 0.27804124634095856,
+              "vertex_turn_deg": 11.250000000039883
+            },
+            {
+              "start_s": 1048.6,
+              "end_s": 1049.3,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10490,
+              "minimum_time_s": 1049.0,
+              "minimum_speed_m_s": 0.5560030533609587,
+              "position_xy_m": [
+                4896.927982697616,
+                4885.400548899797
+              ],
+              "nearest_vertex_index": 7,
+              "distance_to_vertex_m": 0.24377813792886402,
+              "vertex_turn_deg": 5.6941536540163655
+            },
+            {
+              "start_s": 1345.3,
+              "end_s": 1347.1,
+              "duration_s": 1.8,
+              "minimum_frame": 13459,
+              "minimum_time_s": 1345.9,
+              "minimum_speed_m_s": 0.22197065656835446,
+              "position_xy_m": [
+                5729.222506080235,
+                3868.646632156561
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.05224744463071015,
+              "vertex_turn_deg": 120.77270516129757
+            },
+            {
+              "start_s": 1559.0,
+              "end_s": 1559.8,
+              "duration_s": 0.8,
+              "minimum_frame": 15595,
+              "minimum_time_s": 1559.5,
+              "minimum_speed_m_s": 0.5418834623639928,
+              "position_xy_m": [
+                4799.451127061588,
+                3729.107830441873
+              ],
+              "nearest_vertex_index": 9,
+              "distance_to_vertex_m": 0.2538102211327116,
+              "vertex_turn_deg": 22.499999999999638
+            },
+            {
+              "start_s": 1562.6,
+              "end_s": 1563.5,
+              "duration_s": 0.9,
+              "minimum_frame": 15631,
+              "minimum_time_s": 1563.1,
+              "minimum_speed_m_s": 0.5212572654964738,
+              "position_xy_m": [
+                4792.124892962716,
+                3724.5244970268764
+              ],
+              "nearest_vertex_index": 10,
+              "distance_to_vertex_m": 0.25132150735609937,
+              "vertex_turn_deg": 44.999999999998614
+            },
+            {
+              "start_s": 1566.2,
+              "end_s": 1567.1,
+              "duration_s": 0.9,
+              "minimum_frame": 15668,
+              "minimum_time_s": 1566.8,
+              "minimum_speed_m_s": 0.5205602511995133,
+              "position_xy_m": [
+                4790.2410018487835,
+                3716.0456830733046
+              ],
+              "nearest_vertex_index": 11,
+              "distance_to_vertex_m": 0.2871391345591032,
+              "vertex_turn_deg": 45.000000000004995
+            },
+            {
+              "start_s": 1569.9,
+              "end_s": 1570.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 15704,
+              "minimum_time_s": 1570.4,
+              "minimum_speed_m_s": 0.514273724701821,
+              "position_xy_m": [
+                4794.872236045553,
+                3708.754553066672
+              ],
+              "nearest_vertex_index": 12,
+              "distance_to_vertex_m": 0.27389809012994487,
+              "vertex_turn_deg": 44.99999999999834
+            },
+            {
+              "start_s": 1578.1,
+              "end_s": 1578.8,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 15785,
+              "minimum_time_s": 1578.5,
+              "minimum_speed_m_s": 0.5554833791966013,
+              "position_xy_m": [
+                4823.006832660488,
+                3701.8763328278255
+              ],
+              "nearest_vertex_index": 13,
+              "distance_to_vertex_m": 0.24194109535739516,
+              "vertex_turn_deg": 11.521959041835842
+            },
+            {
+              "start_s": 1580.7,
+              "end_s": 1581.6,
+              "duration_s": 0.9,
+              "minimum_frame": 15812,
+              "minimum_time_s": 1581.2,
+              "minimum_speed_m_s": 0.5412948146289014,
+              "position_xy_m": [
+                4827.523767492692,
+                3701.734227221001
+              ],
+              "nearest_vertex_index": 14,
+              "distance_to_vertex_m": 0.2411705225128043,
+              "vertex_turn_deg": 11.52195904183683
+            }
+          ]
+        },
+        "motion_s": 1766.2,
+        "dwell": {
+          "detected": true,
+          "frame_index": 15537,
+          "confirm_frame_index": 15737,
+          "t_s": 1553.7,
+          "t_confirm": 1573.7,
+          "total_duration_s": 22.9,
+          "union_frame_intervals": [
+            [
+              15537,
+              15766
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_03\\r2\\result.json",
+        "sha256": "5f12639957ea77d73cfe43f630b98ddd948b9dbe7c9b98d04245bba7e0d5950b"
+      },
+      "r3": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true,
+          "precision": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.23029351215445001,
+          "p99_m": 0.017031529846923833,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 1777517486
+            },
+            "phases": {
+              "approach": {
+                "frames": 17776,
+                "max_m": 0.23029351215445001,
+                "p99_m": 0.016828658311152368
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.0392809610012643,
+                "p99_m": 0.03795061710479439
+              }
+            }
+          },
+          "gate_mode": "ABSOLUTE"
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_c713f51898e81011_ext_003_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "feint",
+          "execution_method": "feint",
+          "cruise_speed_m_s": 4.45271288532311,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 14,
+          "route_length_km": 7.75318614877084,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 17776,
+          "motion_window_duration_s": 1757.2,
+          "range_km": 7.751661256242287,
+          "low_speed_event_count": 1,
+          "events_per_km": 0.12900460519926824,
+          "low_speed_time_share": 0.0010812656498975642,
+          "speed_over_cruise_p10": 0.9999999999999994,
+          "speed_over_cruise_p50": 0.9999999999999998,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 1338.5,
+              "end_s": 1340.3999999999999,
+              "duration_s": 1.9000000000000001,
+              "minimum_frame": 13391,
+              "minimum_time_s": 1339.1,
+              "minimum_speed_m_s": 0.43377450532269757,
+              "position_xy_m": [
+                5729.072230580642,
+                3868.7288269383325
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.20582385210237036,
+              "vertex_turn_deg": 120.77270516129757
+            }
+          ]
+        },
+        "motion_s": 1757.2,
+        "dwell": {
+          "detected": true,
+          "frame_index": 15466,
+          "confirm_frame_index": 15666,
+          "t_s": 1546.6,
+          "t_confirm": 1566.6,
+          "total_duration_s": 22.3,
+          "union_frame_intervals": [
+            [
+              15466,
+              15689
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_03\\r3\\result.json",
+        "sha256": "4acc9a2a447f32d5cf509a9c907d39af5883df97372353819d881a7b3832a6a5"
+      }
+    },
+    {
+      "probe_id": "probe_04",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.11503652609746229,
+          "p99_m": 0.012655826874997483,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 928575452
+            },
+            "phases": {
+              "approach": {
+                "frames": 9286,
+                "max_m": 0.11503652609746229,
+                "p99_m": 0.011699412979940203
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.03312107945275987,
+                "p99_m": 0.031547376729329224
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_005_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "transit",
+          "execution_method": "transit",
+          "cruise_speed_m_s": 4.632649197420282,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 4,
+          "route_length_km": 4.171704518561646,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 9287,
+          "motion_window_duration_s": 908.3000000000001,
+          "range_km": 4.171141403123745,
+          "low_speed_event_count": 4,
+          "events_per_km": 0.9589701267390317,
+          "low_speed_time_share": 0.003523065066607949,
+          "speed_over_cruise_p10": 0.9999999999999994,
+          "speed_over_cruise_p50": 1.0,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 42.1,
+              "end_s": 42.9,
+              "duration_s": 0.8,
+              "minimum_frame": 426,
+              "minimum_time_s": 42.6,
+              "minimum_speed_m_s": 0.5045737312863116,
+              "position_xy_m": [
+                3854.434117423749,
+                2663.3264033279575
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 0.2651517568227827,
+              "vertex_turn_deg": 60.44853349802988
+            },
+            {
+              "start_s": 536.8,
+              "end_s": 537.6,
+              "duration_s": 0.8,
+              "minimum_frame": 5373,
+              "minimum_time_s": 537.3,
+              "minimum_speed_m_s": 0.5464302128309934,
+              "position_xy_m": [
+                2547.4485737955124,
+                790.4761995643449
+              ],
+              "nearest_vertex_index": 2,
+              "distance_to_vertex_m": 0.2736086717597478,
+              "vertex_turn_deg": 14.6709476768201
+            },
+            {
+              "start_s": 539.5,
+              "end_s": 540.3000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 5400,
+              "minimum_time_s": 540.0,
+              "minimum_speed_m_s": 0.5225374960457718,
+              "position_xy_m": [
+                2543.9411801663623,
+                787.6332514222191
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 0.2652032903433942,
+              "vertex_turn_deg": 29.34189535363844
+            },
+            {
+              "start_s": 542.2,
+              "end_s": 543.0,
+              "duration_s": 0.8,
+              "minimum_frame": 5427,
+              "minimum_time_s": 542.7,
+              "minimum_speed_m_s": 0.5323957908346011,
+              "position_xy_m": [
+                2539.479641806639,
+                786.8563204560554
+              ],
+              "nearest_vertex_index": 4,
+              "distance_to_vertex_m": 0.2579945335028061,
+              "vertex_turn_deg": 14.670947676820377
+            }
+          ]
+        },
+        "motion_s": 908.3000000000001,
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_04\\r2\\result.json",
+        "sha256": "ce3df2d1aeea97b1273e92c30d798a3e2fa03f31d4199e2db764d3f6ec06cc9a"
+      },
+      "r3": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true,
+          "precision": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.24004336355389483,
+          "p99_m": 0.010353400673736475,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 926947096
+            },
+            "phases": {
+              "approach": {
+                "frames": 9270,
+                "max_m": 0.24004336355389483,
+                "p99_m": 0.009940715228025743
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.03724016721272191,
+                "p99_m": 0.03579084533540418
+              }
+            }
+          },
+          "gate_mode": "ABSOLUTE"
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_005_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "transit",
+          "execution_method": "transit",
+          "cruise_speed_m_s": 4.632649197420282,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 4,
+          "route_length_km": 4.171704518561646,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 9270,
+          "motion_window_duration_s": 906.6,
+          "range_km": 4.1707849004413236,
+          "low_speed_event_count": 0,
+          "events_per_km": 0.0,
+          "low_speed_time_share": 0.0,
+          "speed_over_cruise_p10": 0.9999999999999994,
+          "speed_over_cruise_p50": 1.0,
+          "empty_motion_window": false,
+          "events": []
+        },
+        "motion_s": 906.6,
+        "dwell": {
+          "detected": false,
+          "frame_index": null,
+          "confirm_frame_index": null,
+          "t_s": null,
+          "t_confirm": null,
+          "total_duration_s": 0,
+          "union_frame_intervals": []
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_04\\r3\\result.json",
+        "sha256": "5142a94d01debbc67e72224861039232d5b5662278b5c09ed442464672659836"
+      }
+    },
+    {
+      "probe_id": "probe_05",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "FAIL",
+          "max_m": 1.7849249178526083,
+          "p99_m": 0.8145443254244069,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 489788197,
+              "hold_start_us": 332100000,
+              "hold_end_us": 392600000
+            },
+            "phases": {
+              "approach": {
+                "frames": 3321,
+                "max_m": 1.7847768233500276,
+                "p99_m": 0.8546349531884775
+              },
+              "dwell": {
+                "frames": 605,
+                "max_m": 0.19074986319499798,
+                "p99_m": 0.12216143397797305
+              },
+              "departure": {
+                "frames": 972,
+                "max_m": 1.6077746776921857e-11,
+                "p99_m": 8.8989275154825e-12
+              },
+              "terminal_stop": {
+                "frames": 18,
+                "max_m": 1.7849249178526083,
+                "p99_m": 1.7842877961221466
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1c267d4d7000043d_ext_006_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "reconnaissance",
+          "execution_method": "close_observation",
+          "cruise_speed_m_s": 8.50894091640843,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 3,
+          "route_length_km": 3.3676238998622186,
+          "motion_window_start_frame": 0,
+          "motion_window_end_frame": 4906,
+          "motion_window_duration_s": 490.70000000000005,
+          "range_km": 3.376739569490175,
+          "low_speed_event_count": 4,
+          "events_per_km": 1.1845746222602311,
+          "low_speed_time_share": 0.1768901569186876,
+          "speed_over_cruise_p10": 3.5161856938015163e-07,
+          "speed_over_cruise_p50": 1.0,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 0.1,
+              "end_s": 20.5,
+              "duration_s": 20.400000000000002,
+              "minimum_frame": 200,
+              "minimum_time_s": 20.0,
+              "minimum_speed_m_s": 3.1952774163150114e-07,
+              "position_xy_m": [
+                50.00000043014545,
+                3274.642613492364
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 95.54622132590167,
+              "vertex_turn_deg": 26.17167813920424
+            },
+            {
+              "start_s": 34.0,
+              "end_s": 34.800000000000004,
+              "duration_s": 0.8,
+              "minimum_frame": 343,
+              "minimum_time_s": 34.3,
+              "minimum_speed_m_s": 0.19254841334563608,
+              "position_xy_m": [
+                148.55091671436878,
+                3274.2375659683526
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 3.0318732298764512,
+              "vertex_turn_deg": 26.17167813920424
+            },
+            {
+              "start_s": 35.6,
+              "end_s": 36.300000000000004,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 360,
+              "minimum_time_s": 36.0,
+              "minimum_speed_m_s": 0.31155738113100856,
+              "position_xy_m": [
+                147.0526098616427,
+                3274.3364349895783
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 1.5371891213454507,
+              "vertex_turn_deg": 26.17167813920424
+            },
+            {
+              "start_s": 328.2,
+              "end_s": 393.1,
+              "duration_s": 64.9,
+              "minimum_frame": 3745,
+              "minimum_time_s": 374.5,
+              "minimum_speed_m_s": 8.038873388460933e-12,
+              "position_xy_m": [
+                2318.2512703166935,
+                2129.5997014838517
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 1.6077746776921857e-11,
+              "vertex_turn_deg": 180.0
+            }
+          ]
+        },
+        "motion_s": 490.70000000000005,
+        "dwell": {
+          "detected": true,
+          "frame_index": 3236,
+          "confirm_frame_index": 3436,
+          "t_s": 323.6,
+          "t_confirm": 343.6,
+          "total_duration_s": 73.8,
+          "union_frame_intervals": [
+            [
+              3236,
+              3974
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_05\\r2\\result.json",
+        "sha256": "c319c6fb6cb7368cef459a92afdc6900be9d3e247ded38cb6b874a38b864eaa7"
+      },
+      "r3": {
+        "status": "FAIL",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true,
+          "precision": false
+        },
+        "precision": {
+          "absolute_status": "FAIL",
+          "max_m": 1.7853429850690588,
+          "p99_m": 0.4317275168865178,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 487288197,
+              "hold_start_us": 329600000,
+              "hold_end_us": 390100000
+            },
+            "phases": {
+              "approach": {
+                "frames": 3296,
+                "max_m": 1.7853429850690588,
+                "p99_m": 0.4621354268927357
+              },
+              "dwell": {
+                "frames": 605,
+                "max_m": 0.19208632339733323,
+                "p99_m": 0.12302069734606644
+              },
+              "departure": {
+                "frames": 972,
+                "max_m": 1.6077746776921857e-11,
+                "p99_m": 8.8989275154825e-12
+              },
+              "terminal_stop": {
+                "frames": 18,
+                "max_m": 1.7849249178526083,
+                "p99_m": 1.7842877961221466
+              }
+            }
+          },
+          "relative_by_phase": {
+            "approach": {
+              "baseline": {
+                "frames": 3321,
+                "max_m": 1.7847768233500276,
+                "p99_m": 0.8546349531884775
+              },
+              "candidate": {
+                "frames": 3296,
+                "max_m": 1.7853429850690588,
+                "p99_m": 0.4621354268927357
+              },
+              "passed": false
+            },
+            "dwell": {
+              "baseline": {
+                "frames": 605,
+                "max_m": 0.19074986319499798,
+                "p99_m": 0.12216143397797305
+              },
+              "candidate": {
+                "frames": 605,
+                "max_m": 0.19208632339733323,
+                "p99_m": 0.12302069734606644
+              },
+              "passed": false
+            },
+            "departure": {
+              "baseline": {
+                "frames": 972,
+                "max_m": 1.6077746776921857e-11,
+                "p99_m": 8.8989275154825e-12
+              },
+              "candidate": {
+                "frames": 972,
+                "max_m": 1.6077746776921857e-11,
+                "p99_m": 8.8989275154825e-12
+              },
+              "passed": true
+            },
+            "terminal_stop": {
+              "baseline": {
+                "frames": 18,
+                "max_m": 1.7849249178526083,
+                "p99_m": 1.7842877961221466
+              },
+              "candidate": {
+                "frames": 18,
+                "max_m": 1.7849249178526083,
+                "p99_m": 1.7842877961221466
+              },
+              "passed": true
+            }
+          },
+          "gate_mode": "G2_PHASE_NONREGRESSION"
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1c267d4d7000043d_ext_006_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "reconnaissance",
+          "execution_method": "close_observation",
+          "cruise_speed_m_s": 8.50894091640843,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 3,
+          "route_length_km": 3.3676238998622186,
+          "motion_window_start_frame": 0,
+          "motion_window_end_frame": 4881,
+          "motion_window_duration_s": 488.20000000000005,
+          "range_km": 3.3736350693587585,
+          "low_speed_event_count": 2,
+          "events_per_km": 0.5928323481591471,
+          "low_speed_time_share": 0.17472347398607127,
+          "speed_over_cruise_p10": 3.2430282699520695e-07,
+          "speed_over_cruise_p50": 1.0,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 0.1,
+              "end_s": 20.5,
+              "duration_s": 20.400000000000002,
+              "minimum_frame": 200,
+              "minimum_time_s": 20.0,
+              "minimum_speed_m_s": 3.1952774163150114e-07,
+              "position_xy_m": [
+                50.00000043014545,
+                3274.642613492364
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 95.54622132590167,
+              "vertex_turn_deg": 26.17167813920424
+            },
+            {
+              "start_s": 325.7,
+              "end_s": 390.6,
+              "duration_s": 64.9,
+              "minimum_frame": 3721,
+              "minimum_time_s": 372.1,
+              "minimum_speed_m_s": 8.038873388460933e-12,
+              "position_xy_m": [
+                2318.2512703166935,
+                2129.5997014838517
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 1.6077746776921857e-11,
+              "vertex_turn_deg": 180.0
+            }
+          ]
+        },
+        "motion_s": 488.20000000000005,
+        "dwell": {
+          "detected": true,
+          "frame_index": 3211,
+          "confirm_frame_index": 3411,
+          "t_s": 321.1,
+          "t_confirm": 341.1,
+          "total_duration_s": 73.8,
+          "union_frame_intervals": [
+            [
+              3211,
+              3949
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_05\\r3\\result.json",
+        "sha256": "2794838e78bb9ea10800695c8aae651cad587b2c1d68a69b8a0de0376ca3c25f"
+      }
+    },
+    {
+      "probe_id": "probe_06",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.08867275294643737,
+          "p99_m": 0.013898109134109816,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 2234159396
+            },
+            "phases": {
+              "approach": {
+                "frames": 22342,
+                "max_m": 0.08867275294643737,
+                "p99_m": 0.013890921534365552
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.03542919037017435,
+                "p99_m": 0.033926925992181695
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_007_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_01",
+          "role": "monitoring",
+          "execution_method": "monitoring",
+          "cruise_speed_m_s": 4.632649197420282,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 98,
+          "route_length_km": 9.459143540044204,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 22342,
+          "motion_window_duration_s": 2213.8,
+          "range_km": 9.458618599952777,
+          "low_speed_event_count": 97,
+          "events_per_km": 10.255197307615752,
+          "low_speed_time_share": 0.03947962778932153,
+          "speed_over_cruise_p10": 0.6675007226235664,
+          "speed_over_cruise_p50": 0.9999999999992677,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 42.5,
+              "end_s": 43.300000000000004,
+              "duration_s": 0.8,
+              "minimum_frame": 429,
+              "minimum_time_s": 42.9,
+              "minimum_speed_m_s": 0.5308282336731568,
+              "position_xy_m": [
+                3852.681141051355,
+                2663.392768051018
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 0.24249487977543574,
+              "vertex_turn_deg": 41.36549417686309
+            },
+            {
+              "start_s": 181.4,
+              "end_s": 182.1,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 1818,
+              "minimum_time_s": 181.8,
+              "minimum_speed_m_s": 0.5580042170849906,
+              "position_xy_m": [
+                3339.1446559438145,
+                2288.7946543640824
+              ],
+              "nearest_vertex_index": 2,
+              "distance_to_vertex_m": 0.24406203922010236,
+              "vertex_turn_deg": 2.3514398919879973
+            },
+            {
+              "start_s": 190.7,
+              "end_s": 191.6,
+              "duration_s": 0.9,
+              "minimum_frame": 1912,
+              "minimum_time_s": 191.2,
+              "minimum_speed_m_s": 0.4405502885576225,
+              "position_xy_m": [
+                3309.8003641031446,
+                2269.204189395791
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 0.20917762914794225,
+              "vertex_turn_deg": 5.62500000001289
+            },
+            {
+              "start_s": 192.3,
+              "end_s": 193.6,
+              "duration_s": 1.3,
+              "minimum_frame": 1933,
+              "minimum_time_s": 193.3,
+              "minimum_speed_m_s": 0.3666236187423317,
+              "position_xy_m": [
+                3308.263362210735,
+                2268.4087255255326
+              ],
+              "nearest_vertex_index": 4,
+              "distance_to_vertex_m": 0.18616443070937308,
+              "vertex_turn_deg": 5.625000000024182
+            },
+            {
+              "start_s": 202.1,
+              "end_s": 203.0,
+              "duration_s": 0.9,
+              "minimum_frame": 2026,
+              "minimum_time_s": 202.6,
+              "minimum_speed_m_s": 0.4301799990028613,
+              "position_xy_m": [
+                3275.806512449962,
+                2254.9791626115743
+              ],
+              "nearest_vertex_index": 5,
+              "distance_to_vertex_m": 0.17743166941788915,
+              "vertex_turn_deg": 5.624999999998417
+            },
+            {
+              "start_s": 203.8,
+              "end_s": 205.1,
+              "duration_s": 1.3,
+              "minimum_frame": 2047,
+              "minimum_time_s": 204.7,
+              "minimum_speed_m_s": 0.37197951382134015,
+              "position_xy_m": [
+                3274.1402795702643,
+                2254.4943442665544
+              ],
+              "nearest_vertex_index": 6,
+              "distance_to_vertex_m": 0.15903127240621817,
+              "vertex_turn_deg": 5.624999999979857
+            },
+            {
+              "start_s": 213.6,
+              "end_s": 214.5,
+              "duration_s": 0.9,
+              "minimum_frame": 2141,
+              "minimum_time_s": 214.1,
+              "minimum_speed_m_s": 0.4250871838688172,
+              "position_xy_m": [
+                3239.6494026427185,
+                2247.6480176303157
+              ],
+              "nearest_vertex_index": 7,
+              "distance_to_vertex_m": 0.18860752801014044,
+              "vertex_turn_deg": 5.624999999984854
+            },
+            {
+              "start_s": 215.3,
+              "end_s": 216.6,
+              "duration_s": 1.3,
+              "minimum_frame": 2162,
+              "minimum_time_s": 216.2,
+              "minimum_speed_m_s": 0.3679148418698057,
+              "position_xy_m": [
+                3237.9219555808986,
+                2247.498914668472
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.16876559264433572,
+              "vertex_turn_deg": 5.6249999999956275
+            },
+            {
+              "start_s": 225.1,
+              "end_s": 228.1,
+              "duration_s": 3.0,
+              "minimum_frame": 2277,
+              "minimum_time_s": 227.7,
+              "minimum_speed_m_s": 0.27818569951642425,
+              "position_xy_m": [
+                3201.505158535711,
+                2247.61915734661
+              ],
+              "nearest_vertex_index": 10,
+              "distance_to_vertex_m": 0.14097230261217952,
+              "vertex_turn_deg": 4.21463910101995
+            },
+            {
+              "start_s": 258.0,
+              "end_s": 259.1,
+              "duration_s": 1.1,
+              "minimum_frame": 2585,
+              "minimum_time_s": 258.5,
+              "minimum_speed_m_s": 0.3779077366936796,
+              "position_xy_m": [
+                3068.555653947802,
+                2267.3291504014355
+              ],
+              "nearest_vertex_index": 11,
+              "distance_to_vertex_m": 0.16034309853861425,
+              "vertex_turn_deg": 4.518539594298083
+            },
+            {
+              "start_s": 259.3,
+              "end_s": 261.0,
+              "duration_s": 1.7000000000000002,
+              "minimum_frame": 2606,
+              "minimum_time_s": 260.6,
+              "minimum_speed_m_s": 0.2944835411436112,
+              "position_xy_m": [
+                3067.197696357706,
+                2267.6572782161097
+              ],
+              "nearest_vertex_index": 12,
+              "distance_to_vertex_m": 0.14784032539563402,
+              "vertex_turn_deg": 4.518539594301232
+            },
+            {
+              "start_s": 513.0,
+              "end_s": 513.8000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 5135,
+              "minimum_time_s": 513.5,
+              "minimum_speed_m_s": 0.5493795038822553,
+              "position_xy_m": [
+                1957.2293183132506,
+                2616.9108876737205
+              ],
+              "nearest_vertex_index": 13,
+              "distance_to_vertex_m": 0.26638063293818826,
+              "vertex_turn_deg": 2.7331786953146864
+            },
+            {
+              "start_s": 529.0,
+              "end_s": 529.7,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 5294,
+              "minimum_time_s": 529.4,
+              "minimum_speed_m_s": 0.5540464955919868,
+              "position_xy_m": [
+                1893.313629869704,
+                2633.6995574499297
+              ],
+              "nearest_vertex_index": 14,
+              "distance_to_vertex_m": 0.24914933579471116,
+              "vertex_turn_deg": 5.733178695314895
+            },
+            {
+              "start_s": 546.3,
+              "end_s": 547.1,
+              "duration_s": 0.8,
+              "minimum_frame": 5467,
+              "minimum_time_s": 546.7,
+              "minimum_speed_m_s": 0.5626574002491153,
+              "position_xy_m": [
+                1821.6671467873446,
+                2645.0225696961297
+              ],
+              "nearest_vertex_index": 15,
+              "distance_to_vertex_m": 0.23612925878629168,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 563.6,
+              "end_s": 564.4,
+              "duration_s": 0.8,
+              "minimum_frame": 5641,
+              "minimum_time_s": 564.1,
+              "minimum_speed_m_s": 0.5531780064442301,
+              "position_xy_m": [
+                1749.174123278292,
+                2648.793238828088
+              ],
+              "nearest_vertex_index": 16,
+              "distance_to_vertex_m": 0.27851980341733645,
+              "vertex_turn_deg": 5.999999999999782
+            },
+            {
+              "start_s": 580.9,
+              "end_s": 581.7,
+              "duration_s": 0.8,
+              "minimum_frame": 5814,
+              "minimum_time_s": 581.4,
+              "minimum_speed_m_s": 0.5487012946247677,
+              "position_xy_m": [
+                1676.7391338229058,
+                2644.9690903096453
+              ],
+              "nearest_vertex_index": 17,
+              "distance_to_vertex_m": 0.2657338193705273,
+              "vertex_turn_deg": 6.000000000000269
+            },
+            {
+              "start_s": 598.3,
+              "end_s": 599.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 5987,
+              "minimum_time_s": 598.7,
+              "minimum_speed_m_s": 0.5518194150841393,
+              "position_xy_m": [
+                1605.1004702874416,
+                2633.595643972046
+              ],
+              "nearest_vertex_index": 18,
+              "distance_to_vertex_m": 0.25290722280418676,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 615.6,
+              "end_s": 616.4,
+              "duration_s": 0.8,
+              "minimum_frame": 6160,
+              "minimum_time_s": 616.0,
+              "minimum_speed_m_s": 0.5601849257582099,
+              "position_xy_m": [
+                1535.0429214593466,
+                2614.797526901166
+              ],
+              "nearest_vertex_index": 19,
+              "distance_to_vertex_m": 0.23986820403502584,
+              "vertex_turn_deg": 5.999999999999661
+            },
+            {
+              "start_s": 632.9,
+              "end_s": 633.7,
+              "duration_s": 0.8,
+              "minimum_frame": 6334,
+              "minimum_time_s": 633.4,
+              "minimum_speed_m_s": 0.5556879441656705,
+              "position_xy_m": [
+                1467.2839334601122,
+                2588.7563130579165
+              ],
+              "nearest_vertex_index": 20,
+              "distance_to_vertex_m": 0.28205920949163893,
+              "vertex_turn_deg": 6.000000000000452
+            },
+            {
+              "start_s": 650.2,
+              "end_s": 651.0,
+              "duration_s": 0.8,
+              "minimum_frame": 6507,
+              "minimum_time_s": 650.7,
+              "minimum_speed_m_s": 0.5491109995294994,
+              "position_xy_m": [
+                1402.6669603390403,
+                2555.800561372003
+              ],
+              "nearest_vertex_index": 21,
+              "distance_to_vertex_m": 0.26917115377477674,
+              "vertex_turn_deg": 5.999999999999417
+            },
+            {
+              "start_s": 667.5,
+              "end_s": 668.3000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 6680,
+              "minimum_time_s": 668.0,
+              "minimum_speed_m_s": 0.5501793162324501,
+              "position_xy_m": [
+                1341.8479200639376,
+                2516.2720042528217
+              ],
+              "nearest_vertex_index": 22,
+              "distance_to_vertex_m": 0.2564210155561748,
+              "vertex_turn_deg": 6.000000000000147
+            },
+            {
+              "start_s": 684.9,
+              "end_s": 685.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 6853,
+              "minimum_time_s": 685.3,
+              "minimum_speed_m_s": 0.5577986518451893,
+              "position_xy_m": [
+                1285.4931559054105,
+                2470.603717989622
+              ],
+              "nearest_vertex_index": 23,
+              "distance_to_vertex_m": 0.24354931792044113,
+              "vertex_turn_deg": 6.000000000000026
+            },
+            {
+              "start_s": 702.2,
+              "end_s": 703.0,
+              "duration_s": 0.8,
+              "minimum_frame": 7027,
+              "minimum_time_s": 702.7,
+              "minimum_speed_m_s": 0.5591233034940578,
+              "position_xy_m": [
+                1234.184417391446,
+                2419.253464947099
+              ],
+              "nearest_vertex_index": 24,
+              "distance_to_vertex_m": 0.28582344283406325,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 719.5,
+              "end_s": 720.3000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 7200,
+              "minimum_time_s": 720.0,
+              "minimum_speed_m_s": 0.5502511593381051,
+              "position_xy_m": [
+                1188.558559024959,
+                2362.864657604669
+              ],
+              "nearest_vertex_index": 25,
+              "distance_to_vertex_m": 0.2728253558095981,
+              "vertex_turn_deg": 5.999999999999904
+            },
+            {
+              "start_s": 736.8,
+              "end_s": 737.6,
+              "duration_s": 0.8,
+              "minimum_frame": 7373,
+              "minimum_time_s": 737.3,
+              "minimum_speed_m_s": 0.549047543267422,
+              "position_xy_m": [
+                1149.075707187913,
+                2302.0161358819237
+              ],
+              "nearest_vertex_index": 26,
+              "distance_to_vertex_m": 0.25992204433499344,
+              "vertex_turn_deg": 5.999999999999721
+            },
+            {
+              "start_s": 754.2,
+              "end_s": 754.9,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 7546,
+              "minimum_time_s": 754.6,
+              "minimum_speed_m_s": 0.5554383149255974,
+              "position_xy_m": [
+                1116.1683562811415,
+                2237.374398976527
+              ],
+              "nearest_vertex_index": 27,
+              "distance_to_vertex_m": 0.24703626188508024,
+              "vertex_turn_deg": 6.000000000000026
+            },
+            {
+              "start_s": 771.5,
+              "end_s": 772.3000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 7720,
+              "minimum_time_s": 772.0,
+              "minimum_speed_m_s": 0.5628267390995001,
+              "position_xy_m": [
+                1090.1818820662415,
+                2169.5942380642346
+              ],
+              "nearest_vertex_index": 28,
+              "distance_to_vertex_m": 0.2894082522336518,
+              "vertex_turn_deg": 5.999999999999904
+            },
+            {
+              "start_s": 788.8,
+              "end_s": 789.6,
+              "duration_s": 0.8,
+              "minimum_frame": 7893,
+              "minimum_time_s": 789.3,
+              "minimum_speed_m_s": 0.5519762779066032,
+              "position_xy_m": [
+                1071.4363194743862,
+                2099.522658391833
+              ],
+              "nearest_vertex_index": 29,
+              "distance_to_vertex_m": 0.27646665945237026,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 806.1,
+              "end_s": 806.9,
+              "duration_s": 0.8,
+              "minimum_frame": 8066,
+              "minimum_time_s": 806.6,
+              "minimum_speed_m_s": 0.5486986053313849,
+              "position_xy_m": [
+                1060.1166200747884,
+                2027.8755382264665
+              ],
+              "nearest_vertex_index": 30,
+              "distance_to_vertex_m": 0.2636278182759296,
+              "vertex_turn_deg": 5.999999999999904
+            },
+            {
+              "start_s": 823.5,
+              "end_s": 824.2,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8239,
+              "minimum_time_s": 823.9,
+              "minimum_speed_m_s": 0.5530424196398938,
+              "position_xy_m": [
+                1056.3468020392208,
+                1955.437766954238
+              ],
+              "nearest_vertex_index": 31,
+              "distance_to_vertex_m": 0.2507162935350907,
+              "vertex_turn_deg": 5.999999999999782
+            },
+            {
+              "start_s": 840.8,
+              "end_s": 841.6,
+              "duration_s": 0.8,
+              "minimum_frame": 8412,
+              "minimum_time_s": 841.2,
+              "minimum_speed_m_s": 0.5615956893456687,
+              "position_xy_m": [
+                1060.1681239603467,
+                1883.0028275400387
+              ],
+              "nearest_vertex_index": 32,
+              "distance_to_vertex_m": 0.23762595790967975,
+              "vertex_turn_deg": 5.999999999999965
+            },
+            {
+              "start_s": 858.1,
+              "end_s": 858.9,
+              "duration_s": 0.8,
+              "minimum_frame": 8586,
+              "minimum_time_s": 858.6,
+              "minimum_speed_m_s": 0.5541097652645034,
+              "position_xy_m": [
+                1071.5521509396408,
+                1811.3101024474856
+              ],
+              "nearest_vertex_index": 33,
+              "distance_to_vertex_m": 0.2799295129393443,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 875.4,
+              "end_s": 876.2,
+              "duration_s": 0.8,
+              "minimum_frame": 8759,
+              "minimum_time_s": 875.9,
+              "minimum_speed_m_s": 0.548809551080755,
+              "position_xy_m": [
+                1090.352950857143,
+                1741.253111745556
+              ],
+              "nearest_vertex_index": 34,
+              "distance_to_vertex_m": 0.2671511650486638,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 892.8,
+              "end_s": 893.5,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8932,
+              "minimum_time_s": 893.2,
+              "minimum_speed_m_s": 0.5510742635858802,
+              "position_xy_m": [
+                1116.3725292641723,
+                1673.5446046579752
+              ],
+              "nearest_vertex_index": 35,
+              "distance_to_vertex_m": 0.25437843382845104,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 910.1,
+              "end_s": 910.8000000000001,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9105,
+              "minimum_time_s": 910.5,
+              "minimum_speed_m_s": 0.5592108609504383,
+              "position_xy_m": [
+                1149.3258101402362,
+                1608.9263413790266
+              ],
+              "nearest_vertex_index": 36,
+              "distance_to_vertex_m": 0.2414087172044335,
+              "vertex_turn_deg": 5.999999999999782
+            },
+            {
+              "start_s": 927.4,
+              "end_s": 928.2,
+              "duration_s": 0.8,
+              "minimum_frame": 9279,
+              "minimum_time_s": 927.9,
+              "minimum_speed_m_s": 0.5570608885688616,
+              "position_xy_m": [
+                1188.8860039790459,
+                1548.0624144096184
+              ],
+              "nearest_vertex_index": 37,
+              "distance_to_vertex_m": 0.2836146146291762,
+              "vertex_turn_deg": 6.000000000000391
+            },
+            {
+              "start_s": 944.7,
+              "end_s": 945.5,
+              "duration_s": 0.8,
+              "minimum_frame": 9452,
+              "minimum_time_s": 945.2,
+              "minimum_speed_m_s": 0.5494424596149626,
+              "position_xy_m": [
+                1234.5562796848055,
+                1491.709533430219
+              ],
+              "nearest_vertex_index": 38,
+              "distance_to_vertex_m": 0.27063989488484624,
+              "vertex_turn_deg": 5.999999999999539
+            },
+            {
+              "start_s": 962.0,
+              "end_s": 962.8000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 9625,
+              "minimum_time_s": 962.5,
+              "minimum_speed_m_s": 0.5496620564210162,
+              "position_xy_m": [
+                1285.8660861167898,
+                1440.4381304348376
+              ],
+              "nearest_vertex_index": 39,
+              "distance_to_vertex_m": 0.2578302234885123,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 979.4,
+              "end_s": 980.1,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9798,
+              "minimum_time_s": 979.8,
+              "minimum_speed_m_s": 0.5568221468259782,
+              "position_xy_m": [
+                1342.2533489499044,
+                1394.809909445523
+              ],
+              "nearest_vertex_index": 40,
+              "distance_to_vertex_m": 0.2450061517129568,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 996.7,
+              "end_s": 997.5,
+              "duration_s": 0.8,
+              "minimum_frame": 9972,
+              "minimum_time_s": 997.2,
+              "minimum_speed_m_s": 0.5606247920505457,
+              "position_xy_m": [
+                1403.1493009664698,
+                1355.2988278208393
+              ],
+              "nearest_vertex_index": 41,
+              "distance_to_vertex_m": 0.28733780058804737,
+              "vertex_turn_deg": 5.999999999999721
+            },
+            {
+              "start_s": 1014.0,
+              "end_s": 1014.8000000000001,
+              "duration_s": 0.8,
+              "minimum_frame": 10145,
+              "minimum_time_s": 1014.5,
+              "minimum_speed_m_s": 0.5509289465475531,
+              "position_xy_m": [
+                1467.792110542043,
+                1322.394024539399
+              ],
+              "nearest_vertex_index": 42,
+              "distance_to_vertex_m": 0.27436266005025867,
+              "vertex_turn_deg": 6.000000000000209
+            },
+            {
+              "start_s": 1031.3,
+              "end_s": 1032.1,
+              "duration_s": 0.8,
+              "minimum_frame": 10318,
+              "minimum_time_s": 1031.8,
+              "minimum_speed_m_s": 0.5488381463396234,
+              "position_xy_m": [
+                1535.5199523395993,
+                1296.4252309265464
+              ],
+              "nearest_vertex_index": 43,
+              "distance_to_vertex_m": 0.2614695493162308,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1048.7,
+              "end_s": 1049.3999999999999,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10491,
+              "minimum_time_s": 1049.1,
+              "minimum_speed_m_s": 0.5544007965371092,
+              "position_xy_m": [
+                1605.5909275268634,
+                1277.6769223802632
+              ],
+              "nearest_vertex_index": 44,
+              "distance_to_vertex_m": 0.24853926087771652,
+              "vertex_turn_deg": 6.000000000000209
+            },
+            {
+              "start_s": 1066.0,
+              "end_s": 1066.8,
+              "duration_s": 0.8,
+              "minimum_frame": 10664,
+              "minimum_time_s": 1066.4,
+              "minimum_speed_m_s": 0.563100022936871,
+              "position_xy_m": [
+                1677.2375109546501,
+                1266.354441759813
+              ],
+              "nearest_vertex_index": 45,
+              "distance_to_vertex_m": 0.23550066399226183,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1083.3,
+              "end_s": 1084.1,
+              "duration_s": 0.8,
+              "minimum_frame": 10838,
+              "minimum_time_s": 1083.8,
+              "minimum_speed_m_s": 0.5528116288333325,
+              "position_xy_m": [
+                1749.7305680080533,
+                1262.5837001469206
+              ],
+              "nearest_vertex_index": 46,
+              "distance_to_vertex_m": 0.2779259910389564,
+              "vertex_turn_deg": 6.000000000000026
+            },
+            {
+              "start_s": 1100.6,
+              "end_s": 1101.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 11011,
+              "minimum_time_s": 1101.1,
+              "minimum_speed_m_s": 0.5486892443213055,
+              "position_xy_m": [
+                1822.165556135532,
+                1266.4077880736224
+              ],
+              "nearest_vertex_index": 47,
+              "distance_to_vertex_m": 0.26513289388063055,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1118.0,
+              "end_s": 1118.6999999999998,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11184,
+              "minimum_time_s": 1118.4,
+              "minimum_speed_m_s": 0.5521566063696569,
+              "position_xy_m": [
+                1893.8042017990686,
+                1277.781169402274
+              ],
+              "nearest_vertex_index": 48,
+              "distance_to_vertex_m": 0.25227609059929734,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 1135.3,
+              "end_s": 1136.1,
+              "duration_s": 0.8,
+              "minimum_frame": 11357,
+              "minimum_time_s": 1135.7,
+              "minimum_speed_m_s": 0.5605887182246446,
+              "position_xy_m": [
+                1963.8617490305614,
+                1296.579218601049
+              ],
+              "nearest_vertex_index": 49,
+              "distance_to_vertex_m": 0.2392158523756031,
+              "vertex_turn_deg": 5.999999999999661
+            },
+            {
+              "start_s": 1152.6,
+              "end_s": 1153.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 11531,
+              "minimum_time_s": 1153.1,
+              "minimum_speed_m_s": 0.5552052727456329,
+              "position_xy_m": [
+                2031.6207983500738,
+                1322.6203747167945
+              ],
+              "nearest_vertex_index": 50,
+              "distance_to_vertex_m": 0.28144081645626756,
+              "vertex_turn_deg": 6.000000000000269
+            },
+            {
+              "start_s": 1169.9,
+              "end_s": 1170.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 11704,
+              "minimum_time_s": 1170.4,
+              "minimum_speed_m_s": 0.5490043358676011,
+              "position_xy_m": [
+                2096.2378267540275,
+                1355.5760878485114
+              ],
+              "nearest_vertex_index": 51,
+              "distance_to_vertex_m": 0.2685818142022761,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1187.2,
+              "end_s": 1188.0,
+              "duration_s": 0.8,
+              "minimum_frame": 11877,
+              "minimum_time_s": 1187.7,
+              "minimum_speed_m_s": 0.5504145161658778,
+              "position_xy_m": [
+                2157.0569114535056,
+                1395.1046050053283
+              ],
+              "nearest_vertex_index": 52,
+              "distance_to_vertex_m": 0.2558448026653835,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1204.6,
+              "end_s": 1205.3,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 12050,
+              "minimum_time_s": 1205.0,
+              "minimum_speed_m_s": 0.5582054257594917,
+              "position_xy_m": [
+                2213.411701679643,
+                1440.7728358022034
+              ],
+              "nearest_vertex_index": 53,
+              "distance_to_vertex_m": 0.24295630634848955,
+              "vertex_turn_deg": 6.000000000000147
+            },
+            {
+              "start_s": 1221.9,
+              "end_s": 1222.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 12224,
+              "minimum_time_s": 1222.4,
+              "minimum_speed_m_s": 0.5585340465419791,
+              "position_xy_m": [
+                2264.7204742325707,
+                1492.1230227489973
+              ],
+              "nearest_vertex_index": 54,
+              "distance_to_vertex_m": 0.2852051166948621,
+              "vertex_turn_deg": 6.000000000000209
+            },
+            {
+              "start_s": 1239.2,
+              "end_s": 1240.0,
+              "duration_s": 0.8,
+              "minimum_frame": 12397,
+              "minimum_time_s": 1239.7,
+              "minimum_speed_m_s": 0.5506711548906293,
+              "position_xy_m": [
+                2310.3518366520207,
+                1548.507970795038
+              ],
+              "nearest_vertex_index": 55,
+              "distance_to_vertex_m": 0.27239484005113734,
+              "vertex_turn_deg": 3.2556861151630585
+            },
+            {
+              "start_s": 1242.2,
+              "end_s": 1249.8999999999999,
+              "duration_s": 7.7,
+              "minimum_frame": 12436,
+              "minimum_time_s": 1243.6,
+              "minimum_speed_m_s": 0.0003043366678820795,
+              "position_xy_m": [
+                2313.8363252263653,
+                1553.362331692469
+              ],
+              "nearest_vertex_index": 56,
+              "distance_to_vertex_m": 0.061740526457384176,
+              "vertex_turn_deg": 179.99999914622634
+            },
+            {
+              "start_s": 1252.2,
+              "end_s": 1253.0,
+              "duration_s": 0.8,
+              "minimum_frame": 12527,
+              "minimum_time_s": 1252.7,
+              "minimum_speed_m_s": 0.5449659616811962,
+              "position_xy_m": [
+                2310.0233383345426,
+                1548.0781411661378
+              ],
+              "nearest_vertex_index": 55,
+              "distance_to_vertex_m": 0.26859025912690687,
+              "vertex_turn_deg": 3.2556861151630585
+            },
+            {
+              "start_s": 1269.5,
+              "end_s": 1270.3,
+              "duration_s": 0.8,
+              "minimum_frame": 12700,
+              "minimum_time_s": 1270.0,
+              "minimum_speed_m_s": 0.5502264699645676,
+              "position_xy_m": [
+                2264.3590160679387,
+                1491.719812418713
+              ],
+              "nearest_vertex_index": 54,
+              "distance_to_vertex_m": 0.25630276530913704,
+              "vertex_turn_deg": 6.000000000000209
+            },
+            {
+              "start_s": 1286.9,
+              "end_s": 1287.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 12873,
+              "minimum_time_s": 1287.3,
+              "minimum_speed_m_s": 0.5578819548855911,
+              "position_xy_m": [
+                2213.050239791717,
+                1440.447395289298
+              ],
+              "nearest_vertex_index": 53,
+              "distance_to_vertex_m": 0.24342695933537145,
+              "vertex_turn_deg": 6.000000000000147
+            },
+            {
+              "start_s": 1304.2,
+              "end_s": 1305.0,
+              "duration_s": 0.8,
+              "minimum_frame": 13047,
+              "minimum_time_s": 1304.7,
+              "minimum_speed_m_s": 0.5589997586320756,
+              "position_xy_m": [
+                2156.6180783195214,
+                1394.78728618382
+              ],
+              "nearest_vertex_index": 52,
+              "distance_to_vertex_m": 0.28569556088130926,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1321.5,
+              "end_s": 1322.3,
+              "duration_s": 0.8,
+              "minimum_frame": 13220,
+              "minimum_time_s": 1322.0,
+              "minimum_speed_m_s": 0.5501968652052229,
+              "position_xy_m": [
+                2095.768981166642,
+                1355.305595829479
+              ],
+              "nearest_vertex_index": 51,
+              "distance_to_vertex_m": 0.27269660074262125,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1338.8,
+              "end_s": 1339.6,
+              "duration_s": 0.8,
+              "minimum_frame": 13393,
+              "minimum_time_s": 1339.3,
+              "minimum_speed_m_s": 0.5490780971504899,
+              "position_xy_m": [
+                2031.1267115017638,
+                1322.3994227697615
+              ],
+              "nearest_vertex_index": 50,
+              "distance_to_vertex_m": 0.2598001537332291,
+              "vertex_turn_deg": 6.000000000000269
+            },
+            {
+              "start_s": 1356.2,
+              "end_s": 1356.8999999999999,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 13566,
+              "minimum_time_s": 1356.6,
+              "minimum_speed_m_s": 0.5555202470985968,
+              "position_xy_m": [
+                1963.3993354408613,
+                1296.4292309794214
+              ],
+              "nearest_vertex_index": 49,
+              "distance_to_vertex_m": 0.24691691663557117,
+              "vertex_turn_deg": 5.999999999999661
+            },
+            {
+              "start_s": 1373.5,
+              "end_s": 1374.3,
+              "duration_s": 0.8,
+              "minimum_frame": 13740,
+              "minimum_time_s": 1374.0,
+              "minimum_speed_m_s": 0.5626992157899897,
+              "position_xy_m": [
+                1893.2741537745662,
+                1277.670055057323
+              ],
+              "nearest_vertex_index": 48,
+              "distance_to_vertex_m": 0.28929340721262203,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 1390.8,
+              "end_s": 1391.6,
+              "duration_s": 0.8,
+              "minimum_frame": 13913,
+              "minimum_time_s": 1391.3,
+              "minimum_speed_m_s": 0.5519163936470676,
+              "position_xy_m": [
+                1821.6269897311342,
+                1266.3516455691652
+              ],
+              "nearest_vertex_index": 47,
+              "distance_to_vertex_m": 0.276352063389727,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1408.1,
+              "end_s": 1408.8999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 14086,
+              "minimum_time_s": 1408.6,
+              "minimum_speed_m_s": 0.5487025229913266,
+              "position_xy_m": [
+                1749.1891336782624,
+                1262.5831086957976
+              ],
+              "nearest_vertex_index": 46,
+              "distance_to_vertex_m": 0.26350885279448544,
+              "vertex_turn_deg": 6.000000000000026
+            },
+            {
+              "start_s": 1425.5,
+              "end_s": 1426.1999999999998,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 14259,
+              "minimum_time_s": 1425.9,
+              "minimum_speed_m_s": 0.5531149113253431,
+              "position_xy_m": [
+                1676.7541329697824,
+                1266.405738701091
+              ],
+              "nearest_vertex_index": 45,
+              "distance_to_vertex_m": 0.25059408858380616,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1442.8,
+              "end_s": 1443.6,
+              "duration_s": 0.8,
+              "minimum_frame": 14432,
+              "minimum_time_s": 1443.2,
+              "minimum_speed_m_s": 0.5616796750270577,
+              "position_xy_m": [
+                1605.11543000367,
+                1277.777628396292
+              ],
+              "nearest_vertex_index": 44,
+              "distance_to_vertex_m": 0.23750810712511086,
+              "vertex_turn_deg": 6.000000000000209
+            },
+            {
+              "start_s": 1460.1,
+              "end_s": 1460.8999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 14606,
+              "minimum_time_s": 1460.6,
+              "minimum_speed_m_s": 0.5540321525795543,
+              "position_xy_m": [
+                1535.0053903272983,
+                1296.5932117260443
+              ],
+              "nearest_vertex_index": 43,
+              "distance_to_vertex_m": 0.27981763979184954,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1477.4,
+              "end_s": 1478.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 14779,
+              "minimum_time_s": 1477.9,
+              "minimum_speed_m_s": 0.5487985629851387,
+              "position_xy_m": [
+                1467.2973889225398,
+                1322.6139604286307
+              ],
+              "nearest_vertex_index": 42,
+              "distance_to_vertex_m": 0.26704428630697846,
+              "vertex_turn_deg": 6.000000000000209
+            },
+            {
+              "start_s": 1494.8,
+              "end_s": 1495.5,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 14952,
+              "minimum_time_s": 1495.2,
+              "minimum_speed_m_s": 0.5511287799240042,
+              "position_xy_m": [
+                1402.6795790200358,
+                1355.5684566195448
+              ],
+              "nearest_vertex_index": 41,
+              "distance_to_vertex_m": 0.2542696299751571,
+              "vertex_turn_deg": 5.999999999999721
+            },
+            {
+              "start_s": 1512.1,
+              "end_s": 1512.8,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 15125,
+              "minimum_time_s": 1512.5,
+              "minimum_speed_m_s": 0.5592843044242195,
+              "position_xy_m": [
+                1341.8598556665056,
+                1395.0956514528268
+              ],
+              "nearest_vertex_index": 40,
+              "distance_to_vertex_m": 0.24129408066336647,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 1529.4,
+              "end_s": 1530.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 15299,
+              "minimum_time_s": 1529.9,
+              "minimum_speed_m_s": 0.5569566125680894,
+              "position_xy_m": [
+                1285.4645063517644,
+                1440.8011318681138
+              ],
+              "nearest_vertex_index": 39,
+              "distance_to_vertex_m": 0.28349828811062966,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 1546.7,
+              "end_s": 1547.5,
+              "duration_s": 0.8,
+              "minimum_frame": 15472,
+              "minimum_time_s": 1547.2,
+              "minimum_speed_m_s": 0.5494149134467029,
+              "position_xy_m": [
+                1234.194161816761,
+                1492.1116990510207
+              ],
+              "nearest_vertex_index": 38,
+              "distance_to_vertex_m": 0.2705317455324288,
+              "vertex_turn_deg": 5.999999999999539
+            },
+            {
+              "start_s": 1564.0,
+              "end_s": 1564.8,
+              "duration_s": 0.8,
+              "minimum_frame": 15645,
+              "minimum_time_s": 1564.5,
+              "minimum_speed_m_s": 0.5496973675348548,
+              "position_xy_m": [
+                1188.5669532322097,
+                1548.4997428511233
+              ],
+              "nearest_vertex_index": 37,
+              "distance_to_vertex_m": 0.25772608593208257,
+              "vertex_turn_deg": 6.000000000000391
+            },
+            {
+              "start_s": 1581.4,
+              "end_s": 1582.1,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 15818,
+              "minimum_time_s": 1581.8,
+              "minimum_speed_m_s": 0.5568941595769742,
+              "position_xy_m": [
+                1149.0827545179425,
+                1609.3475507843077
+              ],
+              "nearest_vertex_index": 36,
+              "distance_to_vertex_m": 0.24489967865053372,
+              "vertex_turn_deg": 5.999999999999782
+            },
+            {
+              "start_s": 1598.7,
+              "end_s": 1599.5,
+              "duration_s": 0.8,
+              "minimum_frame": 15992,
+              "minimum_time_s": 1599.2,
+              "minimum_speed_m_s": 0.5605150562975859,
+              "position_xy_m": [
+                1116.1534683159948,
+                1674.0399337305419
+              ],
+              "nearest_vertex_index": 35,
+              "distance_to_vertex_m": 0.28722917494702455,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 1616.0,
+              "end_s": 1616.8,
+              "duration_s": 0.8,
+              "minimum_frame": 16165,
+              "minimum_time_s": 1616.5,
+              "minimum_speed_m_s": 0.5508777006288998,
+              "position_xy_m": [
+                1090.1859252737459,
+                1741.7681055370563
+              ],
+              "nearest_vertex_index": 34,
+              "distance_to_vertex_m": 0.27425104795462846,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1633.3,
+              "end_s": 1634.1,
+              "duration_s": 0.8,
+              "minimum_frame": 16338,
+              "minimum_time_s": 1633.8,
+              "minimum_speed_m_s": 0.5488497495057693,
+              "position_xy_m": [
+                1071.438868031565,
+                1811.839401249783
+              ],
+              "nearest_vertex_index": 33,
+              "distance_to_vertex_m": 0.2613564072072969,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 1650.7,
+              "end_s": 1651.3999999999999,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 16511,
+              "minimum_time_s": 1651.1,
+              "minimum_speed_m_s": 0.5544759737762002,
+              "position_xy_m": [
+                1060.1176639114433,
+                1883.4862554827776
+              ],
+              "nearest_vertex_index": 32,
+              "distance_to_vertex_m": 0.2484308691917357,
+              "vertex_turn_deg": 5.999999999999965
+            },
+            {
+              "start_s": 1668.0,
+              "end_s": 1668.8,
+              "duration_s": 0.8,
+              "minimum_frame": 16684,
+              "minimum_time_s": 1668.4,
+              "minimum_speed_m_s": 0.5631742012203966,
+              "position_xy_m": [
+                1056.3463055704615,
+                1955.9238754981043
+              ],
+              "nearest_vertex_index": 31,
+              "distance_to_vertex_m": 0.23539502935149115,
+              "vertex_turn_deg": 5.999999999999782
+            },
+            {
+              "start_s": 1685.3,
+              "end_s": 1686.1,
+              "duration_s": 0.8,
+              "minimum_frame": 16858,
+              "minimum_time_s": 1685.8,
+              "minimum_speed_m_s": 0.552748954541206,
+              "position_xy_m": [
+                1060.1737961136341,
+                2028.413960155913
+              ],
+              "nearest_vertex_index": 30,
+              "distance_to_vertex_m": 0.27782160743838485,
+              "vertex_turn_deg": 5.999999999999904
+            },
+            {
+              "start_s": 1702.6,
+              "end_s": 1703.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 17031,
+              "minimum_time_s": 1703.1,
+              "minimum_speed_m_s": 0.548689541715228,
+              "position_xy_m": [
+                1071.5484428483353,
+                2100.0524176443428
+              ],
+              "nearest_vertex_index": 29,
+              "distance_to_vertex_m": 0.2650282372894247,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 1720.0,
+              "end_s": 1720.6999999999998,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 17204,
+              "minimum_time_s": 1720.4,
+              "minimum_speed_m_s": 0.552216964013091,
+              "position_xy_m": [
+                1090.3477857709618,
+                2170.109775787422
+              ],
+              "nearest_vertex_index": 28,
+              "distance_to_vertex_m": 0.25216667223912836,
+              "vertex_turn_deg": 5.999999999999904
+            },
+            {
+              "start_s": 1737.3,
+              "end_s": 1738.1,
+              "duration_s": 0.8,
+              "minimum_frame": 17377,
+              "minimum_time_s": 1737.7,
+              "minimum_speed_m_s": 0.5606587549742064,
+              "position_xy_m": [
+                1116.3658533501875,
+                2237.818610306264
+              ],
+              "nearest_vertex_index": 27,
+              "distance_to_vertex_m": 0.23910286469166156,
+              "vertex_turn_deg": 6.000000000000026
+            },
+            {
+              "start_s": 1754.6,
+              "end_s": 1755.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 17551,
+              "minimum_time_s": 1755.1,
+              "minimum_speed_m_s": 0.5551239877994754,
+              "position_xy_m": [
+                1149.3470936072522,
+                2302.4844378680978
+              ],
+              "nearest_vertex_index": 26,
+              "distance_to_vertex_m": 0.28133348745499603,
+              "vertex_turn_deg": 5.999999999999721
+            },
+            {
+              "start_s": 1771.9,
+              "end_s": 1772.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 17724,
+              "minimum_time_s": 1772.4,
+              "minimum_speed_m_s": 0.5489876216924389,
+              "position_xy_m": [
+                1188.876585040885,
+                2363.3026876859235
+              ],
+              "nearest_vertex_index": 25,
+              "distance_to_vertex_m": 0.2684796457973912,
+              "vertex_turn_deg": 5.999999999999904
+            },
+            {
+              "start_s": 1789.2,
+              "end_s": 1790.0,
+              "duration_s": 0.8,
+              "minimum_frame": 17897,
+              "minimum_time_s": 1789.7,
+              "minimum_speed_m_s": 0.5504579490263155,
+              "position_xy_m": [
+                1234.545878176478,
+                2419.656750182631
+              ],
+              "nearest_vertex_index": 24,
+              "distance_to_vertex_m": 0.255741966358395,
+              "vertex_turn_deg": 5.999999999999843
+            },
+            {
+              "start_s": 1806.6,
+              "end_s": 1807.3,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 18070,
+              "minimum_time_s": 1807.0,
+              "minimum_speed_m_s": 0.5582779123864187,
+              "position_xy_m": [
+                1285.8546042782611,
+                2470.9291990127144
+              ],
+              "nearest_vertex_index": 23,
+              "distance_to_vertex_m": 0.24285100923337244,
+              "vertex_turn_deg": 6.000000000000026
+            },
+            {
+              "start_s": 1823.9,
+              "end_s": 1824.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 18244,
+              "minimum_time_s": 1824.4,
+              "minimum_speed_m_s": 0.5584321996584106,
+              "position_xy_m": [
+                1342.2867064435775,
+                2516.5893483912555
+              ],
+              "nearest_vertex_index": 22,
+              "distance_to_vertex_m": 0.28509629789565544,
+              "vertex_turn_deg": 6.000000000000147
+            },
+            {
+              "start_s": 1841.2,
+              "end_s": 1842.0,
+              "duration_s": 0.8,
+              "minimum_frame": 18417,
+              "minimum_time_s": 1841.7,
+              "minimum_speed_m_s": 0.5499519268752717,
+              "position_xy_m": [
+                1403.1357723570904,
+                2556.0710898428256
+              ],
+              "nearest_vertex_index": 21,
+              "distance_to_vertex_m": 0.272096403785879,
+              "vertex_turn_deg": 5.999999999999417
+            },
+            {
+              "start_s": 1858.5,
+              "end_s": 1859.3,
+              "duration_s": 0.8,
+              "minimum_frame": 18590,
+              "minimum_time_s": 1859.0,
+              "minimum_speed_m_s": 0.5492301640414028,
+              "position_xy_m": [
+                1467.7780440026902,
+                2588.9773316582623
+              ],
+              "nearest_vertex_index": 20,
+              "distance_to_vertex_m": 0.2592306046977023,
+              "vertex_turn_deg": 6.000000000000452
+            },
+            {
+              "start_s": 1875.9,
+              "end_s": 1876.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 18763,
+              "minimum_time_s": 1876.3,
+              "minimum_speed_m_s": 0.5558999041802974,
+              "position_xy_m": [
+                1535.5054162275344,
+                2614.947581451204
+              ],
+              "nearest_vertex_index": 19,
+              "distance_to_vertex_m": 0.24636243036770128,
+              "vertex_turn_deg": 5.999999999999661
+            },
+            {
+              "start_s": 1893.2,
+              "end_s": 1894.0,
+              "duration_s": 0.8,
+              "minimum_frame": 18937,
+              "minimum_time_s": 1893.7,
+              "minimum_speed_m_s": 0.5620901871210904,
+              "position_xy_m": [
+                1605.630580093741,
+                2633.7068202889095
+              ],
+              "nearest_vertex_index": 18,
+              "distance_to_vertex_m": 0.2887354604058109,
+              "vertex_turn_deg": 6.000000000000087
+            },
+            {
+              "start_s": 1910.5,
+              "end_s": 1911.3,
+              "duration_s": 0.8,
+              "minimum_frame": 19110,
+              "minimum_time_s": 1911.0,
+              "minimum_speed_m_s": 0.551636306325224,
+              "position_xy_m": [
+                1677.27774278453,
+                2645.025286405547
+              ],
+              "nearest_vertex_index": 17,
+              "distance_to_vertex_m": 0.27579902585057453,
+              "vertex_turn_deg": 6.000000000000269
+            },
+            {
+              "start_s": 1927.8,
+              "end_s": 1928.6,
+              "duration_s": 0.8,
+              "minimum_frame": 19283,
+              "minimum_time_s": 1928.3,
+              "minimum_speed_m_s": 0.5487311969713934,
+              "position_xy_m": [
+                1749.7155791195034,
+                2648.7938779572487
+              ],
+              "nearest_vertex_index": 16,
+              "distance_to_vertex_m": 0.2629366081268297,
+              "vertex_turn_deg": 5.999999999999782
+            },
+            {
+              "start_s": 1945.2,
+              "end_s": 1945.8999999999999,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 19456,
+              "minimum_time_s": 1945.6,
+              "minimum_speed_m_s": 0.5534690503858901,
+              "position_xy_m": [
+                1822.150571726994,
+                2644.971306972997
+              ],
+              "nearest_vertex_index": 15,
+              "distance_to_vertex_m": 0.2500085669671785,
+              "vertex_turn_deg": 6.00000000000033
+            },
+            {
+              "start_s": 1962.5,
+              "end_s": 1963.3,
+              "duration_s": 0.8,
+              "minimum_frame": 19629,
+              "minimum_time_s": 1962.9,
+              "minimum_speed_m_s": 0.5621297994647633,
+              "position_xy_m": [
+                1893.7894239989887,
+                2633.5999677777927
+              ],
+              "nearest_vertex_index": 14,
+              "distance_to_vertex_m": 0.23695805238510187,
+              "vertex_turn_deg": 5.733178695314895
+            }
+          ]
+        },
+        "motion_s": 2213.8,
+        "dwell": {
+          "detected": true,
+          "frame_index": 12322,
+          "confirm_frame_index": 12522,
+          "t_s": 1232.2,
+          "t_confirm": 1252.2,
+          "total_duration_s": 27.5,
+          "union_frame_intervals": [
+            [
+              12322,
+              12597
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_06\\r2\\result.json",
+        "sha256": "8ff0ecf84eae4c8c4037afb69d0d31e64e4d769fb4cb29327df3c52949bb9ef7"
+      },
+      "r3": {
+        "status": "NOT_EXECUTED",
+        "reason": "STOP_ON_PROBE05_RESEARCH_FAIL"
+      }
+    },
+    {
+      "probe_id": "probe_07",
+      "r2": {
+        "status": "PASS",
+        "checks": {
+          "input_hash": true,
+          "bitwise_arrays": true,
+          "geometry_and_caps_exact": true,
+          "physical": true,
+          "ordered_nodes": true,
+          "no_scene_violation": true,
+          "witnesses_exact": true,
+          "dwell_exact": true,
+          "observation_exact": true,
+          "low_speed_exact": true,
+          "tracking_exact": true
+        },
+        "precision": {
+          "absolute_status": "PASS",
+          "max_m": 0.12378802622617452,
+          "p99_m": 0.013312099813706195,
+          "threshold_m": 0.5,
+          "phase": {
+            "boundaries": {
+              "terminal_stop_us": 2547892163
+            },
+            "phases": {
+              "approach": {
+                "frames": 25479,
+                "max_m": 0.12378802622617452,
+                "p99_m": 0.013307665393059966
+              },
+              "dwell": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "departure": {
+                "frames": 0,
+                "max_m": null,
+                "p99_m": null
+              },
+              "terminal_stop": {
+                "frames": 10,
+                "max_m": 0.030565119349131125,
+                "p99_m": 0.028914413556936892
+              }
+            }
+          }
+        },
+        "low_speed": {
+          "skeleton_id": "family_s15_1b876e6b8b6f70c6_ext_007_regular",
+          "mode": "solo_probe",
+          "agent_id": "uav_02",
+          "role": "monitoring",
+          "execution_method": "monitoring",
+          "cruise_speed_m_s": 4.632649197420282,
+          "cruise_speed_field_path": "task.json -> group_skeletons[task_group_01] -> cruise_speed_m_s",
+          "internal_vertices": 93,
+          "route_length_km": 10.955492399059187,
+          "motion_window_start_frame": 205,
+          "motion_window_end_frame": 25480,
+          "motion_window_duration_s": 2527.6000000000004,
+          "range_km": 10.955082642616254,
+          "low_speed_event_count": 93,
+          "events_per_km": 8.48921026284381,
+          "low_speed_time_share": 0.030740623516379174,
+          "speed_over_cruise_p10": 0.8189481373393481,
+          "speed_over_cruise_p50": 0.9999999999999976,
+          "empty_motion_window": false,
+          "events": [
+            {
+              "start_s": 43.1,
+              "end_s": 43.9,
+              "duration_s": 0.8,
+              "minimum_frame": 435,
+              "minimum_time_s": 43.5,
+              "minimum_speed_m_s": 0.5616114931651385,
+              "position_xy_m": [
+                3849.7633327868616,
+                2681.373945116081
+              ],
+              "nearest_vertex_index": 1,
+              "distance_to_vertex_m": 0.23828824435044665,
+              "vertex_turn_deg": 3.4080021011100534
+            },
+            {
+              "start_s": 45.1,
+              "end_s": 46.1,
+              "duration_s": 1.0,
+              "minimum_frame": 458,
+              "minimum_time_s": 45.8,
+              "minimum_speed_m_s": 0.5266268943595657,
+              "position_xy_m": [
+                3847.1119673294857,
+                2681.8047014151184
+              ],
+              "nearest_vertex_index": 2,
+              "distance_to_vertex_m": 0.2750147582179631,
+              "vertex_turn_deg": 8.519427929723456
+            },
+            {
+              "start_s": 504.2,
+              "end_s": 505.1,
+              "duration_s": 0.9,
+              "minimum_frame": 5047,
+              "minimum_time_s": 504.7,
+              "minimum_speed_m_s": 0.5002846001497847,
+              "position_xy_m": [
+                1822.0037799318516,
+                3302.2880439632
+              ],
+              "nearest_vertex_index": 3,
+              "distance_to_vertex_m": 0.24904517330575257,
+              "vertex_turn_deg": 71.23136122338977
+            },
+            {
+              "start_s": 750.9,
+              "end_s": 751.7,
+              "duration_s": 0.8,
+              "minimum_frame": 7514,
+              "minimum_time_s": 751.4,
+              "minimum_speed_m_s": 0.5496555428425023,
+              "position_xy_m": [
+                1158.180811963755,
+                2381.9149948515224
+              ],
+              "nearest_vertex_index": 4,
+              "distance_to_vertex_m": 0.26743740992225207,
+              "vertex_turn_deg": 0.4843924793227808
+            },
+            {
+              "start_s": 755.3,
+              "end_s": 756.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 7557,
+              "minimum_time_s": 755.7,
+              "minimum_speed_m_s": 0.551188870102489,
+              "position_xy_m": [
+                1151.0693526555353,
+                2371.8651027325564
+              ],
+              "nearest_vertex_index": 5,
+              "distance_to_vertex_m": 0.25485144607407184,
+              "vertex_turn_deg": 3.387618285771757
+            },
+            {
+              "start_s": 772.9,
+              "end_s": 773.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 7733,
+              "minimum_time_s": 773.3,
+              "minimum_speed_m_s": 0.5510156265641007,
+              "position_xy_m": [
+                1112.0308282386977,
+                2309.1952806916897
+              ],
+              "nearest_vertex_index": 6,
+              "distance_to_vertex_m": 0.2545851069312261,
+              "vertex_turn_deg": 5.8064516129031585
+            },
+            {
+              "start_s": 790.5,
+              "end_s": 791.2,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 7909,
+              "minimum_time_s": 790.9,
+              "minimum_speed_m_s": 0.5512543950067343,
+              "position_xy_m": [
+                1079.5377169228595,
+                2242.8951032294535
+              ],
+              "nearest_vertex_index": 7,
+              "distance_to_vertex_m": 0.2541061630983785,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 808.1,
+              "end_s": 808.8000000000001,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8085,
+              "minimum_time_s": 808.5,
+              "minimum_speed_m_s": 0.5515010414319356,
+              "position_xy_m": [
+                1053.9187499564416,
+                2173.6478349742565
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.25362424526221194,
+              "vertex_turn_deg": 5.806451612903032
+            },
+            {
+              "start_s": 825.7,
+              "end_s": 826.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8261,
+              "minimum_time_s": 826.1,
+              "minimum_speed_m_s": 0.5517500397793941,
+              "position_xy_m": [
+                1035.43681249451,
+                2102.1640542215478
+              ],
+              "nearest_vertex_index": 9,
+              "distance_to_vertex_m": 0.25312230223239257,
+              "vertex_turn_deg": 5.806451612903535
+            },
+            {
+              "start_s": 843.3,
+              "end_s": 844.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8437,
+              "minimum_time_s": 843.7,
+              "minimum_speed_m_s": 0.5520200085739444,
+              "position_xy_m": [
+                1024.2815446905572,
+                2029.1772699209437
+              ],
+              "nearest_vertex_index": 10,
+              "distance_to_vertex_m": 0.2526034972852535,
+              "vertex_turn_deg": 5.806451612903032
+            },
+            {
+              "start_s": 860.9,
+              "end_s": 861.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8613,
+              "minimum_time_s": 861.3,
+              "minimum_speed_m_s": 0.5523108840512008,
+              "position_xy_m": [
+                1020.5674084342746,
+                1955.4364127661424
+              ],
+              "nearest_vertex_index": 11,
+              "distance_to_vertex_m": 0.2520703613432192,
+              "vertex_turn_deg": 5.806451612903347
+            },
+            {
+              "start_s": 878.5,
+              "end_s": 879.2,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8789,
+              "minimum_time_s": 878.9,
+              "minimum_speed_m_s": 0.5526201298250432,
+              "position_xy_m": [
+                1024.3325117312538,
+                1881.69814942964
+              ],
+              "nearest_vertex_index": 12,
+              "distance_to_vertex_m": 0.25152638852605613,
+              "vertex_turn_deg": 5.806451612902781
+            },
+            {
+              "start_s": 896.1,
+              "end_s": 896.8000000000001,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 8965,
+              "minimum_time_s": 896.5,
+              "minimum_speed_m_s": 0.5529317675835786,
+              "position_xy_m": [
+                1035.538218127981,
+                1808.7191206624236
+              ],
+              "nearest_vertex_index": 13,
+              "distance_to_vertex_m": 0.2509739591963629,
+              "vertex_turn_deg": 5.806451612903535
+            },
+            {
+              "start_s": 913.7,
+              "end_s": 914.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9141,
+              "minimum_time_s": 914.1,
+              "minimum_speed_m_s": 0.5532645591479092,
+              "position_xy_m": [
+                1054.0695400958036,
+                1737.2481810873546
+              ],
+              "nearest_vertex_index": 14,
+              "distance_to_vertex_m": 0.2504102779634312,
+              "vertex_turn_deg": 5.806451612903095
+            },
+            {
+              "start_s": 931.3,
+              "end_s": 932.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9317,
+              "minimum_time_s": 931.7,
+              "minimum_speed_m_s": 0.5536109741021956,
+              "position_xy_m": [
+                1079.7363231082961,
+                1668.0187031075757
+              ],
+              "nearest_vertex_index": 15,
+              "distance_to_vertex_m": 0.24983987205345987,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 948.9,
+              "end_s": 949.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9493,
+              "minimum_time_s": 949.3,
+              "minimum_speed_m_s": 0.5539648879774209,
+              "position_xy_m": [
+                1112.2751918949245,
+                1601.7410663397968
+              ],
+              "nearest_vertex_index": 16,
+              "distance_to_vertex_m": 0.24925913396610444,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 966.5,
+              "end_s": 967.2,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9669,
+              "minimum_time_s": 966.9,
+              "minimum_speed_m_s": 0.5543411570634038,
+              "position_xy_m": [
+                1151.3522650208188,
+                1539.095343736426
+              ],
+              "nearest_vertex_index": 17,
+              "distance_to_vertex_m": 0.24868387823437427,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 984.1,
+              "end_s": 984.8000000000001,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 9845,
+              "minimum_time_s": 984.5,
+              "minimum_speed_m_s": 0.5547257970131672,
+              "position_xy_m": [
+                1196.5665773133037,
+                1480.7243451826123
+              ],
+              "nearest_vertex_index": 18,
+              "distance_to_vertex_m": 0.24812908093015343,
+              "vertex_turn_deg": 5.806451612903347
+            },
+            {
+              "start_s": 1001.7,
+              "end_s": 1002.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10021,
+              "minimum_time_s": 1002.1,
+              "minimum_speed_m_s": 0.5550935928271648,
+              "position_xy_m": [
+                1247.4541830561136,
+                1427.2270306342218
+              ],
+              "nearest_vertex_index": 19,
+              "distance_to_vertex_m": 0.2475966152022068,
+              "vertex_turn_deg": 5.806451612903347
+            },
+            {
+              "start_s": 1019.3,
+              "end_s": 1020.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10197,
+              "minimum_time_s": 1019.7,
+              "minimum_speed_m_s": 0.5554438262052253,
+              "position_xy_m": [
+                1303.492919999392,
+                1379.1523514185658
+              ],
+              "nearest_vertex_index": 20,
+              "distance_to_vertex_m": 0.24708769193980581,
+              "vertex_turn_deg": 5.806451612903095
+            },
+            {
+              "start_s": 1036.9,
+              "end_s": 1037.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10373,
+              "minimum_time_s": 1037.3,
+              "minimum_speed_m_s": 0.5557761254047691,
+              "position_xy_m": [
+                1364.1077681979248,
+                1336.9936174350476
+              ],
+              "nearest_vertex_index": 21,
+              "distance_to_vertex_m": 0.24660319568749967,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 1054.5,
+              "end_s": 1055.1999999999998,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10549,
+              "minimum_time_s": 1054.9,
+              "minimum_speed_m_s": 0.5560979470928855,
+              "position_xy_m": [
+                1428.676739714157,
+                1301.1834395865815
+              ],
+              "nearest_vertex_index": 22,
+              "distance_to_vertex_m": 0.24613231714185022,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 1072.1,
+              "end_s": 1072.8,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10725,
+              "minimum_time_s": 1072.5,
+              "minimum_speed_m_s": 0.5564197430318738,
+              "position_xy_m": [
+                1496.5372655511806,
+                1272.0892828500369
+              ],
+              "nearest_vertex_index": 23,
+              "distance_to_vertex_m": 0.24565987719277022,
+              "vertex_turn_deg": 5.806451612903284
+            },
+            {
+              "start_s": 1089.7,
+              "end_s": 1090.3999999999999,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 10901,
+              "minimum_time_s": 1090.1,
+              "minimum_speed_m_s": 0.5567402798573038,
+              "position_xy_m": [
+                1566.9930153479684,
+                1250.0096883115448
+              ],
+              "nearest_vertex_index": 24,
+              "distance_to_vertex_m": 0.24518757263298974,
+              "vertex_turn_deg": 5.80645161290341
+            },
+            {
+              "start_s": 1107.3,
+              "end_s": 1108.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11077,
+              "minimum_time_s": 1107.7,
+              "minimum_speed_m_s": 0.5570584763269006,
+              "position_xy_m": [
+                1639.321028803538,
+                1235.1712197606612
+              ],
+              "nearest_vertex_index": 25,
+              "distance_to_vertex_m": 0.24471714119647395,
+              "vertex_turn_deg": 5.806451612902655
+            },
+            {
+              "start_s": 1124.9,
+              "end_s": 1125.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11253,
+              "minimum_time_s": 1125.3,
+              "minimum_speed_m_s": 0.5573732240996745,
+              "position_xy_m": [
+                1712.7791336668115,
+                1227.7261388473419
+              ],
+              "nearest_vertex_index": 26,
+              "distance_to_vertex_m": 0.24425006787476974,
+              "vertex_turn_deg": 5.806451612903284
+            },
+            {
+              "start_s": 1142.5,
+              "end_s": 1143.1999999999998,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11429,
+              "minimum_time_s": 1142.9,
+              "minimum_speed_m_s": 0.5576920237258675,
+              "position_xy_m": [
+                1786.6135451282269,
+                1227.7508414874846
+              ],
+              "nearest_vertex_index": 27,
+              "distance_to_vertex_m": 0.2437714841216119,
+              "vertex_turn_deg": 5.80645161290341
+            },
+            {
+              "start_s": 1160.1,
+              "end_s": 1160.8,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11605,
+              "minimum_time_s": 1160.5,
+              "minimum_speed_m_s": 0.5580197965410557,
+              "position_xy_m": [
+                1860.0666370361791,
+                1235.2450714926094
+              ],
+              "nearest_vertex_index": 28,
+              "distance_to_vertex_m": 0.24328640202551954,
+              "vertex_turn_deg": 5.806451612902844
+            },
+            {
+              "start_s": 1177.7,
+              "end_s": 1178.3999999999999,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11781,
+              "minimum_time_s": 1178.1,
+              "minimum_speed_m_s": 0.5583534171059031,
+              "position_xy_m": [
+                1932.38469782265,
+                1250.1319290807196
+              ],
+              "nearest_vertex_index": 29,
+              "distance_to_vertex_m": 0.2428014540922538,
+              "vertex_turn_deg": 5.8064516129031585
+            },
+            {
+              "start_s": 1195.3,
+              "end_s": 1196.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 11957,
+              "minimum_time_s": 1195.7,
+              "minimum_speed_m_s": 0.5586794075109914,
+              "position_xy_m": [
+                2002.8256437613286,
+                1272.2586536550139
+              ],
+              "nearest_vertex_index": 30,
+              "distance_to_vertex_m": 0.24230384106373698,
+              "vertex_turn_deg": 5.80645161290341
+            },
+            {
+              "start_s": 1212.9,
+              "end_s": 1213.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 12133,
+              "minimum_time_s": 1213.3,
+              "minimum_speed_m_s": 0.5590094174695146,
+              "position_xy_m": [
+                2070.6666606037206,
+                1301.3981913522073
+              ],
+              "nearest_vertex_index": 31,
+              "distance_to_vertex_m": 0.24178720861138997,
+              "vertex_turn_deg": 5.806451612903095
+            },
+            {
+              "start_s": 1230.5,
+              "end_s": 1231.1999999999998,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 12309,
+              "minimum_time_s": 1230.9,
+              "minimum_speed_m_s": 0.5593505064755321,
+              "position_xy_m": [
+                2135.2116224801457,
+                1337.251531560352
+              ],
+              "nearest_vertex_index": 32,
+              "distance_to_vertex_m": 0.24125469664032265,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1248.1,
+              "end_s": 1248.8,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 12485,
+              "minimum_time_s": 1248.5,
+              "minimum_speed_m_s": 0.5597006888074003,
+              "position_xy_m": [
+                2195.7982249689803,
+                1379.4507738674656
+              ],
+              "nearest_vertex_index": 33,
+              "distance_to_vertex_m": 0.2407093880505646,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1265.7,
+              "end_s": 1266.5,
+              "duration_s": 0.8,
+              "minimum_frame": 12661,
+              "minimum_time_s": 1266.1,
+              "minimum_speed_m_s": 0.5600496145222303,
+              "position_xy_m": [
+                2251.8047811345486,
+                1427.5629030331702
+              ],
+              "nearest_vertex_index": 34,
+              "distance_to_vertex_m": 0.24015471290695012,
+              "vertex_turn_deg": 5.806451612902907
+            },
+            {
+              "start_s": 1283.3,
+              "end_s": 1284.1,
+              "duration_s": 0.8,
+              "minimum_frame": 12837,
+              "minimum_time_s": 1283.7,
+              "minimum_speed_m_s": 0.5603985864170951,
+              "position_xy_m": [
+                2302.656597734643,
+                1481.094228380924
+              ],
+              "nearest_vertex_index": 35,
+              "distance_to_vertex_m": 0.23958987804388598,
+              "vertex_turn_deg": 5.806451612903661
+            },
+            {
+              "start_s": 1300.9,
+              "end_s": 1301.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 13013,
+              "minimum_time_s": 1301.3,
+              "minimum_speed_m_s": 0.5607547124225335,
+              "position_xy_m": [
+                2347.831876680026,
+                1539.4954529476565
+              ],
+              "nearest_vertex_index": 36,
+              "distance_to_vertex_m": 0.23901537275603832,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 1318.5,
+              "end_s": 1319.3,
+              "duration_s": 0.8,
+              "minimum_frame": 13189,
+              "minimum_time_s": 1318.9,
+              "minimum_speed_m_s": 0.5611168974146252,
+              "position_xy_m": [
+                2386.8670686042483,
+                1602.1673104694335
+              ],
+              "nearest_vertex_index": 37,
+              "distance_to_vertex_m": 0.23843294604600432,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 1336.1,
+              "end_s": 1336.8999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 13365,
+              "minimum_time_s": 1336.5,
+              "minimum_speed_m_s": 0.5614864918529264,
+              "position_xy_m": [
+                2419.361627013984,
+                1668.4667102369665
+              ],
+              "nearest_vertex_index": 38,
+              "distance_to_vertex_m": 0.23784072205216386,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 1353.7,
+              "end_s": 1354.5,
+              "duration_s": 0.8,
+              "minimum_frame": 13541,
+              "minimum_time_s": 1354.1,
+              "minimum_speed_m_s": 0.5618944268062411,
+              "position_xy_m": [
+                2444.982130907913,
+                1737.7133670731366
+              ],
+              "nearest_vertex_index": 39,
+              "distance_to_vertex_m": 0.2372668676316975,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1371.3,
+              "end_s": 1372.1,
+              "duration_s": 0.8,
+              "minimum_frame": 13717,
+              "minimum_time_s": 1371.7,
+              "minimum_speed_m_s": 0.5622866147481653,
+              "position_xy_m": [
+                2463.465676407753,
+                1809.1967335312204
+              ],
+              "nearest_vertex_index": 40,
+              "distance_to_vertex_m": 0.2367145035635703,
+              "vertex_turn_deg": 5.80645161290385
+            },
+            {
+              "start_s": 1388.9,
+              "end_s": 1389.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 13893,
+              "minimum_time_s": 1389.3,
+              "minimum_speed_m_s": 0.5626607227367837,
+              "position_xy_m": [
+                2474.622593602588,
+                1882.1833079499079
+              ],
+              "nearest_vertex_index": 41,
+              "distance_to_vertex_m": 0.23618562355160694,
+              "vertex_turn_deg": 5.806451612902781
+            },
+            {
+              "start_s": 1406.5,
+              "end_s": 1407.3,
+              "duration_s": 0.8,
+              "minimum_frame": 14069,
+              "minimum_time_s": 1406.9,
+              "minimum_speed_m_s": 0.5630162936602072,
+              "position_xy_m": [
+                2478.3383916674293,
+                1955.924161741002
+              ],
+              "nearest_vertex_index": 42,
+              "distance_to_vertex_m": 0.2356810955703594,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1424.1,
+              "end_s": 1424.8999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 14245,
+              "minimum_time_s": 1424.5,
+              "minimum_speed_m_s": 0.5633529174560271,
+              "position_xy_m": [
+                2474.574934237039,
+                2029.6626252047224
+              ],
+              "nearest_vertex_index": 43,
+              "distance_to_vertex_m": 0.23520173344755216,
+              "vertex_turn_deg": 5.806451612902844
+            },
+            {
+              "start_s": 1441.7,
+              "end_s": 1442.5,
+              "duration_s": 0.8,
+              "minimum_frame": 14422,
+              "minimum_time_s": 1442.2,
+              "minimum_speed_m_s": 0.5636605059466739,
+              "position_xy_m": [
+                2463.357676620342,
+                2102.6958544600625
+              ],
+              "nearest_vertex_index": 44,
+              "distance_to_vertex_m": 0.2900972611448953,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 1459.3,
+              "end_s": 1460.1,
+              "duration_s": 0.8,
+              "minimum_frame": 14598,
+              "minimum_time_s": 1459.8,
+              "minimum_speed_m_s": 0.5631222801536828,
+              "position_xy_m": [
+                2444.8225357415226,
+                2174.1657326033423
+              ],
+              "nearest_vertex_index": 45,
+              "distance_to_vertex_m": 0.28961971645630585,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1476.9,
+              "end_s": 1477.6999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 14774,
+              "minimum_time_s": 1477.4,
+              "minimum_speed_m_s": 0.5625951465847636,
+              "position_xy_m": [
+                2419.1520486432396,
+                2243.3937734170945
+              ],
+              "nearest_vertex_index": 46,
+              "distance_to_vertex_m": 0.289144114475622,
+              "vertex_turn_deg": 5.806451612903284
+            },
+            {
+              "start_s": 1494.5,
+              "end_s": 1495.3,
+              "duration_s": 0.8,
+              "minimum_frame": 14950,
+              "minimum_time_s": 1495.0,
+              "minimum_speed_m_s": 0.5620811464943876,
+              "position_xy_m": [
+                2386.6096243228462,
+                2309.669613223124
+              ],
+              "nearest_vertex_index": 47,
+              "distance_to_vertex_m": 0.28867160735277314,
+              "vertex_turn_deg": 5.8064516129031585
+            },
+            {
+              "start_s": 1512.1,
+              "end_s": 1512.8999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 15126,
+              "minimum_time_s": 1512.6,
+              "minimum_speed_m_s": 0.5623134967349948,
+              "position_xy_m": [
+                2347.5340354708696,
+                2372.316718703708
+              ],
+              "nearest_vertex_index": 48,
+              "distance_to_vertex_m": 0.28837898409355484,
+              "vertex_turn_deg": 3.5689884601901247
+            },
+            {
+              "start_s": 1517.4,
+              "end_s": 1525.1999999999998,
+              "duration_s": 7.800000000000001,
+              "minimum_frame": 15247,
+              "minimum_time_s": 1524.7,
+              "minimum_speed_m_s": 0.0010040094142618901,
+              "position_xy_m": [
+                2337.856491107343,
+                2385.867441693715
+              ],
+              "nearest_vertex_index": 49,
+              "distance_to_vertex_m": 0.0013531175206849212,
+              "vertex_turn_deg": 180.0
+            },
+            {
+              "start_s": 1529.8,
+              "end_s": 1530.6,
+              "duration_s": 0.8,
+              "minimum_frame": 15303,
+              "minimum_time_s": 1530.3,
+              "minimum_speed_m_s": 0.5503156195523737,
+              "position_xy_m": [
+                2347.8452794498035,
+                2371.8511576900783
+              ],
+              "nearest_vertex_index": 48,
+              "distance_to_vertex_m": 0.2716392316344098,
+              "vertex_turn_deg": 3.5689884601901247
+            },
+            {
+              "start_s": 1547.4,
+              "end_s": 1548.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 15479,
+              "minimum_time_s": 1547.9,
+              "minimum_speed_m_s": 0.5496796109432014,
+              "position_xy_m": [
+                2386.881989815056,
+                2309.180414042379
+              ],
+              "nearest_vertex_index": 47,
+              "distance_to_vertex_m": 0.2712393174527532,
+              "vertex_turn_deg": 5.8064516129031585
+            },
+            {
+              "start_s": 1565.0,
+              "end_s": 1565.8,
+              "duration_s": 0.8,
+              "minimum_frame": 15655,
+              "minimum_time_s": 1565.5,
+              "minimum_speed_m_s": 0.5495038193536039,
+              "position_xy_m": [
+                2419.373527606938,
+                2242.8796370145774
+              ],
+              "nearest_vertex_index": 46,
+              "distance_to_vertex_m": 0.27066889551383716,
+              "vertex_turn_deg": 5.806451612903284
+            },
+            {
+              "start_s": 1582.6,
+              "end_s": 1583.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 15831,
+              "minimum_time_s": 1583.1,
+              "minimum_speed_m_s": 0.5493676774443172,
+              "position_xy_m": [
+                2444.990884959406,
+                2173.6319108260673
+              ],
+              "nearest_vertex_index": 45,
+              "distance_to_vertex_m": 0.27012002137713964,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1600.2,
+              "end_s": 1601.0,
+              "duration_s": 0.8,
+              "minimum_frame": 16007,
+              "minimum_time_s": 1600.7,
+              "minimum_speed_m_s": 0.5492496594075152,
+              "position_xy_m": [
+                2463.4711894944066,
+                2102.147796671572
+              ],
+              "nearest_vertex_index": 44,
+              "distance_to_vertex_m": 0.2695936632543188,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 1617.8,
+              "end_s": 1618.6,
+              "duration_s": 0.8,
+              "minimum_frame": 16183,
+              "minimum_time_s": 1618.3,
+              "minimum_speed_m_s": 0.5491482898862644,
+              "position_xy_m": [
+                2474.6248039705183,
+                2029.1608052387267
+              ],
+              "nearest_vertex_index": 43,
+              "distance_to_vertex_m": 0.26909095327184607,
+              "vertex_turn_deg": 5.806451612902844
+            },
+            {
+              "start_s": 1635.4,
+              "end_s": 1636.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 16359,
+              "minimum_time_s": 1635.9,
+              "minimum_speed_m_s": 0.5490623904082341,
+              "position_xy_m": [
+                2478.3372711906813,
+                1955.4198700210077
+              ],
+              "nearest_vertex_index": 42,
+              "distance_to_vertex_m": 0.26861270821072025,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1653.0,
+              "end_s": 1653.8,
+              "duration_s": 0.8,
+              "minimum_frame": 16535,
+              "minimum_time_s": 1653.5,
+              "minimum_speed_m_s": 0.5489881913690815,
+              "position_xy_m": [
+                2474.5704904831564,
+                1881.6816737751128
+              ],
+              "nearest_vertex_index": 41,
+              "distance_to_vertex_m": 0.2681480206519508,
+              "vertex_turn_deg": 5.806451612902781
+            },
+            {
+              "start_s": 1670.6,
+              "end_s": 1671.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 16711,
+              "minimum_time_s": 1671.1,
+              "minimum_speed_m_s": 0.5489232832171246,
+              "position_xy_m": [
+                2463.363112689456,
+                1808.7028753269624
+              ],
+              "nearest_vertex_index": 40,
+              "distance_to_vertex_m": 0.2676822477800933,
+              "vertex_turn_deg": 5.80645161290385
+            },
+            {
+              "start_s": 1688.2,
+              "end_s": 1689.0,
+              "duration_s": 0.8,
+              "minimum_frame": 16887,
+              "minimum_time_s": 1688.7,
+              "minimum_speed_m_s": 0.5488679257746505,
+              "position_xy_m": [
+                2444.8301386815833,
+                1737.2323250857155
+              ],
+              "nearest_vertex_index": 39,
+              "distance_to_vertex_m": 0.2672168936673219,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1705.8,
+              "end_s": 1706.6,
+              "duration_s": 0.8,
+              "minimum_frame": 17063,
+              "minimum_time_s": 1706.3,
+              "minimum_speed_m_s": 0.5488222516005832,
+              "position_xy_m": [
+                2419.1617382330614,
+                1668.0033970254601
+              ],
+              "nearest_vertex_index": 38,
+              "distance_to_vertex_m": 0.2667536536906039,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 1723.4,
+              "end_s": 1724.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 17239,
+              "minimum_time_s": 1723.9,
+              "minimum_speed_m_s": 0.5487863034648065,
+              "position_xy_m": [
+                2386.621298967626,
+                1601.7264639928171
+              ],
+              "nearest_vertex_index": 37,
+              "distance_to_vertex_m": 0.26629386350168355,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 1741.0,
+              "end_s": 1741.8,
+              "duration_s": 0.8,
+              "minimum_frame": 17415,
+              "minimum_time_s": 1741.5,
+              "minimum_speed_m_s": 0.5487564133210194,
+              "position_xy_m": [
+                2347.5427330452703,
+                1539.0816209449576
+              ],
+              "nearest_vertex_index": 36,
+              "distance_to_vertex_m": 0.2658230030769817,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 1758.6,
+              "end_s": 1759.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 17591,
+              "minimum_time_s": 1759.1,
+              "minimum_speed_m_s": 0.5487408951919109,
+              "position_xy_m": [
+                2302.3270337147787,
+                1480.711674826711
+              ],
+              "nearest_vertex_index": 35,
+              "distance_to_vertex_m": 0.26534623661732426,
+              "vertex_turn_deg": 5.806451612903661
+            },
+            {
+              "start_s": 1776.2,
+              "end_s": 1777.0,
+              "duration_s": 0.8,
+              "minimum_frame": 17767,
+              "minimum_time_s": 1776.7,
+              "minimum_speed_m_s": 0.5487413429580336,
+              "position_xy_m": [
+                2251.438165377251,
+                1427.215567194161
+              ],
+              "nearest_vertex_index": 34,
+              "distance_to_vertex_m": 0.26487014954801924,
+              "vertex_turn_deg": 5.806451612902907
+            },
+            {
+              "start_s": 1793.8,
+              "end_s": 1794.6,
+              "duration_s": 0.8,
+              "minimum_frame": 17943,
+              "minimum_time_s": 1794.3,
+              "minimum_speed_m_s": 0.5487388233553825,
+              "position_xy_m": [
+                2195.3983197851708,
+                1379.1422427858956
+              ],
+              "nearest_vertex_index": 33,
+              "distance_to_vertex_m": 0.2643810942112343,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1811.4,
+              "end_s": 1812.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 18119,
+              "minimum_time_s": 1811.9,
+              "minimum_speed_m_s": 0.5487412521598818,
+              "position_xy_m": [
+                2134.782541527039,
+                1336.984992210504
+              ],
+              "nearest_vertex_index": 32,
+              "distance_to_vertex_m": 0.26387350356836253,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 1829.0,
+              "end_s": 1829.8,
+              "duration_s": 0.8,
+              "minimum_frame": 18295,
+              "minimum_time_s": 1829.5,
+              "minimum_speed_m_s": 0.5487571587104371,
+              "position_xy_m": [
+                2070.2128221897133,
+                1301.176393816828
+              ],
+              "nearest_vertex_index": 31,
+              "distance_to_vertex_m": 0.26335065597886775,
+              "vertex_turn_deg": 5.806451612903095
+            },
+            {
+              "start_s": 1846.6,
+              "end_s": 1847.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 18471,
+              "minimum_time_s": 1847.1,
+              "minimum_speed_m_s": 0.5487875717134821,
+              "position_xy_m": [
+                2002.3517241408963,
+                1272.0838823296488
+              ],
+              "nearest_vertex_index": 30,
+              "distance_to_vertex_m": 0.2628155847648177,
+              "vertex_turn_deg": 5.80645161290341
+            },
+            {
+              "start_s": 1864.2,
+              "end_s": 1865.0,
+              "duration_s": 0.8,
+              "minimum_frame": 18647,
+              "minimum_time_s": 1864.7,
+              "minimum_speed_m_s": 0.548821953908978,
+              "position_xy_m": [
+                1931.8955821860352,
+                1250.0059785686287
+              ],
+              "nearest_vertex_index": 29,
+              "distance_to_vertex_m": 0.2622712647647914,
+              "vertex_turn_deg": 5.8064516129031585
+            },
+            {
+              "start_s": 1881.8,
+              "end_s": 1882.6,
+              "duration_s": 0.8,
+              "minimum_frame": 18823,
+              "minimum_time_s": 1882.3,
+              "minimum_speed_m_s": 0.5488625651260296,
+              "position_xy_m": [
+                1859.5673625309983,
+                1235.1692260865366
+              ],
+              "nearest_vertex_index": 28,
+              "distance_to_vertex_m": 0.26171693713173494,
+              "vertex_turn_deg": 5.806451612902844
+            },
+            {
+              "start_s": 1899.4,
+              "end_s": 1900.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 18999,
+              "minimum_time_s": 1899.9,
+              "minimum_speed_m_s": 0.5489182753255445,
+              "position_xy_m": [
+                1786.109239094623,
+                1227.7258648804636
+              ],
+              "nearest_vertex_index": 27,
+              "distance_to_vertex_m": 0.2611534851659125,
+              "vertex_turn_deg": 5.80645161290341
+            },
+            {
+              "start_s": 1917.0,
+              "end_s": 1917.8,
+              "duration_s": 0.8,
+              "minimum_frame": 19175,
+              "minimum_time_s": 1917.5,
+              "minimum_speed_m_s": 0.5489881200424345,
+              "position_xy_m": [
+                1712.2749786638929,
+                1227.752270502963
+              ],
+              "nearest_vertex_index": 26,
+              "distance_to_vertex_m": 0.2605825308662231,
+              "vertex_turn_deg": 5.806451612903284
+            },
+            {
+              "start_s": 1934.6,
+              "end_s": 1935.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 19351,
+              "minimum_time_s": 1935.1,
+              "minimum_speed_m_s": 0.5490758515396084,
+              "position_xy_m": [
+                1638.822210625658,
+                1235.248169805185
+              ],
+              "nearest_vertex_index": 25,
+              "distance_to_vertex_m": 0.2600022971528377,
+              "vertex_turn_deg": 5.806451612902655
+            },
+            {
+              "start_s": 1952.2,
+              "end_s": 1953.0,
+              "duration_s": 0.8,
+              "minimum_frame": 19527,
+              "minimum_time_s": 1952.7,
+              "minimum_speed_m_s": 0.5492194740859153,
+              "position_xy_m": [
+                1566.5046191162962,
+                1250.1366498265297
+              ],
+              "nearest_vertex_index": 24,
+              "distance_to_vertex_m": 0.2594419354292795,
+              "vertex_turn_deg": 5.80645161290341
+            },
+            {
+              "start_s": 1969.8,
+              "end_s": 1970.6,
+              "duration_s": 0.8,
+              "minimum_frame": 19703,
+              "minimum_time_s": 1970.3,
+              "minimum_speed_m_s": 0.5493703519709197,
+              "position_xy_m": [
+                1496.0642690412244,
+                1272.264946323092
+              ],
+              "nearest_vertex_index": 23,
+              "distance_to_vertex_m": 0.2589034932614595,
+              "vertex_turn_deg": 5.806451612903284
+            },
+            {
+              "start_s": 1987.4,
+              "end_s": 1988.1999999999998,
+              "duration_s": 0.8,
+              "minimum_frame": 19879,
+              "minimum_time_s": 1987.9,
+              "minimum_speed_m_s": 0.5495265075786117,
+              "position_xy_m": [
+                1428.2239649870705,
+                1301.4060033218316
+              ],
+              "nearest_vertex_index": 22,
+              "distance_to_vertex_m": 0.25838766668664903,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 2005.0,
+              "end_s": 2005.8,
+              "duration_s": 0.8,
+              "minimum_frame": 20055,
+              "minimum_time_s": 2005.5,
+              "minimum_speed_m_s": 0.5496858998915819,
+              "position_xy_m": [
+                1363.6798326741202,
+                1337.260805502984
+              ],
+              "nearest_vertex_index": 21,
+              "distance_to_vertex_m": 0.2578956868118871,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 2022.6,
+              "end_s": 2023.3999999999999,
+              "duration_s": 0.8,
+              "minimum_frame": 20231,
+              "minimum_time_s": 2023.1,
+              "minimum_speed_m_s": 0.5498466348422765,
+              "position_xy_m": [
+                1303.094176775365,
+                1379.4614459401112
+              ],
+              "nearest_vertex_index": 20,
+              "distance_to_vertex_m": 0.25742834082725446,
+              "vertex_turn_deg": 5.806451612903095
+            },
+            {
+              "start_s": 2040.2,
+              "end_s": 2041.0,
+              "duration_s": 0.8,
+              "minimum_frame": 20407,
+              "minimum_time_s": 2040.7,
+              "minimum_speed_m_s": 0.550016056269857,
+              "position_xy_m": [
+                1247.0887014598495,
+                1427.5748837780711
+              ],
+              "nearest_vertex_index": 19,
+              "distance_to_vertex_m": 0.2569620526523636,
+              "vertex_turn_deg": 5.806451612903347
+            },
+            {
+              "start_s": 2057.8,
+              "end_s": 2058.6,
+              "duration_s": 0.8,
+              "minimum_frame": 20583,
+              "minimum_time_s": 2058.3,
+              "minimum_speed_m_s": 0.5501947838780707,
+              "position_xy_m": [
+                1196.2380929099231,
+                1481.1074154680962
+              ],
+              "nearest_vertex_index": 18,
+              "distance_to_vertex_m": 0.25649521942745407,
+              "vertex_turn_deg": 5.806451612903347
+            },
+            {
+              "start_s": 2075.4,
+              "end_s": 2076.2,
+              "duration_s": 0.8,
+              "minimum_frame": 20759,
+              "minimum_time_s": 2075.9,
+              "minimum_speed_m_s": 0.5503818239813018,
+              "position_xy_m": [
+                1151.0641397277786,
+                1539.5097334212792
+              ],
+              "nearest_vertex_index": 17,
+              "distance_to_vertex_m": 0.25602972997673,
+              "vertex_turn_deg": 5.806451612903221
+            },
+            {
+              "start_s": 2093.0,
+              "end_s": 2093.7999999999997,
+              "duration_s": 0.8,
+              "minimum_frame": 20935,
+              "minimum_time_s": 2093.5,
+              "minimum_speed_m_s": 0.5505767193070885,
+              "position_xy_m": [
+                1112.0303820809586,
+                1602.1825597805096
+              ],
+              "nearest_vertex_index": 16,
+              "distance_to_vertex_m": 0.25556670479081106,
+              "vertex_turn_deg": 5.806451612902969
+            },
+            {
+              "start_s": 2110.7,
+              "end_s": 2111.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 21111,
+              "minimum_time_s": 2111.1,
+              "minimum_speed_m_s": 0.550780948894894,
+              "position_xy_m": [
+                1079.5373574081748,
+                1668.482789302838
+              ],
+              "nearest_vertex_index": 15,
+              "distance_to_vertex_m": 0.25509989255287013,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 2128.3,
+              "end_s": 2129.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 21287,
+              "minimum_time_s": 2128.7,
+              "minimum_speed_m_s": 0.5509978051765331,
+              "position_xy_m": [
+                1053.9184850985946,
+                1737.730093297127
+              ],
+              "nearest_vertex_index": 14,
+              "distance_to_vertex_m": 0.2546222020150117,
+              "vertex_turn_deg": 5.806451612903095
+            },
+            {
+              "start_s": 2145.9,
+              "end_s": 2146.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 21463,
+              "minimum_time_s": 2146.3,
+              "minimum_speed_m_s": 0.5512356193236186,
+              "position_xy_m": [
+                1035.4366410076752,
+                1809.2139180372249
+              ],
+              "nearest_vertex_index": 13,
+              "distance_to_vertex_m": 0.25414302436603525,
+              "vertex_turn_deg": 5.806451612903535
+            },
+            {
+              "start_s": 2163.5,
+              "end_s": 2164.2,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 21639,
+              "minimum_time_s": 2163.9,
+              "minimum_speed_m_s": 0.551482420878006,
+              "position_xy_m": [
+                1024.2814718970037,
+                1882.200752894532
+              ],
+              "nearest_vertex_index": 12,
+              "distance_to_vertex_m": 0.2536628035008811,
+              "vertex_turn_deg": 5.806451612902781
+            },
+            {
+              "start_s": 2181.1,
+              "end_s": 2181.7999999999997,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 21815,
+              "minimum_time_s": 2181.5,
+              "minimum_speed_m_s": 0.5517297109838568,
+              "position_xy_m": [
+                1020.5674440155033,
+                1955.9416446819548
+              ],
+              "nearest_vertex_index": 11,
+              "distance_to_vertex_m": 0.25316235667062953,
+              "vertex_turn_deg": 5.806451612903347
+            },
+            {
+              "start_s": 2198.7,
+              "end_s": 2199.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 21991,
+              "minimum_time_s": 2199.1,
+              "minimum_speed_m_s": 0.5519982086109484,
+              "position_xy_m": [
+                1024.3326610199067,
+                2029.6799246617177
+              ],
+              "nearest_vertex_index": 10,
+              "distance_to_vertex_m": 0.25264443779740337,
+              "vertex_turn_deg": 5.806451612903032
+            },
+            {
+              "start_s": 2216.3,
+              "end_s": 2217.0,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 22167,
+              "minimum_time_s": 2216.7,
+              "minimum_speed_m_s": 0.5522875687649078,
+              "position_xy_m": [
+                1035.5384830331677,
+                2102.6589523237117
+              ],
+              "nearest_vertex_index": 9,
+              "distance_to_vertex_m": 0.2521121376017116,
+              "vertex_turn_deg": 5.806451612903535
+            },
+            {
+              "start_s": 2233.9,
+              "end_s": 2234.6,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 22343,
+              "minimum_time_s": 2234.3,
+              "minimum_speed_m_s": 0.5525966521446253,
+              "position_xy_m": [
+                1054.0699220994004,
+                2174.129879101261
+              ],
+              "nearest_vertex_index": 8,
+              "distance_to_vertex_m": 0.25156915245388717,
+              "vertex_turn_deg": 5.806451612903032
+            },
+            {
+              "start_s": 2251.5,
+              "end_s": 2252.2,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 22519,
+              "minimum_time_s": 2251.9,
+              "minimum_speed_m_s": 0.5529066754460037,
+              "position_xy_m": [
+                1079.736821875409,
+                2243.3593298661012
+              ],
+              "nearest_vertex_index": 7,
+              "distance_to_vertex_m": 0.2510175501972458,
+              "vertex_turn_deg": 5.806451612903472
+            },
+            {
+              "start_s": 2269.1,
+              "end_s": 2269.7999999999997,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 22695,
+              "minimum_time_s": 2269.5,
+              "minimum_speed_m_s": 0.5532378404449546,
+              "position_xy_m": [
+                1112.2758052980478,
+                2309.6369260676124
+              ],
+              "nearest_vertex_index": 6,
+              "distance_to_vertex_m": 0.2504547064925573,
+              "vertex_turn_deg": 5.8064516129031585
+            },
+            {
+              "start_s": 2286.7,
+              "end_s": 2287.4,
+              "duration_s": 0.7000000000000001,
+              "minimum_frame": 22871,
+              "minimum_time_s": 2287.1,
+              "minimum_speed_m_s": 0.5538834310273005,
+              "position_xy_m": [
+                1151.3488768552563,
+                2372.2855351757894
+              ],
+              "nearest_vertex_index": 5,
+              "distance_to_vertex_m": 0.25002230164282263,
+              "vertex_turn_deg": 3.387618285771757
+            }
+          ]
+        },
+        "motion_s": 2527.6000000000004,
+        "dwell": {
+          "detected": true,
+          "frame_index": 15072,
+          "confirm_frame_index": 15272,
+          "t_s": 1507.2,
+          "t_confirm": 1527.2,
+          "total_duration_s": 28.0,
+          "union_frame_intervals": [
+            [
+              15072,
+              15352
+            ]
+          ]
+        },
+        "witness_ratio": 1.0,
+        "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate04\\probe_07\\r2\\result.json",
+        "sha256": "3f8f019766ee666d67e4252ed77dfd1526c59a6c2d27257a9ffd8f1183f96837"
+      },
+      "r3": {
+        "status": "NOT_EXECUTED",
+        "reason": "STOP_ON_PROBE05_RESEARCH_FAIL"
+      }
+    }
+  ],
+  "old_evidence_unchanged": {
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R1_report.md": true,
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R1_gate.json": true,
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R1\\gate.json": true
+  },
+  "production_unchanged_since_c9955ca": true,
+  "r2_config_sha256": "94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193",
+  "elapsed_wall_s": 599.2969999999914,
+  "R2": "NOT_EXECUTED",
+  "R3": "NOT_EXECUTED",
+  "R4": "NOT_EXECUTED"
+}
