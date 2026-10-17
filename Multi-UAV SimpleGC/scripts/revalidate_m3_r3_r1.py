@@ -13,6 +13,7 @@ from scripts.m3_r3_support import d0b_oracle
 OLD=DATA/'fast_dynamics/m3/m3_r3_r1_attempt01'
 OUT=DATA/'fast_dynamics/m3/m3_r3_r1_revalidate01'
 AUDIT=REPORT/'R1_revalidation'
+GATE=REPORT/'R1_revalidated_gate.json'
 
 
 def parse_log(text):
@@ -82,13 +83,13 @@ def legacy_audit():
     record=dict(status='PASS',baseline_commit=BASE,environment=dict(python=sys.version,numpy=np.__version__),
         invocation='python -B -m unittest -v <modules>; original same llm environment, deterministic inline fixtures',
         prior_source_verification=attribution['identical_source_files'],evidence_sha256=attribution['evidence_sha256'],failures=rows)
-    atomic(REPORT/'R1_legacy_failures.json',record)
+    atomic(AUDIT/'R1_legacy_failures.json',record)
     lines=['# R1 历史回归故障核实','', '保留原 R1 FAIL；只使用已锁定日志及 Git 对象逐项复核。四项故障机制相同。',
            '', '注意：后两项含尚未执行到的间距/驻留审计断言，不能称其完全不涉及安全合同。最终 G-1/G-5 优先，允许登记精确历史故障；这不证明这些断言已通过，也不豁免物理、航点或独立审计硬门禁。']
     for r in rows:
         lines += ['', '## '+r['test_id'], '',r['status']+' / '+r['kind'],r['reason'],'','固定 FE 基线：','```',r['baseline']['traceback'],'```','当前候选原 R1：','```',r['candidate']['traceback'],'```']
-    (REPORT/'R1_legacy_failures.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
-    (REPORT/'legacy_test_debt.md').write_text('# 历史测试债务（本任务不修）\n\n'+'\n\n'.join('`'+r['test_id']+'`\n\n'+r['reason'] for r in rows)+'\n\n保留原断言与生产合同；后续单独确认现行合同并恢复测试覆盖。\n',encoding='utf-8')
+    (AUDIT/'R1_legacy_failures.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+    (AUDIT/'legacy_test_debt.md').write_text('# 历史测试债务（本任务不修）\n\n'+'\n\n'.join('`'+r['test_id']+'`\n\n'+r['reason'] for r in rows)+'\n\n保留原断言与生产合同；后续单独确认现行合同并恢复测试覆盖。\n',encoding='utf-8')
     return a,[r['test_id'] for r in rows]
 
 
@@ -162,11 +163,29 @@ def tests(project,modules,log,deadline):
     result=parse_log(log.read_text());result['returncode']=p.returncode;return result
 
 
-def launch():
-    assert not OUT.exists() and not (REPORT/'R1_revalidated_gate.json').exists()
-    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=PROJECT,text=True).strip()=='316d0fa7a3fc03249db363cb4a8ab219de6ed32b'
+def validate_inputs(plan):
+    mutable={str(PROJECT/'swarm_sim'/'fast_dynamics'/n) for n in ('route_tracker.py','contracts.py')}
+    for f in plan['input_files']:
+        if f['path'] not in mutable:assert digest(f['path'])==f['sha256'],f['path']
+    return dict(input_files=len(plan['input_files']),mutable_paths=sorted(mutable))
+
+
+def startup(expected_head=None):
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=PROJECT,text=True).strip()
+    if expected_head is not None:assert head==expected_head
+    assert subprocess.check_output(['git','branch','--show-current'],cwd=PROJECT,text=True).strip()=='fe/m3-r3-p2-candidate'
+    assert not subprocess.check_output(['git','diff','c9955ca8d5408309556f5942b88916ca3eb9cd7c','--','swarm_sim','task_v07','configs'],cwd=PROJECT)
     plan=read(PLAN);assert digest(PLAN)==read(REPORT/'R0_revalidated_gate.json')['input_sha256']
-    OUT.mkdir();AUDIT.mkdir();start=time.monotonic();deadline=start+plan['R1']['wall_limit_s']
+    result=validate_inputs(plan)
+    return dict(status='DRY_RUN_PASS',head=head,**result)
+
+
+def launch(expected_head):
+    assert not OUT.exists() and not GATE.exists()
+    assert expected_head is not None
+    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=PROJECT,text=True).strip()==expected_head
+    plan=read(PLAN);assert digest(PLAN)==read(REPORT/'R0_revalidated_gate.json')['input_sha256']
+    OUT.mkdir();AUDIT.mkdir(parents=True);start=time.monotonic();deadline=start+plan['R1']['wall_limit_s']
     protected={str(p):digest(p) for p in (REPORT/'R1_report.md',REPORT/'R1_gate.json',REPORT/'R1/gate.json')}
     hashes=code_hashes();results=[];reg=None;stop=None;baseline_dryrun={}
     amended=dict(schema='m3-r3-user-gates-g1-g5-v1',parent_plan_sha256=digest(PLAN),baseline_commit=BASE,
@@ -178,13 +197,11 @@ def launch():
         R3='Original integration requirements; G-1 dry run and exact baseline delta',
         R4=dict(hard=['original30 strict pairs','no P0ContractError','independent audits','retained episode separation >=2m','no forbidden violations','source hashes unchanged'],additional8='REPORT_ONLY first failure stage/reason'),
         budgets={s:plan[s].get('wall_limit_s') for s in ('R1','R2','R3','R4')})
-    atomic(REPORT/'R1_validation_plan_amended.json',amended)
-    atomic(OUT/'registration.json',dict(parent_commit='316d0fa7a3fc03249db363cb4a8ab219de6ed32b',plan_sha256=digest(REPORT/'R1_validation_plan_amended.json'),source_sha256=hashes,old_evidence_sha256=protected,probes=plan['R1']['probes'],wall_limit_s=plan['R1']['wall_limit_s']))
+    assert read(REPORT/'R1_validation_plan_amended.json')==amended
+    atomic(OUT/'registration.json',dict(parent_commit=expected_head,plan_sha256=digest(REPORT/'R1_validation_plan_amended.json'),source_sha256=hashes,old_evidence_sha256=protected,probes=plan['R1']['probes'],wall_limit_s=plan['R1']['wall_limit_s']))
     try:
         oldbaseline,white=legacy_audit()
-        mutable={str(PROJECT/'swarm_sim/fast_dynamics/'+n) for n in ('route_tracker.py','contracts.py')}
-        for f in plan['input_files']:
-            if f['path'] not in mutable:assert digest(f['path'])==f['sha256'],f['path']
+        startup(expected_head)
         # An immutable Git archive is a temporary isolated checkout, not another worktree.
         archive=OUT/'baseline.zip'
         subprocess.run(['git','archive','--format=zip','--output',str(archive),BASE,'Multi-UAV SimpleGC'],cwd=PROJECT,check=True)
@@ -202,7 +219,7 @@ def launch():
         # All r2 replays precede r3, so the dry run is complete before candidate evaluation.
         for version in ('r2','r3'):
             if version=='r3':
-                atomic(AUDIT/'baseline_gate_dryrun.json',baseline_dryrun);atomic(REPORT/'R1/baseline_gate_dryrun.json',baseline_dryrun)
+                atomic(AUDIT/'baseline_gate_dryrun.json',baseline_dryrun)
                 candidate=tests(PROJECT,plan['R1']['unit_modules'],OUT/'unit_tests.txt',deadline)
                 reg=regression(candidate,baseline,white);atomic(AUDIT/'regression_delta.json',reg)
                 extra=tests(PROJECT,['test_m3_r3_r1_revalidation'],OUT/'gate_unit_tests.txt',deadline)
@@ -229,16 +246,24 @@ def launch():
     gate=dict(stage='R1',status=status,result='R1_REVALIDATED_PASS' if status=='PASS' else 'R1_REVALIDATION_'+status,required_checks=checks,regression=reg,
         stop=stop,probes=[{k:r[k] for k in ('probe_id','version','status','checks','precision') if k in r} for r in results],
         elapsed_wall_s=time.monotonic()-start,plan_sha256=digest(REPORT/'R1_validation_plan_amended.json'),evidence_paths=[str(OUT),str(AUDIT)],next_stage='R2' if status=='PASS' else None)
-    atomic(OUT/'summary.json',gate);atomic(REPORT/'R1_revalidated_gate.json',gate)
+    atomic(OUT/'summary.json',gate);atomic(GATE,gate)
     if not (AUDIT/'baseline_gate_dryrun.json').exists():
-        baseline_dryrun.update(status='INCOMPLETE',stop=stop);atomic(AUDIT/'baseline_gate_dryrun.json',baseline_dryrun);atomic(REPORT/'R1/baseline_gate_dryrun.json',baseline_dryrun)
+        baseline_dryrun.update(status='INCOMPLETE',stop=stop);atomic(AUDIT/'baseline_gate_dryrun.json',baseline_dryrun)
     state=read(REPORT/'pipeline_state.json');atomic(AUDIT/'previous_pipeline_state.json',state)
-    state.update(status=status,current_stage='R1',next_stage=gate['next_stage']);state['stages']['R1']=dict(status=status,executed=True,gate=str(REPORT/'R1_revalidated_gate.json'))
+    state.update(status=status,current_stage='R1',next_stage=gate['next_stage']);state['stages']['R1']=dict(status=status,executed=True,gate=str(GATE))
     if status=='PASS':state['last_pass_stage']='R1'
     atomic(REPORT/'pipeline_state.json',state)
     print(json.dumps(dict(status=status,stop=stop and {k:v for k,v in stop.items() if k!='details'},elapsed=gate['elapsed_wall_s'])),flush=True)
     return 0 if status=='PASS' else 2
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worker');p.add_argument('--version');p.add_argument('--output',type=Path);a=p.parse_args()
-    raise SystemExit(probe_worker(a.worker,a.version,a.output) if a.worker else launch())
+    p=argparse.ArgumentParser();p.add_argument('--worker');p.add_argument('--version');p.add_argument('--output',type=Path)
+    p.add_argument('--attempt',type=int);p.add_argument('--expected-head');p.add_argument('--dry-run',action='store_true');a=p.parse_args()
+    if a.dry_run:
+        print(json.dumps(startup(a.expected_head)),flush=True);raise SystemExit(0)
+    if a.worker:raise SystemExit(probe_worker(a.worker,a.version,a.output))
+    if a.attempt is None or a.attempt<2:p.error('new attempt >= 2 required')
+    OUT=DATA/f'fast_dynamics/m3/m3_r3_r1_revalidate{a.attempt:02d}'
+    AUDIT=REPORT/f'R1_revalidation/attempt{a.attempt:02d}'
+    GATE=REPORT/f'R1_revalidated_gate_attempt{a.attempt:02d}.json'
+    raise SystemExit(launch(a.expected_head))

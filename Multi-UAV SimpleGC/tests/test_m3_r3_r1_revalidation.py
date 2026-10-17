@@ -31,3 +31,14 @@ class R1GateTests(unittest.TestCase):
         self.assertNotEqual(diff['actual_bytes'],diff['historical_bytes'])
     def test_incomplete_log_rejected(self):
         with self.assertRaises(ValueError):parse_log('test_one (a.b.test_one) ... ok\nRan 2 tests in 0.1s\nOK\n')
+
+    def test_end_to_end_startup_dry_run_validates_locked_inputs(self):
+        import json,subprocess,sys
+        from scripts.revalidate_m3_r3_r1 import PROJECT
+        run=subprocess.run([sys.executable,'-B',str(PROJECT/'scripts/revalidate_m3_r3_r1.py'),'--dry-run'],
+                           cwd=PROJECT,capture_output=True,text=True,timeout=120)
+        self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+        result=json.loads(run.stdout)
+        self.assertEqual(result['status'],'DRY_RUN_PASS')
+        self.assertEqual(result['input_files'],8608)
+        self.assertEqual({p.replace('\\','/').rsplit('/',1)[-1] for p in result['mutable_paths']},{'route_tracker.py','contracts.py'})
