@@ -1,0 +1,27 @@
+{
+  "stage": "R1",
+  "status": "BLOCKED",
+  "result": "R1_REVALIDATION_BLOCKED",
+  "required_checks": {
+    "legacy_audit": true,
+    "regression": false,
+    "all14": false,
+    "source_unchanged": true,
+    "old_fail_evidence_unchanged": true,
+    "r2_config": true
+  },
+  "regression": null,
+  "stop": {
+    "status": "BLOCKED",
+    "reason": "CalledProcessError(128, ['git', 'archive', '--format=zip', '--output', 'F:\\\\CASIA\\\\Drone Swarm Situational Awareness Algorithm\\\\SwarmData\\\\fast_dynamics\\\\m3\\\\m3_r3_r1_revalidate02\\\\baseline.zip', '81f804a969192790d89100528e3f802bc06446b1', 'Multi-UAV SimpleGC'])",
+    "traceback": "Traceback (most recent call last):\n  File \"F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\scripts\\revalidate_m3_r3_r1.py\", line 207, in launch\n    subprocess.run(['git','archive','--format=zip','--output',str(archive),BASE,'Multi-UAV SimpleGC'],cwd=PROJECT,check=True)\n  File \"C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['git', 'archive', '--format=zip', '--output', 'F:\\\\CASIA\\\\Drone Swarm Situational Awareness Algorithm\\\\SwarmData\\\\fast_dynamics\\\\m3\\\\m3_r3_r1_revalidate02\\\\baseline.zip', '81f804a969192790d89100528e3f802bc06446b1', 'Multi-UAV SimpleGC']' returned non-zero exit status 128.\n"
+  },
+  "probes": [],
+  "elapsed_wall_s": 3.0310000000026776,
+  "plan_sha256": "56d05dbc4091df6caa9fb936f292fe099ae4ad891e90ba0dda586f6eada4e8a3",
+  "evidence_paths": [
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\fast_dynamics\\m3\\m3_r3_r1_revalidate02",
+    "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-m3r3\\Multi-UAV SimpleGC\\docs\\v07\\evidence\\m3_r3\\R1_revalidation\\attempt02"
+  ],
+  "next_stage": null
+}

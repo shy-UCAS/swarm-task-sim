@@ -1,0 +1,14 @@
+{
+  "stage": "R1",
+  "repair_number": 2,
+  "max_repairs": 3,
+  "failed_attempt": "m3_r3_r1_revalidate02",
+  "problem": "git archive pathspec resolved relative to subproject",
+  "change": "Explicit git -C repository root; export_baseline helper and actual archive/extraction test; LF normalization only",
+  "gate_logic_thresholds_inputs_unchanged": true,
+  "test_command": "python -B -m unittest -v test_m3_r3_r1_revalidation",
+  "tests": 9,
+  "passed": 9,
+  "new_test": "test_fixed_baseline_archive_from_subproject_directory",
+  "next_attempt": "m3_r3_r1_revalidate03"
+}

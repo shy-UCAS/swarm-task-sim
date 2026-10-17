@@ -42,3 +42,14 @@ class R1GateTests(unittest.TestCase):
         self.assertEqual(result['status'],'DRY_RUN_PASS')
         self.assertEqual(result['input_files'],8608)
         self.assertEqual({p.replace('\\','/').rsplit('/',1)[-1] for p in result['mutable_paths']},{'route_tracker.py','contracts.py'})
+
+    def test_fixed_baseline_archive_from_subproject_directory(self):
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from scripts.revalidate_m3_r3_r1 import export_baseline,digest,CONFIG_SHA,PROJECT
+        with TemporaryDirectory() as directory:
+            folder=Path(directory)
+            base=export_baseline(folder/'baseline.zip',folder/'baseline_checkout')
+            self.assertEqual(digest(base/'configs/fast_dynamics/m3_r2_20261013_v1.json'),CONFIG_SHA)
+            self.assertEqual(digest(base/'tests/test_v07_s2_revision_continuous.py'),digest(PROJECT/'tests/test_v07_s2_revision_continuous.py'))
+            self.assertTrue((base/'swarm_sim/fast_dynamics/route_tracker.py').is_file())

@@ -170,6 +170,12 @@ def validate_inputs(plan):
     return dict(input_files=len(plan['input_files']),mutable_paths=sorted(mutable))
 
 
+def export_baseline(archive,destination):
+    subprocess.run(['git','-C',str(PROJECT.parent),'archive','--format=zip','--output',str(archive),BASE,'Multi-UAV SimpleGC'],cwd=PROJECT,check=True)
+    with zipfile.ZipFile(archive) as z:z.extractall(destination)
+    return destination/'Multi-UAV SimpleGC'
+
+
 def startup(expected_head=None):
     head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=PROJECT,text=True).strip()
     if expected_head is not None:assert head==expected_head
@@ -204,10 +210,8 @@ def launch(expected_head):
         startup(expected_head)
         # An immutable Git archive is a temporary isolated checkout, not another worktree.
         archive=OUT/'baseline.zip'
-        subprocess.run(['git','archive','--format=zip','--output',str(archive),BASE,'Multi-UAV SimpleGC'],cwd=PROJECT,check=True)
         baseline_root=OUT/'baseline_checkout'
-        with zipfile.ZipFile(archive) as z:z.extractall(baseline_root)
-        baseproject=baseline_root/'Multi-UAV SimpleGC'
+        baseproject=export_baseline(archive,baseline_root)
         baseline=tests(baseproject,[m for m in plan['R1']['unit_modules'] if m!='test_m3_r3_reference'],OUT/'baseline_tests.txt',deadline)
         # Archive absolute roots normalized using explicit replacement, no stack frames removed.
         for f in baseline['failures'].values():
