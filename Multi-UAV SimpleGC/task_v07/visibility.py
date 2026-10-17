@@ -34,10 +34,35 @@ def _support_nodes(geometry, margin, directions=32):
     return nodes
 
 
+def _box(geometry):
+    """Conservative bounds; unsupported primitives always use exact geometry."""
+    if geometry["type"] == "Circle":
+        x, y = geometry["center_m"]
+        radius = geometry["radius_m"]
+        return (x-radius, y-radius, x+radius, y+radius)
+    if geometry["type"] in ("Polygon", "BufferedPolygon"):
+        vertices = geometry["vertices_m"]
+        padding = max(geometry.get("buffer_m", 0.), 0.)
+        return (min(p[0] for p in vertices)-padding, min(p[1] for p in vertices)-padding,
+                max(p[0] for p in vertices)+padding, max(p[1] for p in vertices)+padding)
+    return None
+
+
+def _boxes_far(query, obstacle, margin):
+    if obstacle is None:
+        return False
+    dx = max(0., query[0]-obstacle[2], obstacle[0]-query[2])
+    dy = max(0., query[1]-obstacle[3], obstacle[1]-query[3])
+    epsilon = 1e-9*max(1., *(abs(value) for value in (*query, *obstacle)))
+    return math.hypot(dx, dy) > margin+epsilon
+
+
 class ExactVisibilityPlanner:
     def __init__(self, scene, margin_m=35.0):
         self.world = scene["world"]["geometry"]
         self.obstacles = [e["geometry"] for e in scene["entities"] if e["type"]=="hard_constraint_obstacle"]
+        self._boxes = [_box(g) for g in self.obstacles]
+        self._broadphase_stats = {"exact_calls": 0, "skipped": 0}
         self.margin = margin_m
         self._free_cache = {}
         self._visible_cache = {}
@@ -58,8 +83,17 @@ class ExactVisibilityPlanner:
         key=tuple(point)
         if key in self._free_cache:
             return self._free_cache[key]
-        answer=bool(geometry_facts(self.world, point)["signed_distance_m"] <= 1e-8) and all(
-            geometry_facts(g, point)["signed_distance_m"] >= self.margin-1e-8 for g in self.obstacles)
+        answer=bool(geometry_facts(self.world, point)["signed_distance_m"] <= 1e-8)
+        if answer:
+            query=(point[0], point[1], point[0], point[1])
+            for g, box in zip(self.obstacles, self._boxes):
+                if _boxes_far(query, box, self.margin):
+                    self._broadphase_stats["skipped"] += 1
+                    continue
+                self._broadphase_stats["exact_calls"] += 1
+                if not geometry_facts(g, point)["signed_distance_m"] >= self.margin-1e-8:
+                    answer=False
+                    break
         self._free_cache[key]=answer
         return answer
 
@@ -75,8 +109,16 @@ class ExactVisibilityPlanner:
             return False
         if tuple(start) == tuple(finish):
             return True
-        return all(geometry_facts(g,[start,finish],footprint=True)["clearance_m"] >= self.margin-1e-8
-                   for g in self.obstacles)
+        query=(min(start[0], finish[0]), min(start[1], finish[1]),
+               max(start[0], finish[0]), max(start[1], finish[1]))
+        for g, box in zip(self.obstacles, self._boxes):
+            if _boxes_far(query, box, self.margin):
+                self._broadphase_stats["skipped"] += 1
+                continue
+            self._broadphase_stats["exact_calls"] += 1
+            if not geometry_facts(g,[start,finish],footprint=True)["clearance_m"] >= self.margin-1e-8:
+                return False
+        return True
 
     def path(self, start, finish):
         start,finish = list(start),list(finish)

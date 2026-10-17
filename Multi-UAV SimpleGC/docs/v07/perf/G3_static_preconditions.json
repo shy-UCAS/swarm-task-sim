@@ -1,0 +1,39 @@
+{
+  "E1": {
+    "pass": true,
+    "baseline_locations": [
+      "task_v07/execution.py:83-107",
+      "task_v07/dwell.py:41-61"
+    ],
+    "finding": "command 位于快照前；快照到回滚只调用 observe_segment；observe_sample 位于事务后。"
+  },
+  "E2": {
+    "pass": true,
+    "locations": [
+      "swarm_sim/fast_dynamics/route_tracker.py:337-434"
+    ],
+    "finding": "witnesses.append(event) 与 events.extend(emitted)，未修改已有元素。"
+  },
+  "E3": {
+    "pass": true,
+    "search": "G3_event_writes_search.txt",
+    "finding": "全仓 Python 的 .witnesses/.events 写入已核对。执行相关列表只有构造、deepcopy 赋值及追加；replay_viewer 的排序、诊断 RNG 的 events、测试假对象属于不同类型。已有测试读取或 deepcopy 切片，没有改 tracker 的旧元素。"
+  },
+  "E4": {
+    "pass": true,
+    "locations": [
+      "swarm_sim/fast_dynamics/route_tracker.py:194-201",
+      "swarm_sim/fast_dynamics/route_tracker.py:350-355",
+      "swarm_sim/fast_dynamics/route_tracker.py:433"
+    ],
+    "finding": "同一新 event 字典加入 witnesses 与 emitted 后进入 events；deepcopy 使用共享 memo。新快照保留元素身份，S1 检验 is 共享。"
+  },
+  "E5": {
+    "pass": true,
+    "baseline_locations": [
+      "task_v07/execution.py:40-49",
+      "task_v07/execution.py:67-101"
+    ],
+    "finding": "tracker 构造及使用局限于 execute；dwell_trackers 只保存整数。循环局部 t 在回滚后读取前即重新绑定；events 不持有 tracker。Dwell 的内层引用封装在 wrapper 内，递归恢复。新增 snapshots 是私有事务引用，不导出。"
+  }
+}
