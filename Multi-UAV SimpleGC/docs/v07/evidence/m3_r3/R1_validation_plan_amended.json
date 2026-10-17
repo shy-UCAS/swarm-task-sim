@@ -1,0 +1,49 @@
+{
+  "schema": "m3-r3-user-gates-g1-g5-v1",
+  "parent_plan_sha256": "50deb2ed20694508b9ecbe15fe234d56247f20db1bb6e35a1bd032746833a8e6",
+  "baseline_commit": "81f804a969192790d89100528e3f802bc06446b1",
+  "R1": {
+    "original_test_count": 209,
+    "baseline_test_count": 200,
+    "additional_test_modules": [
+      "test_m3_r3_r1_revalidation"
+    ],
+    "whitelist": "R1_legacy_failures.json exact IDs and exact normalized traces only",
+    "phase_definition": "Original-node witness defines terminal-stop start; DwellRouteTracker original 1m/.15m/s exported-frame continuous planned hold defines dwell; remaining portions approach/departure. No dwell => N/A dwell/departure.",
+    "precision": "Absolute .5m if r2 passes; otherwise each phase max and p99 <= same-input r2 + 1e-9",
+    "absolute_hard": [
+      "r2 bitwise",
+      "r3 B2 bitwise",
+      "input hashes",
+      "ordered nodes",
+      "physical limits",
+      "curve geometry/caps",
+      "no new regression"
+    ]
+  },
+  "R2": {
+    "hard": [
+      "original tiers().hard.passed",
+      "282 tasks complete and comparable"
+    ],
+    "numerical_nonregression": "REPORT_ONLY; per-metric worst 10 regressions"
+  },
+  "R3": "Original integration requirements; G-1 dry run and exact baseline delta",
+  "R4": {
+    "hard": [
+      "original30 strict pairs",
+      "no P0ContractError",
+      "independent audits",
+      "retained episode separation >=2m",
+      "no forbidden violations",
+      "source hashes unchanged"
+    ],
+    "additional8": "REPORT_ONLY first failure stage/reason"
+  },
+  "budgets": {
+    "R1": 7200,
+    "R2": 28800,
+    "R3": 7200,
+    "R4": 21600
+  }
+}
