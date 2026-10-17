@@ -276,7 +276,7 @@ class ReferenceConfig:
     preview_time_s: float = 0.2
 
     def __post_init__(self) -> None:
-        if self.policy != "continuous_route_v2":
+        if self.policy not in ("continuous_route_v2", "continuous_route_v3"):
             raise ValueError("unsupported continuous reference policy")
         for name, upper in (("corner_cut_max_m", .25), ("corner_leg_fraction", .1),
                             ("tracking_tube_m", .5), ("preview_time_s", .2),

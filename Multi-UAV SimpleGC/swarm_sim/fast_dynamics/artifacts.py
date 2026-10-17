@@ -56,8 +56,10 @@ def _validate_m2_task(scene):
 
 
 def _validate_m2_identity(manifest, source, events, root):
-    expected = dict(config_schema_version="fast_dynamics_config_v2", behavior_version="m2_continuous_v2",
-                    reference_version="continuous_route_v2", executor_version="airborne_multi_intent_m2")
+    reference_policy = FastDynamicsConfig.from_dict(source["config"]).reference.policy
+    expected = dict(config_schema_version="fast_dynamics_config_v2",
+                    behavior_version="m2_continuous_v2" if reference_policy == "continuous_route_v2" else "m2_continuous_v3_candidate",
+                    reference_version=reference_policy, executor_version="airborne_multi_intent_m2")
     if (manifest.get("simulator_version") != ENGINE_VERSION or manifest.get("analysis_version") != ADAPTER_VERSION
             or manifest.get("component_versions", {}).get("facts") != M2_FACTS_VERSION
             or any(source.get(k) != v or manifest.get(k) != v for k, v in expected.items())):
@@ -420,8 +422,10 @@ def _write_m2_episode(scene, result, output, *, run_id, input_hashes, config, se
         end_us=end, time_policy=TIME_POLICY, status=status, diagnostics=result_value(result, "diagnostics"),
         calibration_status="uncalibrated_M2", intended_use="local_development")
     mode = "test_reference_fault" if source["diagnostics"].get("test_harness") is not None else "normal"
-    identity = dict(config_schema_version="fast_dynamics_config_v2", behavior_version="m2_continuous_v2",
-                    reference_version="continuous_route_v2", executor_version="airborne_multi_intent_m2",
+    reference_policy = config["reference"]["policy"]
+    identity = dict(config_schema_version="fast_dynamics_config_v2",
+                    behavior_version="m2_continuous_v2" if reference_policy == "continuous_route_v2" else "m2_continuous_v3_candidate",
+                    reference_version=reference_policy, executor_version="airborne_multi_intent_m2",
                     execution_mode=mode)
     source.update(identity)
     root.mkdir(parents=True)

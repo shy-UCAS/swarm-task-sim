@@ -50,9 +50,17 @@ def frozen_config():
     return M2Config.from_dict(json.loads(raw.decode("utf-8-sig")))
 
 
-def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_switch=None):
+def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_switch=None, reference_version="r2"):
     started=time.perf_counter()
-    cfg=frozen_config()
+    if reference_version == "r2":
+        cfg=frozen_config()
+        config_sha256=FROZEN_SHA256
+    elif reference_version == "r3":
+        from swarm_sim.fast_dynamics.reference_r3 import candidate_config, CONFIG_SHA256
+        cfg=candidate_config()
+        config_sha256=CONFIG_SHA256
+    else:
+        raise ValueError("reference_version must be r2 or r3")
     ids=[only_agent] if only_agent else list(skeleton["agent_ids"])
     states={s["agent_id"]:s for s in skeleton["initial_states"]}
     routes=[np.array(skeleton["references"][a]["points_enu_m"]) for a in ids]
@@ -152,7 +160,7 @@ def execute(skeleton, delays_s, *, only_agent=None, time_budget=None, route_swit
             "a":np.array([s.a for s in samples]),"end_us":engine.time_us,
             "execution_status":status,"wall_s":time.perf_counter()-started,
             "release_s":{a:float(release[i]/1e6) for i,a in enumerate(ids)},
-            "config_sha256":FROZEN_SHA256,"time_budget":budget}
+            "config_sha256":config_sha256,"time_budget":budget}
     if route_switch is not None:
         result['route_switch_applied']=switched
     return result

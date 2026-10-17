@@ -221,8 +221,12 @@ class RouteTracker:
             if angle >= math.radians(175):
                 stops.add(i)
             elif angle > 1e-8:
-                d = min(self.reference.corner_cut_max_m, self.reference.corner_leg_fraction*lengths[i-1],
-                        self.reference.corner_leg_fraction*lengths[i])
+                if self.reference.policy == "continuous_route_v3":
+                    from .reference_r3 import cut_distance
+                    d = cut_distance(self.gates[i], angle, lengths[i-1], lengths[i])
+                else:
+                    d = min(self.reference.corner_cut_max_m, self.reference.corner_leg_fraction*lengths[i-1],
+                            self.reference.corner_leg_fraction*lengths[i])
                 v = self.points[i, :2]
                 e, x = v-d*u, v+d*w
                 ctrl = [e, e+d*u/3, e+2*d*u/3, x-2*d*w/3, x-d*w/3, x]
@@ -257,7 +261,7 @@ class RouteTracker:
 
     @property
     def diagnostics(self):
-        return {"reference_version": REFERENCE_VERSION, "route_complete": self.complete,
+        return {"reference_version": self.reference.policy, "route_complete": self.complete,
                 "primitive_index": self.primitive_index, "original_node_count": len(self.points),
                 "witnessed_node_count": self.next_node, "witnesses": list(self.witnesses),
                 "reference_length_m": sum(p.length for p in self.primitives)}
