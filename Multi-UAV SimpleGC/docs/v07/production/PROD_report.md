@@ -51,7 +51,7 @@
 
 命令（HEAD `40f5b88`）：
 
-```
+```text
 --run-id s0_dryrun --families 0:300 --dry-run --root <ROOT>\SwarmData\v07_first_edition_checks_v3
 ```
 
@@ -136,7 +136,7 @@ family：`candidate_index = 7`，`family_s15_0aeede8b1f29217e`（不在阶段 2 
 仓库外原始运行：
 
 - `SwarmData\v07_first_edition_checks_v3\s0_dryrun`
-- `SwarmData\v07_first_edition_checks_v3\s1a_20261018T031208Z`
+- `SwarmData\v07_first_edition_checks_v3\s1a_20261018T031209Z`
 - `SwarmData\v07_first_edition_checks_v3\s1b_20261018T031214Z`
 - `SwarmData\v07_first_edition_smoke_v2\s2_smoke`
 - `SwarmData\v07_first_edition_smoke_v2\s2_driver`
