@@ -1,0 +1,430 @@
+{
+  "status": "S3_R2_PASS",
+  "verified_utc": "2026-10-18T07:59:45.9721110Z",
+  "timezone": "America/Los_Angeles",
+  "baseline_s3_commit": "6fb6d2c181fa521dfc546b90e060715bd590d89f",
+  "implementation_commit": "d3aeea9b7e0f342e3dd32145f1256b65f936cbfd",
+  "template_revision": "r2",
+  "template_sha256": "ae691f11bc483e0d17636b6c5bf9dc755d0478c1c8c8a623e1dfc085f2b5f54b",
+  "approved_changes": {
+    "sector_names": [
+      "正东",
+      "东北",
+      "正北",
+      "西北",
+      "正西",
+      "西南",
+      "正南",
+      "东南"
+    ],
+    "group_sentence_order": [
+      "approach",
+      "coordination",
+      "role",
+      "exit"
+    ],
+    "template": {
+      "id": "role_feint/B2",
+      "before": "随后抵近至设施{f}的警戒区内，再行折返。",
+      "after": "随后抵近并进入设施{f}的警戒区，之后折返。"
+    },
+    "approved_by": "用户，本会话明确授权",
+    "other_template_values_unchanged": 63,
+    "template_inventory": 64
+  },
+  "environment": {
+    "powershell": "7.6.5",
+    "conda": "llm",
+    "python": "3.12.3",
+    "numpy": "2.5.3",
+    "single_process": true,
+    "numeric_library_threads": 1
+  },
+  "tests": {
+    "executed": 14,
+    "passed": 14,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "ids": [
+      "test_v07_s3_unit.S3UnitTests.test_T01_sectors_and_missing_member_heading",
+      "test_v07_s3_unit.S3UnitTests.test_T02_gates_and_subjects",
+      "test_v07_s3_unit.S3UnitTests.test_T03_intent_sentence",
+      "test_v07_s3_unit.S3UnitTests.test_T04_rounding",
+      "test_v07_s3_unit.S3UnitTests.test_T05_template_split_and_determinism",
+      "test_v07_s3_unit.S3UnitTests.test_T06_forbidden_words",
+      "test_v07_s3_unit.S3UnitTests.test_T07_independent_fact_binding",
+      "test_v07_s3_unit.S3UnitTests.test_T08_normalized_intervals_and_column_order",
+      "test_v07_s3_unit.S3UnitTests.test_T09_normalization_errors",
+      "test_v07_s3_unit.S3UnitTests.test_T10_loader_whitelist_and_targets",
+      "test_v07_s3_unit.S3UnitTests.test_T11_fixed_family_split",
+      "test_v07_s3_unit.S3UnitTests.test_T12_hash_and_incomplete_run_refusal",
+      "test_v07_s3_integration.S3IntegrationTests.test_T13_byte_identical_exports",
+      "test_v07_s3_integration.S3IntegrationTests.test_T14_real_multigroup_penetration"
+    ],
+    "unit_log": "T1_T12_r2_attempt01.log",
+    "integration_log": "T13_T14_r2_attempt01.log",
+    "unit_wall_s": 0.114,
+    "integration_wall_s": 506.016
+  },
+  "q0": {
+    "pilot_f000_005": {
+      "draws": 6,
+      "families": 4,
+      "retained_episodes": 60
+    }
+  },
+  "q1": {
+    "status": "PASS",
+    "episodes": 60,
+    "descriptions": 160,
+    "forbidden_words": 0,
+    "binding_mismatches": 0,
+    "byte_identical_jsonl": true,
+    "jsonl_sha256": {
+      "descriptions.jsonl": "9591c528535fa8a62a6584e943bef2f1478f942e041f2ee86e0b3988434240d0",
+      "episodes.jsonl": "8b61df1ac4b5f8caf5db353c880edfa82599109a6d0854028c23cc121a923a71"
+    }
+  },
+  "q2": {
+    "status": "COMPLETED",
+    "identical_to_r1": true,
+    "members": 460,
+    "statistics": [
+      {
+        "episode_duration_s": {
+          "median": 1734.2,
+          "p90": 2275.8
+        },
+        "episodes": 6,
+        "intent": "feint",
+        "members": 46,
+        "mode": "sequential",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 142.35000000000002,
+          "p90": 356.45000000000016
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 1118.9,
+          "p90": 1544.4
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1485,
+          "p90": 1777
+        },
+        "episodes": 6,
+        "intent": "feint",
+        "members": 46,
+        "mode": "synchronous",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 2.300000000000068,
+          "p90": 6.849999999999909
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 1118.9,
+          "p90": 1544.3999999999999
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 3618.4,
+          "p90": 5319.799999999999
+        },
+        "episodes": 6,
+        "intent": "monitoring",
+        "members": 46,
+        "mode": "sequential",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 210.95000000000005,
+          "p90": 707.1499999999996
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 3083.3,
+          "p90": 4651.049999999999
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 3460.2,
+          "p90": 5222.9
+        },
+        "episodes": 6,
+        "intent": "monitoring",
+        "members": 46,
+        "mode": "synchronous",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 151.29999999999995,
+          "p90": 734.5999999999999
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 3083.3,
+          "p90": 4651.1
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1585,
+          "p90": 3003.3
+        },
+        "episodes": 6,
+        "intent": "penetration",
+        "members": 46,
+        "mode": "sequential",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 87.59999999999991,
+          "p90": 247.05000000000007
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 936.25,
+          "p90": 1328.15
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1338.5,
+          "p90": 2989.3
+        },
+        "episodes": 6,
+        "intent": "penetration",
+        "members": 46,
+        "mode": "synchronous",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 6.600000000000023,
+          "p90": 74.95000000000005
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 936.25,
+          "p90": 1328.15
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1360.7,
+          "p90": 2041.1000000000001
+        },
+        "episodes": 6,
+        "intent": "reconnaissance",
+        "members": 46,
+        "mode": "sequential",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 94.80000000000018,
+          "p90": 289.80000000000007
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 978.2,
+          "p90": 1594.2
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1167,
+          "p90": 1674.3
+        },
+        "episodes": 6,
+        "intent": "reconnaissance",
+        "members": 46,
+        "mode": "synchronous",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 4.899999999999977,
+          "p90": 12.25
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 978.2,
+          "p90": 1594.2
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1261.6,
+          "p90": 2396.1
+        },
+        "episodes": 6,
+        "intent": "transit",
+        "members": 46,
+        "mode": "sequential",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 96.55000000000007,
+          "p90": 292.5499999999997
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 907.95,
+          "p90": 1713.25
+        }
+      },
+      {
+        "episode_duration_s": {
+          "median": 1253.4,
+          "p90": 1953.3999999999999
+        },
+        "episodes": 6,
+        "intent": "transit",
+        "members": 46,
+        "mode": "synchronous",
+        "normalized_post_tc_s": {
+          "median": 1,
+          "p90": 1
+        },
+        "raw_endpoint_wait_s": {
+          "median": 40.05000000000007,
+          "p90": 116.10000000000002
+        },
+        "stop_hold_s": [
+          1
+        ],
+        "visible_duration_s": {
+          "median": 907.95,
+          "p90": 1713.25
+        }
+      }
+    ]
+  },
+  "q3": {
+    "status": "PASS",
+    "sample_count": 10,
+    "sample_keys": [
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_005_regular_synchronous",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_005_regular_sequential",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_006_regular_synchronous",
+      "pilot_f000_005/family_s15_79c93b22d09e8a7a_ext_001_regular_sequential",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_007_regular_synchronous",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_007_regular_sequential",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_008_regular_synchronous",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_008_regular_sequential",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_009_regular_synchronous",
+      "pilot_f000_005/family_s15_38bedc9d791d547b_ext_009_regular_sequential"
+    ],
+    "human_review": "r2 samples regenerated under approved wording; available for review"
+  },
+  "q4": {
+    "primary": {
+      "episodes": 60,
+      "status": "PASS",
+      "targets_loaded": 160,
+      "views_loaded": 120,
+      "wall_s": 137.15478010001243
+    },
+    "repeat": {
+      "episodes": 60,
+      "status": "PASS",
+      "targets_loaded": 160,
+      "views_loaded": 120,
+      "wall_s": 135.14401829999406
+    }
+  },
+  "primary_export": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_r2",
+  "repeat_export": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_r2_repro01",
+  "split_counts": {
+    "test": 20,
+    "train": 10,
+    "val": 30
+  },
+  "input_runs": [
+    {
+      "manifest_sha256": "491252c0ac1cd9b71b72e117848849f78f0df847f6a5429d0027275d9d799fe1",
+      "registration_sha256": "02fe3d84f3df46646e2c25a4b63313b4d03ff0ee3d8e754cd7dc329add5d2fe0",
+      "run_id": "pilot_f000_005"
+    }
+  ],
+  "source_sha256": {
+    "scripts/run_v07_s3_export.py": "496f22db761d50a03850bdb68cac99c53bb8ee9a8234971df8cedc773f113d6e",
+    "task_v07/s3/__init__.py": "1ad3a15951318b9a5e008d47ab64e392b94959351ca527b80d3d13ad93aa5735",
+    "task_v07/s3/_common.py": "7096000c0db4df04f066850fde64c8f84d9bbfd115d1bda12cbe3d04476324f7",
+    "task_v07/s3/describe.py": "b45759a212de39f0296ae6db099c3129d681daecae0961746732af819ff8c5c1",
+    "task_v07/s3/facts.py": "877c275359481f71c19b17d73663100ef36e7fdddec7714abf20b4dd6b763c3d",
+    "task_v07/s3/loader.py": "f1e5e6ca3e1457a8ff1b298b99f2469e8287371f05bd0fa7c14de66ed3cee271",
+    "task_v07/s3/normalize.py": "212165694af88ed8cff60c7aee12ed2d9a25d68b581798456118ffb501f3ef3d",
+    "task_v07/s3/split.py": "549416eabe6a48fff40abb43ab5b771375e124b6138b51ad6e6236b6dd1b838a",
+    "task_v07/s3/verify.py": "c406f32f37d2d9e2a94126173c8cd6e9a35e6556798101e811f441de06b28594"
+  },
+  "preservation": {
+    "episodes_compared": 60,
+    "group_sector_values_updated": 32,
+    "slot_sector_values_updated": 16,
+    "all_other_index_values_unchanged": true,
+    "old_export_files_unchanged": 10,
+    "old_export_sha256": {
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005\\stats.md": "00304EFD87E5D347E0B87A0CF4ABC548EF76927FBB1177BC90E43D21BAC6397B",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005\\export_manifest.json": "D74B7AF314E829DAE0F232094320448F67C7D923B9D66FFB69A971CB9738C3F6",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_repro01\\samples_for_review.md": "7ECE3BA4322366C522E35587EF65EFD602D702BA899BA00F1BAD9A73403F1447",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005\\episodes.jsonl": "2BC8AA0675B0C775B3A19E207A48C34510F86F8677748988203E00A80C61AE0A",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005\\descriptions.jsonl": "408DBB243773266FE078CD91D3C93BC18B8A44623CE4DFF7DA8A7A35D6E187C9",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005\\samples_for_review.md": "7ECE3BA4322366C522E35587EF65EFD602D702BA899BA00F1BAD9A73403F1447",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_repro01\\stats.md": "E7378FCA2A84A7A1B8B5952182E0E1995966DFD27798FA88D0EF5A27F91DA206",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_repro01\\episodes.jsonl": "2BC8AA0675B0C775B3A19E207A48C34510F86F8677748988203E00A80C61AE0A",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_repro01\\descriptions.jsonl": "408DBB243773266FE078CD91D3C93BC18B8A44623CE4DFF7DA8A7A35D6E187C9",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData\\v07_first_edition_s3\\s3_dev_f000_005_repro01\\export_manifest.json": "9A3217C10EA47413A0121EAB8F386756ACE1E5468169B54839BC2189EB458E98"
+    },
+    "r1_template_sha256": "09ccf43753a04fc5557c42b07aa8b5e2cc66edb662bed868c94a1fafa7e1a5c4",
+    "source_fingerprint_unchanged": true,
+    "baseline_existing_files_unchanged": true,
+    "historical_evidence_unchanged": true
+  },
+  "second_pilot_read": false,
+  "harness_repairs_used": 0,
+  "simulation_or_training_run": false
+}
