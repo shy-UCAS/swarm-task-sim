@@ -37,8 +37,10 @@ class P0FactRepairTests(unittest.TestCase):
         self.assertEqual(facts['depth_fraction_in_alert_band'],.5)
         self.assertEqual(facts['turnaway_s'],155.)
         self.assertEqual(result['observed']['work_end_s'],250.1)
-        self.assertTrue(result['result']['conditions']['depth_in_band'])
-        self.assertTrue(result['result']['conditions']['retreat_direction'])
+        # criteria-r1: depth and retreat direction are measured diagnostics, not gates.
+        self.assertTrue(facts['retreat_ok'])
+        self.assertEqual(facts['maximum_retreat_drop_m'], 0.)
+        self.assertEqual(facts['retreat_descending_fraction'], 0.)
 
     def test_monitoring_measured_end_does_not_erase_terminal_hold(self):
         approach=np.c_[np.linspace(3000.,2500.,1001),np.full(1001,2000.)]
@@ -58,10 +60,14 @@ class P0FactRepairTests(unittest.TestCase):
         sk,run=self.build('monitoring',positions,velocities,{'monitoring':rules},reference)
         labels,_=measure(scene(),sk,run,'synchronous')
         result=labels['agents']['a']
-        self.assertEqual(result['observed']['work_end_s'],(1000+count)/10.)
+        # Warning radius is 700 m. After the radius-500 ring, 400 samples
+        # of 0.5 m reach its boundary; sample 401 is the first outside.
+        # Work ends there, rather than at the end of the two patrol laps.
+        self.assertEqual(result['observed']['work_end_s'],(1000+count+401)/10.)
         self.assertEqual(result['observed']['endpoint_hold_s'],3.0)
-        self.assertTrue(result['result']['conditions']['own_endpoint_hold'])
-        self.assertTrue(result['result']['conditions']['reached_retreat_point'])
+        self.assertEqual(result['observed']['retreat_event']['status'], 'known')
+        self.assertEqual(result['observed']['retreat_event']['minimum_observed_endpoint_distance_m'], 0.)
+        self.assertTrue(result['result']['conditions']['ended_outside_warning'])
         self.assertAlmostEqual(result['observed']['contribution']['lap_count_observed'],2.,places=3)
 
 

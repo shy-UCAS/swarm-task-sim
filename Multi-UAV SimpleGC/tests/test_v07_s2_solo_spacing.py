@@ -76,24 +76,35 @@ class SoloSpacingTests(unittest.TestCase):
         with self.assertRaises(P0ContractError):solo_interval_check(solos,self.plans())
 
     def test_overlay_rejection_changes_combination_and_caps_five_solo_rounds(self):
+        # M2Checks.test_A9_last_failure_and_history covers mixed rejection
+        # history; retain this five-distinct-combination overlay contract.
         from scripts.run_v07_s2_episode_batch import run_episode_job
         descriptor={'skeleton_id':'test','family_id':'family','base_intent':'reconnaissance',
             'common_draw':{'slot':0,'approach_mode':'same_direction'},'task_groups':[{}]}
         search={'candidate_budget':200,'attempted_candidates':200,'solo_flights_run':0,'rejection_reasons':{}}
-        pool=[{'index':i,'skeleton':{'agent_ids':['a','b']},'bundle':None,'checks':{}} for i in range(8)]
-        interval={m:{'below_warning':False} for m in ('synchronous','sequential')}
-        interval['warning_threshold_m']=10.
+        pool=[{'index':i,'skeleton':{'agent_ids':['a','b'],'candidate_marker':i},'bundle':None,'checks':{}} for i in range(8)]
+        passed={'status':'passed','core_times_s':{'a':1.,'b':1.},
+                'completion_times_s':{'a':2.,'b':2.},'failures':[]}
+        solos=self.crossing()
+        for run in solos.values():run['execution_status']='completed'
+        conflict={'status':'rejected','plans':{},'failed_versions':['synchronous'],
+                  'versions':{'synchronous':{'attempts':[{'draw':19,'minimum_m':1.9}]}}}
         with TemporaryDirectory() as tmp, patch('task_v07.expansion.candidate_search.episode_candidate_pool',return_value=(pool,search)), \
-             patch('scripts.run_v07_s2_episode_batch.calibrate_episode',return_value=({}, {}, self.crossing(),self.plans())) as calibrate, \
-             patch('scripts.run_v07_s2_episode_batch.episode_interval_check',return_value=interval), \
+             patch('task_v07.unified.rehearsal.rehearse',return_value=(passed,solos)) as rehearse, \
+             patch('task_v07.unified.timing.select_timing',return_value=conflict) as timing, \
              patch('scripts.run_v07_s2_episode_batch.execute') as joint:
             rows=run_episode_job({'scene':{},'descriptor':descriptor,'out':tmp})
-            self.assertEqual(calibrate.call_count,5);joint.assert_not_called()
-            self.assertTrue(all(r['reason']=='planning_spacing_rejection' for r in rows))
+            self.assertEqual(rehearse.call_count,5);self.assertEqual(timing.call_count,5)
+            self.assertEqual([c.args[1]['candidate_marker'] for c in rehearse.call_args_list],list(range(5)))
+            self.assertEqual([c.args[0]['candidate_marker'] for c in timing.call_args_list],list(range(5)))
+            joint.assert_not_called()
+            self.assertTrue(all(r['reason']=='timing_conflict' for r in rows))
             saved=json.loads((Path(tmp)/'test/candidate_search.json').read_text())
-            self.assertEqual(saved['solo_overlay_rejections'],5)
-            self.assertEqual(saved['additional_overlay_rejections'],5)
-            self.assertEqual(len(list((Path(tmp)/'test').glob('geometry_*/solo_overlay_interval.json'))),5)
+            self.assertEqual(saved['actual_single_agent_calibration_rounds'],5)
+            self.assertEqual(saved['solo_flights_run'],10)
+            receipt=json.loads((Path(tmp)/'test/planning_rejection.json').read_text())
+            self.assertEqual([r['category'] for r in receipt['history']],['timing_conflict']*5)
+            self.assertEqual(len(list((Path(tmp)/'test').glob('geometry_*/timing_selection.json'))),5)
 
 
 if __name__=='__main__':unittest.main()

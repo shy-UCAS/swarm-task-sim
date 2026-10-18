@@ -65,7 +65,7 @@ class WarningApproachMeasurementTests(unittest.TestCase):
         labels, _ = measure(scene(), sk, run, 'synchronous')
         group = labels['task_groups']['g']
         self.assertAlmostEqual(group['observed']['approach_span_deg'], 0., places=10)
-        self.assertFalse(group['result']['conditions']['multi_direction_span'])
+        self.assertEqual(group['observed']['approach_classification'], 'same_direction')
         for agent in run['agent_ids']:
             observed = labels['agents'][agent]['observed']
             self.assertEqual(observed['core_event']['raw_event_type'], 'enter_protected_zone')
@@ -77,7 +77,8 @@ class WarningApproachMeasurementTests(unittest.TestCase):
         group = labels['task_groups']['g']
         self.assertIsNone(group['observed']['approach_headings_deg']['c'])
         self.assertIsNone(group['observed']['approach_span_deg'])
-        self.assertIsNone(group['result']['conditions']['multi_direction_span'])
+        self.assertEqual(group['observed']['approach_classification'], 'unknown')
+        self.assertNotEqual(group['result']['status'], 'success')
 
 
 class WarningIngressGeometryTests(unittest.TestCase):

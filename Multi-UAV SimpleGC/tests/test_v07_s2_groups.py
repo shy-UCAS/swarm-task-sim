@@ -47,12 +47,16 @@ class GroupEvidenceTests(unittest.TestCase):
         labels, frame = measure_groups(public, root, run, 'synchronous')
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)
-            for name, value in [('public_scene.json', public), ('task.json', root), ('labels.json', labels)]:
+            for name, value in [('public_scene.json', public), ('task.json', root), ('labels.json', labels),
+                                ('source.json', {'execution_status': run['execution_status']})]:
                 save_json(path / name, value)
             write_csv(path / 'truth.csv', run['agent_ids'], run['time_us'], run['p'], run['v'])
             np.savez_compressed(path / 'truth_10hz.npz', **{k: run[k] for k in ('agent_ids', 'time_us', 'p', 'v')})
             np.savez_compressed(path / 'frame_labels.npz', **frame)
-            audited = audit_groups(path)
+            from debt_line_evidence import line_evidence
+            from scripts.audit_v07_m1 import audit_episode, audit_data
+            with line_evidence(self.id(), audit_groups, audit_episode, audit_data):
+                audited = audit_groups(path)
         self.assertEqual(audited['status'], 'PASS', audited)
         self.assertEqual(audited['uncovered_conditions'], [])
 

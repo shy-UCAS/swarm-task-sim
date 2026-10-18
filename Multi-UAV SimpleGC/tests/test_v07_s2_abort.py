@@ -31,13 +31,16 @@ class AbortEvidenceTests(unittest.TestCase):
         self.assertTrue(labels['task_groups']['g']['result']['conditions']['abort_group_withdrawal_observed'])
         for a in ids:
             self.assertIsNone(labels['agents'][a]['observed']['core_event']['t_s'])
-            self.assertTrue(labels['agents'][a]['result']['conditions']['own_endpoint_hold'])
+            for condition in ('abort_entered_alert', 'abort_no_protected_entry',
+                              'abort_left_warning_after_turn', 'abort_ended_outside_warning'):
+                self.assertTrue(labels['agents'][a]['result']['conditions'][condition], condition)
             self.assertIn('approached_then_withdrew',labels['agents'][a]['observed']['behaviors'])
         prefix,_=measure(scene(),sk,run,'synchronous',cutoff_s=160.)
         self.assertNotIn('approached_then_withdrew',prefix['task_groups']['g']['observed']['behaviors'])
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
-            for name,value in [('public_scene.json',scene()),('task.json',sk),('labels.json',labels)]:
+            for name,value in [('public_scene.json',scene()),('task.json',sk),('labels.json',labels),
+                               ('source.json', {'execution_status': run['execution_status']})]:
                 save_json(root/name,value)
             write_csv(root/'truth.csv',ids,t,p,v)
             np.savez_compressed(root/'truth_10hz.npz',agent_ids=np.array(ids),time_us=t,p=p,v=v)

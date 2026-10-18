@@ -68,6 +68,7 @@ def successful_record(family, intent, index, mode):
     return {"episode_id": f"{skeleton}_{mode}", "family_id": family, "skeleton_id": skeleton,
             "intent": intent, "mode": mode, "state": "generated", "path": f"{skeleton}/{mode}",
             "quality_valid": True, "audit_passed": True, "task_result": "success",
+            "all_groups_complete": True, "execution_status": "completed",
             "coordination_by_group": {"g1": mode, "g2": mode}, "condition_digest": skeleton,
             "scene_digest": family, "agent_ids": ["b", "a"], "aborted": False}
 
@@ -352,6 +353,9 @@ class EvaluationTests(unittest.TestCase):
                          evaluate(callback, {}, {}, exported_evidence(other)))
 
 
+from debt_line_evidence import line_evidence
+
+
 class ViewTests(unittest.TestCase):
     def records(self):
         return [successful_record("f", intent, index, mode) for intent in INTENTS
@@ -359,7 +363,8 @@ class ViewTests(unittest.TestCase):
 
     def test_balanced_minimum_pairs_and_extended_without_copy(self):
         records = self.records()
-        result = make_views(records, seed=9)
+        with line_evidence(self.id(), make_views):
+            result = make_views(records, seed=9)
         self.assertEqual(result["counts"], {"primary": 10, "extended": 8, "aborted": 0, "failed": 0, "pending": 0})
         self.assertEqual(result, make_views(list(reversed(records)), seed=9))
         self.assertTrue(result["index_only"])
@@ -394,7 +399,8 @@ class ViewTests(unittest.TestCase):
     def test_pair_mismatch_and_escape_paths_are_p0(self):
         rows = self.records()
         rows[0]["agent_ids"] = ["a", "b"]
-        with self.assertRaises(P0ContractError):
+        with line_evidence(self.id(), make_views), self.assertRaisesRegex(
+                P0ContractError, "Claimed successful pair changed non-time conditions"):
             make_views(rows)
         for path in ("../other", "C:/outside", "/outside", "a\\b"):
             with self.subTest(path=path), self.assertRaises(P0ContractError):
