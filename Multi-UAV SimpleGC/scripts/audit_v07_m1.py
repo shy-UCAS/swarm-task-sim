@@ -12,22 +12,22 @@ def _numeric(value):
     return isinstance(value, (int, float, np.number)) and not isinstance(value, (bool, np.bool_))
 
 
-def compare_event_metric(path, actual, wanted, errors, tolerated):
-    """Exact comparison, with a single documented 0.1 s audit-boundary tolerance."""
+def compare_event_metric(path, actual, wanted, errors, diagnostics):
+    """effective_observation_duration_s is diagnostic-only, with no threshold."""
     if (path.endswith(".contribution.effective_observation_duration_s")
             and _numeric(actual) and _numeric(wanted)):
-        if _equal(actual, wanted):
-            return
-        if abs(float(actual) - float(wanted)) <= 0.1 + 1e-9:
-            tolerated.append({"field": path, "label": actual, "independent": wanted})
-            return
+        if float(actual) != float(wanted):
+            diagnostics.append({"field": path, "label": float(actual),
+                                "independent": float(wanted),
+                                "difference": float(actual) - float(wanted)})
+        return
     if not _equal(actual, wanted):
         errors.append({"field": path, "label": actual, "independent": wanted})
 
 
-def attach_tolerated(result, tolerated):
-    if tolerated:
-        result["tolerated_boundary_differences"] = tolerated
+def attach_diagnostics(result, diagnostics):
+    if diagnostics:
+        result["diagnostic_metric_differences"] = diagnostics
     return result
 
 
@@ -183,7 +183,7 @@ def audit_data(scene, task, run, labels, frame):
     complete = run["execution_status"] in ("completed", "timeout")
     expected = independently_measure(scene, task, run, complete)
     errors = []
-    tolerated = []
+    diagnostics = []
     def compare(path, actual, wanted):
         if isinstance(wanted, dict):
             if not isinstance(actual, dict):
@@ -192,7 +192,7 @@ def audit_data(scene, task, run, labels, frame):
                 if key not in actual: errors.append({"field": path + "." + key, "error": "missing field"})
                 else: compare(path + "." + key, actual[key], value)
         else:
-            compare_event_metric(path, actual, wanted, errors, tolerated)
+            compare_event_metric(path, actual, wanted, errors, diagnostics)
     compare("evidence.complete_observation", labels["evidence"].get("complete_observation"), complete)
     compare("evidence.frame_count", labels["evidence"].get("frame_count"), len(run["time_us"]))
     for a, wanted in expected["agents"].items():
@@ -223,7 +223,7 @@ def audit_data(scene, task, run, labels, frame):
         "uncovered_conditions": [e for e in errors if e["field"].endswith("condition_keys")],
         "method": "independent criteria-r1 detectors, role predicates, event confirmation, group/cluster composition and quality",
         "independent_role_facts": expected["agents"]}
-    return attach_tolerated(result, tolerated)
+    return attach_diagnostics(result, diagnostics)
 
 
 def audit_episode(root):

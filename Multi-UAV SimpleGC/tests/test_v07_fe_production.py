@@ -375,45 +375,46 @@ class ProductionCoreTests(unittest.TestCase):
             self.assertTrue(rows)
             self.assertEqual(rows[0]["file"], "geometry_00/candidate_search_progress.json")
 
-    def test_audit_tolerance_effective_observation_duration_01_passes(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
-        errors, tolerated = [], []
-        compare_event_metric("uav_02.contribution.effective_observation_duration_s",
-                             665.0, 665.1, errors, tolerated)
+    def test_audit_diagnostic_effective_observation_duration_any_difference_passes(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+        errors, diagnostics = [], []
+        compare_event_metric("uav_07.contribution.effective_observation_duration_s",
+                             181.0, 181.3, errors, diagnostics)
         self.assertEqual(errors, [])
-        self.assertEqual(len(tolerated), 1)
-        result = attach_tolerated({"status": "PASS"}, tolerated)
-        self.assertIn("tolerated_boundary_differences", result)
+        self.assertEqual(len(diagnostics), 1)
+        self.assertAlmostEqual(diagnostics[0]["difference"], -0.3, places=9)
+        result = attach_diagnostics({"status": "PASS"}, diagnostics)
+        self.assertIn("diagnostic_metric_differences", result)
 
-    def test_audit_tolerance_effective_observation_duration_02_still_p0(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
-        errors, tolerated = [], []
-        compare_event_metric("uav_02.contribution.effective_observation_duration_s",
-                             665.0, 665.2, errors, tolerated)
+    def test_audit_covered_group_grid_points_difference_one_is_p0(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+        errors, diagnostics = [], []
+        compare_event_metric("uav_01.contribution.covered_group_grid_points",
+                             100, 101, errors, diagnostics)
         self.assertEqual(len(errors), 1)
-        self.assertEqual(tolerated, [])
-        self.assertNotIn("tolerated_boundary_differences",
-                         attach_tolerated({"status": "PASS"}, tolerated))
+        self.assertEqual(diagnostics, [])
+        self.assertNotIn("diagnostic_metric_differences",
+                         attach_diagnostics({"status": "PASS"}, diagnostics))
 
-    def test_audit_tolerance_other_field_01_still_p0(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
-        errors, tolerated = [], []
-        compare_event_metric("uav_02.contribution.other_metric_s",
-                             665.0, 665.1, errors, tolerated)
+    def test_audit_other_field_01_is_p0(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+        errors, diagnostics = [], []
+        compare_event_metric("uav_01.contribution.dwell_total_duration_s",
+                             1.0, 1.1, errors, diagnostics)
         self.assertEqual(len(errors), 1)
-        self.assertEqual(tolerated, [])
-        self.assertNotIn("tolerated_boundary_differences",
-                         attach_tolerated({"status": "PASS"}, tolerated))
+        self.assertEqual(diagnostics, [])
+        self.assertNotIn("diagnostic_metric_differences",
+                         attach_diagnostics({"status": "PASS"}, diagnostics))
 
-    def test_audit_tolerance_no_difference_has_no_new_key(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
-        errors, tolerated = [], []
-        compare_event_metric("uav_02.contribution.effective_observation_duration_s",
-                             665.0, 665.0, errors, tolerated)
+    def test_audit_diagnostic_no_difference_has_no_new_key(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+        errors, diagnostics = [], []
+        compare_event_metric("uav_07.contribution.effective_observation_duration_s",
+                             181.0, 181.0, errors, diagnostics)
         self.assertEqual(errors, [])
-        self.assertEqual(tolerated, [])
-        self.assertNotIn("tolerated_boundary_differences",
-                         attach_tolerated({"status": "PASS"}, tolerated))
+        self.assertEqual(diagnostics, [])
+        self.assertNotIn("diagnostic_metric_differences",
+                         attach_diagnostics({"status": "PASS"}, diagnostics))
 
     def test_T7_resume_moves_residuals_and_reinterrupt_does_not_write_status(self):
         with tempfile.TemporaryDirectory() as tmp:
