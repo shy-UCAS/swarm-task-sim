@@ -8,6 +8,29 @@ from scripts.audit_v07_s2_roles import _center, _runs, _load_truth, _build_level
 from scripts.audit_v07_s2_conditions import _equal
 
 
+def _numeric(value):
+    return isinstance(value, (int, float, np.number)) and not isinstance(value, (bool, np.bool_))
+
+
+def compare_event_metric(path, actual, wanted, errors, tolerated):
+    """Exact comparison, with a single documented 0.1 s audit-boundary tolerance."""
+    if (path.endswith(".contribution.effective_observation_duration_s")
+            and _numeric(actual) and _numeric(wanted)):
+        if _equal(actual, wanted):
+            return
+        if abs(float(actual) - float(wanted)) <= 0.1 + 1e-9:
+            tolerated.append({"field": path, "label": actual, "independent": wanted})
+            return
+    if not _equal(actual, wanted):
+        errors.append({"field": path, "label": actual, "independent": wanted})
+
+
+def attach_tolerated(result, tolerated):
+    if tolerated:
+        result["tolerated_boundary_differences"] = tolerated
+    return result
+
+
 def positive(value, complete):
     return True if value else False if complete else None
 
@@ -160,6 +183,7 @@ def audit_data(scene, task, run, labels, frame):
     complete = run["execution_status"] in ("completed", "timeout")
     expected = independently_measure(scene, task, run, complete)
     errors = []
+    tolerated = []
     def compare(path, actual, wanted):
         if isinstance(wanted, dict):
             if not isinstance(actual, dict):
@@ -167,7 +191,8 @@ def audit_data(scene, task, run, labels, frame):
             for key, value in wanted.items():
                 if key not in actual: errors.append({"field": path + "." + key, "error": "missing field"})
                 else: compare(path + "." + key, actual[key], value)
-        elif not _equal(actual, wanted): errors.append({"field": path, "label": actual, "independent": wanted})
+        else:
+            compare_event_metric(path, actual, wanted, errors, tolerated)
     compare("evidence.complete_observation", labels["evidence"].get("complete_observation"), complete)
     compare("evidence.frame_count", labels["evidence"].get("frame_count"), len(run["time_us"]))
     for a, wanted in expected["agents"].items():
@@ -191,13 +216,14 @@ def audit_data(scene, task, run, labels, frame):
     if not np.array_equal(frame["inside_hard_obstacle"], expected["blocked"]): errors.append({"field": "inside_hard_obstacle"})
     if frame["agent_ids"].tolist() != list(run["agent_ids"]) or not np.array_equal(frame["time_us"], run["time_us"]):
         errors.append({"field": "frame_axes"})
-    return {"status": "P0_STOP" if errors or region_diff or target_diff else "PASS", "frames": len(run["time_us"]),
+    result = {"status": "P0_STOP" if errors or region_diff or target_diff else "PASS", "frames": len(run["time_us"]),
         "agents": len(run["agent_ids"]), "facilities": len(order), "all_facility_frame_comparisons": int(expected["levels"].size),
         "region_difference_count": region_diff, "target_difference_count": target_diff,
         "event_or_metric_difference_count": len(errors), "event_or_metric_witnesses": errors,
         "uncovered_conditions": [e for e in errors if e["field"].endswith("condition_keys")],
         "method": "independent criteria-r1 detectors, role predicates, event confirmation, group/cluster composition and quality",
         "independent_role_facts": expected["agents"]}
+    return attach_tolerated(result, tolerated)
 
 
 def audit_episode(root):

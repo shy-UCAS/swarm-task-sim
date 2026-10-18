@@ -375,6 +375,46 @@ class ProductionCoreTests(unittest.TestCase):
             self.assertTrue(rows)
             self.assertEqual(rows[0]["file"], "geometry_00/candidate_search_progress.json")
 
+    def test_audit_tolerance_effective_observation_duration_01_passes(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
+        errors, tolerated = [], []
+        compare_event_metric("uav_02.contribution.effective_observation_duration_s",
+                             665.0, 665.1, errors, tolerated)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(tolerated), 1)
+        result = attach_tolerated({"status": "PASS"}, tolerated)
+        self.assertIn("tolerated_boundary_differences", result)
+
+    def test_audit_tolerance_effective_observation_duration_02_still_p0(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
+        errors, tolerated = [], []
+        compare_event_metric("uav_02.contribution.effective_observation_duration_s",
+                             665.0, 665.2, errors, tolerated)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(tolerated, [])
+        self.assertNotIn("tolerated_boundary_differences",
+                         attach_tolerated({"status": "PASS"}, tolerated))
+
+    def test_audit_tolerance_other_field_01_still_p0(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
+        errors, tolerated = [], []
+        compare_event_metric("uav_02.contribution.other_metric_s",
+                             665.0, 665.1, errors, tolerated)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(tolerated, [])
+        self.assertNotIn("tolerated_boundary_differences",
+                         attach_tolerated({"status": "PASS"}, tolerated))
+
+    def test_audit_tolerance_no_difference_has_no_new_key(self):
+        from scripts.audit_v07_m1 import compare_event_metric, attach_tolerated
+        errors, tolerated = [], []
+        compare_event_metric("uav_02.contribution.effective_observation_duration_s",
+                             665.0, 665.0, errors, tolerated)
+        self.assertEqual(errors, [])
+        self.assertEqual(tolerated, [])
+        self.assertNotIn("tolerated_boundary_differences",
+                         attach_tolerated({"status": "PASS"}, tolerated))
+
     def test_T7_resume_moves_residuals_and_reinterrupt_does_not_write_status(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
