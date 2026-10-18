@@ -593,9 +593,19 @@ def run_scheduler(run_dir, registration, descriptors, workers, planning_timeout_
             statuses = load_statuses(run_dir)
             _enqueue_c_tasks(draws, statuses, queue, c_tasks, c_sids, c_draws, single_skeletons)
             while queue and len(active) < workers:
-                task = queue.pop(0)
-                if task["sid"] in statuses[task["stage"]] or task["sid"] in active:
+                task = queue[0]
+                if task["sid"] in statuses[task["stage"]]:
+                    queue.pop(0)
                     continue
+                if any(info["task"]["sid"] == task["sid"] for info in active.values()):
+                    # A C task can be ready (B status exists) while the B process
+                    # is still exiting.  Defer it instead of dropping it.
+                    queue.append(queue.pop(0))
+                    if all(any(info["task"]["sid"] == pending["sid"]
+                               for info in active.values()) for pending in queue):
+                        break
+                    continue
+                queue.pop(0)
                 task["timeout_s"] = planning_timeout_s if task["stage"] == "B" else episode_timeout_s
                 log_path = run_dir / "logs" / f"{task['stage']}__{task['sid']}.txt"
                 log_path.parent.mkdir(parents=True, exist_ok=True)

@@ -147,7 +147,8 @@ def _is_allowed(path, cls):
             or leaf.endswith("_wall_s") or leaf == "scope")
 
 
-def _json_diffs(name, reference, new, normalize):
+def _json_diffs(name, reference, new, normalize, display=None):
+    label = display or name
     ref = normalize(core.read_json(reference / name))
     cur = normalize(core.read_json(new / name))
     if name == "manifest.json":
@@ -156,7 +157,7 @@ def _json_diffs(name, reference, new, normalize):
     rows = []
     for diff in deep_diff(ref, cur):
         cls = classify(diff["path"])
-        rows.append({"file": name, **diff, "class": cls,
+        rows.append({"file": label, **diff, "class": cls,
                      "allowed": _is_allowed(diff["path"], cls)})
     return rows
 
@@ -226,7 +227,8 @@ def _compare_sid(reference, new, normalize):
             rows.append({"file": f"{name}/{missing}", "path": "<missing>",
                          "class": "content", "allowed": False})
         for json_name in sorted(ref_json & new_json):
-            rows.extend(_json_diffs(f"{name}/{json_name}", ref_dir, new_dir, normalize))
+            rows.extend(_json_diffs(json_name, ref_dir, new_dir, normalize,
+                                    display=f"{name}/{json_name}"))
         ref_npz = {path.name for path in ref_dir.glob("*.npz")}
         new_npz = {path.name for path in new_dir.glob("*.npz")}
         for missing in sorted(ref_npz ^ new_npz):

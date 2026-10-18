@@ -329,6 +329,52 @@ class ProductionCoreTests(unittest.TestCase):
         self.assertEqual(len(c_tasks), 5)
         self.assertEqual(queue[:5], c_tasks)
 
+    def test_T6_status_before_worker_exit_does_not_drop_c_task(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            run_dir = root / "run"
+            for name in ("status", "planning", "episodes", "logs", "descriptors"):
+                (run_dir / name).mkdir(parents=True)
+            descriptors = five_descriptors()
+            sid = descriptors[0]["skeleton_id"]
+            (run_dir / "descriptors" / "descriptors.json").write_text(json.dumps(descriptors))
+            (run_dir / "registration.json").write_text(json.dumps({"run_id": "run"}))
+            (run_dir / "code_hashes.json").write_text("{}")
+            def worker(task, directory):
+                stage = task["stage"]
+                payload = {"stage": stage, "skeleton_id": task["sid"],
+                           "status": "PASS" if stage == "B" else "PAIRED",
+                           "detail": {}, "rows": [] if stage == "C" else None,
+                           "paired": True if stage == "C" else None,
+                           "first_failure": None if stage == "C" else None,
+                           "elapsed_wall_s": 0. if stage == "C" else None}
+                (Path(directory) / "status" / f"{stage}__{task['sid']}.json").write_text(
+                    json.dumps(payload))
+                if stage == "B":
+                    return [sys.executable, "-c", "import time;time.sleep(0.6)"]
+                return [sys.executable, "-c", "pass"]
+            with patch.object(prod, "code_hashes", return_value={}):
+                code = prod.run_scheduler(run_dir, {}, descriptors, 1, 1., 1.,
+                                          single_skeletons={sid},
+                                          worker_command=worker, poll_s=0.05)
+            self.assertEqual(code, 0)
+            self.assertTrue((run_dir / "status" / f"C__{sid}.json").exists())
+            self.assertEqual(read_json(run_dir / "status" / f"C__{sid}.json")["status"], "PAIRED")
+
+    def test_T6_equivalence_json_display_keeps_geometry_prefix(self):
+        from scripts import check_v07_fe_production_equivalence as equivalence
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            ref, new = root / "ref", root / "new"
+            ref.mkdir(); new.mkdir()
+            (ref / "candidate_search_progress.json").write_text(json.dumps({"a": 1}))
+            (new / "candidate_search_progress.json").write_text(json.dumps({"a": 2}))
+            rows = equivalence._json_diffs(
+                "candidate_search_progress.json", ref, new, lambda value: value,
+                display="geometry_00/candidate_search_progress.json")
+            self.assertTrue(rows)
+            self.assertEqual(rows[0]["file"], "geometry_00/candidate_search_progress.json")
+
     def test_T7_resume_moves_residuals_and_reinterrupt_does_not_write_status(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
