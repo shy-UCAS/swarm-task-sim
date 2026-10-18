@@ -96,8 +96,8 @@ class TransitCriterionTests(unittest.TestCase):
         self.assertAlmostEqual(c["entry_exit_azimuth_difference_deg"], 180 - 2 * math.degrees(math.asin(450 / 700)), delta=1)
         self.assertEqual(labels["agents"]["a"]["observed"]["core_event"]["raw_event_type"], "enter_warning_zone")
         self.assertGreaterEqual(group["observed"]["approach_span_deg"], 170)
-        self.assertTrue(group["result"]["conditions"]["multi_direction_span"])
-        self.assertEqual(labels["schema_version"], "traj2language.labels/0.7-s2x.2")
+        self.assertEqual(group["observed"]["approach_classification"], "multi_direction")
+        self.assertEqual(labels["evidence"]["criteria_version"], "criteria/0.7-r1")
         self.assertTrue((frame["phase"][-1] == 4).all())
 
     def test_small_entry_exit_azimuth_difference_fails(self):
@@ -130,8 +130,10 @@ class TransitCriterionTests(unittest.TestCase):
         cutoff = round((entry + exit_) / 2, 1)
         prefix, _ = measure(scene(), sk, run, "synchronous", cutoff_s=cutoff)
         conditions = prefix["agents"]["a"]["result"]["conditions"]
-        self.assertIsNone(conditions["exited_warning"]); self.assertIsNone(conditions["chord_length"])
-        self.assertIsNone(conditions["no_loop_in_warning"])
+        self.assertIsNone(conditions["ended_outside_warning"])
+        # criteria-r1 删除弦长判据
+        self.assertIsNone(conditions["no_dwell"])
+        self.assertIsNone(conditions["no_revisit"])
         self.assertEqual(prefix["task_groups"]["g"]["result"]["status"], "unknown")
         result = truncation_check(group_evaluator, scene(), sk, run, cutoff)
         self.assertEqual((result["status"], result["full_verdict"], result["prefix_verdict"]), ("PASS", "yes", "unknown"))

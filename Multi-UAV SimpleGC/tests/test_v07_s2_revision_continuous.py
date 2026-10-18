@@ -12,6 +12,7 @@ from task_v07.dwell import DwellRouteTracker, timed_route_samples
 from task_v07.execution import execute, frozen_config
 from task_v07.expansion.operation_parameters import draw_radial_parameters, dwell_circle
 from task_v07.expansion.candidate_search import choose_eligible
+from task_v07.unified.config import load_generator
 from task_v07.expansion.contracts import RouteBundle
 from task_v07.expansion.geometry_checks import planning_layer_interval_check
 
@@ -74,9 +75,12 @@ class ContinuousRevisionTests(unittest.TestCase):
                 self.assertTrue(all(c['length']>=430. and c['difference']>=95. for c in block))
 
     def test_115_percent_filter_then_seeded_order(self):
-        pool=[{'cost':v,'index':i} for i,v in enumerate((100,114.9,115,115.1,200))]
+        bound=100*load_generator()['combination']['same_direction_length_ratio_max']
+        pool=[{'cost':v,'index':i} for i,v in enumerate((100,bound-.1,bound,bound+.1,200))]
         selected,report=choose_eligible(pool,True,random.Random(8))
-        self.assertEqual({c['cost'] for c in selected},{100,114.9,115})
+        self.assertEqual({c['cost'] for c in selected},{100,bound-.1,bound})
+        expected=pool[:3].copy();random.Random(8).shuffle(expected)
+        self.assertEqual(selected,expected)
         self.assertEqual(report['feasible_candidates'],5)
         self.assertEqual(choose_eligible(pool,False,random.Random(8))[1]['eligible_candidates'],5)
 
@@ -96,7 +100,8 @@ class ContinuousRevisionTests(unittest.TestCase):
             with self.assertRaises(ValueError):episode_candidate_pool({},descriptor,budget=199,backend='legacy')
 
     def test_each_group_has_its_own_115_percent_bound(self):
-        costs=[(100,200),(200,100),(114,114),(116,100)]
+        bound=100*load_generator()['combination']['same_direction_length_ratio_max']
+        costs=[(100,200),(200,100),(bound-1,bound-1),(bound+1,100)]
         pool=[{'index':i,'cost':sum(values),'cost_by_group':dict(zip(('g1','g2'),values))}
               for i,values in enumerate(costs)]
         selected,report=choose_eligible(pool,True,random.Random(8))
@@ -183,27 +188,33 @@ class ContinuousRevisionTests(unittest.TestCase):
         self.assertLess(np.linalg.norm(run['p'][-1,0]-points[-1]),1.)
 
     def test_five_calibration_round_limit_and_zero_flights_for_empty_pool(self):
+        # M2Checks.test_A9_last_failure_and_history covers category history,
+        # but not pool exhaustion at five rounds or an empty pool's zero flights.
         from scripts.run_v07_s2_episode_batch import run_episode_job
         descriptor={'skeleton_id':'test','family_id':'family','base_intent':'reconnaissance',
                     'common_draw':{'slot':0,'approach_mode':'same_direction'},'task_groups':[{}]}
         search={'candidate_budget':200,'attempted_candidates':200,'solo_flights_run':0,'rejection_reasons':{}}
-        pool=[{'index':i,'skeleton':{},'bundle':None,'checks':{}} for i in range(8)]
-        interval={m:{'below_warning':True} for m in ('synchronous','sequential')}
-        interval['warning_threshold_m']=6.
+        pool=[{'index':i,'skeleton':{'candidate_marker':i},'bundle':None,'checks':{}} for i in range(8)]
+        failed={'status':'rejected','core_times_s':{},'completion_times_s':{},
+                'failures':[{'agent_id':'a','conditions':['observation_dwell']}]}
         with TemporaryDirectory() as directory, patch('task_v07.expansion.candidate_search.episode_candidate_pool',return_value=(pool,dict(search))), \
-             patch('scripts.run_v07_s2_episode_batch.calibrate_episode',return_value=({}, {}, {}, {'synchronous':{},'sequential':{}})) as calibrate, \
-             patch('scripts.run_v07_s2_episode_batch.episode_interval_check',return_value=interval), \
-             patch('scripts.run_v07_s2_episode_batch.write_result') as flight:
+             patch('task_v07.unified.rehearsal.rehearse',return_value=(failed,{})) as rehearse, \
+             patch('task_v07.unified.timing.select_timing') as timing, \
+             patch('scripts.run_v07_s2_episode_batch.execute') as flight, \
+             patch('scripts.run_v07_s2_episode_batch.write_result') as export:
             rows=run_episode_job({'scene':{},'descriptor':descriptor,'out':directory})
-            self.assertEqual(calibrate.call_count,5)
-            flight.assert_not_called()
-            self.assertTrue(all(row['reason']=='planning_spacing_rejection' for row in rows))
+            self.assertEqual(rehearse.call_count,5)
+            self.assertEqual([c.args[1]['candidate_marker'] for c in rehearse.call_args_list],list(range(5)))
+            timing.assert_not_called();flight.assert_not_called();export.assert_not_called()
+            self.assertTrue(all(row['reason']=='rehearsal_failure' for row in rows))
             self.assertEqual(len(list((Path(directory)/'test').glob('geometry_*'))),5)
         with TemporaryDirectory() as directory, patch('task_v07.expansion.candidate_search.episode_candidate_pool',return_value=([],dict(search))), \
-             patch('scripts.run_v07_s2_episode_batch.calibrate_episode') as calibrate:
+             patch('task_v07.unified.rehearsal.rehearse') as rehearse, \
+             patch('task_v07.unified.timing.select_timing') as timing, \
+             patch('scripts.run_v07_s2_episode_batch.execute') as flight:
             rows=run_episode_job({'scene':{},'descriptor':descriptor,'out':directory})
-            calibrate.assert_not_called()
-            self.assertTrue(all(row['reason']=='geometry_infeasible' for row in rows))
+            rehearse.assert_not_called();timing.assert_not_called();flight.assert_not_called()
+            self.assertTrue(all(row['reason']=='geometry_pool_empty' for row in rows))
 
 
 if __name__=='__main__':unittest.main()

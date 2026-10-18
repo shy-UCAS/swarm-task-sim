@@ -4,6 +4,7 @@ import unittest
 
 from task_v07.expansion.geometry_checks import check_retreat_point
 from task_v07.expansion.pipeline import role_parameters
+from task_v07.unified.config import load_generator
 from test_v07_s2_expansion import scene
 
 
@@ -31,7 +32,8 @@ class RevisionRetreatTests(unittest.TestCase):
                       'common_draw': {'approach_mode': 'same_direction'}}
         original = deepcopy(descriptor)
         parameters = role_parameters(descriptor, {'group_id': 'g'})
-        self.assertEqual(parameters['retreat_warning_minimum_m'], 100.)
+        self.assertEqual(parameters['retreat_warning_minimum_m'],
+                         load_generator()['retreat']['warning_clearance_m'])
         self.assertEqual(descriptor, original)
 
 
