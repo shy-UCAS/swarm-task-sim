@@ -45,12 +45,12 @@ def _expected(labels):
             kind = {"same_direction": "same", "multi_direction": "multi"}.get(obs["approach_classification"], "neutral")
             yield "approach_" + kind, gid, False, paths + [gp + "/observed/approach_classification"]
             first = False
-        if group["result"]["status"] == "success":
-            yield "role_" + ass["execution_method"], gid, first, [gp + "/result/status", gp + "/assigned/execution_method"]
-            first = False
         classification = obs["coordination"]["classification"]
         if classification in ("synchronous", "sequential"):
             yield ("coord_sync" if classification == "synchronous" else "coord_seq"), gid, first, [gp + "/observed/coordination/classification"]
+            first = False
+        if group["result"]["status"] == "success":
+            yield "role_" + ass["execution_method"], gid, first, [gp + "/result/status", gp + "/assigned/execution_method"]
             first = False
         if ass["role"] != "intrusion":
             paths = [f"/agents/{a}/result/conditions/ended_outside_warning" for a in obs["members"]]
@@ -90,7 +90,7 @@ def _source_bindings(labels, gid, prefix):
         angle = math.degrees(math.atan2(statistics.mean(map(math.sin, radians)),
                                        statistics.mean(map(math.cos, radians))))
         bearing = (angle + 180) % 360
-        sector = ("东", "东北", "北", "西北", "西", "西南", "南", "东南")[int((bearing + 22.5) % 360 // 45)]
+        sector = ("正东", "东北", "正北", "西北", "正西", "西南", "正南", "东南")[int((bearing + 22.5) % 360 // 45)]
     method = get("/assigned/execution_method")
     cov, dwell = None, None
     cov_refs = [gp + "/assigned/execution_method"]

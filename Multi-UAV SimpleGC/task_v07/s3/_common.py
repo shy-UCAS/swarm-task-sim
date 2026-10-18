@@ -8,7 +8,7 @@ from task_v07.expansion.contracts import P0ContractError
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_ROOT = PROJECT_ROOT.parents[1] / "SwarmData" / "v07_first_edition"
 EXPORT_ROOT = DATA_ROOT.parent / "v07_first_edition_s3"
-TEMPLATE_PATH = PROJECT_ROOT / "configs" / "s3" / "templates_v07_s3_r1.json"
+TEMPLATE_PATH = PROJECT_ROOT / "configs" / "s3" / "templates_v07_s3_r2.json"
 
 
 class RunNotReady(ValueError):

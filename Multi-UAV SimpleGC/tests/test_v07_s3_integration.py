@@ -19,11 +19,11 @@ class S3IntegrationTests(unittest.TestCase):
 
     def test_T13_byte_identical_exports(self):
         self.require_pilot()
-        primary = EXPORT_ROOT / "s3_dev_f000_005"
+        primary = EXPORT_ROOT / "s3_dev_f000_005_r2"
         if not primary.exists():
             export_runs(["pilot_f000_005"], primary.name)
         self.assertTrue((primary / "export_manifest.json").is_file(), "Primary export must have completed")
-        repeat = EXPORT_ROOT / "s3_dev_f000_005_repro01"
+        repeat = EXPORT_ROOT / "s3_dev_f000_005_r2_repro01"
         export_runs(["pilot_f000_005"], repeat.name)
         for name in ("episodes.jsonl", "descriptions.jsonl"):
             self.assertEqual((primary / name).read_bytes(), (repeat / name).read_bytes(), name)
@@ -61,6 +61,10 @@ class S3IntegrationTests(unittest.TestCase):
                     seen.append(gid)
                     self.assertTrue(sentence["text"].startswith(f"第{len(seen)}编组（"))
             self.assertEqual(seen, sorted(labels["task_groups"]))
+            self.assertEqual([s["type"] for s in record["sentences"] if s["group_id"] == "task_group_01"],
+                             ["approach_same", "coord_seq", "role_feint", "exit_out"])
+            self.assertEqual([s["type"] for s in record["sentences"] if s["group_id"] == "task_group_02"],
+                             ["approach_same", "coord_seq", "role_intrusion"])
             self.assertIn("该编组", record["text"])
 
 

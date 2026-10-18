@@ -5,7 +5,7 @@ from statistics import median
 
 from ._common import P0ContractError, pointer
 
-SECTORS = ("东", "东北", "北", "西北", "西", "西南", "南", "东南")
+SECTORS = ("正东", "东北", "正北", "西北", "正西", "西南", "正南", "东南")
 
 
 def from_sector(headings, members):

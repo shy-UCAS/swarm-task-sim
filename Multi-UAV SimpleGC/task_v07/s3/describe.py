@@ -18,11 +18,11 @@ def _selection(facts):
             suffix = {"same_direction": "same", "multi_direction": "multi"}.get(group["approach_class"], "neutral")
             yield "approach_" + suffix, group, False
             first = False
-        if group["group_status"] == "success":
-            yield "role_" + group["execution_method"], group, first
-            first = False
         if group["coordination"] in ("synchronous", "sequential"):
             yield "coord_sync" if group["coordination"] == "synchronous" else "coord_seq", group, first
+            first = False
+        if group["group_status"] == "success":
+            yield "role_" + group["execution_method"], group, first
             first = False
         if group["exit_state"] in ("all_outside", "all_inside"):
             yield "exit_out" if group["exit_state"] == "all_outside" else "exit_in", group, first

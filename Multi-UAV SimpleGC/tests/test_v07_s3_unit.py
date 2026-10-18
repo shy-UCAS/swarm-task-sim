@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import numpy as np
 from task_v07.io import INPUT_KEYS
-from task_v07.s3._common import P0ContractError, RunNotReady, read_run, sha256, write_json
+from task_v07.s3._common import P0ContractError, RunNotReady, TEMPLATE_PATH, read_run, sha256, write_json
 from task_v07.s3.describe import description_variants, render_description
 from task_v07.s3.facts import extract_facts, from_sector
 from task_v07.s3.loader import load_inputs, load_targets
@@ -23,11 +23,21 @@ from test_v07_s3_fixtures import episode, labels, scene, trajectories
 
 class S3UnitTests(unittest.TestCase):
     def test_T01_sectors_and_missing_member_heading(self):
-        for headings, expected in (([0.], "西"), ([90.], "南"),
-                                   ([202.4], "东"), ([202.6], "东北"), ([359., 1.], "西")):
+        for headings, expected in (([0.], "正西"), ([45.], "西南"), ([90.], "正南"),
+                                   ([135.], "东南"), ([180.], "正东"), ([225.], "东北"),
+                                   ([270.], "正北"), ([315.], "西北"),
+                                   ([202.4], "正东"), ([202.6], "东北"), ([359., 1.], "正西")):
             with self.subTest(headings=headings):
                 members = [str(i) for i in range(len(headings))]
                 self.assertEqual(from_sector(dict(zip(members, headings)), members), expected)
+        for heading, expected in ((0., "正西"), (90., "正南"), (180., "正东"), (270., "正北")):
+            value = labels()
+            value["task_groups"]["task_group_01"]["observed"]["approach_headings_deg"] = dict.fromkeys(value["agents"], heading)
+            extracted = extract_facts(value, scene())
+            self.assertEqual(extracted["slots"]["from_sector"], expected)
+            record = render_description(extracted["facts"], "x", "A")
+            self.assertIn(expected + "方向", record["text"])
+            self.assertTrue(verify_description(record, value, scene()))
         for missing in ("uav_01", "uav_02"):
             value = labels()
             value["task_groups"]["task_group_01"]["observed"]["approach_headings_deg"][missing] = None
@@ -60,6 +70,46 @@ class S3UnitTests(unittest.TestCase):
                 if not entered:
                     first = next(s for s in record["sentences"] if s["group_id"] is not None)
                     self.assertTrue(first["text"].startswith("该编组"))
+        # r2 order is fixed; omitted approach gives the first remaining sentence its subject.
+        for entered, coordination, status, expected in (
+            (True, "sequential", "success", ["approach_same", "coord_seq", "role_transit", "exit_out"]),
+            (True, "synchronous", "success", ["approach_same", "coord_sync", "role_transit", "exit_out"]),
+            (False, "sequential", "success", ["coord_seq", "role_transit", "exit_out"]),
+            (False, "unknown", "success", ["role_transit", "exit_out"]),
+            (False, "unknown", "failure", ["exit_out"]),
+        ):
+            for n_groups in (1, 2):
+                value = labels()
+                first_group = value["task_groups"]["task_group_01"]
+                if n_groups == 2:
+                    value["task_groups"]["task_group_02"] = deepcopy(first_group)
+                    first_group["observed"]["members"] = ["uav_01"]
+                    value["task_groups"]["task_group_02"]["observed"]["members"] = ["uav_02"]
+                for group in value["task_groups"].values():
+                    group["observed"]["coordination"]["classification"] = coordination
+                    group["result"]["status"] = status
+                for agent in value["agents"].values():
+                    agent["observed"]["regions_by_facility"]["facility_01"]["warning"]["entered_observed"] = entered
+                facts = extract_facts(value, scene())["facts"]
+                for template_group in ("A", "B"):
+                    with self.subTest(entered=entered, coordination=coordination, status=status,
+                                      n_groups=n_groups, template_group=template_group):
+                        record = render_description(facts, "synthetic/episode", template_group)
+                        self.assertTrue(verify_description(record, value, scene()))
+                        for index, gid in enumerate(sorted(value["task_groups"]), 1):
+                            sentences = [s for s in record["sentences"] if s["group_id"] == gid]
+                            self.assertEqual([s["type"] for s in sentences], expected)
+                            subject = "该编组" if n_groups == 1 else f"第{index}编组（1架）"
+                            self.assertTrue(sentences[0]["text"].startswith(subject))
+                            if not entered:
+                                self.assertEqual(sentences[0]["values"]["subj"], subject)
+                                self.assertEqual(sentences[0]["values"].get("subj2", ""), "")
+                        if entered and coordination == "sequential":
+                            old_order = deepcopy(record)
+                            old_order["sentences"][2:4] = reversed(old_order["sentences"][2:4])
+                            old_order["text"] = "".join(s["text"] for s in old_order["sentences"])
+                            with self.assertRaisesRegex(P0ContractError, "Sentence order/type/group"):
+                                verify_description(old_order, value, scene())
         value = labels()
         g = value["task_groups"]["task_group_01"]
         g["assigned"]["role"] = g["assigned"]["execution_method"] = "intrusion"
@@ -117,6 +167,12 @@ class S3UnitTests(unittest.TestCase):
 
     def test_T06_forbidden_words(self):
         templates = load_templates()
+        self.assertEqual(TEMPLATE_PATH.name, "templates_v07_s3_r2.json")
+        original = load_templates(TEMPLATE_PATH.with_name("templates_v07_s3_r1.json"))
+        differences = [(kind, tid) for kind in original for tid in original[kind]
+                       if original[kind][tid] != templates[kind][tid]]
+        self.assertEqual(differences, [("role_feint", "B2")])
+        self.assertEqual(templates["role_feint"]["B2"], "随后抵近并进入设施{f}的警戒区，之后折返。")
         check_forbidden(templates)
         facts = extract_facts(labels(), scene())["facts"]
         for group in ("A", "B"):
