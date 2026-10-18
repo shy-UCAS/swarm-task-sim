@@ -1,0 +1,28 @@
+test_T01_sectors_and_missing_member_heading (test_v07_s3_unit.S3UnitTests.test_T01_sectors_and_missing_member_heading) ... ok
+test_T02_gates_and_subjects (test_v07_s3_unit.S3UnitTests.test_T02_gates_and_subjects) ... ERROR
+
+======================================================================
+ERROR: test_T02_gates_and_subjects (test_v07_s3_unit.S3UnitTests.test_T02_gates_and_subjects)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-s3\Multi-UAV SimpleGC\tests\test_v07_s3_unit.py", line 56, in test_T02_gates_and_subjects
+    record = render_description(facts, "synthetic/episode", "A")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-s3\Multi-UAV SimpleGC\task_v07\s3\describe.py", line 66, in render_description
+    templates = load_templates() if templates is None else templates
+                ^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-s3\Multi-UAV SimpleGC\task_v07\s3\verify.py", line 31, in load_templates
+    check_forbidden(value)
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-s3\Multi-UAV SimpleGC\task_v07\s3\verify.py", line 17, in check_forbidden
+    check_forbidden(v)
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-s3\Multi-UAV SimpleGC\task_v07\s3\verify.py", line 17, in check_forbidden
+    check_forbidden(v)
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-fe-s3\Multi-UAV SimpleGC\task_v07\s3\verify.py", line 24, in check_forbidden
+    raise P0ContractError(f"Forbidden word: {word}")
+task_v07.expansion.contracts.P0ContractError: Forbidden word: 返航
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+FAILED (errors=1)
+ERROR conda.cli.main_run:execute(142): `conda run python -B -m unittest -v test_v07_s3_unit -f` failed. (See above for error)
