@@ -58,11 +58,12 @@ def evaluate_solos(scene, skeleton, solos):
             "completion_budget_basis": "measured" if all(v is not None for v in finished.values()) else "conservative"}
 
 
-def rehearse(scene, skeleton):
+def rehearse(scene, skeleton, *, reference_version="r2"):
     solos = {}
     for group in groups_of(skeleton).values():
         for agent in sorted(group["members"]):
-            solos[agent] = execute(group, {a: 0. for a in group["members"]}, only_agent=agent)
+            solos[agent] = execute(group, {a: 0. for a in group["members"]}, only_agent=agent,
+                                   reference_version=reference_version)
     return evaluate_solos(scene, skeleton, solos), solos
 
 

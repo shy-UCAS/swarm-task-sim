@@ -4,6 +4,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from copy import deepcopy
 import json
+import pickle
 import subprocess
 import sys
 import time
@@ -23,7 +24,7 @@ from task_v07.expansion.role_evaluation import group_evaluator
 from task_v07.execution import execute, FROZEN_SHA256
 from task_v07.labels import measure
 from task_v07.unified.outcome import exhausted_failure
-from task_v07.io import read_json, save_json, write_episode, load_episode, load_pair
+from task_v07.io import read_json, save_json, sha, write_episode, load_episode, load_pair
 from scripts.audit_v07_s2_groups import audit_groups
 from scripts.audit_v07_s2_infrastructure import audit_geometry
 
@@ -112,12 +113,13 @@ def group_truncations(scene, skeleton, run, labels):
     return checks
 
 
-def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode, out, setup_s, *, extra_metrics=None):
+def write_result(scene, descriptor, skeleton, bundle, run, plan, measured, mode, out, setup_s, *, extra_metrics=None,
+                 scope=EXPANSION_SCOPE):
     started = time.perf_counter()
     labels, frame = measure(scene, skeleton, run, mode, timing_plan=plan)
     dest = out / descriptor["skeleton_id"] / mode
     write_episode(dest, scene, descriptor["family_conditions"], skeleton, run, labels, frame,
-                  plan["departure_delays_s"], mode, measured, timing_plan=plan, scope=EXPANSION_SCOPE)
+                  plan["departure_delays_s"], mode, measured, timing_plan=plan, scope=scope)
     audit = audit_episode(scene, skeleton, run, labels, mode, plan, dest)
     truncation = group_truncations(scene, skeleton, run, labels)
     save_json(dest / "truncation_check.json", truncation)
@@ -177,11 +179,28 @@ def run_episode_job(payload):
     from task_v07.unified.rehearsal import rehearse, joint_budget
     from task_v07.unified.timing import select_timing
     scene, descriptor, out = payload["scene"], payload["descriptor"], Path(payload["out"])
+    reference_version = payload.get("reference_version", "r2")
     skroot = out / descriptor["skeleton_id"]
     skroot.mkdir()
     started = time.perf_counter()
     limit = load_generator()["calibration"]["max_rounds"]
-    pool, search = episode_candidate_pool(scene, descriptor, backend=payload.get("geometry_backend", "unified"))
+    cached = payload.get("candidate_pool_pickle")
+    if cached is None:
+        pool, search = episode_candidate_pool(scene, descriptor, backend=payload.get("geometry_backend", "unified"))
+    else:
+        expected = payload.get("candidate_pool_sha256")
+        if not expected or sha(cached) != expected:
+            raise P0ContractError("Cached candidate pool SHA256 differs from the registered value")
+        with Path(cached).open("rb") as stream:
+            saved = pickle.load(stream)
+        if not isinstance(saved, dict) or saved.get("skeleton_id") != descriptor["skeleton_id"]:
+            raise P0ContractError("Cached candidate pool belongs to another skeleton")
+        pool, search = saved.get("pool"), saved.get("search")
+        if not isinstance(pool, list) or not isinstance(search, dict):
+            raise P0ContractError("Cached candidate pool payload is malformed")
+        for candidate in pool:
+            if not isinstance(candidate, dict) or candidate.get("skeleton", {}).get("skeleton_id") != descriptor["skeleton_id"]:
+                raise P0ContractError("Cached candidate pool contains another skeleton's candidate")
     search.update(actual_single_agent_calibration_rounds=0, solo_flights_run=0)
     save_json(skroot / "candidate_pool.json", search)
     history = []
@@ -198,7 +217,7 @@ def run_episode_job(payload):
         save_json(attempt / "planning_checks.json", pre)
         print(json.dumps({"stage": "rehearsal", "skeleton": descriptor["skeleton_id"],
                           "round": variant + 1, "candidate_index": candidate["index"]}), flush=True)
-        rehearsal, solo = rehearse(scene, sk)
+        rehearsal, solo = rehearse(scene, sk, reference_version=reference_version)
         search["actual_single_agent_calibration_rounds"] += 1
         search["solo_flights_run"] += len(solo)
         for agent, flight in solo.items():
@@ -247,7 +266,8 @@ def run_episode_job(payload):
         for mode, plan in timing["plans"].items():
             current = variants[mode]
             run = execute(current, plan["departure_delays_s"],
-                          time_budget=joint_budget(current, plan["departure_delays_s"], rehearsal["completion_times_s"]))
+                          time_budget=joint_budget(current, plan["departure_delays_s"], rehearsal["completion_times_s"]),
+                          reference_version=reference_version)
             if condition_digest(current, bundle) != baseline:
                 raise P0ContractError("Timing or execution mutated a non-time skeleton condition")
             prediction = prediction_error(solo, plan, run, timing["overlay"][mode])
@@ -257,7 +277,8 @@ def run_episode_job(payload):
                     "single_agent_calibration_rounds": search["actual_single_agent_calibration_rounds"],
                     "solo_flights_run": search["solo_flights_run"], "selected_candidate_index": candidate["index"],
                     "rehearsal": rehearsal, "timing_selection": timing["versions"],
-                    "solo_overlay_prediction_error": prediction}))
+                    "solo_overlay_prediction_error": prediction},
+                scope=payload.get("episode_scope", EXPANSION_SCOPE)))
             save_json(skroot / mode / "solo_overlay_comparison.json", prediction)
         validate_pair(variants["synchronous"], variants["sequential"], bundle, bundle)
         load_pair(*(skroot / mode for mode in ("synchronous", "sequential")))
