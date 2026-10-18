@@ -1,0 +1,127 @@
+{
+  "run_id": "s2_smoke",
+  "created_utc": "2026-10-18T03:29:41.283044+00:00",
+  "families_range": [
+    7,
+    8
+  ],
+  "code_commit": "40f5b881b330ce215163fb176af37b0a062b206d",
+  "git_clean": true,
+  "code_hashes_sha256": "6ef8f60d49361b556ce7cdc54b02e8bf2cfa7dfcb525863e4dc02efc9c923261",
+  "reference_version": "r3",
+  "r3_config_sha256": "0fe3efff6f97ed88c665374d0280aef571b92399ac3711184f13e5c6a3de3b30",
+  "r2_frozen_sha256": "94822513045c434dc2f713070728f1f99d18bcbea3933f8f092b85c5e4d78193",
+  "criteria_version": "criteria/0.7-r1",
+  "criteria_sha256": "d85c3753fc9d3096c6b09ade59637db8fb6b2f79b765d3aebb07d7b7211ceb74",
+  "generator_config_sha256": "88c0ef30d0a8fe65f5f3dc7073e3112ea2bcec39485c4f8564b2531e01e02976",
+  "baseline_path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-fe-prod-r3\\Multi-UAV SimpleGC\\docs\\v07\\s15\\S15_frozen_baseline.json",
+  "baseline_sha256": "ba68f7ea15fb3c337f67ee3584266b9648e3a80509ad522c228e11a7e471a590",
+  "scene_layout": "v07-s15@b4676bb",
+  "workers": 8,
+  "planning_timeout_s": 3600.0,
+  "episode_timeout_s": 5400.0,
+  "FE_SCOPE": "v0.7 first_edition production; fastsim reference r3 (config sha256 0fe3efff6f97ed88c665374d0280aef571b92399ac3711184f13e5c6a3de3b30); point-mass kinematic model, 4–10 m/s not SITL-calibrated; criteria criteria/0.7-r1; scene v07-s15@b4676bb",
+  "python_version": "3.12.3",
+  "numpy_version": "2.5.3",
+  "descriptor_count": 10,
+  "slots_per_family": 2,
+  "subset": "regular",
+  "retained_episodes": [],
+  "non_retained_episodes": [],
+  "draws": [
+    {
+      "draw_key": "family_s15_0aeede8b1f29217e:0",
+      "family_id": "family_s15_0aeede8b1f29217e",
+      "slot": 0,
+      "status": "B_REJECT",
+      "intents": {
+        "transit": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "reconnaissance": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "monitoring": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "feint": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "penetration": {
+          "b": "REJECT",
+          "c": null,
+          "first_failure": {
+            "eligible_combinations": 0,
+            "candidate_pool_sha256": null,
+            "rejection_reasons": {
+              "shape_search_budget_exhausted": 200
+            },
+            "termination": {
+              "classification": "search_budget_exhausted",
+              "scope": "skeleton_search",
+              "reason": "no_eligible_combination_in_registered_budgets",
+              "geometric_evidence": [],
+              "global_infeasibility_claimed": false
+            },
+            "planning_wall_s": 0.42199999999138527
+          }
+        }
+      }
+    },
+    {
+      "draw_key": "family_s15_0aeede8b1f29217e:1",
+      "family_id": "family_s15_0aeede8b1f29217e",
+      "slot": 1,
+      "status": "B_REJECT",
+      "intents": {
+        "transit": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "reconnaissance": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "monitoring": {
+          "b": "REJECT",
+          "c": null,
+          "first_failure": {
+            "eligible_combinations": 0,
+            "candidate_pool_sha256": null,
+            "rejection_reasons": {
+              "shape_search_budget_exhausted": 200
+            },
+            "termination": {
+              "classification": "search_budget_exhausted",
+              "scope": "skeleton_search",
+              "reason": "no_eligible_combination_in_registered_budgets",
+              "geometric_evidence": [],
+              "global_infeasibility_claimed": false
+            },
+            "planning_wall_s": 245.26499999998487
+          }
+        },
+        "feint": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        },
+        "penetration": {
+          "b": "PASS",
+          "c": null,
+          "first_failure": null
+        }
+      }
+    }
+  ]
+}
