@@ -101,20 +101,62 @@ class TransitCriterionTests(unittest.TestCase):
         self.assertTrue((frame["phase"][-1] == 4).all())
 
     def test_small_entry_exit_azimuth_difference_fails(self):
+        # Historical test ID retained. criteria-r1 removes angle/chord gates:
+        # criteria_labels.measure_criteria(transit); geometry remains diagnostic.
         sk, run = run_for({"a": (650, 1), "b": (-450, -1)})
         labels, _ = measure(scene(), sk, run, "synchronous")
-        conditions = labels["agents"]["a"]["result"]["conditions"]
-        self.assertTrue(conditions["chord_length"])
-        self.assertFalse(conditions["entry_exit_azimuth_difference"])
-        self.assertEqual(labels["task_groups"]["g"]["result"]["status"], "failure")
+        c=labels['agents']['a']['observed']['contribution']
+        expected=180-2*math.degrees(math.asin(650/700))
+        self.assertAlmostEqual(c['entry_exit_azimuth_difference_deg'],expected,delta=1.)
+        # criteria-r1 删除弦长判据
+        self.assertTrue(all(v is True for v in labels['agents']['a']['result']['conditions'].values()))
+        self.assertEqual(labels['task_groups']['g']['result']['status'],'success')
 
     def test_stop_and_loop_inside_warning_fail(self):
-        sk, run = run_for({"a": straight(450, 1, stop=100), "b": straight(-450, -1, loop=True)})
-        labels, _ = measure(scene(), sk, run, "synchronous")
-        self.assertGreater(labels["agents"]["a"]["observed"]["contribution"]["longest_low_speed_in_warning_s"], 2)
-        self.assertFalse(labels["agents"]["a"]["result"]["conditions"]["no_stop_in_warning"])
-        self.assertGreaterEqual(labels["agents"]["b"]["observed"]["contribution"]["cumulative_turn_in_warning_deg"], 350)
-        self.assertFalse(labels["agents"]["b"]["result"]["conditions"]["no_loop_in_warning"])
+        from task_v07.criteria import load_criteria
+        cfg=load_criteria();dw=cfg['detectors']['dwell'];rv=cfg['detectors']['revisit']
+        public=scene()
+        warning=next(e['geometry']['radius_m'] for e in public['entities'] if e.get('layer')=='warning')
+        alert=next(e['geometry']['radius_m'] for e in public['entities'] if e.get('layer')=='alert')
+        radius=max((warning+alert)/2,(rv['min_departure_m']+50)/2)
+        self.assertLess(radius,warning)
+        speed=max(2*rv['min_speed_m_s'],4*dw['radius_m']/dw['window_s'])
+        base_p,base_v,end=straight(radius,1,speed=speed)
+        k=int(np.argmin(abs(base_p[:,0]-CENTER[0])))
+        origin=base_p[k];r=float(np.linalg.norm(origin-CENTER))
+        theta=math.atan2(*(origin-CENTER)[::-1])
+        count=math.ceil(2*math.pi*r/speed*10)
+        angles=theta-np.linspace(0,2*math.pi,count+1)[1:]
+        loop_p=CENTER+r*np.c_[np.cos(angles),np.sin(angles)]
+        loop_v=speed*np.c_[np.sin(angles),-np.cos(angles)]
+        hold_count=round((dw['window_s']+5)*10)
+        insertions={'positive':(np.empty((0,2)),np.empty((0,2))),
+                    'dwell':(np.repeat(origin[None],hold_count,axis=0),np.zeros((hold_count,2))),
+                    'revisit':(loop_p,loop_v)}
+        for name,(extra_p,extra_v) in insertions.items():
+            with self.subTest(case=name):
+                positions=np.vstack((base_p[:k],extra_p,base_p[k:]))
+                velocities=np.vstack((base_v[:k],extra_v,base_v[k:]))
+                sk,run=run_for({'a':(positions,velocities,end)})
+                labels,frame=measure(public,sk,run,'synchronous')
+                checks=labels['agents']['a']['result']['conditions']
+                # Only ingress/exit connectors are outside warning. Every
+                # inserted work sample stays in layer 1; no alert entry anywhere.
+                self.assertTrue(np.all(frame['region_assigned_target']<=1))
+                self.assertTrue(np.all(frame['region_assigned_target'][k:k+len(extra_p)]==1))
+                self.assertTrue(checks['exclusion_policy_respected'])
+                self.assertEqual(checks['no_dwell'],name!='dwell')
+                self.assertEqual(checks['no_revisit'],name!='revisit')
+                failed=[key for key,value in checks.items() if value is not True]
+                self.assertEqual(failed,[] if name=='positive' else ['no_'+name])
+                self.assertEqual(labels['task_groups']['g']['result']['status'],
+                                 'success' if name=='positive' else 'failure')
+                if name=='dwell':
+                    self.assertLessEqual(np.linalg.norm(extra_p-origin,axis=1).max(),dw['radius_m']/2)
+                if name=='revisit':
+                    self.assertGreaterEqual(np.linalg.norm(extra_p-origin,axis=1).max(),rv['min_departure_m']+50)
+                    self.assertLessEqual(np.linalg.norm(extra_p[-1]-origin),rv['radius_m'])
+                    self.assertTrue(np.all(np.linalg.norm(extra_v,axis=1)>rv['min_speed_m_s']))
 
     def test_alert_entry_violates_explicit_policy(self):
         sk, run = run_for({"a": (200, 1), "b": (-450, -1)})

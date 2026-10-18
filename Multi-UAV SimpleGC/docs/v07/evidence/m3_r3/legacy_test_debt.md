@@ -48,3 +48,39 @@ Old literal 1.15 conflicts with the unchanged FE generator configuration 1.30; c
 Same stale 1.15 preference; current per-group ratio comes from unchanged generator configuration 1.30.
 
 保留原断言与生产合同；后续单独确认现行合同并恢复测试覆盖。
+
+
+## 已修复：T-debt（2026-10-17）
+
+本段按 T-debt 及问题1/2、R-1～R-3 授权追加。以上18项历史表和原文完整保留，历史失败事实不改写。
+
+完整冻结测试集 **492执行、492 PASS、0 FAIL、0 ERROR、0 SKIP**。删除0项，新增0项；全部原测试ID保留（部分名称保留历史词汇）。新辅助文件 debt_line_evidence.py 不定义测试方法。两项 A5 改写而不删除。
+
+|测试ID|原语义|现语义|已批准依据|
+|---|---|---|---|
+|test_v07_s2_abort.AbortEvidenceTests.test_full_abort_labels_and_independent_audit|own_endpoint_hold 判据与独立撤离审计|四项 abort_* 真值、未进入受保护区、退出预警区、前缀不得声明撤离；补 source.execution_status 使审计执行|criteria-r1 / M2-C13|
+|test_v07_s2_expansion.TransitCriterionTests.test_mid_chord_prefix_is_unknown_and_never_success|exited_warning/chord_length/no_loop 前缀未知|ended_outside_warning/no_dwell/no_revisit 为 None，组结果 unknown，截断审计 PASS；删除弦长判据断言|criteria-r1；T-debt R-1|
+|test_v07_s2_expansion.TransitCriterionTests.test_small_entry_exit_azimuth_difference_fails|小进出方位角判失败|其他条件均满足时 success；观测进出方位角与圆几何解析值一致|criteria-r1 删除角度判据；T-debt 问题2(a)/R-1|
+|test_v07_s2_expansion.TransitCriterionTests.test_stop_and_loop_inside_warning_fail|3 秒停顿及 60 米小圈触发旧停止/绕圈条件|按配置构造 dwell.window_s+5 秒停顿、离开再返回且方位覆盖充分的绕圈；各只触发 no_dwell/no_revisit，正对照成功，全程不进第2层|criteria-r1 驻留/再访定义；T-debt 问题2(b)/R-2|
+|test_v07_s2_expansion.TransitCriterionTests.test_two_sided_crossing_succeeds_with_measured_facts|多向角度成败条件及旧 schema|观测接近跨度/分类事实、解析弦长/方位角、criteria/0.7-r1 与完整成功|criteria-r1 将接近角度改为观测事实|
+|test_v07_s2_fact_repairs.P0FactRepairTests.test_feint_exact_contour_depth_and_fraction|depth_in_band 与 retreat_direction 成败条件|75 m 深度、0.5 带宽比例、转向/作业终点时间及 retreat_ok/回落量诊断|criteria-r1 将深度和撤离形态改为诊断|
+|test_v07_s2_groups.GroupEvidenceTests.test_independent_group_audit_and_condition_coverage|缺 source.json 导致审计未执行|补本测试临时 source.execution_status，原 PASS/无未覆盖条件断言不变|M2-C13；A1|
+|test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_one_missing_warning_entry_does_not_use_known_subset|缺成员时多向条件 None|接近方位及跨度 None、classification unknown，绝不成功|criteria-r1；A2|
+|test_v07_s2_revision_approach.WarningApproachMeasurementTests.test_warning_entry_is_separate_from_role_core_event|同侧进入不满足 multi_direction_span|观测跨度0、classification same_direction；预警进入与保护区核心事件仍独立|criteria-r1；A2|
+|test_v07_s2_revision_continuous.ContinuousRevisionTests.test_five_calibration_round_limit_and_zero_flights_for_empty_pool|patch 已删除 calibrate_episode|patch rehearse/select_timing/execute；五轮且逐轮不同候选，空池零预演/零飞行|M2-C3/C6/C10；A5 改写不删除|
+|test_v07_s2_revision_continuous.ContinuousRevisionTests.test_variable_observation_dwell_preserves_eighty_percent_criterion|计划驻留80%参数生成和篡改其阈值应 P0|生成断言原样保留；最小计划25秒夹具 observation_dwell True 且 detected True；独立篡改条件/confirm_frame_index 分别 P0_STOP 且字段命中|criteria-r1 20秒空间驻留；T-debt 问题1(a–d)/R-1|
+|test_v07_s2_solo_spacing.SoloSpacingTests.test_overlay_rejection_changes_combination_and_caps_five_solo_rounds|旧 calibrate_episode/interval_check 的五轮换组合|现行 rehearse/select_timing 五轮不同候选，10次单机记录、无联合飞行、五项 timing_conflict 历史|M2-C3/C6/C10；A5 改写不删除|
+|test_v07_s2_fact_repairs.P0FactRepairTests.test_monitoring_measured_end_does_not_erase_terminal_hold|作业在巡视末点结束|最后离开目标预警区的首个区外帧1396.7秒；3秒终点驻留和抵达事实保留|criteria-r1 作业段定义；A3|
+|test_v07_s2_infrastructure.ViewTests.test_balanced_minimum_pairs_and_extended_without_copy|旧成功夹具缺完整性字段|补 all_groups_complete/execution_status，primary10/extended8 原断言保留|严格配对合同；A1|
+|test_v07_s2_infrastructure.ViewTests.test_pair_mismatch_and_escape_paths_are_p0|配对不一致必须抛 P0，路径逃逸必须拒绝|补完整性字段；精确匹配 Claimed successful pair changed non-time conditions；路径逃逸断言不变|严格配对合同；A1|
+|test_v07_s2_revision_continuous.ContinuousRevisionTests.test_115_percent_filter_then_seeded_order|115% 截断及种子排序|读取 same_direction_length_ratio_max 构造边界，检查筛选和同种子排序|M2-C7 已批准1.30；A4|
+|test_v07_s2_revision_continuous.ContinuousRevisionTests.test_each_group_has_its_own_115_percent_bound|每组独立115%上限|按配置上限构造候选，仍仅第2号候选满足两组各自最短比例|M2-C7；A4|
+|test_v07_s2_revision_retreat.RevisionRetreatTests.test_expanded_request_selects_minimum_without_mutating_descriptor|旧100m撤离参数|从配置读取 warning_clearance_m，描述符不变断言保留|M2-C8 已批准50m；A3|
+
+A1 配对异常精确匹配指定消息；三个测试的执行行见 [A1证据](T_debt/A1_target_line_evidence.json)。
+
+驻留篡改分别命中 a.result.conditions.observation_dwell、a.contribution.observation_dwell.confirm_frame_index，均返回 P0_STOP；未暴露这两项事实的审计覆盖缺失。
+
+初次局部验证发生测试自身 FileExistsError（save_json 使用独占创建，无法覆盖临时标签），已仅改用测试临时文件写入后重验；不是审计放过篡改，也未改生产。
+
+[A验收](T_debt/A_gate.json) · [完整日志](T_debt/A_full_unittest_attempt01.log)

@@ -113,7 +113,9 @@ class ContinuousRevisionTests(unittest.TestCase):
         from task_v07.expansion.formation_role_planners import Context,CloseObservationPlanner
         from task_v07.expansion.pipeline import COMMON_CONSTANTS,exclusion_policy
         from task_v07.labels import measure
-        from scripts.audit_v07_s2_conditions import audit_conditions
+        from copy import deepcopy
+        from scripts.audit_v07_m1 import audit_episode
+        from task_v07.io import save_json, write_csv
         from test_v07_s2_expansion import scene
         ids=['a','b']
         family={'sampling_seed':41,'cruise_speed_m_s':5.,'task_altitude_m':100.,
@@ -121,31 +123,51 @@ class ContinuousRevisionTests(unittest.TestCase):
                                                        for i,a in enumerate(ids)]}
         group={'role':'reconnaissance','execution_method':'close_observation','target_id':'f','members':ids}
         ctx=Context(scene(),group,{'family':family,'approach_mode':'same_direction','planning_seed':10})
+        minimum_plan=None
         for planned,minimum in ((25.,20.),(55.,44.)):
             ctx.operation_parameters={'observation_alert_clearance_m':50.,'planned_observation_dwell_s':planned,
                                       'observation_dwell_method':'hover'}
             result,reason=CloseObservationPlanner().attempt(ctx,math.pi)
             self.assertIsNotNone(result,reason)
             self.assertEqual(result['template']['close_observation']['minimum_dwell_s'],minimum)
+            if minimum_plan is None: minimum_plan=deepcopy(result)
+        # operation_parameters.py draws uniformly in [25,55] seconds.
+        # Keep the planner 80% assertions above; M1 uses spatial dwell facts.
+        result=minimum_plan
+        samples=round(result['template']['close_observation']['planned_dwell_s']*10)+1
         sk={**COMMON_CONSTANTS,**result['template'],'base_intent':'reconnaissance','group_id':'g',
             'members':ids,'agent_ids':ids,'approach_mode':'same_direction','cruise_speed_m_s':5.,
             'continuous_geometry_draw':{},'exclusion_policy':exclusion_policy(scene(),'reconnaissance','f',ids)}
-        positions=np.repeat(np.asarray([[sk['references'][a]['observation_point_enu_m'] for a in ids]]),301,axis=0)
-        run={'agent_ids':ids,'time_us':np.arange(301,dtype=np.int64)*100000,'p':positions,
+        positions=np.repeat(np.asarray([[sk['references'][a]['observation_point_enu_m'] for a in ids]]),samples,axis=0)
+        run={'agent_ids':ids,'time_us':np.arange(samples,dtype=np.int64)*100000,'p':positions,
              'v':np.zeros_like(positions),'execution_status':'completed'}
         labels,frame=measure(scene(),sk,run,'synchronous')
-        self.assertFalse(labels['agents']['a']['result']['conditions']['minimum_dwell'])
-        # A copied fixed threshold must be rejected independently even if production
-        # labels were computed from that same corrupted threshold.
-        sk['close_observation']['minimum_dwell_s']=19.2
-        labels,frame=measure(scene(),sk,run,'synchronous')
-        self.assertTrue(labels['agents']['a']['result']['conditions']['minimum_dwell'])
+        self.assertTrue(labels['agents']['a']['result']['conditions']['observation_dwell'])
+        self.assertTrue(labels['agents']['a']['observed']['contribution']['observation_dwell']['detected'])
         with TemporaryDirectory() as directory:
-            (Path(directory)/'truth.csv').write_text('',encoding='utf-8')
-            audit=audit_conditions(directory,data={'scene':scene(),'task':sk,'labels':labels,'ids':ids,
-                't':run['time_us'],'p':positions,'v':run['v'],'frame':frame})
-        self.assertEqual(audit['status'],'P0_STOP')
-        self.assertTrue(any(w.get('field')=='planned_dwell_acceptance_ratio' for w in audit['event_or_metric_witnesses']))
+            root=Path(directory)
+            for name,value in [('public_scene',scene()),('task',sk),('labels',labels),
+                               ('source',{'execution_status':run['execution_status']})]:
+                save_json(root/(name+'.json'),value)
+            write_csv(root/'truth.csv',ids,run['time_us'],positions,run['v'])
+            np.savez_compressed(root/'truth_10hz.npz',**{k:run[k] for k in ('agent_ids','time_us','p','v')})
+            np.savez_compressed(root/'frame_labels.npz',**frame)
+            self.assertEqual(audit_episode(root)['status'],'PASS')
+            for field in ('condition','confirm_frame_index'):
+                with self.subTest(tampered_field=field):
+                    changed=deepcopy(labels)
+                    if field=='condition':
+                        changed['agents']['a']['result']['conditions']['observation_dwell']=False
+                        witness='a.result.conditions.observation_dwell'
+                    else:
+                        changed['agents']['a']['observed']['contribution']['observation_dwell'][field]+=1
+                        witness='a.contribution.observation_dwell.'+field
+                    import json
+                    (root/'labels.json').write_text(json.dumps(changed),encoding='utf-8')
+                    audit=audit_episode(root)
+                    self.assertEqual(audit['status'],'P0_STOP',audit)
+                    self.assertTrue(any(w['field']==witness for w in audit['event_or_metric_witnesses']),audit)
+                    print('DWELL_TAMPER_REJECTED '+witness,flush=True)
 
     def test_nominal_spacing_includes_stationary_middle_dwell(self):
         points=[[0.,0.,50.],[100.,0.,50.],[200.,0.,50.]]
