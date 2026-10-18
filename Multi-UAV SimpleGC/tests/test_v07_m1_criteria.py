@@ -194,7 +194,7 @@ class CriteriaQ0(unittest.TestCase):
         self.assertLessEqual(np.linalg.norm(window - window.mean(axis=0), axis=1).max(), 30.)
         self.assertGreater(np.linalg.norm(window[0] - window[-1]), 30.)
         sk = skeleton("transit", run); labels, frame = measure(self.public, sk, run, "synchronous")
-        bad = deepcopy(labels); bad["agents"]["a"]["observed"]["core_event"]["t_confirm"] += .1
+        bad = deepcopy(labels); bad["agents"]["a"]["observed"]["core_event"]["t_confirm"] += 1.1
         self.assertEqual(audit_data(self.public, sk, run, bad, frame)["status"], "P0_STOP")
         bad = deepcopy(labels); bad["agents"]["a"]["result"]["conditions"]["no_dwell"] = False
         self.assertEqual(audit_data(self.public, sk, run, bad, frame)["status"], "P0_STOP")

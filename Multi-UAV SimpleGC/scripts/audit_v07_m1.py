@@ -8,20 +8,154 @@ from scripts.audit_v07_s2_roles import _center, _runs, _load_truth, _build_level
 from scripts.audit_v07_s2_conditions import _equal
 
 
+STRICT_PATH_MARKERS = ("conditions", "result", "status", "classification",
+                       "detected", "generation_quality")
+STRICT_LEAVES = {
+    "minimum_separation_m", "hard_obstacle_sample_count", "outside_world_sample_count",
+    "frame_count", "grid_point_count", "group_grid_point_count",
+}
+DIAGNOSTIC_LEAVES = {
+    "effective_observation_duration_s", "dwell_total_duration_s",
+    "minimum_contour_distance_m", "minimum_contour_distance_frame",
+    "work_reversal_count", "work_reversal_start_frames",
+}
+
+
 def _numeric(value):
     return isinstance(value, (int, float, np.number)) and not isinstance(value, (bool, np.bool_))
 
 
-def compare_event_metric(path, actual, wanted, errors, diagnostics):
-    """effective_observation_duration_s is diagnostic-only, with no threshold."""
-    if (path.endswith(".contribution.effective_observation_duration_s")
-            and _numeric(actual) and _numeric(wanted)):
-        if float(actual) != float(wanted):
-            diagnostics.append({"field": path, "label": float(actual),
-                                "independent": float(wanted),
-                                "difference": float(actual) - float(wanted)})
+def _leaf(path):
+    return path.split(".")[-1].split("[")[0]
+
+
+def _strict_path(path):
+    lower = path.lower()
+    return any(marker in lower for marker in STRICT_PATH_MARKERS)
+
+
+def _diagnostic_path(path):
+    leaf = _leaf(path)
+    if leaf in DIAGNOSTIC_LEAVES:
+        return True
+    return leaf == "covered_group_grid_points" and ".contribution." in path
+
+
+def _segments(path):
+    return [segment.split("[")[0].lower() for segment in path.split(".")]
+
+
+def _tolerance(path, context=None):
+    leaf = _leaf(path)
+    segments = _segments(path)
+    if (any("event_times" in segment for segment in segments)
+            or any(segment in ("t_s", "t1", "t2", "t_confirm")
+                   or segment.endswith("_s") for segment in segments)):
+        return 1.0
+    if any("frame" in segment for segment in segments):
+        return 10.0
+    if leaf == "covered_grid_point_count":
+        grid = (context or {}).get("grid_point_count")
+        try:
+            return max(1.0, 0.01 * float(grid))
+        except (TypeError, ValueError):
+            return 1.0
+    if any("fraction" in segment for segment in segments):
+        return 0.01
+    if any(segment.endswith("_deg") for segment in segments):
+        return 1.0
+    if any(segment.endswith("_m") for segment in segments):
+        return 1.0
+    return None
+
+
+def metric_class(path, context=None):
+    """Fixed order: S (strict), D (diagnostic), T (tolerance), else S."""
+    if _strict_path(path) or _leaf(path) in STRICT_LEAVES:
+        return "S", None
+    if _diagnostic_path(path):
+        return "D", None
+    tolerance = _tolerance(path, context)
+    if tolerance is not None:
+        return "T", tolerance
+    return "S", None
+
+
+def _kind(value):
+    if value is None:
+        return "none"
+    if isinstance(value, (bool, np.bool_)):
+        return "bool"
+    if isinstance(value, str):
+        return "str"
+    if _numeric(value):
+        return "number"
+    if isinstance(value, dict):
+        return "dict"
+    if isinstance(value, list):
+        return "list"
+    return "other"
+
+
+def compare_value(path, actual, wanted, errors, diagnostics, context=None):
+    actual_kind, wanted_kind = _kind(actual), _kind(wanted)
+    if actual_kind != wanted_kind:
+        errors.append({"field": path, "label": actual, "independent": wanted})
         return
-    if not _equal(actual, wanted):
+    if actual_kind == "none":
+        return
+    if actual_kind == "dict":
+        missing = sorted(set(wanted) - set(actual))
+        if missing:
+            errors.append({"field": path + ".key_set", "missing": missing,
+                           "label": sorted(actual), "independent": sorted(wanted)})
+            return
+        # Label-only evidence keys (source/trace metadata, role-specific facts)
+        # are not produced by the independent side; only expected keys are compared.
+        for key in wanted:
+            compare_value(path + "." + key, actual[key], wanted[key], errors, diagnostics, wanted)
+        return
+    if actual_kind == "list":
+        if len(actual) != len(wanted):
+            errors.append({"field": path, "label": len(actual), "independent": len(wanted)})
+            return
+        for index, (left, right) in enumerate(zip(actual, wanted)):
+            compare_value(f"{path}[{index}]", left, right, errors, diagnostics)
+        return
+    if actual_kind == "bool":
+        if bool(actual) != bool(wanted):
+            errors.append({"field": path, "label": actual, "independent": wanted})
+        return
+    if actual_kind == "str":
+        if actual != wanted:
+            errors.append({"field": path, "label": actual, "independent": wanted})
+        return
+    if actual_kind == "number":
+        category, tolerance = metric_class(path, context)
+        if category == "S":
+            if not _equal(actual, wanted):
+                errors.append({"field": path, "label": actual, "independent": wanted})
+            return
+        if category == "D":
+            difference = float(actual) - float(wanted)
+            if difference != 0.0:
+                diagnostics.append({"field": path, "label": float(actual),
+                                    "independent": float(wanted), "difference": difference,
+                                    "category": "D", "tolerance": None})
+            return
+        if _leaf(path).endswith("_deg"):
+            difference = ((float(actual) - float(wanted) + 180.0) % 360.0) - 180.0
+        else:
+            difference = float(actual) - float(wanted)
+        if abs(difference) <= float(tolerance):
+            if difference != 0.0:
+                diagnostics.append({"field": path, "label": float(actual),
+                                    "independent": float(wanted), "difference": difference,
+                                    "category": "T", "tolerance": float(tolerance)})
+        else:
+            errors.append({"field": path, "label": actual, "independent": wanted})
+        return
+    if actual != wanted:
         errors.append({"field": path, "label": actual, "independent": wanted})
 
 
@@ -185,14 +319,7 @@ def audit_data(scene, task, run, labels, frame):
     errors = []
     diagnostics = []
     def compare(path, actual, wanted):
-        if isinstance(wanted, dict):
-            if not isinstance(actual, dict):
-                errors.append({"field": path, "label": actual, "independent": wanted}); return
-            for key, value in wanted.items():
-                if key not in actual: errors.append({"field": path + "." + key, "error": "missing field"})
-                else: compare(path + "." + key, actual[key], value)
-        else:
-            compare_event_metric(path, actual, wanted, errors, diagnostics)
+        compare_value(path, actual, wanted, errors, diagnostics)
     compare("evidence.complete_observation", labels["evidence"].get("complete_observation"), complete)
     compare("evidence.frame_count", labels["evidence"].get("frame_count"), len(run["time_us"]))
     for a, wanted in expected["agents"].items():

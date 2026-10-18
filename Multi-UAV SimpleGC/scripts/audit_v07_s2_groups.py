@@ -36,11 +36,11 @@ def audit_groups(root):
     ids, t, p, v = _load_truth(root)
     with np.load(root / "frame_labels.npz", allow_pickle=False) as loaded:
         stored = {key: loaded[key].copy() for key in loaded.files}
-    errors, reports, facts, condition_map = [], {}, {}, {}
+    from scripts.audit_v07_m1 import compare_value, attach_diagnostics
+    errors, diagnostics, reports, facts, condition_map = [], [], {}, {}, {}
     complete = labels["evidence"]["complete_observation"]
     def compare(field, left, right):
-        if not _equal(left, right):
-            errors.append({"field": field, "label": left, "independent": right})
+        compare_value(field, left, right, errors, diagnostics)
     for gid, group in task["group_skeletons"].items():
         indices = [i for i, a in enumerate(ids) if a in group["members"]]
         members = [ids[i] for i in indices]
@@ -125,7 +125,7 @@ def audit_groups(root):
     uncovered = [e for e in errors if "uncovered_condition" in e] + [e for r in reports.values() for e in r["uncovered_conditions"]]
     group_errors = sum(r["event_or_metric_difference_count"] for r in reports.values())
     passed = not (errors or uncovered or region_diff or target_diff) and all(r["status"] == "PASS" for r in reports.values())
-    return {"directory": str(root), "status": "PASS" if passed else "P0_STOP", "frames": len(t), "agents": len(ids),
+    result = {"directory": str(root), "status": "PASS" if passed else "P0_STOP", "frames": len(t), "agents": len(ids),
             "facilities": len(facilities), "all_facility_frame_comparisons": int(levels.size),
             "region_difference_count": region_diff, "target_difference_count": target_diff,
             "event_or_metric_difference_count": len(errors) + group_errors, "event_or_metric_witnesses": errors[:50],
@@ -133,3 +133,4 @@ def audit_groups(root):
             "uncovered_conditions": uncovered, "independent_role_facts": facts,
             "truth_csv_sha256": hashlib.sha256((root / "truth.csv").read_bytes()).hexdigest(),
             "method": "independent per-group role evidence, analytic/GEOS regions and full-clock cluster recomposition"}
+    return attach_diagnostics(result, diagnostics)

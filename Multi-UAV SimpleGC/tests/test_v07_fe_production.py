@@ -375,42 +375,103 @@ class ProductionCoreTests(unittest.TestCase):
             self.assertTrue(rows)
             self.assertEqual(rows[0]["file"], "geometry_00/candidate_search_progress.json")
 
-    def test_audit_diagnostic_effective_observation_duration_any_difference_passes(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+    def test_audit_rule_d_field_large_difference_is_diagnostic(self):
+        from scripts.audit_v07_m1 import compare_value, attach_diagnostics
         errors, diagnostics = [], []
-        compare_event_metric("uav_07.contribution.effective_observation_duration_s",
-                             181.0, 181.3, errors, diagnostics)
+        compare_value("uav_07.contribution.effective_observation_duration_s",
+                      181.0, 281.0, errors, diagnostics)
         self.assertEqual(errors, [])
         self.assertEqual(len(diagnostics), 1)
-        self.assertAlmostEqual(diagnostics[0]["difference"], -0.3, places=9)
+        self.assertEqual(diagnostics[0]["category"], "D")
+        self.assertAlmostEqual(diagnostics[0]["difference"], -100.0, places=9)
         result = attach_diagnostics({"status": "PASS"}, diagnostics)
         self.assertIn("diagnostic_metric_differences", result)
 
-    def test_audit_covered_group_grid_points_difference_one_is_p0(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+    def test_audit_rule_d_agent_covered_group_grid_points_is_diagnostic(self):
+        from scripts.audit_v07_m1 import compare_value, attach_diagnostics
         errors, diagnostics = [], []
-        compare_event_metric("uav_01.contribution.covered_group_grid_points",
-                             100, 101, errors, diagnostics)
+        compare_value("uav_01.contribution.covered_group_grid_points",
+                      100, 101, errors, diagnostics)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(diagnostics), 1)
+        self.assertEqual(diagnostics[0]["category"], "D")
+        self.assertIn("diagnostic_metric_differences",
+                      attach_diagnostics({"status": "PASS"}, diagnostics))
+
+    def test_audit_rule_s_other_numeric_is_p0(self):
+        from scripts.audit_v07_m1 import compare_value, attach_diagnostics
+        errors, diagnostics = [], []
+        compare_value("uav_01.contribution.other_count", 10, 11, errors, diagnostics)
         self.assertEqual(len(errors), 1)
         self.assertEqual(diagnostics, [])
         self.assertNotIn("diagnostic_metric_differences",
                          attach_diagnostics({"status": "PASS"}, diagnostics))
 
-    def test_audit_other_field_01_is_p0(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+    def test_audit_rule_s_bool_flip_is_p0(self):
+        from scripts.audit_v07_m1 import compare_value
         errors, diagnostics = [], []
-        compare_event_metric("uav_01.contribution.dwell_total_duration_s",
-                             1.0, 1.1, errors, diagnostics)
+        compare_value("task_group_01.result.conditions.entered_warning",
+                      True, False, errors, diagnostics)
         self.assertEqual(len(errors), 1)
         self.assertEqual(diagnostics, [])
-        self.assertNotIn("diagnostic_metric_differences",
-                         attach_diagnostics({"status": "PASS"}, diagnostics))
 
-    def test_audit_diagnostic_no_difference_has_no_new_key(self):
-        from scripts.audit_v07_m1 import compare_event_metric, attach_diagnostics
+    def test_audit_rule_none_vs_value_is_p0(self):
+        from scripts.audit_v07_m1 import compare_value
         errors, diagnostics = [], []
-        compare_event_metric("uav_07.contribution.effective_observation_duration_s",
-                             181.0, 181.0, errors, diagnostics)
+        compare_value("uav_01.core_event.t_s", 1.0, None, errors, diagnostics)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(diagnostics, [])
+
+    def test_audit_rule_t_seconds_within_tolerance_is_recorded(self):
+        from scripts.audit_v07_m1 import compare_value
+        errors, diagnostics = [], []
+        compare_value("task_group_01.coordination.event_range_s",
+                      1.0, 1.9, errors, diagnostics)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(diagnostics), 1)
+        self.assertEqual(diagnostics[0]["category"], "T")
+        self.assertAlmostEqual(diagnostics[0]["tolerance"], 1.0)
+
+    def test_audit_rule_t_seconds_outside_tolerance_is_p0(self):
+        from scripts.audit_v07_m1 import compare_value
+        errors, diagnostics = [], []
+        compare_value("task_group_01.coordination.event_range_s",
+                      1.0, 2.1, errors, diagnostics)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(diagnostics, [])
+
+    def test_audit_rule_t_fraction_within_and_outside(self):
+        from scripts.audit_v07_m1 import compare_value
+        errors, diagnostics = [], []
+        compare_value("task_group_01.shared_coverage.coverage_fraction",
+                      0.5, 0.505, errors, diagnostics)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(diagnostics), 1)
+        self.assertEqual(diagnostics[0]["category"], "T")
+        errors, diagnostics = [], []
+        compare_value("task_group_01.shared_coverage.coverage_fraction",
+                      0.5, 0.52, errors, diagnostics)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(diagnostics, [])
+
+    def test_audit_rule_t_frame_within_and_outside(self):
+        from scripts.audit_v07_m1 import compare_value
+        errors, diagnostics = [], []
+        compare_value("a.core_event.confirm_frame_index", 200, 201, errors, diagnostics)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(diagnostics), 1)
+        self.assertEqual(diagnostics[0]["category"], "T")
+        self.assertAlmostEqual(diagnostics[0]["tolerance"], 10.0)
+        errors, diagnostics = [], []
+        compare_value("a.core_event.confirm_frame_index", 200, 211, errors, diagnostics)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(diagnostics, [])
+
+    def test_audit_rule_no_difference_has_no_new_key(self):
+        from scripts.audit_v07_m1 import compare_value, attach_diagnostics
+        errors, diagnostics = [], []
+        compare_value("uav_07.contribution.effective_observation_duration_s",
+                      181.0, 181.0, errors, diagnostics)
         self.assertEqual(errors, [])
         self.assertEqual(diagnostics, [])
         self.assertNotIn("diagnostic_metric_differences",

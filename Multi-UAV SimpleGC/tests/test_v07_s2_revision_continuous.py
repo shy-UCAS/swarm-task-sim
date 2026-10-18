@@ -160,7 +160,7 @@ class ContinuousRevisionTests(unittest.TestCase):
                         changed['agents']['a']['result']['conditions']['observation_dwell']=False
                         witness='a.result.conditions.observation_dwell'
                     else:
-                        changed['agents']['a']['observed']['contribution']['observation_dwell'][field]+=1
+                        changed['agents']['a']['observed']['contribution']['observation_dwell'][field]+=11
                         witness='a.contribution.observation_dwell.'+field
                     import json
                     (root/'labels.json').write_text(json.dumps(changed),encoding='utf-8')
