@@ -732,7 +732,7 @@ def _parse_range(text):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--run-id")
     parser.add_argument("--families")
     parser.add_argument("--workers", type=int, default=DEFAULT_WORKERS)
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
@@ -749,6 +749,8 @@ def main(argv=None):
         if not args.run_dir or not args.skeleton:
             raise SystemExit("worker mode requires --run-dir and --skeleton")
         return worker_b(args.run_dir, args.skeleton) if args.worker_stage == "B" else worker_c(args.run_dir, args.skeleton)
+    if not args.run_id:
+        raise ProductionError(3, "--run-id is required")
     if args.report:
         if args.resume:
             raise ProductionError(3, "--report and --resume are mutually exclusive")

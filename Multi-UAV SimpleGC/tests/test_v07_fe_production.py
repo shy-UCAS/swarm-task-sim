@@ -141,6 +141,14 @@ class ProductionCoreTests(unittest.TestCase):
             self.assertTrue(solo_calls and all(call["reference_version"] == "r3" for call in solo_calls))
             self.assertTrue(joint_calls and all(call["reference_version"] == "r3" for call in joint_calls))
 
+    def test_T1_worker_cli_does_not_require_run_id(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(prod, "worker_b", return_value=0) as worker:
+                code = prod.main(["--worker-stage", "B", "--run-dir", tmp,
+                                  "--skeleton", "sid"])
+            self.assertEqual(code, 0)
+            worker.assert_called_once()
+
     def test_T2_reference_version_defaults_to_r2(self):
         sk = fake_sk()
         calls = []
