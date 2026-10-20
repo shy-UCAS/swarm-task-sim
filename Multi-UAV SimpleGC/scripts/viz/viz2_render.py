@@ -102,13 +102,18 @@ class MapPanel:
                 self.cores[agent].set_offsets(np.empty((0, 2)))
 
 
-def animation_window(eps, fraction=0.60):
+def animation_window(eps, fraction=0.85):
+    """五格共用的公共活动窗口：结束于最早结束的 episode，起点取窗口 80%。
+
+    这样首帧各组都已有轨迹，且整段 GIF 中五格都仍在运动；不会出现
+    四个较短意图已经结束、只剩监视在动的静止面板。
+    """
     t0 = min(av.time_window([ep])[0] for ep in eps)
-    t1 = max(av.time_window([ep])[1] for ep in eps)
+    common_end = min(max(ep["last_move"]) for ep in eps)
     release_max = max(max(ep["release"].values()) for ep in eps)
-    start = max(release_max + 0.05 * max(t1 - release_max, 1.0),
-                t0 + fraction * max(t1 - t0, 1.0))
-    return t0, t1, min(start, t1 - 1e-6)
+    start = max(release_max + 0.02 * max(common_end - release_max, 1.0),
+                t0 + fraction * max(common_end - t0, 1.0))
+    return t0, common_end, min(start, common_end - 1e-6)
 
 
 def render_gif(fig, panels, clock, n_frames, out_path, first_png, fps=12, hold=2.0, colors=64):
@@ -315,7 +320,7 @@ def cmd_b(args):
         ep = av.load_episode(DATA_ROOT / args.run / entries[intent]["path"])
         eps.append(ep)
     box = vp.crop_box(eps)
-    t0, t1, start = animation_window(eps)
+    t0, t1, start = animation_window(eps, fraction=0.92)
     fig, axes = plt.subplots(2, 3, figsize=(18, 12), dpi=args.dpi, facecolor=BACKGROUND)
     panels = []
     for ax, ep, intent in zip(axes.flat[:5], eps, INTENT_ORDER):
@@ -392,7 +397,7 @@ def cmd_c1(args):
     box = vp.crop_box([sync_ep, seq_ep])
     sync_tl, seq_tl = vp.load_timeline(sync_dir), vp.load_timeline(seq_dir)
     tmax = max(sync_tl["last"], seq_tl["last"])
-    t0, t1, start = animation_window([sync_ep, seq_ep])
+    t0, t1, start = animation_window([sync_ep, seq_ep], fraction=0.80)
     fig = plt.figure(figsize=(18, 11), dpi=args.dpi, facecolor=BACKGROUND)
     gs = fig.add_gridspec(2, 2, height_ratios=(1.45, 1.0), hspace=0.28, wspace=0.08,
                           left=0.06, right=0.985, top=0.95, bottom=0.08)
@@ -425,7 +430,7 @@ def cmd_c1(args):
     n = args.frames
     frames = []
     for k in range(n):
-        now = start + (tmax - start) * k / max(n - 1, 1)
+        now = start + (t1 - start) * k / max(n - 1, 1)
         for panel in panels:
             panel.update(now)
         for pointer in pointers:
