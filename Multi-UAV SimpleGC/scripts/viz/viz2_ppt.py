@@ -116,7 +116,7 @@ def _panel(ax, ep, box, now):
     ax.set_title(ep.get("title", ""), fontsize=13, color=TEXT, pad=7)
 
 
-def _legend_cell(ax):
+def _legend_cell(ax, dot_label="中间时刻位置"):
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
     ax.set_facecolor(BACKGROUND)
@@ -126,7 +126,7 @@ def _legend_cell(ax):
         Line2D([0], [0], color=av.GROUP_COLORS[1], lw=2.2, label="第2编组"),
         Line2D([0], [0], color=av.GROUP_COLORS[2], lw=2.2, label="第3编组"),
         Line2D([0], [0], marker="o", ls="", markerfacecolor=SECONDARY,
-               markeredgecolor="white", markersize=7, label="中间时刻位置"),
+               markeredgecolor="white", markersize=7, label=dot_label),
     ]
     handles += [Patch(facecolor=color, edgecolor="#8aa5ba", label=name)
                 for _, color, name in av.LAYER_STYLE]
