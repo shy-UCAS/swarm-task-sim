@@ -9,6 +9,7 @@ public_scene.json），不调用规划器或仿真器，不写入数据目录。
   python -B scripts/viz/animate_v07.py single --episode <episode 目录>
   python -B scripts/viz/animate_v07.py pair   --run pilot_f005_020d --draw <family_id>:<slot> --intent monitoring
   python -B scripts/viz/animate_v07.py five   --run pilot_f005_020d --draw <family_id>:<slot> --mode synchronous
+      [--showcase <展示 episode 目录>]   第 6 格改为分阶段突防展示，通用图例移到图底部
 
 公共参数：--out 输出目录（默认 ..\\..\\SwarmData\\ppt_media）、--seconds 动画时长（默认 10）、
 --fps（默认 12）、--hold 末帧停留秒数（默认 2）、--dpi、--colors GIF 调色板颜色数（默认 128）、
@@ -355,36 +356,56 @@ def cmd_pair(args):
 
 
 def cmd_five(args):
-    """同一抽签（同一地图、同一批飞机）的五种意图，2×3 排布，第 6 格放图例。"""
+    """同一抽签（同一地图、同一批飞机）的五种意图，2×3 排布。
+
+    未给 --showcase 时第 6 格放图例；给了 --showcase 时第 6 格改为分阶段突防展示，
+    通用图例移到图底部，六格共用同一地图范围。
+    """
     setup_fonts()
     import matplotlib.pyplot as plt
     eps = [load_episode(find_entry(args.run, args.draw, i, args.mode)) for i in INTENT_ORDER]
-    windows = [time_window([e]) for e in eps]
+    showcase = load_episode(args.showcase) if args.showcase else None
+    all_eps = eps + ([showcase] if showcase else [])
+    windows = [time_window([e]) for e in all_eps]
     t0_all = min(w[0] for w in windows)
     t1_all = max(w[1] for w in windows)
-    box = view_box(eps, args.full_map, t0_all, t1_all)
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10.4), dpi=args.dpi)
+    box = view_box(all_eps, args.full_map, t0_all, t1_all)
+    height = 10.4 if showcase is None else 11.2
+    fig, axes = plt.subplots(2, 3, figsize=(15, height), dpi=args.dpi)
     n = int(args.seconds * args.fps)
     pairs = []
-    for ax, ep, (t0, t1) in zip(axes.flat, eps, windows):
-        title = INTENT_ZH.get(ep["intent"], ep["intent"])
+    titles = [INTENT_ZH.get(ep["intent"], ep["intent"]) for ep in eps]
+    if showcase is not None:
+        titles.append(args.showcase_title)
+    for ax, ep, (t0, t1), title in zip(axes.flat, all_eps, windows, titles):
         panel = Panel(ax, ep, box, not args.no_plan, args.show_radar, title)
         ax.legend(handles=legend_handles(ep)[:len(ep["groups"])], loc="upper left", fontsize=8, framealpha=0.85)
         if args.shared_clock:
             pairs.append((panel, clock_for(ep, t0_all, t1_all, n)))
         else:
             pairs.append((panel, clock_for(ep, t0, t1, n)))
-    legend_ax = axes.flat[5]
-    legend_ax.axis("off")
     handles = legend_handles(eps[4])[len(eps[4]["groups"]):]
-    legend_ax.legend(handles=handles, loc="center", fontsize=11, frameon=False, title=MODE_ZH.get(args.mode, ""),
-                     title_fontsize=13)
-    note = ("五个子图共用同一仿真时钟" if args.shared_clock else "各子图按自身时长播放（监视实际最长）")
-    legend_ax.text(0.5, 0.08, note + "\n同一地图、同一批飞机、同一编组划分\n每个子图的编组颜色见各自轨迹",
-                   transform=legend_ax.transAxes, ha="center", fontsize=10, color="#555555")
-    fig.text(0.5, 0.01, "合成数据，抽象场景", ha="center", fontsize=9, color="#555555")
-    fig.tight_layout(rect=(0, 0.025, 1, 1))
-    name = args.name or f"five_{args.mode}"
+    if showcase is not None:
+        # 第 6 格已被展示样例占用：通用图例移到图底部
+        fig.legend(handles=handles, loc="lower center", ncol=len(handles), fontsize=10, frameon=False,
+                   bbox_to_anchor=(0.5, 0.012))
+        note = ("六个子图共用同一仿真时钟" if args.shared_clock else "各子图按自身时长播放")
+        note += " · 右下角为分阶段突防展示（监视→佯动→突入，仅用于汇报，不进数据集）"
+        fig.text(0.5, 0.072, note, ha="center", fontsize=9.5, color="#555555")
+        fig.text(0.5, 0.042, "同一地图、同一批飞机；每个子图的编组颜色见各自图例 · 合成数据，抽象场景",
+                 ha="center", fontsize=9, color="#555555")
+        fig.tight_layout(rect=(0, 0.10, 1, 1))
+    else:
+        legend_ax = axes.flat[5]
+        legend_ax.axis("off")
+        legend_ax.legend(handles=handles, loc="center", fontsize=11, frameon=False,
+                         title=MODE_ZH.get(args.mode, ""), title_fontsize=13)
+        note = ("五个子图共用同一仿真时钟" if args.shared_clock else "各子图按自身时长播放（监视实际最长）")
+        legend_ax.text(0.5, 0.08, note + "\n同一地图、同一批飞机、同一编组划分\n每个子图的编组颜色见各自轨迹",
+                       transform=legend_ax.transAxes, ha="center", fontsize=10, color="#555555")
+        fig.text(0.5, 0.01, "合成数据，抽象场景", ha="center", fontsize=9, color="#555555")
+        fig.tight_layout(rect=(0, 0.025, 1, 1))
+    name = args.name or (f"five_six_{args.mode}" if showcase is not None else f"five_{args.mode}")
     render(fig, pairs, n, Path(args.out) / f"{name}.gif", args)
 
 
@@ -438,7 +459,10 @@ def main(argv=None):
     p.add_argument("--intent", default="monitoring", choices=INTENT_ORDER); common(p)
     p = sub.add_parser("five"); p.add_argument("--run", required=True); p.add_argument("--draw", required=True)
     p.add_argument("--mode", default="synchronous", choices=("synchronous", "sequential"))
-    p.add_argument("--shared-clock", action="store_true"); common(p)
+    p.add_argument("--shared-clock", action="store_true")
+    p.add_argument("--showcase", help="第 6 格放该展示 episode（分阶段突防），通用图例移到图底部")
+    p.add_argument("--showcase-title", default="分阶段突防展示（同一设施）")
+    common(p)
     args = parser.parse_args(argv)
     {"list": cmd_list, "single": cmd_single, "pair": cmd_pair, "five": cmd_five}[args.cmd](args)
 
