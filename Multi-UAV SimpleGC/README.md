@@ -31,6 +31,10 @@ conda run -n llm --no-capture-output python main.py generate generation_profiles
 
 ### 桌面回放与计划预览
 
+导出的 episode 使用新增的[离线俯视图脚本](docs/visualization.md)：`python -B scripts/viz_episodes.py --source examples/v05_episodes --family`。图片输出到仓库外 `SwarmData/viz/`，可选依赖见 `requirements-viz.txt`。下面的旧桌面工具保留用于历史阶段目标点格式，不支持当前连续航线或 episode 直接输入。
+
+按时间查看 episode 使用新的[离线播放器](docs/episode_player.md)：`python -B -m episode_player --source examples/v05_episodes`。它与静态图共用加载器，支持筛选、逐帧、10 秒尾迹及 1×/5×/20× 播放；依赖为 `requirements-gui.txt`，运行时只读。
+
 ```powershell
 conda run -n llm --no-capture-output python replay.py
 ```

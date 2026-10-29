@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 
 from .generation import checked_path, file_hash
-from .protocol import PROTOCOL_FIELDS, manifest_protocol, supported_protocols, validate_artifact_protocol
+from .protocol import PROTOCOL_FIELDS, V06_COMPONENT_KEYS, manifest_protocol, supported_protocols, validate_artifact_protocol
 from .quality import policy_hash, resolve_policy
 
 FEATURE_COLUMNS = ("east_m", "north_m", "up_m", "ve_m_s", "vn_m_s", "vu_m_s")
@@ -42,6 +42,28 @@ def load_public_scene(episode_dir):
             (east + width, north + height), (east, north + height))
 
 
+def _validate_dataset_components(dataset):
+    """Each named component has one version across the frozen dataset.
+
+    Existing records store identifiers such as perimeter_revisit_v2 as values;
+    planner/validator/facts/templates are roles, not component names.
+    """
+    seen = {}
+    for entry in dataset["episodes"]:
+        versions = entry.get("component_versions")
+        if (entry.get("protocol_version") != "v0.6" or not isinstance(versions, dict)
+                or set(versions) != V06_COMPONENT_KEYS
+                or any(not isinstance(value, str) or not value for value in versions.values())
+                or any(not isinstance(entry.get(key), str) or not entry[key] for key in ("intent", "flight_pattern"))):
+            raise ValueError("dataset has incomplete v0.6 component versions")
+        for identifier in versions.values():
+            component, separator, version = identifier.rpartition("_v")
+            if not separator or not component or not version:
+                raise ValueError(f"invalid dataset component identifier: {identifier}")
+            if seen.setdefault(component, version) != version:
+                raise ValueError(f"dataset mixes component versions: {component}")
+
+
 def load_episode(path, agent_ids=None, verify_hashes=True):
     """Return unnormalized nested lists x[T,N,6], mask[T,N], time, targets and metadata.
 
@@ -63,7 +85,6 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
         for name, expected in manifest["artifact_sha256"].items():
             if file_hash(checked_path(root, name)) != expected:
                 raise ValueError(f"episode artifact changed: {name}")
-    validate_artifact_protocol(manifest, root)
     entry = {}
     dataset_file = root.parent.parent / "dataset_manifest.json"
     if dataset_file.is_file():
@@ -95,6 +116,11 @@ def load_episode(path, agent_ids=None, verify_hashes=True):
             modes = dataset.get("control_modes", [])
             if manifest["control_mode"] not in modes or (len(modes)>1 and dataset.get("allow_mixed_control_modes") is not True):
                 raise ValueError("dataset mixes control_mode without explicit permission")
+        if manifest.get("protocol_version") == "v0.6":
+            _validate_dataset_components(dataset)
+    # Frozen dataset records, rather than today's registry, select component
+    # identities. Standalone analyses retain their existing production checks.
+    validate_artifact_protocol(manifest, root, expected_components=entry.get("component_versions"))
     expected = agent_ids if agent_ids is not None else manifest.get("agent_ids")
     if expected is None and (root / "task.json").is_file():
         task = json.loads((root / "task.json").read_text(encoding="utf-8"))

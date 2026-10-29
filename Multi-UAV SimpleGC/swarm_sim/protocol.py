@@ -28,7 +28,7 @@ def is_v06_task_spec(task):
             and task.get("execution", {}).get("protocol_version") == "v0.6")
 
 
-def task_metadata(task):
+def task_metadata(task, *, expected_components=None):
     """Additional v0.6 provenance; intentionally excluded from model features."""
     if not is_v06_task_spec(task):
         return {}
@@ -37,9 +37,11 @@ def task_metadata(task):
             or set(versions) != V06_COMPONENT_KEYS
             or any(not isinstance(value, str) or not value for value in versions.values())):
         raise ValueError("v0.6 requires flight_pattern and four component versions")
-    from .registry import component_versions
-    if versions != component_versions(task["mission"]["intent"], pattern):
-        raise ValueError("v0.6 component versions differ from registered components")
+    if expected_components is None:
+        from .registry import component_versions
+        expected_components = component_versions(task["mission"]["intent"], pattern)
+    if versions != expected_components:
+        raise ValueError("v0.6 component versions differ from expected components")
     return dict(protocol_version="v0.6", flight_pattern=pattern, component_versions=dict(versions))
 
 
@@ -100,11 +102,11 @@ def manifest_protocol(manifest):
     return protocol
 
 
-def validate_artifact_protocol(manifest, root):
+def validate_artifact_protocol(manifest, root, *, expected_components=None):
     """Reject inconsistent version claims even when each file's hash is valid."""
     protocol = manifest_protocol(manifest)
     if protocol["task_kind"] == "mission_v3":
-        return _validate_v3_artifacts(manifest, Path(root), protocol)
+        return _validate_v3_artifacts(manifest, Path(root), protocol, expected_components=expected_components)
     if protocol["task_kind"] != "mission_v2":
         return
     artifacts = {}
@@ -137,7 +139,7 @@ def supported_protocols():
     return historical | {tuple(current[key] for key in PROTOCOL_FIELDS), tuple(v06[key] for key in PROTOCOL_FIELDS)}
 
 
-def _validate_v3_artifacts(manifest, root, protocol):
+def _validate_v3_artifacts(manifest, root, protocol, *, expected_components=None):
     from .observation_processing import processing_versions
     from .registry import get_intent
     from .quality import v3_eligibility
@@ -154,7 +156,7 @@ def _validate_v3_artifacts(manifest, root, protocol):
     if semantic_protocol({"task_spec": task}, patrol_validator_version=patrol_version) != protocol:
         raise ValueError("v3 TaskSpec semantic protocol mismatch")
     if is_v06_task_spec(task):
-        expected_metadata = task_metadata(task)
+        expected_metadata = task_metadata(task, expected_components=expected_components)
         if any(manifest.get(key) != value for key, value in expected_metadata.items()):
             raise ValueError("inconsistent v0.6 task metadata")
     if is_v05_task_spec(task) and task.get("execution", {}).get("control_mode") == "semantic_phase_route_v1":
@@ -247,6 +249,8 @@ def _validate_v3_artifacts(manifest, root, protocol):
             raise ValueError(f"inconsistent v3 per-agent quality evidence: {key}")
     intent = get_intent(task["mission"]["intent"])
     validator_version = patrol_version if intent.name == "patrol" else intent.validator_version
+    if is_v06_task_spec(task) and expected_components is not None:
+        validator_version = expected_components["validator"]
     validators = {intent.name: validator_version}
     from .families import scene_family_id
     if (task.get("schema_version") != 3 or task.get("family_scheme") != "scene_content_v1"
