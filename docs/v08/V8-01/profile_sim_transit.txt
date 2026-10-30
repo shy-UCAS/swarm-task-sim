@@ -1,0 +1,136 @@
+# V8-01 §5.3 cProfile：sim_transit
+
+- 批次/骨架：prod_f100_140 / family_s15_353b8b5f4cae79d3_ext_005_regular
+- 剖析对象：sim
+- 运行信息：
+
+```json
+{
+ "run_id": "prod_f100_140",
+ "skeleton_id": "family_s15_353b8b5f4cae79d3_ext_005_regular",
+ "target": "sim",
+ "B_unprofiled": {
+  "returncode": 0,
+  "status": "PASS",
+  "planning_wall_s": 25.39099999999962,
+  "b_stage_wall_s": 25.42621710000094
+ },
+ "C_synchronous": {
+  "status": "generated",
+  "row_state": "generated",
+  "task_result": "success",
+  "execution_status": "completed",
+  "simulation_wall_s": 70.57378370000151,
+  "setup_s": 108.25643560000026,
+  "episode_postprocess_wall_s": 3.6459162999999535,
+  "selected_candidate_index": 87,
+  "geometry_variants_tried": 1,
+  "n_agents": 6,
+  "n_task_groups": 1,
+  "sim_duration_s": 896.72,
+  "c_stage_wall_s": 182.56980570000087
+ },
+ "profiled_wall_s": 182.60032729999875,
+ "joint_execute": {
+  "wall_s": 70.5764702000015,
+  "agents": 6,
+  "steps": 45002,
+  "rollbacks": 166,
+  "samples_10hz": 8968,
+  "sim_end_s": 896.72
+ },
+ "joint_us_per_step_per_agent": 261.3827170644323
+}
+```
+
+路径缩写：`<frozen>` = `Simulation-fe-prod-r3\Multi-UAV SimpleGC`，`<V8-01>` = `_handoff\2026-10-29_V8-01_baseline-diagnosis`，`<site-packages>` / `<stdlib>` = conda `llm` 环境。
+
+## 按累计时间（cumulative）排序前 30 项
+
+```
+Fri Oct 30 00:28:06 2026    <V8-01>\out\rerun\profile_sim_transit\profile_sim_transit.prof
+
+         379323433 function calls (376981173 primitive calls) in 181.702 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1084 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.010    0.010  182.598  182.598 <V8-01>\scripts\v8_01_driver.py:207(c_sync)
+        7    3.753    0.536  177.981   25.426 <frozen>\task_v07\execution.py:53(execute)
+        1    0.009    0.009  107.509  107.509 <frozen>\task_v07\unified\rehearsal.py:61(rehearse)
+   481358    3.653    0.000   79.891    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:341(observe_segment)
+        1    0.003    0.003   70.576   70.576 <V8-01>\scripts\v8_01_driver.py:396(joint_execute)
+   480245    3.606    0.000   48.014    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:274(command)
+   477595    3.672    0.000   43.214    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:137(_disk_intervals)
+   480245    5.752    0.000   39.941    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:290(_command)
+   289434    0.844    0.000   38.914    0.000 <frozen>\swarm_sim\fast_dynamics\engine.py:69(step)
+   901093    4.937    0.000   29.042    0.000 <frozen>\swarm_sim\fast_dynamics\references.py:25(_roots)
+   289434    1.980    0.000   24.790    0.000 <frozen>\swarm_sim\fast_dynamics\plants.py:43(step)
+   826491    6.492    0.000   22.046    0.000 <frozen>\swarm_sim\fast_dynamics\plants.py:18(dense_state)
+   537057    0.398    0.000   16.149    0.000 <frozen>\swarm_sim\fast_dynamics\engine.py:41(at)
+   897391    2.054    0.000   14.823    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:94(point)
+  3884853    5.600    0.000   14.543    0.000 <frozen>\swarm_sim\fast_dynamics\contracts.py:43(_array3)
+  2085534    3.879    0.000   13.370    0.000 <site-packages>\numpy\polynomial\polyutils.py:63(as_series)
+  4240069    7.828    0.000   13.249    0.000 <site-packages>\numpy\linalg\_linalg.py:2598(norm)
+   476306    2.099    0.000   12.886    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:121(project)
+   901093    3.238    0.000   12.282    0.000 <site-packages>\numpy\lib\_function_base_impl.py:1951(trim_zeros)
+  6513226    2.509    0.000   11.196    0.000 <site-packages>\numpy\_core\fromnumeric.py:2586(all)
+  5038024    2.867    0.000   10.603    0.000 {built-in method builtins.sum}
+   826498    1.352    0.000   10.292    0.000 <frozen>\swarm_sim\fast_dynamics\contracts.py:59(__post_init__)
+   289434    2.270    0.000   10.230    0.000 <frozen>\swarm_sim\fast_dynamics\controllers.py:18(command)
+  1013022    1.084    0.000   10.225    0.000 <site-packages>\numpy\polynomial\polynomial.py:331(polymul)
+   598402    7.272    0.000   10.193    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:22(_bezier)
+  4306129    2.158    0.000    9.868    0.000 <site-packages>\numpy\_core\fromnumeric.py:48(_wrapfunc)
+   868302    4.194    0.000    9.657    0.000 <frozen>\swarm_sim\fast_dynamics\plants.py:9(project_acceleration)
+   769679    4.604    0.000    9.152    0.000 <frozen>\swarm_sim\fast_dynamics\references.py:12(endpoint_velocity)
+  1013022    0.269    0.000    8.850    0.000 <site-packages>\numpy\polynomial\polynomial.py:216(polyadd)
+  6513353    4.704    0.000    8.687    0.000 <site-packages>\numpy\_core\fromnumeric.py:86(_wrapreduction_any_all)
+
+
+```
+
+## 按自身时间（tottime）排序前 30 项
+
+```
+Fri Oct 30 00:28:06 2026    <V8-01>\out\rerun\profile_sim_transit\profile_sim_transit.prof
+
+         379323433 function calls (376981173 primitive calls) in 181.702 seconds
+
+   Ordered by: internal time
+   List reduced from 1084 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  4240069    7.828    0.000   13.249    0.000 <site-packages>\numpy\linalg\_linalg.py:2598(norm)
+   598402    7.272    0.000   10.193    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:22(_bezier)
+ 11050544    6.497    0.000    6.497    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+   826491    6.492    0.000   22.046    0.000 <frozen>\swarm_sim\fast_dynamics\plants.py:18(dense_state)
+   480245    5.752    0.000   39.941    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:290(_command)
+  3884853    5.600    0.000   14.543    0.000 <frozen>\swarm_sim\fast_dynamics\contracts.py:43(_array3)
+ 22643978    5.512    0.000    7.732    0.000 <frozen>\swarm_sim\fast_dynamics\references.py:33(<genexpr>)
+   901093    4.937    0.000   29.042    0.000 <frozen>\swarm_sim\fast_dynamics\references.py:25(_roots)
+  6513353    4.704    0.000    8.687    0.000 <site-packages>\numpy\_core\fromnumeric.py:86(_wrapreduction_any_all)
+   769679    4.604    0.000    9.152    0.000 <frozen>\swarm_sim\fast_dynamics\references.py:12(endpoint_velocity)
+ 17726600    4.247    0.000    4.247    0.000 {built-in method numpy.array}
+   868302    4.194    0.000    9.657    0.000 <frozen>\swarm_sim\fast_dynamics\plants.py:9(project_acceleration)
+  2085534    3.879    0.000   13.370    0.000 <site-packages>\numpy\polynomial\polyutils.py:63(as_series)
+        7    3.753    0.536  177.981   25.426 <frozen>\task_v07\execution.py:53(execute)
+   477595    3.672    0.000   43.214    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:137(_disk_intervals)
+   481358    3.653    0.000   79.891    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:341(observe_segment)
+   480245    3.606    0.000   48.014    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:274(command)
+  2085534    3.406    0.000    6.036    0.000 <site-packages>\numpy\lib\_type_check_impl.py:661(common_type)
+  1076012    3.263    0.000    4.021    0.000 <site-packages>\numpy\_core\shape_base.py:378(stack)
+   901093    3.238    0.000   12.282    0.000 <site-packages>\numpy\lib\_function_base_impl.py:1951(trim_zeros)
+   289435    2.935    0.000    6.026    0.000 <site-packages>\numpy\_core\numeric.py:2320(isclose)
+   530384    2.892    0.000    4.023    0.000 <site-packages>\numpy\lib\_index_tricks_impl.py:343(__getitem__)
+  5038024    2.867    0.000   10.603    0.000 {built-in method builtins.sum}
+  2502813    2.727    0.000    2.727    0.000 <site-packages>\numpy\_core\_methods.py:96(_clip)
+  6513226    2.509    0.000   11.196    0.000 <site-packages>\numpy\_core\fromnumeric.py:2586(all)
+ 38326595    2.470    0.000    2.470    0.000 {built-in method math.comb}
+  2245874    2.393    0.000    5.422    0.000 <site-packages>\numpy\_core\fromnumeric.py:38(_wrapit)
+   289434    2.270    0.000   10.230    0.000 <frozen>\swarm_sim\fast_dynamics\controllers.py:18(command)
+  4306129    2.158    0.000    9.868    0.000 <site-packages>\numpy\_core\fromnumeric.py:48(_wrapfunc)
+   476306    2.099    0.000   12.886    0.000 <frozen>\swarm_sim\fast_dynamics\route_tracker.py:121(project)
+
+
+```

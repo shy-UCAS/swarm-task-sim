@@ -1,0 +1,112 @@
+# V8-01 §5.3 cProfile：plan_monitoring
+
+- 批次/骨架：prod_f220_260 / family_s15_e891bec0170b57ed_ext_007_regular
+- 剖析对象：plan
+- 运行信息：
+
+```json
+{
+ "run_id": "prod_f220_260",
+ "skeleton_id": "family_s15_e891bec0170b57ed_ext_007_regular",
+ "target": "plan",
+ "B": {
+  "returncode": 0,
+  "status": "PASS",
+  "planning_wall_s": 341.45300000000134,
+  "b_stage_wall_s": 341.5857490999988
+ },
+ "profiled_wall_s": 341.8786720999997
+}
+```
+
+路径缩写：`<frozen>` = `Simulation-fe-prod-r3\Multi-UAV SimpleGC`，`<V8-01>` = `_handoff\2026-10-29_V8-01_baseline-diagnosis`，`<site-packages>` / `<stdlib>` = conda `llm` 环境。
+
+## 按累计时间（cumulative）排序前 30 项
+
+```
+Fri Oct 30 00:26:45 2026    <V8-01>\out\rerun\profile_plan_monitoring\profile_plan_monitoring.prof
+
+         717485671 function calls (709654889 primitive calls) in 341.878 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1468 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.067    0.067  341.878  341.878 <V8-01>\scripts\v8_01_driver.py:303(run_plan)
+        1    0.000    0.000  341.519  341.519 <frozen>\scripts\run_v07_fe_production.py:315(worker_b)
+        1    0.000    0.000  341.433  341.433 <frozen>\task_v07\expansion\candidate_search.py:59(episode_candidate_pool)
+        1    0.003    0.003  341.430  341.430 <frozen>\task_v07\expansion\group_candidate_pool.py:92(independent_episode_pool)
+        1    0.021    0.021  337.862  337.862 <frozen>\task_v07\expansion\group_candidate_pool.py:32(build_group_pool)
+        1    0.033    0.033  337.827  337.827 <frozen>\task_v07\unified\adapter.py:15(build_unified_pool)
+  6713406   89.806    0.000  300.978    0.000 <frozen>\task_v07\geometry.py:15(geometry_facts)
+   519457    2.628    0.000  148.603    0.000 <frozen>\task_v07\unified\free_space.py:101(segment_issues)
+      190    0.020    0.000  114.594    0.603 <frozen>\task_v07\expansion\pipeline.py:100(precheck)
+     3420    3.651    0.001  114.203    0.033 <frozen>\task_v07\expansion\geometry_checks.py:81(check_polyline)
+      200    0.378    0.002   80.303    0.402 <frozen>\task_v07\unified\checks.py:68(plan_checks)
+      200    0.001    0.000   77.967    0.390 <frozen>\task_v07\unified\shapes.py:11(draw_shape)
+      200    0.135    0.001   77.963    0.390 <frozen>\task_v07\unified\operation_shapes.py:156(draw_operation)
+      200    0.004    0.000   61.520    0.308 <frozen>\task_v07\unified\route.py:154(route_group)
+      200    0.370    0.002   61.514    0.308 <frozen>\task_v07\unified\operation_routes.py:26(route_operation)
+ 18023035   20.642    0.000   56.164    0.000 <site-packages>\shapely\decorators.py:62(wrapped)
+      254    0.075    0.000   54.712    0.215 <frozen>\task_v07\unified\route.py:84(_approaches)
+   600757    0.575    0.000   53.812    0.000 <frozen>\task_v07\visibility.py:100(visible)
+   595538    1.966    0.000   53.108    0.000 <frozen>\task_v07\visibility.py:106(_visible_uncached)
+     1795    0.003    0.000   41.825    0.023 <frozen>\task_v07\unified\free_space.py:115(planner)
+       30    0.171    0.006   41.817    1.394 <frozen>\task_v07\visibility.py:61(__init__)
+  5287599    6.848    0.000   30.242    0.000 <site-packages>\shapely\geometry\linestring.py:38(__new__)
+  2159810    1.942    0.000   26.892    0.000 <site-packages>\shapely\geometry\polygon.py:221(__new__)
+  9068244   15.435    0.000   26.379    0.000 <site-packages>\numpy\linalg\_linalg.py:2598(norm)
+ 36764533   23.367    0.000   23.367    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+3225576/3225456   16.280    0.000   22.975    0.000 <site-packages>\numpy\_core\numeric.py:1226(roll)
+  5287599    2.200    0.000   21.118    0.000 <site-packages>\shapely\geometry\base.py:332(distance)
+  3127826    4.995    0.000   19.356    0.000 <site-packages>\shapely\geometry\point.py:52(__new__)
+ 12735677    7.005    0.000   15.201    0.000 <site-packages>\numpy\_core\numerictypes.py:418(issubdtype)
+  6447930    3.648    0.000   14.864    0.000 <site-packages>\numpy\_core\fromnumeric.py:2342(sum)
+
+
+```
+
+## 按自身时间（tottime）排序前 30 项
+
+```
+Fri Oct 30 00:26:45 2026    <V8-01>\out\rerun\profile_plan_monitoring\profile_plan_monitoring.prof
+
+         717485671 function calls (709654889 primitive calls) in 341.878 seconds
+
+   Ordered by: internal time
+   List reduced from 1468 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  6713406   89.806    0.000  300.978    0.000 <frozen>\task_v07\geometry.py:15(geometry_facts)
+ 36764533   23.367    0.000   23.367    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+ 18023035   20.642    0.000   56.164    0.000 <site-packages>\shapely\decorators.py:62(wrapped)
+3225576/3225456   16.280    0.000   22.975    0.000 <site-packages>\numpy\_core\numeric.py:1226(roll)
+  9068244   15.435    0.000   26.379    0.000 <site-packages>\numpy\linalg\_linalg.py:2598(norm)
+ 44123193    9.317    0.000    9.317    0.000 {built-in method numpy.asarray}
+  5287599    8.308    0.000    8.308    0.000 <site-packages>\shapely\measurement.py:47(distance)
+ 12735677    7.005    0.000   15.201    0.000 <site-packages>\numpy\_core\numerictypes.py:418(issubdtype)
+  5287599    6.848    0.000   30.242    0.000 <site-packages>\shapely\geometry\linestring.py:38(__new__)
+  5287599    6.768    0.000    7.212    0.000 <site-packages>\shapely\creation.py:79(linestrings)
+ 10192730    6.512    0.000   13.574    0.000 <site-packages>\numpy\_core\fromnumeric.py:86(_wrapreduction_any_all)
+ 78832730    6.289    0.000    6.289    0.000 {built-in method builtins.isinstance}
+  6969187    5.002    0.000   11.298    0.000 <site-packages>\numpy\_core\fromnumeric.py:66(_wrapreduction)
+  3127826    4.995    0.000   19.356    0.000 <site-packages>\shapely\geometry\point.py:52(__new__)
+  2159810    4.928    0.000    9.119    0.000 <site-packages>\shapely\creation.py:176(polygons)
+ 25471354    4.549    0.000    7.452    0.000 <site-packages>\numpy\_core\numerictypes.py:230(issubclass_)
+ 49981141    4.472    0.000    4.472    0.000 {built-in method builtins.issubclass}
+6308396/12894    4.225    0.000    8.318    0.001 <stdlib>\copy.py:118(deepcopy)
+  3236826    4.154    0.000    4.154    0.000 <site-packages>\numpy\_core\_methods.py:96(_clip)
+ 38478187    4.064    0.000    4.064    0.000 {method 'items' of 'dict' objects}
+  3127826    3.831    0.000    4.064    0.000 <site-packages>\shapely\creation.py:34(points)
+     3420    3.651    0.001  114.203    0.033 <frozen>\task_v07\expansion\geometry_checks.py:81(check_polyline)
+  6447930    3.648    0.000   14.864    0.000 <site-packages>\numpy\_core\fromnumeric.py:2342(sum)
+  3227076    3.504    0.000    6.784    0.000 <site-packages>\numpy\_core\numeric.py:2471(array_equal)
+  2290021    3.381    0.000    7.687    0.000 <frozen>\task_v07\visibility.py:51(_boxes_far)
+  3225456    3.209    0.000    5.107    0.000 <site-packages>\numpy\_core\numeric.py:1427(normalize_axis_tuple)
+42921336/42921227    2.946    0.000    2.946    0.000 {built-in method builtins.len}
+  2159810    2.900    0.000    3.066    0.000 <site-packages>\shapely\creation.py:124(linearrings)
+  2159810    2.723    0.000   11.963    0.000 <site-packages>\shapely\geometry\polygon.py:62(__new__)
+  9948272    2.701    0.000    8.400    0.000 {method 'all' of 'numpy.ndarray' objects}
+
+
+```
