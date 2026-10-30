@@ -281,4 +281,4 @@ branch refs/heads/dev/r1.3
 - 提交到 `docs/v08/V8-01/`：本报告、`code_map.md`、`failures.md`、`field_inventory.md`、`prior_profiling.md`、`profile_plan_monitoring.txt`、`profile_sim_transit.txt`、`rejection_samples.md`、`rejection_subreasons.md`、`stage_timing.md`、`timing_records.csv`（1.9 MB）、`timing_summary.md`，以及 `scripts/` 下全部 10 个脚本。没有超过 5 MB 的文件被排除；`out/rerun/`（重跑产物、`.prof`、快照、日志，约 0.6 GB）不提交。
 - 最终 `SwarmData\v07_*` 快照（`out/rerun/snapshot_final.json`）与运行前快照逐目录相同（文件数、字节数、最新修改时间）。
 - 冻结工作树最终 `git -C Simulation-fe-prod-r3 status --porcelain` 输出：**空**。（`--ignored` 只列出原有的 `scripts/__pycache__/`、`task_v07/unified/__pycache__/`，其中没有任何文件晚于本任务开始时间。）
-- 推送后的远端提交号：（推送后补记于同一分支的下一个提交）
+- 推送后的远端提交号：`d8573127c47153fe1f71fb80c9284ad3c01fa811`（内容提交 `docs(v08): V8-01 首版诊断报告与脚本`；`git ls-remote origin refs/heads/review/v08/V8-01-diagnosis` 核对一致）。本行由随后的补记提交写入，补记提交自身的提交号见本地 `out/REPORT_V8-01.md`。
