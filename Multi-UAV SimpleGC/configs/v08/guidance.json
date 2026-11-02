@@ -1,0 +1,66 @@
+{
+  "schema": "v08-config-v1",
+  "name": "guidance",
+  "parameters": {
+    "a_lat_m_s2": {
+      "value": 2.0,
+      "kind": "pending_measurement",
+      "source": "V8-07：横向加速度上限初值；与 a_lon 合成 2.5 m/s²，比冻结水平加速度上限 3.75 m/s² 留 1/3 供纠偏与滞后。V8-09 用 ArduCopter 软件在环数据标定并以跟踪管 0.5 m 验证后替换"
+    },
+    "a_lon_m_s2": {
+      "value": 1.5,
+      "kind": "pending_measurement",
+      "source": "V8-07：纵向加减速度初值，理由同 a_lat；V8-09 标定后替换"
+    },
+    "lookahead_m": {
+      "value": 1.0,
+      "kind": "engineering_margin",
+      "source": "V8-07 3.3：速度前视，避免起步时参考速度为 0 而无法出发；V8-09 验证"
+    },
+    "slope_half_window_m": {
+      "value": 0.5,
+      "kind": "engineering_margin",
+      "source": "dv/ds 中心差分半宽，取加密间距 0.5 m（V8-07 3.1）"
+    },
+    "k_pos_per_s": {
+      "value": 1.0,
+      "kind": "engineering_margin",
+      "source": "V8-07 3.3：横向纠偏增益（原型取值）；V8-09 验证跟踪管"
+    },
+    "projection_window_m": {
+      "value": 5.0,
+      "kind": "engineering_margin",
+      "source": "投影只在上一进度前后 5 m 弧长内搜索：每 20 ms 步最多前进 12 m/s × 0.02 s = 0.24 m，5 m 远大于此；又远小于航线自身靠近（掉头、自交）所需的弧长，防止投影跳到另一支"
+    },
+    "tail_min_m": {
+      "value": 5.0,
+      "kind": "engineering_margin",
+      "source": "非最后一段的曲线须在段末点之后至少再延伸 5 m（≥ 前视 1 m + 差分 0.5 m，且 = 投影窗口），只供查表，越过即截断"
+    },
+    "max_chord_m": {
+      "value": 1.0,
+      "kind": "engineering_margin",
+      "source": "加密点间距上限：V8-07 3.1 规定约 0.5 m，留一倍余量"
+    },
+    "max_turn_per_chord_rad": {
+      "value": 0.2,
+      "kind": "engineering_margin",
+      "source": "相邻弦方向差上限，用于拒绝折角（V8-07 3.1 要求切向连续）。0.5 m 弦下对应曲率半径 ≥ 2.5 m，不限制任何可飞的弯道"
+    },
+    "budget_factor": {
+      "value": 0.5,
+      "kind": "pending_measurement",
+      "source": "时间预算 = 名义用时 × (1 + budget_factor) + budget_const_s + 停留时长 + 释放前时长；初值宽松，V8-09 实测名义用时误差后替换（r3 8.2 第 2 条的 δ_sim）"
+    },
+    "budget_const_s": {
+      "value": 60.0,
+      "kind": "pending_measurement",
+      "source": "同上（r3 8.2 第 2 条的 C）"
+    },
+    "stop_approach_m": {
+      "value": 2.0,
+      "kind": "engineering_margin",
+      "source": "距停止点（驻留点、终点）弧长 ≤ 2 m 时改为直接拉向停止点（期望速度 = k_pos ×（停止点 − 位置））。只用剖面时会停在前视 + 滞后补偿的平衡点：ℓ + τ²·a_lon/2 = 1 + 0.475²×1.5/2 ≈ 1.17 m，2 m 大于此"
+    }
+  }
+}
