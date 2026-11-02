@@ -1,0 +1,36 @@
+{
+  "schema": "v08-config-v1",
+  "name": "sim",
+  "parameters": {
+    "initial_settle_s": {
+      "value": 20.0,
+      "kind": "engineering_margin",
+      "source": "沿用 v0.7 task_v07/expansion/pipeline.py:25（冻结 641a9b3）。出发前在起点保持；学习视图中出发前不可见（V8-02 6.7.5、11.3）"
+    },
+    "terminal_radius_m": {
+      "value": 1.0,
+      "kind": "engineering_margin",
+      "source": "沿用 v0.7 task_v07/expansion/pipeline.py:25；只用于最后一段的仿真停止判定（V8-02 8.2 第 6 条）"
+    },
+    "terminal_speed_m_s": {
+      "value": 0.15,
+      "kind": "engineering_margin",
+      "source": "沿用 v0.7 task_v07/expansion/pipeline.py:26；同上"
+    },
+    "terminal_hold_s": {
+      "value": 2.0,
+      "kind": "engineering_margin",
+      "source": "沿用 v0.7 task_v07/expansion/pipeline.py:25；V8-02 8.2 第 6 条：到终点停止并保持 2 s"
+    },
+    "extension_length_m": {
+      "value": 30.0,
+      "kind": "pending_measurement",
+      "source": "跟踪器只在剩余距离 < 2×(0.475+0.10) s×v 时开始为终点减速（route_tracker.py RouteTracker._command 中 cap = exit_cap + distance/(2·horizon)；horizon 取 r3 配置的两个响应时间之和），v ≤ 10 m/s 时为 11.5 m。初值取 30 m；V8-06 实测后替换（V8-02 8.3）"
+    },
+    "join_max_distance_m": {
+      "value": 2.0,
+      "kind": "engineering_margin",
+      "source": "续跑时本小段计划起点与实际状态位置的最大允许平面距离：跟踪管 0.5 m（r3 配置 reference.tracking_tube_m）+ 12 m/s 下一帧（0.1 s）的行程 1.2 m，向上取整"
+    }
+  }
+}
