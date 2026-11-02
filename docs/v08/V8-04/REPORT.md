@@ -55,7 +55,7 @@
 | `74ab2e2` | V8-04 第 4 部分：逐成员分段仿真 |
 | 本报告所在提交 | V8-04 报告 |
 
-推送后的远端提交号：REMOTE_SHA_PLACEHOLDER
+推送后的远端提交号：`c1a73350627ed466a4bb8068e43c72b85cf42a59`（报告提交 `V8-04 报告`；`git ls-remote origin refs/heads/review/v08/V8-04-sim-adapter` 核对一致）。本行由随后的补记提交写入；补记提交只改本文件，其提交号以远端分支头为准。
 
 ## 3. 改动文件清单
 
