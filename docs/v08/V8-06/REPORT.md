@@ -212,9 +212,9 @@ T_model = Σ 元素长度 / min(v_cmd, v_curve(R_元素)) + c(v_cmd) + h(v_cmd)�
 | `ececce7` | V8-06 第 3 部分：冒烟检查 |
 | `9ce6161` | V8-06 第 4 部分：实验 A、D 与 derive1（曲线速度表、直线参数） |
 | `0501591` | V8-06 第 4 部分：实验 B、C、E、H 与 derive2（建议值文件） |
-| （本报告提交） | V8-06 报告 |
+| `68ec76e` | V8-06 报告 |
 
-- 推送后的提交号：推送后补记。
+- 推送后的提交号：首次推送后 `git ls-remote` 核对远端 `review/v08/V8-06-sim-calibration` = `68ec76e6d40e9d9dd2527665e9f85e8e24ec5398`；本行所在的补记提交随后推送（只改本报告）。
 - `calibration_result.json` 的 `source_commit` 为运行 derive2 时的 HEAD `9ce6161`。标定代码自 `08e4d0b` 起未改动：各 `timing_*.json` 的 `code_sha256` 一致，即 A/D 时 HEAD 为 `ececce7`，B–H 时为 `9ce6161`，两者的代码文件相同。
 
 ## 5. 改动文件清单
