@@ -2,6 +2,8 @@
 
 读 docs/v08/V8-09/flights/<飞行编号>/processed.csv 与 check.json，写 arcs.csv、straights.csv、flights.csv、summary.md。
 v_meas 为飞控估计的水平速度 √(ve² + vn²)；加速度由速度中心差分得到。
+时间口径（V8-09b 改动一）：仿真器时间 t_sim = t / β，β 取 check.json 的全程拟合斜率（host = α + β·boot）；
+加速度、起步时长、刹停时长、弧上停留时间都按 t_sim 计算，速度仍用 ve、vn。
 
 用法（在 Multi-UAV SimpleGC 目录下）:
     python -B scripts/v08/v8_09_sitl_analyze.py [--flights 编号 …]
@@ -45,7 +47,8 @@ ARC_FIELDS = ["flight", "v_cmd", "accel_cm_s2", "mode", "valid_flight", "element
 STRAIGHT_FIELDS = ["flight", "v_cmd", "accel_cm_s2", "mode", "valid_flight", "element", "length_m", "mid_frames",
                    "v_meas_median", "v_meas_max"]
 FLIGHT_FIELDS = ["flight", "v_cmd", "accel_cm_s2", "mode", "valid_flight", "check_params", "WPNAV_SPEED",
-                 "WPNAV_ACCEL", "check_timebase", "timebase_slope", "check_valid", "valid_fraction",
+                 "WPNAV_ACCEL", "check_timebase", "beta", "check_2a", "window_slope_min", "window_slope_max",
+                 "window_max_abs_diff", "check_2b", "time_basis", "check_valid", "valid_fraction",
                  "check_status", "status", "elapsed_s", "frames", "t90_s", "start_a_lon_p95",
                  "brake_duration_s", "brake_decel_p95", "dev_max_nonterminal_m", "a_lat_p99", "a_lat_max",
                  "a_lon_abs_p99", "a_lon_abs_max"]
@@ -138,7 +141,10 @@ def assign_elements(t, xy):
     return out
 
 
-def analyze_flight(t, xy, vel, v_cmd):
+def analyze_flight(t, xy, vel, v_cmd, beta=1.0):
+    """t 为 processed.csv 的主机时间；先换算为仿真器时间 t / β，后面所有时间量都用它。"""
+    t = np.asarray(t, dtype=float) / beta
+    frame_s = FRAME_S / beta
     prims = route()
     speed, a_lat, a_lon = derive(t, vel)
     owner = assign_elements(t, xy)
@@ -155,7 +161,7 @@ def analyze_flight(t, xy, vel, v_cmd):
                              v_meas_median=_q(speed[st], 50), v_meas_p05=_q(speed[st], 5),
                              v_meas_p95=_q(speed[st], 95), a_lat_median=_q(a_lat[st], 50),
                              a_lat_p95=_q(a_lat[st], 95), dev_max_m=_max(dev), dev_median_m=_q(dev, 50),
-                             time_on_arc_s=round(int(on.sum()) * FRAME_S, 1)))
+                             time_on_arc_s=round(int(on.sum()) * frame_s, 2)))
         else:
             frac, lat, L = _line_frame(xy, prim)
             mid = (frac >= 0.25) & (frac <= 0.75) & (lat <= NEAR_M) & (owner == k)
@@ -224,14 +230,21 @@ def run(flights_dir, out_dir, only=None):
                   WPNAV_SPEED=chk.get("params", {}).get("actual", {}).get("WPNAV_SPEED"),
                   WPNAV_ACCEL=chk.get("params", {}).get("actual", {}).get("WPNAV_ACCEL"),
                   check_timebase=int(bool(chk.get("timebase", {}).get("pass_"))),
-                  timebase_slope=chk.get("timebase", {}).get("slope"),
+                  beta=chk.get("timebase", {}).get("beta", chk.get("timebase", {}).get("slope")),
+                  check_2a=int(bool(chk.get("timebase", {}).get("pass_2a"))),
+                  window_slope_min=chk.get("timebase", {}).get("window_slope_min"),
+                  window_slope_max=chk.get("timebase", {}).get("window_slope_max"),
+                  window_max_abs_diff=chk.get("timebase", {}).get("window_max_abs_diff"),
+                  check_2b=int(bool(chk.get("timebase", {}).get("pass_2b"))),
                   check_valid=int(bool(chk.get("valid", {}).get("pass_"))),
                   valid_fraction=chk.get("valid", {}).get("fraction"),
                   check_status=int(bool(chk.get("status", {}).get("pass_"))),
                   status=chk.get("status", {}).get("value"), elapsed_s=meta.get("elapsed_s"))
         if (d / "processed.csv").is_file():
             t, xy, vel = read_processed(d / "processed.csv")
-            arcs, straights, fl = analyze_flight(t, xy, vel, v)
+            beta = fr["beta"]
+            fr["time_basis"] = "sim" if beta else "host（β 缺失）"
+            arcs, straights, fl = analyze_flight(t, xy, vel, v, beta if beta else 1.0)
             arc_rows += [dict(base, **r) for r in arcs]
             straight_rows += [dict(base, **r) for r in straights]
             fr.update(fl)
@@ -249,6 +262,7 @@ def summary(arc_rows, flight_rows):
     keys = [(e, r[0], round(r[1])) for e, r in ((k, (p[2], math.degrees(p[4]))) for k, p in elements() if p[0] == "arc")]
     head = ["v_cmd", "WPNAV_ACCEL", "方式", "有效"] + [f"#{e} R{R:g}/{d}°" for e, R, d in keys]
     lines = ["# V8-09 弯道实测汇总", "",
+             "**时间口径：仿真器时间**（t_sim = 主机时间 t / β，β 为每次飞行的全程拟合斜率，见 flights.csv）。", "",
              "每格为该元素稳态帧的 v_meas 中位数 / a_lat 中位数（m/s / m/s²）；稳态帧 = 弧内（两端各去 15°）、"
              "距设计圆弧 ≤ 10 m。v_meas 是飞控估计的速度；速度单位 m/s，加速度 m/s²。只记录，不作结论。", "",
              "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]

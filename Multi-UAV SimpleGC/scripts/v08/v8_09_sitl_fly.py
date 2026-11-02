@@ -45,7 +45,9 @@ REMAINING = ["v10_a250_dense25", "v10_a250_spline25", "v10_a100_dense10", "v10_a
 PARAM_PREFIXES = ("WPNAV_", "PSC_", "ATC_ACCEL", "ANGLE_MAX")
 EXTRA_PREFIXES = ("FENCE_",)                                 # 自加记录：确认地理围栏未启用
 ENV_ERROR = re.compile(r"OSError|WinError 100(48|13)|address already in use|port", re.IGNORECASE)
-SLOPE_TOL = 0.02
+BETA_RANGE = (0.95, 1.05)          # V8-09b 改动二 2a：排除时钟源接错（例如误开仿真加速）
+WINDOW_S = 30.0                    # 2b：飞行窗口内每 30 s 一窗
+WINDOW_TOL = 0.01                  # 2b：各窗斜率与 β 之差上限
 VALID_MIN = 0.99
 ID_RE = re.compile(r"v(\d+)_a(\d+)_(dense10|dense25|spline25)")
 
@@ -182,7 +184,22 @@ def read_bin_params(run_dir):
                 params=keep, extra_params=extra, param_count=len(params))
 
 
-def timebase_slope(run_dir):
+def _window_slopes(b, h, start, end):
+    """飞行窗口 [start, end]（主机时刻）内每 30 s 一窗的斜率；不足 30 s 的尾窗并入前一窗。"""
+    edges = list(np.arange(start, end, WINDOW_S)) + [end]
+    if len(edges) > 2 and edges[-1] - edges[-2] < WINDOW_S:
+        del edges[-2]
+    out = []
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        sel = (h >= lo) & (h <= hi)
+        if sel.sum() >= 3:
+            out.append(dict(host_from_s=float(lo - start), host_to_s=float(hi - start), packets=int(sel.sum()),
+                            slope=float(np.polyfit(b[sel], h[sel], 1)[0])))
+    return out
+
+
+def timebase_slope(run_dir, meta):
+    """全程拟合 host = α + β·boot（V8-09 2.3 第 2 条的斜率即 β），以及飞行窗口内的分窗斜率（V8-09b 改动二）。"""
     boot, host = [], []
     with open(run_dir / "raw" / "uav_01.jsonl", encoding="utf-8") as fh:
         for line in fh:
@@ -192,12 +209,17 @@ def timebase_slope(run_dir):
                 boot.append(msg["time_boot_ms"] / 1000.0)
                 host.append(pkt["recv_monotonic_s"])
     if len(boot) < 2:
-        return dict(packets=len(boot), slope=None)
+        return dict(packets=len(boot), slope=None, windows=[])
     b, h = np.asarray(boot), np.asarray(host)
     slope, icpt = np.polyfit(b, h, 1)
     resid = h - (slope * b + icpt)
-    return dict(packets=len(boot), slope=float(slope), resid_p95_s=float(np.percentile(np.abs(resid), 95)),
-                resid_max_s=float(np.abs(resid).max()), boot_span_s=float(b[-1] - b[0]))
+    res = dict(packets=len(boot), slope=float(slope), intercept=float(icpt),
+               resid_p95_s=float(np.percentile(np.abs(resid), 95)), resid_max_s=float(np.abs(resid).max()),
+               boot_span_s=float(b[-1] - b[0]), windows=[])
+    start, end = meta.get("flight_epoch_monotonic_s"), meta.get("mission_end_monotonic_s")
+    if start is not None and end is not None and end > start:
+        res["windows"] = _window_slopes(b, h, start, end)
+    return res
 
 
 def valid_fraction(run_dir):
@@ -223,10 +245,18 @@ def check_run(fid, run_dir, v, accel, attempts):
                          error=prm.get("error"),
                          pass_=p.get("WPNAV_SPEED") == 100 * v and p.get("WPNAV_ACCEL") == accel)
     try:
-        tb = timebase_slope(run_dir)
+        tb = timebase_slope(run_dir, meta)
     except Exception as exc:
-        tb = dict(error=f"{type(exc).__name__}: {exc}", slope=None)
-    tb["pass_"] = tb.get("slope") is not None and abs(tb["slope"] - 1.0) <= SLOPE_TOL
+        tb = dict(error=f"{type(exc).__name__}: {exc}", slope=None, windows=[])
+    beta = tb.get("slope")
+    tb["beta"] = beta
+    tb["pass_2a"] = beta is not None and BETA_RANGE[0] <= beta <= BETA_RANGE[1]
+    ws = [w["slope"] for w in tb.get("windows", [])]
+    tb["window_slope_min"] = min(ws) if ws else None
+    tb["window_slope_max"] = max(ws) if ws else None
+    tb["window_max_abs_diff"] = max(abs(s - beta) for s in ws) if ws and beta is not None else None
+    tb["pass_2b"] = tb["window_max_abs_diff"] is not None and tb["window_max_abs_diff"] <= WINDOW_TOL
+    tb["pass_"] = tb["pass_2a"] and tb["pass_2b"]
     res["timebase"] = tb
     try:
         vf = valid_fraction(run_dir)
@@ -236,8 +266,9 @@ def check_run(fid, run_dir, v, accel, attempts):
     res["valid"] = vf
     res["status"] = dict(value=meta.get("status"), error=meta.get("error"), pass_=meta.get("status") == "completed")
     res["all_pass"] = all(res[k]["pass_"] for k in ("params", "timebase", "valid", "status"))
-    res["summary"] = dict(params=res["params"]["pass_"], slope=tb.get("slope"), valid=vf.get("fraction"),
-                          status=meta.get("status"))
+    res["summary"] = dict(params=res["params"]["pass_"], beta=beta, pass_2a=tb["pass_2a"],
+                          window_max_abs_diff=tb["window_max_abs_diff"], pass_2b=tb["pass_2b"],
+                          valid=vf.get("fraction"), status=meta.get("status"))
     res["_bin"] = prm
     res["_meta"] = meta
     return res
