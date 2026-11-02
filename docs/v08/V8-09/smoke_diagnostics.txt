@@ -1,0 +1,63 @@
+# V8-09 冒烟飞行 v10_a250_dense10：时基诊断（执行方临时只读脚本，读本次运行目录的 raw/uav_01.jsonl 与 metadata.json）
+
+## 1. 主机接收时刻 对 time_boot_ms/1000 的最小二乘斜率，分阶段与每 30 s
+全程                           n= 4293 boot     2.6-  433.0s host    3.8- 444.4s slope=1.02231 resid p95=0.110 max=0.543
+放飞前（启动、起飞）                   n= 1062 boot     2.6-  109.9s host    3.8- 114.1s slope=1.02237 resid p95=0.232 max=0.506
+飞行窗口 [放飞, 任务结束]              n= 2860 boot   110.0-  395.9s host  114.2- 406.4s slope=1.02205 resid p95=0.088 max=0.157
+任务结束后（降落）                    n=  371 boot   396.0-  433.0s host  406.5- 444.4s slope=1.02127 resid p95=0.061 max=0.090
+--- 每 30 s 主机时间窗的斜率
+  host    3.8s  boot    2.6s  n= 289  slope=1.0169  rate=9.6Hz
+  host   33.9s  boot   31.5s  n= 294  slope=1.0222  rate=9.8Hz
+  host   63.9s  boot   60.9s  n= 293  slope=1.0232  rate=9.8Hz
+  host   93.9s  boot   90.2s  n= 281  slope=1.0248  rate=9.4Hz
+  host  123.9s  boot  119.5s  n= 293  slope=1.0231  rate=9.8Hz
+  host  153.9s  boot  148.8s  n= 293  slope=1.0220  rate=9.8Hz
+  host  183.9s  boot  178.1s  n= 294  slope=1.0233  rate=9.8Hz
+  host  213.9s  boot  207.5s  n= 294  slope=1.0218  rate=9.8Hz
+  host  243.9s  boot  236.9s  n= 293  slope=1.0221  rate=9.8Hz
+  host  273.9s  boot  266.2s  n= 294  slope=1.0228  rate=9.8Hz
+  host  303.9s  boot  295.6s  n= 293  slope=1.0231  rate=9.8Hz
+  host  333.9s  boot  324.9s  n= 294  slope=1.0219  rate=9.8Hz
+  host  363.9s  boot  354.3s  n= 293  slope=1.0242  rate=9.8Hz
+  host  393.9s  boot  383.6s  n= 294  slope=1.0211  rate=9.8Hz
+  host  423.9s  boot  413.0s  n= 201  slope=1.0214  rate=6.7Hz
+release(host rel run epoch) 114.20134240000334 mission_end 406.49383550000493
+
+## 2. 位置差分速度 / 飞控速度（水平速度 > 5 m/s 的包）
+按 time_boot_ms：位置差分速度/飞控速度 中位数 1.0079  p25 1.0043  p75 1.0110  n=2806
+按 主机接收时刻    ：位置差分速度/飞控速度 中位数 0.9952  p25 0.9316  p75 1.0652  n=2806
+
+## 3. processed.csv（主机时间网格）上同一比值
+frames 2868  位置差分速度 / 飞控速度：中位数 0.9943  p05 0.8513  p95 1.0807  （1/1.0223 = 0.9782）
+
+## 4. sitl/uav_01/console.log（全文）
+Set parameter SIM_SPEEDUP to 1.000000
+Home: 37.496950 122.155858 alt=12.000000m hdg=90.000000
+Starting sketch 'ArduCopter'
+Starting SITL input
+Using Irlock at port : 19109
+bind port 19100 for 0
+Serial port 0 on TCP port 19100
+Loaded defaults from defaults.parm
+Smoothing reset at 0.001
+bind port 19102 for 2
+Serial port 2 on TCP port 19102
+bind port 19103 for 3
+Serial port 3 on TCP port 19103
+validate_structures:411: Validating structures
+Ignored unknown param MAG_ENABLE in defaults file defaults.parm
+Ignored unknown param CH7_OPT in defaults file defaults.parm
+Loaded defaults from defaults.parm
+Unable to fetch Log File Size: No such file or directory
+New connection on serial port 0
+
+## 5. events.jsonl（除 waypoint_reached 外全部）
+{"event": "connected", "agent_id": "uav_01", "t": 1.6942648000040208, "sysid": 1}
+{"event": "airborne_ready", "agent_id": "uav_01", "t": 111.8932311000026}
+{"event": "phase_release_scheduled", "agent_id": null, "t": 113.9025438000026, "phase": "calib", "release_t": 114.20134240000334}
+{"event": "phase_start_sent", "agent_id": "uav_01", "t": 114.20862500000658, "phase": "calib"}
+{"event": "phase_auto_confirmed", "agent_id": "uav_01", "t": 114.21148240000184, "phase": "calib"}
+{"event": "phase_finished", "agent_id": "uav_01", "t": 406.46336750000046, "phase": "calib"}
+{"event": "landed", "agent_id": "uav_01", "t": 444.4806630000021}
+
+waypoint_reached 共 130 条
