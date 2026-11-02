@@ -1,4 +1,4 @@
-"""多样性度量（r3 14.3）：折线等弧长重采样与离散 Fréchet 距离。
+"""多样性度量（r3 14.3）：折线等弧长重采样、离散 Fréchet 距离与变异系数。
 
 均为纯函数；Fréchet 用逐行动态规划迭代，不递归。
 """
@@ -93,3 +93,20 @@ def pairwise_discrete_frechet(paths):
         for j in range(i + 1, k):
             out[i, j] = out[j, i] = discrete_frechet(arrs[i], arrs[j])
     return out
+
+
+def coefficient_of_variation(values):
+    try:
+        v = np.asarray(values, dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"values 无法转成浮点数组：{exc}") from None
+    if v.ndim != 1:
+        raise ValueError(f"values 必须是一维数组，实际 ndim={v.ndim}")
+    if v.size == 0:
+        raise ValueError("values 不能为空")
+    if not np.all(np.isfinite(v)):
+        raise ValueError("values 含 NaN 或无穷")
+    mean = float(np.mean(v))
+    if mean <= 0:
+        raise ValueError(f"均值必须为正，实际 {mean}")
+    return float(np.std(v, ddof=0) / mean)
