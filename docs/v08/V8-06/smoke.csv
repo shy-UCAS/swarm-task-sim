@@ -1,0 +1,44 @@
+case,experiment,description,metric,value,reference,tolerance,passed
+1,A,"R=240, s=24, v_cmd=10",status,s01_A=ok,ok,,true
+1,A,"R=240, s=24, v_cmd=10",v_meas_med,5.681064863,5.681,0.05,true
+1,A,"R=240, s=24, v_cmd=10",v_meas_p05,5.680088977,5.68,0.05,true
+1,A,"R=240, s=24, v_cmd=10",v_meas_p95,6.357136097,6.357,0.05,true
+1,A,"R=240, s=24, v_cmd=10",dev_curve_max,0.3025203028,0.303,0.05,true
+1,A,"R=240, s=24, v_cmd=10",dev_poly_max,0.2483073375,0.248,0.05,true
+1,A,"R=240, s=24, v_cmd=10",dwell,false,false,equal,true
+2,A,"R=60, s=12, v_cmd=4",status,s02_A=ok,ok,,true
+2,A,"R=60, s=12, v_cmd=4",v_meas_med,3.608218737,3.608,0.05,true
+2,A,"R=60, s=12, v_cmd=4",dev_curve_max,0.2763167004,0.276,0.05,true
+2,A,"R=60, s=12, v_cmd=4",dev_poly_max,0.2315431485,0.232,0.05,true
+2,A,"R=60, s=12, v_cmd=4",dwell,false,false,equal,true
+3,B,"rho0=300, [(30,2,0)], s=32, v_cmd=10",status,s03_B=ok,ok,,true
+3,B,"rho0=300, [(30,2,0)], s=32, v_cmd=10",v_meas_med,6.591206479,6.591,0.05,true
+3,B,"rho0=300, [(30,2,0)], s=32, v_cmd=10",v_meas_p05,4.798730405,4.799,0.05,true
+3,B,"rho0=300, [(30,2,0)], s=32, v_cmd=10",v_meas_p95,9.052619915,9.053,0.05,true
+3,B,"rho0=300, [(30,2,0)], s=32, v_cmd=10",dev_curve_max,0.538603964,0.539,0.05,true
+3,B,"rho0=300, [(30,2,0)], s=32, v_cmd=10",dwell,false,false,equal,true
+4,C,"U, R=10, s=6, v_cmd=4",status,s04_C=ok,ok,,true
+4,C,"U, R=10, s=6, v_cmd=4",dwell,true,true,equal,true
+5,C,"U, R=20, s=10, v_cmd=4",status,s05_C=ok,ok,,true
+5,C,"U, R=20, s=10, v_cmd=4",dwell,false,false,equal,true
+6,D,"L_e=5, v=10",status,s06_ref=ok;s06_split=ok,ok,,true
+6,D,"L_e=5, v=10",dv_at,2.000956739,2.001,0.05,true
+6,D,"L_e=5, v=10",dp_at,0.5563554453,0.556,0.05,true
+7,D,"L_e=30, v=10",status,s07_ref=ok;s07_split=ok,ok,,true
+7,D,"L_e=30, v=10",dv_at,0,0,<=1e-6,true
+7,D,"L_e=30, v=10",dp_at,0,0,<=1e-6,true
+7,D,"L_e=30, v=10",dv_win,0,0,<=1e-6,true
+7,D,"L_e=30, v=10",dp_win,0,0,<=1e-6,true
+8,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), straight",status,s08_ref=ok;s08_split=ok,ok,,true
+8,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), straight",dv_at,3.866169902,3.866,0.05,true
+8,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), straight",dev_curve_max,1.222172353,1.222,0.05,true
+9,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), continuation",status,s09_ref=ok;s09_split=ok,ok,,true
+9,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), continuation",dv_at,0,0,<=1e-6,true
+9,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), continuation",dp_at,0,0,<=1e-6,true
+9,E-a,"R=60, s=12, (10,10), q=0.3 (E=4), continuation",dev_curve_max,0.2772506847,0.277,0.05,true
+10,E-b,"R=60, s_a=5, s=12, v=10",status,s10_ref=ok;s10_split=ok,ok,,true
+10,E-b,"R=60, s_a=5, s=12, v=10",dv_win,2.842756154,2.843,0.05,true
+10,E-b,"R=60, s_a=5, s=12, v=10",dev_curve_max,0.2939972322,0.294,0.05,true
+11,E-b,"R=60, s_a=60, s=12, v=10",status,s11_ref=ok;s11_split=ok,ok,,true
+11,E-b,"R=60, s_a=60, s=12, v=10",dv_win,0,0,<=1e-6,true
+11,E-b,"R=60, s_a=60, s=12, v=10",dp_win,0,0,<=1e-6,true
