@@ -1,3 +1,8 @@
+> **2026-11-01 当前状态（优先于本文件下方的全部历史内容）：** 当前主线是 v0.8 生成器：开发工作树 `Simulation-v08`，分支 `dev/v0.8`，新代码在 `Multi-UAV SimpleGC/v08/`。每次工作以用户给出的 `_handoff\<日期>_<工作项>_*\` 执行指令为准。
+> - **允许：** 推送 `review/v08/<工作项>-*` 审查分支；指令要求时快进合并并推送 `dev/v0.8`。
+> - **不允许：** 推送 `main`；强制推送；修改冻结工作树 `Simulation-fe-prod-r3`、`Simulation-fe-s3`；写入 `SwarmData\v07_*`；在 conda `llm` 环境中安装或升级包。
+> - 本文件下方关于 M0–M3、SITL、"不推送"等内容，是 2026-10 中旬以前的历史记录，不再约束当前工作。
+
 <!-- activate-conda-env:begin -->
 ## Project Python environment
 
