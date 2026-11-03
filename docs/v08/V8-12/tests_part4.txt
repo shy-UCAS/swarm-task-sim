@@ -1,0 +1,79 @@
+# 环境: OMP/OPENBLAS/MKL_NUM_THREADS=1; cwd=Multi-UAV SimpleGC; conda llm; 代码提交 e5b7419
+## 命令: python -B -m unittest discover -s tests/v08/V8-12 -p "test_preset_numpy_checkpoint.py" -v
+test_each_diagnostic_threshold (test_preset_numpy_checkpoint.TestCheckpoint.test_each_diagnostic_threshold) ... FAIL
+test_equality_is_not_trigger (test_preset_numpy_checkpoint.TestCheckpoint.test_equality_is_not_trigger) ... ok
+test_false_proof_triggers (test_preset_numpy_checkpoint.TestCheckpoint.test_false_proof_triggers) ... ok
+test_missing_measurements_are_not_pass (test_preset_numpy_checkpoint.TestCheckpoint.test_missing_measurements_are_not_pass) ... ok
+
+======================================================================
+FAIL: test_each_diagnostic_threshold (test_preset_numpy_checkpoint.TestCheckpoint.test_each_diagnostic_threshold)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\tests\v08\V8-12\test_preset_numpy_checkpoint.py", line 61, in test_each_diagnostic_threshold
+    self.assertIn("frechet", checkpoint(item).triggers,
+AssertionError: 'frechet' not found in () : 上层D.4：同条件中位数19<场景间距20
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.007s
+
+FAILED (failures=1)
+ERROR conda.cli.main_run:execute(142): `conda run python -B -m unittest discover -s tests/v08/V8-12 -p test_preset_numpy_checkpoint.py -v` failed. (See above for error)
+exit_code=1 elapsed_s=1
+
+## 命令: python -B -m unittest discover -s tests/v08/V8-12 -p "test_own_part4.py" -v
+test_allowed_outside (test_own_part4.TestPathGuard.test_allowed_outside) ... ok
+test_rejects_existing_output (test_own_part4.TestPathGuard.test_rejects_existing_output) ... ok
+test_rejects_junction_into_forbidden (test_own_part4.TestPathGuard.test_rejects_junction_into_forbidden) ... ok
+test_rejects_junction_to_v07_target (test_own_part4.TestPathGuard.test_rejects_junction_to_v07_target) ... ok
+test_rejects_repo_frozen_data (test_own_part4.TestPathGuard.test_rejects_repo_frozen_data) ... ok
+test_rejects_v07_component (test_own_part4.TestPathGuard.test_rejects_v07_component) ... ok
+test_constant_radius_has_zero_cv (test_own_part4.TestRhoCv.test_constant_radius_has_zero_cv) ... ok
+test_discrete_close_to_exact (test_own_part4.TestRhoCv.test_discrete_close_to_exact) ... ok
+test_exact_matches_dense_quadrature (test_own_part4.TestRhoCv.test_exact_matches_dense_quadrature) ... ok
+test_canonical_json_is_stable_and_total (test_own_part4.TestSelectionAndSerialization.test_canonical_json_is_stable_and_total) ... ok
+test_diversity_selection_covers_and_is_by_order (test_own_part4.TestSelectionAndSerialization.test_diversity_selection_covers_and_is_by_order) ... ok
+test_denominators_include_failures_and_missing (test_own_part4.TestSummary.test_denominators_include_failures_and_missing) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.621s
+
+OK
+exit_code=0 elapsed_s=2
+
+## 命令: python -B -m unittest discover -s tests/v08/V8-12 -p "test_own_part3.py" -v
+test_attempt_changes_only_shape_not_common_or_target (test_own_part3.TestPlanOnRealFamily.test_attempt_changes_only_shape_not_common_or_target) ... ok
+test_budget_repair_is_recorded (test_own_part3.TestPlanOnRealFamily.test_budget_repair_is_recorded) ... ok
+test_plan_is_independently_valid_and_reproducible (test_own_part3.TestPlanOnRealFamily.test_plan_is_independently_valid_and_reproducible) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 5.808s
+
+OK
+exit_code=0 elapsed_s=7
+
+## 命令: python -B -m unittest discover -s tests/v08/V8-12 -p "test_preset_numpy_motion.py" -v
+test_circle_offset_distance (test_preset_numpy_motion.TestMotionPure.test_circle_offset_distance) ... ok
+test_common_draw_and_rng_isolation (test_preset_numpy_motion.TestMotionPure.test_common_draw_and_rng_isolation) ... ok
+test_continuous_time_catches_between_nodes (test_preset_numpy_motion.TestMotionPure.test_continuous_time_catches_between_nodes) ... ok
+test_core_imports_without_shapely (test_preset_numpy_motion.TestMotionPure.test_core_imports_without_shapely) ... ok
+test_initial_states_are_stationary (test_preset_numpy_motion.TestMotionPure.test_initial_states_are_stationary) ... ok
+test_opposite_curvature_has_straight (test_preset_numpy_motion.TestMotionPure.test_opposite_curvature_has_straight) ... ok
+test_periodic_radius_is_not_constant (test_preset_numpy_motion.TestMotionPure.test_periodic_radius_is_not_constant) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.332s
+
+OK
+exit_code=0 elapsed_s=2
+
+## 命令: python -B -m unittest discover -s tests/v08/V8-12 -p "test_preset_local_monitoring.py" -v
+test_boundaries_alignment_and_terminal (test_preset_local_monitoring.TestMonitoringLocal.test_boundaries_alignment_and_terminal) ... ok
+test_guided_adapter_reaches_real_entry_checks (test_preset_local_monitoring.TestMonitoringLocal.test_guided_adapter_reaches_real_entry_checks) ... ok
+test_nominal_window_matches_frozen_oracle (test_preset_local_monitoring.TestMonitoringLocal.test_nominal_window_matches_frozen_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.007s
+
+OK
+exit_code=0 elapsed_s=3
+

@@ -62,9 +62,22 @@ def draw(ax, ctx, rec, arrays, title):
             if k.startswith("member."):
                 ax.plot(v[:, 0], v[:, 1], lw=0.7, alpha=0.8)
         ref = arrays["reference_xy"]
-        ax.plot(ref[:, 0], ref[:, 1], "k-", lw=1.4, label="reference")
-        ax.plot(*ref[0], "go", ms=5)
-        ax.plot(*ref[-1], "rs", ms=5)
+        ax.plot(ref[:, 0], ref[:, 1], "k-", lw=1.4, label="参考路径")
+        P = rec["plan"]["proposal"]
+        c = np.asarray(P["collection_xy"], float)
+        x_in = np.asarray(P["entry_point_xy"], float)
+        u = (x_in - c) / np.hypot(*(x_in - c))
+        ax.plot([], [], "k^", ms=5, label="成员初点")
+        for k, v in arrays.items():
+            if k.startswith("member."):
+                ax.plot(*v[0], "k^", ms=5)
+        marks = [("汇合参考点", c, "go", 6), ("入圈边界交点", x_in, "bD", 5),
+                 ("入圈前 100 m 对齐起点", x_in - 100.0 * u, "c>", 5),
+                 ("出口边界", np.asarray(P["exit_point_xy"], float), "mD", 5),
+                 ("终点", np.asarray(P["terminal_xy"], float), "rs", 6)]
+        for name, pt, style, size in marks:
+            ax.plot(*pt, style, ms=size, label=name)
+        ax.legend(loc="upper left", fontsize=7)
     ax.set_aspect("equal")
     ax.set_title(title, fontsize=9)
 
@@ -79,6 +92,8 @@ def main(argv=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    matplotlib.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "DengXian", "DejaVu Sans"]
+    matplotlib.rcParams["axes.unicode_minus"] = False
     from v08.runner import monitoring as run
     from v08.scene.context import load_context
 
@@ -111,6 +126,18 @@ def main(argv=None):
             title = (f"{r['contract_id']}  n={r['group_size']}  {r['failure']['code']}  last stage={last['stage']}  "
                      f"attempts={r['attempts']}")
         draw(ax, ctx, r, arrays, title)
+        if arrays is None:
+            import collections
+            stages = collections.Counter(a["stage"] for a in r["attempt_log"] if not a["ok"])
+            last = r["attempt_log"][-1]
+            w = last["witness"] or {}
+            wit = ", ".join(f"{k}={w[k]:.1f}" if isinstance(w[k], float) else f"{k}={w[k]}" for k in w
+                            if isinstance(w[k], (int, float, str)) and k != "stage")
+            text = ("该合同没有成功计划。20 次 attempt 的失败阶段计数：\n"
+                    + "\n".join(f"  {k}: {v}" for k, v in stages.most_common())
+                    + f"\n最后一次：{last['stage']}\n原因：{(last['reason'] or '')[:70]}\n见证：{wit[:90]}")
+            ax.text(0.02, 0.02, text, transform=ax.transAxes, fontsize=8, va="bottom",
+                    bbox={"fc": "white", "alpha": 0.85})
         fig.savefig(out / f"{name}.png", dpi=110, bbox_inches="tight")
         plt.close(fig)
         print(f"{name}: {r['contract_id']} -> {out / (name + '.png')}")
