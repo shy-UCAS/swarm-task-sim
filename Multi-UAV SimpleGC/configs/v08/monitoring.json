@@ -1,0 +1,33 @@
+{
+  "schema": "v08-config-v1",
+  "name": "monitoring",
+  "parameters": {
+    "grid_m": {"value": 5.0, "kind": "pending_measurement", "source": "r4 6.4 距离场栅格初值5m"},
+    "curve_spacing_m": {"value": 0.5, "kind": "execution", "source": "r4 6.1 每成员参考曲线约0.5m弧长间隔"},
+    "tracking_tube_m": {"value": 0.5, "kind": "engineering_margin", "source": "r4 6.6 跟踪管0.5m；6.8推导D_lane"},
+    "spline_basis_min": {"value": 4, "kind": "execution", "source": "r4 6.3.4 周期B样条基数U{4..8}"},
+    "spline_basis_max": {"value": 8, "kind": "execution", "source": "r4 6.3.4 周期B样条基数U{4..8}"},
+    "formation_controls_min": {"value": 2, "kind": "execution", "source": "r4 6.7.2 队形偏移2至4个控制站"},
+    "formation_controls_max": {"value": 4, "kind": "execution", "source": "r4 6.7.2 队形偏移2至4个控制站"},
+    "group_count_max": {"value": 3, "kind": "execution", "source": "r4 5.1 公共抽签U{1,2,3}后截到机数"},
+    "speed_min_m_s": {"value": 4.0, "kind": "execution", "source": "r4 5.1和6.10 期望速度U[4,10]m/s"},
+    "speed_max_m_s": {"value": 10.0, "kind": "execution", "source": "r4 5.1和6.10 期望速度U[4,10]m/s"},
+    "change_rate_max_per_min": {"value": 1.0, "kind": "pending_measurement", "source": "r4 5.1 lambda_max初值1次/分钟"},
+    "member_variation_probability": {"value": 0.0, "kind": "execution", "source": "上层D.2：③组内差异关闭并记录p=0"},
+    "turn_u_min_m": {"value": 15.0, "kind": "engineering_margin", "source": "r4 6.3.5与6.6：U形掉头防驻留误报下界15m"},
+    "turn_oblique_min_m": {"value": 8.0, "kind": "engineering_margin", "source": "r4 6.3.5：150度斜切掉头下界8m"},
+    "turn_teardrop_min_m": {"value": 25.0, "kind": "engineering_margin", "source": "r4 6.3.5：泪滴掉头下界25m"},
+    "sign_change_straight_min_m": {"value": 5.0, "kind": "engineering_margin", "source": "r4 6.6：max(5m,0.6s乘期望巡航速度)"},
+    "sign_change_straight_time_s": {"value": 0.6, "kind": "engineering_margin", "source": "r4 6.6：反向曲率接点过渡时间系数0.6s"},
+    "retreat_clearance_m": {"value": 50.0, "kind": "engineering_margin", "source": "r4 4.4：最后非突入段终点离所有预警圈至少50m"},
+    "nominal_budget_s": {"value": 1800.0, "kind": "pending_measurement", "source": "r4 6.3 决定41：编组名义总时长初值1800s"},
+    "contracts_per_family": {"value": 5, "kind": "execution", "source": "上层D.2、D.4；r4 14.1第4条：每族5次公共抽签"},
+    "diversity_family_count": {"value": 10, "kind": "execution", "source": "上层D.4：多样性选择10族"},
+    "diversity_seed_count": {"value": 10, "kind": "execution", "source": "上层D.4；r4 14.3：同条件10种子"},
+    "quick_contract_count": {"value": 10, "kind": "execution", "source": "上层D.5：先快速10合同"},
+    "checkpoint_success_floor": {"value": 0.80, "kind": "execution", "source": "上层D.4诊断止损：总成功率严格小于80%"},
+    "checkpoint_facility_gap": {"value": 0.20, "kind": "execution", "source": "上层D.4诊断止损：设施数档落后总率严格超过20个百分点"},
+    "checkpoint_planning_median_s": {"value": 30.0, "kind": "execution", "source": "上层D.4诊断止损：规划中位数严格大于30s"},
+    "simulation_wall_budget_s": {"value": 7200.0, "kind": "execution", "source": "上层D.9：第5部分超过2小时在已完成处汇报；2*60*60=7200s"}
+  }
+}

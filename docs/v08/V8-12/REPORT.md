@@ -89,3 +89,37 @@
 - **实际模型：** Claude Sonnet 5.5（`claude-sonnet-5-5`）。指令建议强模型（Claude），符合。
 - **本机估时（不是判据）：** 第 1 部分约 10 分钟；第 2 部分约 1–2 小时（含冷缓存建场）；第 3 部分是工作量最大的一部分，估计数小时的实现与调试；第 4 部分运行时间取决于 200 合同的重试次数，目前无法预估，冷缓存和多样性耗时将另列实测；第 5 部分有 2 小时壁钟上限。
 - **环境：** Windows 11，PowerShell 7；conda 环境 `llm`（Python 3.12.3、NumPy 2.5.3、shapely 2.0.7；SciPy 1.14.1，导入时报 NumPy 版本警告：需要 <2.3.0，检测到 2.5.3；本项核心代码不依赖 SciPy）。
+
+## 2. 逐部分结论（随进度补全）
+
+### 第 1 部分：通过（提交 `e05dcf2`）
+
+- `dev/v0.8` 快进 `2bbe8ad → 4d2cf5d`（固定提交 `4d2cf5df48187671f0dd9aa0018a69adac829911`），`git ls-remote` 核对远端 `dev/v0.8` = `4d2cf5df…`；之后新建 `review/v08/V8-12-monitoring`。
+- 基线：V8-08 24/24、V8-11 预置测试 30/30 通过，完整输出 `docs/v08/V8-12/tests_part1.txt`。
+- 指令原文归档于 `claude/v08/`（SHA256 与 `_handoff` 中一致）。
+
+### 第 2 部分：通过
+
+**实现（均在 `Multi-UAV SimpleGC/`）：**
+
+| 文件 | 内容 |
+|---|---|
+| `configs/v08/monitoring.json` | 从指令 0.8 节代码块逐字提取（27 个参数；SHA256 `327ad911…ed69`），未改动 |
+| `v08/scene/exact.py` | NumPy 解析有符号距离（圆、凸多边形、BufferedPolygon），面积质心，整条弦的 sdf 取值范围（Cyrus–Beck 裁剪 + 四类端点到边距离），凸多边形内缩，膨胀 |
+| `v08/scene/field.py` | `Clearance`、`DistanceField`（5 m 栅格，双线性 − 半对角线）、`build_distance_field`、保守单元集合 `conservative_cells`（整格可证 + 四叉细分，子格用精确中心距离与当前格半对角线判定）、面积加权均匀抽点 |
+| `v08/scene/context.py` | `load_context`/`build_context`：核对 `public_scene_sha256`、`family_initial_sha256`；读入时核对显式圈层几何 = 设施几何 + `offset_m`；SHA256 缓存键；NPZ 缓存精确距离栅格 |
+| `v08/scene/visibility.py` | 可视图骨架适配器（NumPy 内缩 world、障碍/禁止圈转显式副本、`margin_m=0`），shapely 只在函数内部惰性导入 |
+| `v08/contract/monitoring.py` | `Family`、`Failure`、`family_from_initial`、`ContractInvalid` |
+| `v08/motion/feasible.py` | `classify_empty`、`prove_concentric_band_empty`、`certificate_valid`（从保存的原几何重算证书） |
+
+**测试：** 预置 `test_preset_numpy_geometry.py` 4/4、`test_preset_local_devset.py` 1/1（40 族）通过；自加 `test_own_part2.py` 5/5、`test_own_imports.py` 1/1 通过。完整输出 `docs/v08/V8-12/tests_part2.txt`。
+
+**第 2 部分发现的事实：**
+1. `SwarmData\v07_scene`（及 `v07_*` 下大多数目录）是指向 `D:\T2L\SwarmData\…` 的 **NTFS 联接**。第一版输入守卫用 `Path.resolve()` 后检查是否仍在数据根下，因此对全部 40 族误报"越出数据根"，预置本地测试 40 个子用例全报错。已改为对 `directory_rel` 做字面检查（非绝对路径、无 `..`），读取仍经联接只读。**这对输出路径守卫的含义：** 指令 0.4 节要求拒绝"通过联接指向 `v07_*` 的路径"，所以输出/缓存路径守卫必须用 `resolve()` 后的实际路径（含 `D:\T2L\SwarmData\v07_*`）做检查，该守卫在第 4 部分的 CLI 中实现。
+2. 40 族几何：多边形（设施、障碍、圈层、world）全部为凸；27 个圆形设施、42 个多边形设施；每族 1–3 个 `hard_constraint_obstacle`；显式圈层几何与"设施几何 + `offset_m`"逐族一致（0 处不一致）。world 全为四边形。
+3. 输入读取前后快照（160 个文件，SHA256、大小、`mtime_ns`）完全一致，见 `docs/v08/V8-12/inputs_snapshot_part2.json`。
+4. 距离场耗时：最大地图（边长 6750 m，1351×1351 栅格，7 个几何）冷缓存 4.27 s，热缓存 0.23 s；边长 4000 m（801×801，3 个几何）冷 0.42 s、热 0.03 s。
+
+**实现取舍（记录，非偏离）：**
+- `Clearance.sense` 在指令的 ±1 之外增加了 `0`（要离边界至少 `minimum_m`，内外皆可）。非目标设施的预警圈边界在巡逻中需要"不被穿越就保持 10 m"，用 `|sdf| − 10` 表示；`|sdf|` 仍是 1-Lipschitz，误差界不变。
+- 可视图（顶点/邻接）当前每进程重建，不落盘；落盘的是精确距离栅格。指令 2.4 节写的是图也缓存，这一项未实现，若第 4 部分耗时需要再补。
