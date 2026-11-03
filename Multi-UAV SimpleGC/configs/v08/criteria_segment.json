@@ -1,0 +1,51 @@
+{
+  "schema": "v08-config-v1",
+  "name": "criteria_segment",
+  "parameters": {
+    "max_target_layer_transit": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4：过境不进入警戒层；同 criteria/0.7-r1 exclusion_max_layer.transit"
+    },
+    "max_target_layer_area_search": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4：区域侦察不进入警戒层；同 criteria/0.7-r1 exclusion_max_layer.reconnaissance"
+    },
+    "max_target_layer_close_observation": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4：抵近观察不进入警戒层；同 criteria/0.7-r1 exclusion_max_layer.reconnaissance"
+    },
+    "max_target_layer_monitoring": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4：监视不进入警戒层；同 criteria/0.7-r1 exclusion_max_layer.monitoring"
+    },
+    "max_target_layer_feint": {
+      "value": 2,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4：佯动不进入保护层；同 criteria/0.7-r1 exclusion_max_layer.feint"
+    },
+    "max_target_layer_intrusion": {
+      "value": 3,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4：突入进入保护层；同 criteria/0.7-r1 exclusion_max_layer.intrusion"
+    },
+    "max_other_facility_layer": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 6.3 公共约束与决定 22：非本段目标设施最深只到预警层；同 criteria/0.7-r1 exclusion_max_layer.other_facilities"
+    },
+    "start_max_layer_any_facility": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 4.4 任务切换方式：任何段开始时，编组都不在任何设施的警戒层或保护层内"
+    },
+    "feint_end_max_target_layer": {
+      "value": 1,
+      "kind": "definitional",
+      "source": "V8-02 r4 9.2：佯动段结束时退出警戒层即可（v0.7 为退出预警圈）"
+    }
+  }
+}
