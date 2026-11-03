@@ -1,0 +1,53 @@
+# V8-11 第 1 部分测试输出（换配置 budget_factor=0.1, budget_const_s=30 之后）
+## python: 3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:20:11) [MSC v.1938 64 bit (AMD64)]
+
+## 命令: python -B -m unittest discover -s tests/v08/V8-08 -p "test_*.py" -v
+test_bad_stops (test_own_v8_08.TestOwnInputChecks.test_bad_stops) ... ok
+test_curve_readonly (test_own_v8_08.TestOwnInputChecks.test_curve_readonly) ... ok
+test_header_checks (test_own_v8_08.TestOwnInputChecks.test_header_checks) ... ok
+test_record_fields (test_own_v8_08.TestOwnInterfaces.test_record_fields) ... ok
+test_release_delay_and_tau_offset (test_own_v8_08.TestOwnInterfaces.test_release_delay_and_tau_offset) ... ok
+test_vehicle_overrides_change_result (test_own_v8_08.TestOwnInterfaces.test_vehicle_overrides_change_result) ... ok
+test_circle_curvature (test_preset_v8_08.TestCurve.test_circle_curvature) ... ok
+test_rejects (test_preset_v8_08.TestCurve.test_rejects) ... ok
+test_straight (test_preset_v8_08.TestCurve.test_straight) ... ok
+test_controller_inverse (test_preset_v8_08.TestGuidanceLaw.test_controller_inverse) ... ok
+test_projection_window_on_self_overlap (test_preset_v8_08.TestGuidanceLaw.test_projection_window_on_self_overlap) ... ok
+test_arc_speed_and_tube (test_preset_v8_08.TestGuidedRun.test_arc_speed_and_tube) ... ok
+test_determinism_and_timeout (test_preset_v8_08.TestGuidedRun.test_determinism_and_timeout) ... ok
+test_disturbance_offset (test_preset_v8_08.TestGuidedRun.test_disturbance_offset) ... ok
+test_input_checks (test_preset_v8_08.TestGuidedRun.test_input_checks) ... ok
+test_speed_change_mid_arc (test_preset_v8_08.TestGuidedRun.test_speed_change_mid_arc) ... ok
+test_split_and_resume (test_preset_v8_08.TestGuidedRun.test_split_and_resume) ... ok
+test_stop_and_hold (test_preset_v8_08.TestGuidedRun.test_stop_and_hold) ... ok
+test_straight_final (test_preset_v8_08.TestGuidedRun.test_straight_final) ... ok
+test_injectable_engine_identity (test_preset_v8_08.TestKernel.test_injectable_engine_identity) ... ok
+test_member_config (test_preset_v8_08.TestKernel.test_member_config) ... ok
+test_curvature_cap (test_preset_v8_08.TestSpeedProfile.test_curvature_cap) ... ok
+test_speed_break_and_stop (test_preset_v8_08.TestSpeedProfile.test_speed_break_and_stop) ... ok
+test_trapezoid (test_preset_v8_08.TestSpeedProfile.test_trapezoid) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 3.490s
+
+OK
+exit_code_V8-08=0
+
+## 命令: python -B -m unittest discover -s tests/v08/V8-04 -p "test_*.py" -v
+test_config_rejects_bad_kind_and_missing_source (test_preset_v8_04.TestConfig.test_config_rejects_bad_kind_and_missing_source) ... ok
+test_sim_config_values_and_kinds (test_preset_v8_04.TestConfig.test_sim_config_values_and_kinds) ... ok
+test_recording_is_bitwise_identity_and_witnesses_all_nodes (test_preset_v8_04.TestRecordedExecute.test_recording_is_bitwise_identity_and_witnesses_all_nodes) ... ok
+test_contract_violations_raise (test_preset_v8_04.TestRunMemberSegment.test_contract_violations_raise) ... ok
+test_crossing_uses_route_progress_not_first_half_plane_hit (test_preset_v8_04.TestRunMemberSegment.test_crossing_uses_route_progress_not_first_half_plane_hit) ... ok
+test_single_final_piece_equals_frozen_execute (test_preset_v8_04.TestRunMemberSegment.test_single_final_piece_equals_frozen_execute) ... ok
+test_speed_change_pieces_in_one_segment (test_preset_v8_04.TestRunMemberSegment.test_speed_change_pieces_in_one_segment) ... ok
+test_split_on_straight_leg_matches_unsplit_and_does_not_brake (test_preset_v8_04.TestRunMemberSegment.test_split_on_straight_leg_matches_unsplit_and_does_not_brake) ... ok
+test_async_switch_two_members (test_preset_v8_04.TestStitch.test_async_switch_two_members) ... ok
+test_duplicate_gap_and_state_mismatch_raise (test_preset_v8_04.TestStitch.test_duplicate_gap_and_state_mismatch_raise) ... ok
+test_structure_errors_raise (test_preset_v8_04.TestStitch.test_structure_errors_raise) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 12.688s
+
+OK
+exit_code_V8-04=0

@@ -48,14 +48,14 @@
       "source": "相邻弦方向差上限，用于拒绝折角（V8-07 3.1 要求切向连续）。0.5 m 弦下对应曲率半径 ≥ 2.5 m，不限制任何可飞的弯道"
     },
     "budget_factor": {
-      "value": 0.5,
-      "kind": "pending_measurement",
-      "source": "时间预算 = 名义用时 × (1 + budget_factor) + budget_const_s + 停留时长 + 释放前时长；初值宽松，V8-09 实测名义用时误差后替换（r3 8.2 第 2 条的 δ_sim）（V8-10 实测后替换）"
+      "value": 0.1,
+      "kind": "engineering_margin",
+      "source": "V8-10 G6（11-02）：新引导层实际用时比名义用时（速度剖面的积分）长 0.19–0.80 s，相对误差 ≤ 2%（停止点接近与终点刹停的滞后）。时间预算 = 名义用时 × (1 + budget_factor) + budget_const_s + 停留时长 + 释放前时长，只用于判定卡死（超时记 sim_timeout），取 0.1，为实测误差的 5 倍以上"
     },
     "budget_const_s": {
-      "value": 60.0,
-      "kind": "pending_measurement",
-      "source": "同上（r3 8.2 第 2 条的 C）（V8-10 实测后替换）"
+      "value": 30.0,
+      "kind": "engineering_margin",
+      "source": "V8-10 G6（11-02）：同上；常数项取 30 s，远大于实测绝对误差 0.80 s，保证短段也不因滞后被误判超时"
     },
     "stop_approach_m": {
       "value": 2.0,
