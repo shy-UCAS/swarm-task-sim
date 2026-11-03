@@ -3,14 +3,14 @@
   "name": "guidance",
   "parameters": {
     "a_lat_m_s2": {
-      "value": 2.0,
-      "kind": "pending_measurement",
-      "source": "V8-07：横向加速度上限初值；与 a_lon 合成 2.5 m/s²，比冻结水平加速度上限 3.75 m/s² 留 1/3 供纠偏与滞后。V8-09 用 ArduCopter 软件在环数据标定并以跟踪管 0.5 m 验证后替换"
+      "value": 3.0,
+      "kind": "engineering_margin",
+      "source": "V8-09 标定（11-02）：ArduCopter 软件在环、WPNAV_ACCEL = 2.5 m/s²、v_cmd = 10 的有效飞行中，R ≤ 40 m 弯道稳态横向加速度中位数 2.0–3.5 m/s²，R = 20 m 弯道按外抛后的实际半径折算约 3.1 m/s²，取 3.0。对应配置为 WPNAV_ACCEL 2.5 m/s²；不代表真实无人机的物理极限。V8-10 以跟踪管 0.5 m 与加速度饱和验证"
     },
     "a_lon_m_s2": {
-      "value": 1.5,
-      "kind": "pending_measurement",
-      "source": "V8-07：纵向加减速度初值，理由同 a_lat；V8-09 标定后替换"
+      "value": 2.0,
+      "kind": "engineering_margin",
+      "source": "V8-09 标定（11-02）：同一组飞行起步段纵向加速度 p95 为 1.9–2.3 m/s²，取 2.0；刹停 p95 为 3.1–3.9 m/s²，本模型加减速共用一个值，偏保守。与 a_lat 合成 3.6 m/s²，低于冻结加速度上限 3.75 m/s²"
     },
     "lookahead_m": {
       "value": 1.0,
@@ -50,12 +50,12 @@
     "budget_factor": {
       "value": 0.5,
       "kind": "pending_measurement",
-      "source": "时间预算 = 名义用时 × (1 + budget_factor) + budget_const_s + 停留时长 + 释放前时长；初值宽松，V8-09 实测名义用时误差后替换（r3 8.2 第 2 条的 δ_sim）"
+      "source": "时间预算 = 名义用时 × (1 + budget_factor) + budget_const_s + 停留时长 + 释放前时长；初值宽松，V8-09 实测名义用时误差后替换（r3 8.2 第 2 条的 δ_sim）（V8-10 实测后替换）"
     },
     "budget_const_s": {
       "value": 60.0,
       "kind": "pending_measurement",
-      "source": "同上（r3 8.2 第 2 条的 C）"
+      "source": "同上（r3 8.2 第 2 条的 C）（V8-10 实测后替换）"
     },
     "stop_approach_m": {
       "value": 2.0,
