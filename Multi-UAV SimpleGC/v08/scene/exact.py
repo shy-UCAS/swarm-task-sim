@@ -218,11 +218,26 @@ def segment_clearance(geometry, a, b, *, sense, minimum_m):
     return float(margin_from_range(lo, hi, sense=sense, minimum_m=minimum_m)[0])
 
 
-def polyline_clearance(geometry, xy, *, sense, minimum_m):
-    """折线每条弦的最小余量，形状 (N−1,)。折线本身就是被飞的参考曲线，逐弦检查即检查整条曲线。"""
+def polyline_clearance(geometry, xy, *, sense, minimum_m, fast_far_m=None):
+    """折线每条弦的最小余量，形状 (N−1,)。折线本身就是被飞的参考曲线，逐弦检查即检查整条曲线。
+
+    fast_far_m 不为 None 时启用快速路径：先算顶点余量；由 1-Lipschitz，弦内任一点的余量不小于
+    min(两端顶点余量) − 弦长/2。该下界 ≥ fast_far_m 的弦直接取下界，其余弦做精确范围计算；
+    因此凡是真实余量小于 fast_far_m 的弦，结果仍然精确。"""
     P = np.asarray(xy, dtype=float)[:, :2]
-    lo, hi, _ = chord_sdf_range(geometry, P[:-1], P[1:])
-    return margin_from_range(lo, hi, sense=sense, minimum_m=minimum_m)
+    if fast_far_m is None:
+        lo, hi, _ = chord_sdf_range(geometry, P[:-1], P[1:])
+        return margin_from_range(lo, hi, sense=sense, minimum_m=minimum_m)
+    mv = clearance_values(geometry, P, sense=sense, minimum_m=minimum_m)
+    half = 0.5 * np.hypot(*np.diff(P, axis=0).T)
+    bound = np.minimum(mv[:-1], mv[1:]) - half
+    out = bound.copy()
+    near = bound < fast_far_m
+    if np.any(near):
+        idx = np.flatnonzero(near)
+        lo, hi, _ = chord_sdf_range(geometry, P[idx], P[idx + 1])
+        out[idx] = margin_from_range(lo, hi, sense=sense, minimum_m=minimum_m)
+    return out
 
 
 def expand(geometry, distance_m):

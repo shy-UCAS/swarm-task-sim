@@ -143,6 +143,34 @@ class DistanceField:
         return vmin >= self.eps
 
 
+class CombinedGrid:
+    """若干约束取最小值得到的单一栅格。min 仍是 1-Lipschitz，所以"双线性 − eps ≥ extra"依然保守。
+    比逐约束插值快得多，用来在极坐标/射线上批量判可行；最终仍由精确弦检查验收。"""
+
+    def __init__(self, field, names=None):
+        self.field = field
+        grid = None
+        for c in field._select(names):
+            v = field.corner_values(c)
+            grid = v if grid is None else np.minimum(grid, v)
+        self.grid = grid
+
+    def value(self, xy):
+        """双线性值（不减 eps）；栅格外为 −inf。"""
+        f = self.field
+        pts = np.asarray(xy, dtype=float)
+        shape = pts.shape[:-1]
+        pts = pts.reshape(-1, pts.shape[-1])[:, :2]
+        inside, ix, iy, fx, fy = f._locate(pts)
+        g = self.grid
+        val = (g[iy, ix] * (1 - fx) * (1 - fy) + g[iy, ix + 1] * fx * (1 - fy) + g[iy + 1, ix] * (1 - fx) * fy
+               + g[iy + 1, ix + 1] * fx * fy)
+        return np.where(inside, val, -np.inf).reshape(shape)
+
+    def ok(self, xy, extra_margin_m=0.0):
+        return self.value(xy) - self.field.eps >= extra_margin_m
+
+
 def build_distance_field(constraints, bounds_xyxy, *, spacing_m, raw_cache=None):
     """覆盖 bounds 的距离场，端点扩至完整栅格。raw_cache 是 {geometry_key: 数组} 形式的可写映射，
     用来在不同阶段的约束集之间复用同一几何的精确距离（也可由调用方落盘）。"""

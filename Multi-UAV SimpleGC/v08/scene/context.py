@@ -7,6 +7,8 @@ visibility.py 的函数内部惰性导入。读入只读：不改输入文件的
 import hashlib
 import json
 import math
+import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
@@ -142,12 +144,37 @@ class SceneContext:
     def facility_by_id(self):
         return {f.id: f for f in self.facilities}
 
+    @contextmanager
+    def cold_build(self):
+        """惰性缓存（距离场、可视图、边界点）的首次构建计时，累计到 timings["cold_s"]。
+        规划耗时按"总用时 − 冷缓存用时"报告（指令 4.2：冷缓存另报，不混入每段耗时）。嵌套只计最外层。"""
+        depth = self.timings.get("_depth", 0)
+        self.timings["_depth"] = depth + 1
+        t0 = time.perf_counter()
+        try:
+            yield
+        finally:
+            self.timings["_depth"] = depth
+            if depth == 0:
+                self.timings["cold_s"] = self.timings.get("cold_s", 0.0) + time.perf_counter() - t0
+                self.timings["cold_builds"] = self.timings.get("cold_builds", 0) + 1
+
     def field(self, name, constraints):
         """阶段距离场：同名只建一次；各阶段共享同一几何的精确距离（并落盘）。"""
         if name not in self.fields:
-            self.fields[name] = build_distance_field(constraints, self.bounds, spacing_m=self.params["grid_m"],
-                                                     raw_cache=self._raw)
+            with self.cold_build():
+                self.fields[name] = build_distance_field(constraints, self.bounds, spacing_m=self.params["grid_m"],
+                                                         raw_cache=self._raw)
         return self.fields[name]
+
+    def combined(self, name, constraints):
+        """阶段组合栅格（约束取最小值），同名只建一次。"""
+        from .field import CombinedGrid
+
+        if ("grid", name) not in self.extra:
+            with self.cold_build():
+                self.extra[("grid", name)] = CombinedGrid(self.field(name, constraints))
+        return self.extra[("grid", name)]
 
     def cells(self, key, field, *, names=None, extra_margin_m=0.0):
         k = (key, extra_margin_m)

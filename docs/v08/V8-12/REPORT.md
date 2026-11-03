@@ -123,3 +123,49 @@
 **实现取舍（记录，非偏离）：**
 - `Clearance.sense` 在指令的 ±1 之外增加了 `0`（要离边界至少 `minimum_m`，内外皆可）。非目标设施的预警圈边界在巡逻中需要"不被穿越就保持 10 m"，用 `|sdf| − 10` 表示；`|sdf|` 仍是 1-Lipschitz，误差界不变。
 - 可视图（顶点/邻接）当前每进程重建，不落盘；落盘的是精确距离栅格。指令 2.4 节写的是图也缓存，这一项未实现，若第 4 部分耗时需要再补。
+
+### 第 3 部分：通过（提交号见第 8 节的 git 输出）
+
+**实现（均在 `Multi-UAV SimpleGC/`）：**
+
+| 文件 | 内容 |
+|---|---|
+| `v08/contract/monitoring.py`（追加） | `SpeedProfilePrior`、`TaskSpec`、`GroupSpec`、`CommonDraw`、`Mission`、`MemberPlan`、`SegmentPlan`、`initial_states`、`validate_mission`、`to_guided`、`monitoring_mission` |
+| `v08/sampler/common.py` | `sample_common(family, draw_index)`：不接受意图/目标；组数 `min(U{1,2,3}, n)`，每组先 1 人再逐个均匀抽组，`permutation` 切片分配成员，每组速度 U[4,10]、变速率 U[0,1]、队形倾向均匀 |
+| `v08/motion/path.py` | 周期三次 B 样条半径及一二阶导、直线/圆弧/五次 Bézier/样条弧图元的 0.5 m 采样、曲率上界与车道曲率检查、`connect_poses`、`opposite_arc_join`、`circle_offsets` |
+| `v08/motion/formation.py` | 横排/纵列/梯形槽位、`loose→abreast` 映射与退让链、成员车道派生 |
+| `v08/motion/speed.py` | 泊松变速事件抽取与按参考节点名义时间的固定点离散映射（循环检测） |
+| `v08/motion/nominal.py` | 复用冻结 `make_curve/speed_profile/nominal_time` 的名义运动；10 Hz 整数微秒采样；连续时间最小间距（二次运动、导数实根 + 端点，分支定界） |
+| `v08/motion/nominal_checks.py` | 从固定提交 `task_v07/detectors.py` 逐字抽取 runs/work_mask/azimuth_coverage/dwell/revisit（头部记录来源与块 SHA256），加 `screen_member` |
+| `v08/motion/connect.py` | 边界穿越分析（直线、单次、±10 m 带、100 m 对齐）、释放延迟（0.1 s 向上取整）、圆角折线、骨架规划器 |
+| `v08/motion/intents/monitoring.py` | 约束集合、`build_candidate`（全部检查）、随机提案采样器与预算修复（见下） |
+| `v08/motion/plan.py` | `plan_segment`：20 次 attempt 预算、带证书的 `proven_infeasible`、`approx_empty`（含精确复核）、`budget_exhausted` |
+| `v08/scene/{exact,field,context}.py`（小改） | 折线快速路径、`CombinedGrid`、惰性缓存首次构建计时 `cold_build`（供"冷缓存另报"） |
+
+**测试（完整输出 `docs/v08/V8-12/tests_part3.txt`）：** 预置 `test_preset_numpy_motion.py` 7/7、`test_preset_local_monitoring.py` 3/3 通过（SHA256 与指令 6.9 一致，未改一字）；自加 `test_own_part3.py` 3/3（真实场景端到端：独立精确复核 world 内缩 35 m、所有设施 alert 外 ≥10 m、终点离所有预警圈 ≥50 m、释放延迟在 0.1 s 网格、总时长 ≤1800 s、同键重规划的计划 JSON 与数组逐字节一致）、`test_own_imports.py`（核心模块导入链不含 shapely/scene_v07）通过；第 1–2 部分的测试在新代码上回归通过。
+
+**第 3 部分的主要实现取舍与偏离（均已记录，不是对测试的迁就）：**
+
+1. **预算检查前置。** 名义总时长（自首名成员释放到最后成员停止保持结束）只依赖名义时钟，比几何/判据/间距检查便宜得多，所以 `build_candidate` 先查它；一个 attempt 的原因链记录的是第一个失败阶段。
+2. **预算修复（指令 3.9 的局部修复）。** 圈数/穿行次数已取下限仍超 1800 s 时：折返先把弧跨度缩到覆盖下限（120°）为止，其余由各结点半径同时向各自合法径向区间的内端移动补足——这是"线性长度约束＋区间箱约束"下离原抽样欧氏距离最近的点（各结点对长度的权重相同）。移动量用时间模型解析求出（需缩短比例 = (D − 0.97×预算)/巡逻用时），逐轮用 `duration_only` 的廉价构造核对并更新；目标取预算的 97% 以吸收线性模型误差；随机流固定为同一对种子，所以轮与轮之间的差异只来自几何。修复前后系数/弧跨度/时长全部写入 `repairs[*].log`。**这是我对"活动约束投影"的一种具体化，不是指令给出的公式。**
+3. **队形退让也由下游几何失败触发。** 指令 3.4 的退让链（abreast→echelon→column）在我的第一版里只在环带容不下该队形时触发，结果大编组在掉头/入圈阶段整体失败。现改为：该队形的转弯、入圈、起点路由、出圈、间距、边界穿越、形状阶段失败，也退到链上的下一个队形（预算超限不触发）。`repairs` 里的 `formation_retreat.forced_by` 记录触发阶段。
+4. **汇合带的槽位足迹余量。** 指令 2.4 的 [50,250] m 带约束的是汇合**参考位置**；我第一版把成员足迹余量也加在带的两侧，使 11 人以上的编组汇合集合恒为空。现在足迹余量只加在物理约束（世界、限制区、预警圈外）上，带本身不加。
+5. **圈心预算筛选与 `topology_forced` 的原因。** 圈心候选先用"内边界曲线长度 × 圈数下限 + 汇合距离"的名义时间下界估计筛一遍；若绕圈因此被排除而折返可行，按 r4 6.3.4 的"只有局部弧可用"处理为强制折返并记录 `forced_reason=budget`（几何原因记 `geometry`）。**这是把"预算许可集合为空"纳入"可行"的读法**；它在 200 合同上实际没有改变任何合同的成败（见探索表第 4 轮）。
+6. **`approx_empty` 的精确复核。** 全部 attempt 都是 `patrol_region`/`budget_region` 时才报 `approx_empty`，并对单车道巡逻约束在警戒圈外接框内按 0.5 m 取点做精确有符号距离复核（`exact_nonempty`、检查点数入记录）。预算原因的空集报 `approx_empty / duration_budget`，不是 `proven_infeasible`。
+7. **转弯组合惰性枚举。** 6 种（形状×侧向）组合按随机排列逐个核对，取第一个可行者再枚举它的连续可行半径（半径等概率）；记录 `combos_tested`，不再记录全部 `feasible_kinds`。
+8. **名义运动复用。** `release_delays` 一并返回各成员的名义运动，`build_candidate` 不再对同一曲线重复做 `make_curve/speed_profile`（自检 `nominal_time` 一致性保留）。
+9. 可视图（顶点/邻接）仍每进程重建、不落盘（第 2 部分已记，指令 2.4 写的是图也缓存）；惰性构建的耗时由 `cold_build` 计入"冷缓存"而非"每段规划"。
+
+**开发过程中的探索性整批运行（不是第 4 部分的结论；仅为迭代构造，运行在我的草稿目录，不入库）：**
+同一份 40 族 × 5 draw = 200 合同、每合同 20 次 attempt 预算、8–10 个并行进程，每轮只改一处，成功率与"每合同净规划用时"如下。
+
+| 轮 | 改动 | 成功 | 净规划用时中位数 |
+|---|---|---:|---:|
+| 1 | 预算检查前置 + 二分半径修复 | 119/200 (59.5%) | 30.2 s |
+| 2 | 解析时间模型的预算修复（弧跨度 + 半径） | 131/200 (65.5%) | 26.5 s |
+| 3 | 下游几何失败触发队形退让 | 167/200 (83.5%) | 25.9 s |
+| 4 | 圈心预算筛选 | 与第 3 轮同 | — |
+| 5 | 汇合带足迹余量只加在物理约束上 | 173/200 (86.5%) | 27.1 s |
+| 6 | 名义运动复用、转弯惰性枚举、极坐标半径范围收紧 | 176/200 (88.0%) | 15.2 s |
+
+> **必须说明的限制：** 这些迭代用的就是第 4 部分的评估集（登记的 40 个开发族）。构造因此在这些族上做过调参，第 4 部分报告的成功率不是对新场景的无偏估计。第 6 轮剩余的 24 个失败合同几乎全是 `duration_budget`（大地图、起点在远角、初速 4–5.5 m/s 的编组），这类合同的名义总时长下界与预算只差几个百分点（见"执行方观察"）。
