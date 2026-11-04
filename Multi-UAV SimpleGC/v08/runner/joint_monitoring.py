@@ -33,11 +33,15 @@ DRAWS = 5
 
 # ---------------------------------------------------------------- 唯一预算
 
-def run_attempts(key, attempt_fn, *, budget=BUDGET):
+def run_attempts(key, attempt_fn, *, budget=BUDGET, should_stop=None):
     """attempt_fn(key_with_attempt) -> {"ok":bool, "stage":str, ...}
-    返回 {"success":bool, "attempts":int, "records":list, "result":object}；首次成功报告 attempts=1。"""
+    返回 {"success":bool, "attempts":int, "records":list, "result":object}；首次成功报告 attempts=1。
+    should_stop()（第 5 部分墙钟预算）为真时在下一 attempt 前合作退出，返回 incomplete=True（不是成功也不是预算耗尽）。"""
     records = []
     for a in range(int(budget)):
+        if should_stop is not None and should_stop():
+            return {"success": False, "attempts": len(records), "records": records, "result": None,
+                    "incomplete": True}
         rec = attempt_fn(replace(key, attempt=a))
         records.append(rec)
         if rec.get("ok"):
@@ -187,7 +191,7 @@ def contract_id(entry, draw, branch=None):
     return f"o{int(entry['order']):02d}_d{int(draw)}" + ("" if branch is None else f"_b{int(branch)}")
 
 
-def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None):
+def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, should_stop=None, keep=None):
     """一个合同的完整链路与唯一 20 次预算。out_dir 给出时写 contracts/<id>/ 的确定性载荷。返回记录 dict。"""
     from ..contract.monitoring import initial_states, monitoring_mission
     from ..motion.plan import final_failure
@@ -209,11 +213,14 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None):
         summaries.append(_attempt_summary(rec, k))
         return rec
 
-    out = run_attempts(key0, attempt_fn)
+    out = run_attempts(key0, attempt_fn, should_stop=should_stop)
     opt_s = float(sum((s["timing"] or {}).get("optimize_s", 0.0) for s in summaries))
     cid = contract_id(entry, draw, branch)
     failure = None
-    if not out["success"]:
+    if out.get("incomplete"):
+        failure = {"code": "incomplete_deadline", "reason": "第 5 部分 2 h 墙钟预算到期，合作退出",
+                   "feasible_set": None, "witness": {"attempts_done": out["attempts"]}}
+    elif not out["success"]:
         log = []
         for s in summaries:
             stage = s["stage"]
@@ -232,12 +239,26 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None):
            "optimization_s": opt_s, "failure": failure, "attempt_log": summaries,
            "settings_sha256": settings.get("_sha256"),
            "release_us": None, "retained_p0_ok": True}
+    rec["incomplete"] = bool(out.get("incomplete", False))
+    rec["stage_timing"] = {k: float(sum((s["timing"] or {}).get(k, 0.0) for s in summaries))
+                           for k in ("skeleton_s", "optimize_s", "simulation_s", "verify_s")}
     if out["success"]:
         res = out["result"]
         rec["release_us"] = {m: int(v) for m, v in sorted(res["release_us"].items())}
         rec["retained_p0_ok"] = _retained_p0(res)
+        rec["deviation"] = member_deviation(res)
+        rec["tracking"] = tracking_stats(res)
+        plan = res["plan"]
+        rec["nominal_duration_s"] = float(plan.nominal_duration_s)
+        rec["formation"] = {k: plan.formation.get(k) for k in ("prior", "start", "realized", "mapped_from_loose",
+                                                                "lateral_step_m")}
+        rec["topology"] = {k: plan.topology.get(k) for k in ("final", "laps", "traversals", "turn_kind", "prior_draw",
+                                                              "forced", "forced_reason")}
+        if keep is not None:
+            keep["result"] = res
     if out_dir is not None:
-        save_contract(Path(out_dir), rec, out["result"])
+        last = out["records"][-1] if (out["records"] and not out["success"]) else None
+        save_contract(Path(out_dir), rec, out["result"], last_failed=last)
     return rec
 
 
@@ -260,7 +281,7 @@ def _json_bytes(obj):
     return canonical_json(obj) + b"\n"
 
 
-def save_contract(out, rec, result):
+def save_contract(out, rec, result, last_failed=None):
     """contracts/<id>/{contract.json,result.json}；成功另存 skeleton.json、optimized.json 与 tracks/<m>/*.npy。
     墙钟等遥测写在合同目录外的 telemetry/<id>.json，不参与确定性载荷。"""
     d = out / "contracts" / rec["contract_id"]
@@ -275,7 +296,10 @@ def save_contract(out, rec, result):
         det_attempts.append(s2)
     result_doc = {"success": rec["success"], "attempts": rec["attempts"], "failure": rec["failure"],
                   "attempt_log": det_attempts, "release_us": rec["release_us"], "settings_sha256": rec["settings_sha256"],
-                  "retained_p0_ok": rec["retained_p0_ok"]}
+                  "retained_p0_ok": rec["retained_p0_ok"], "incomplete": rec.get("incomplete", False),
+                  "deviation": rec.get("deviation"), "tracking": rec.get("tracking"),
+                  "nominal_duration_s": rec.get("nominal_duration_s"), "formation": rec.get("formation"),
+                  "topology": rec.get("topology")}
     (d / "result.json").write_bytes(_json_bytes(result_doc))
     if result is not None and result.get("ok"):
         plan = result["plan"]
@@ -297,6 +321,26 @@ def save_contract(out, rec, result):
             td.mkdir(parents=True, exist_ok=False)
             for name in ("tau_us", "p", "v", "a", "segment_index"):
                 np.save(td / f"{name}.npy", np.ascontiguousarray(getattr(tr, name)), allow_pickle=False)
+    if last_failed is not None and last_failed.get("plan") is not None and last_failed["plan"].failure is None:
+        # 失败合同最后一个 attempt 的骨架/优化曲线与违规见证（供失败示例图；确定性载荷）
+        plan = last_failed["plan"]
+        doc = {"stage": last_failed.get("stage"), "reason": last_failed.get("reason"),
+               "skeleton_members": {m: np.asarray(mp.curve_xy, float).tolist() for m, mp in sorted(plan.members.items())}}
+        opt = last_failed.get("opt")
+        if opt is not None:
+            sol = opt["solution"]
+            doc["optimized"] = {m: {"release_s": t.release_s, "end_s": t.end_s, "knots": t.knots, "controls": t.controls}
+                                for m, t in sorted(sol.references.items())}
+            doc["physical_failures"] = jsonable((sol.diagnostics.get("physical") or {}).get("failures"))
+            if opt.get("monitoring") is not None:
+                doc["monitoring_failures"] = jsonable(opt["monitoring"]["failures"])
+        if last_failed.get("tracks") is not None:
+            doc["tracks_p"] = {m: np.asarray(tr.p, float)[:, :2].tolist() for m, tr in sorted(last_failed["tracks"].items())}
+        if last_failed.get("validity") is not None:
+            doc["validity_codes"] = jsonable(last_failed["validity"].codes)
+        if last_failed.get("verdicts") is not None:
+            doc["segment_failures"] = jsonable([v.failures for v in last_failed["verdicts"]])
+        (d / "failure_witness.json").write_bytes(_json_bytes(doc))
     tele = out / "telemetry"
     tele.mkdir(exist_ok=True)
     (tele / f"{rec['contract_id']}.json").write_bytes(_json_bytes(
@@ -384,5 +428,252 @@ def cli(args, out):
         chk = summary["checkpoint"]
         print("检查点 2：", json.dumps(chk, ensure_ascii=False))
         return 2 if chk["triggered"] else 0
-    print(f"--stage {args.stage} 属于第 5 部分，需两个检查点均通过后接入；本次未实现运行路径", file=sys.stderr)
-    return 3
+    if args.stage == "full":
+        summary = full_stage(entries, data_root=data_root, cache_dir=cache, out_dir=out, workers=args.workers)
+        chk = summary["checkpoint"]
+        print("全量诊断：", json.dumps(chk, ensure_ascii=False))
+        if not summary["complete"]:
+            return 3
+        return 2 if chk["triggered"] else 0
+    if args.stage == "rerun":
+        if not (args.keys and args.compare_to):
+            print("rerun 需要 --keys 与 --compare-to", file=sys.stderr)
+            return 1
+        doc = rerun_stage(entries, data_root=data_root, cache_dir=cache, out_dir=out, keys_path=args.keys,
+                          compare_to=args.compare_to)
+        return 0 if doc["all_equal"] else 4
+    print("多样性种子在 --stage full 内与全量共用 2 h 预算运行（指令 5.4），不单独运行", file=sys.stderr)
+    return 1
+
+
+# ================================================================ 第 5 部分：全量、复跑、多样性（指令 5.1–5.4）
+
+WALL_BUDGET_S = 7200.0      # U D.6：第 5 部分超过 2 小时在已完成处汇报（monitoring.simulation_wall_budget_s）
+DIVERSITY_SEEDS = 10        # U D.4；r4 14.3
+FRECHET_SPACING_M = 5.0     # C12 第 7 条
+
+
+def member_deviation(res):
+    """逐成员骨架→优化的水平偏离（同一绝对时刻、10 Hz、移动期 [release, end]）：max/mean；末端保持期按构造为 0。"""
+    out = {}
+    refs = {r.member_id: r for r in res["opt"]["references"]}
+    for m, tr in sorted(res["opt"]["solution"].references.items()):
+        r = refs[m]
+        f0 = int(math.ceil(tr.release_s * 10 - 1e-9))
+        f1 = int(math.floor(tr.end_s * 10 + 1e-9))
+        t = np.arange(f0, f1 + 1, dtype=np.int64) / 10.0
+        d = np.hypot(*(tr.evaluate(t) - np.asarray(r.pva(t)[0])).T)
+        out[m] = {"max_m": float(d.max()) if len(d) else 0.0, "mean_m": float(d.mean()) if len(d) else 0.0}
+    return out
+
+
+def tracking_stats(res):
+    out = {}
+    for r in res["results"]:
+        rec = r.pieces[0]
+        d10 = np.diff(np.asarray(r.a)[:, :2], axis=0) / 0.1
+        out[r.member_id] = {"max_step_pos_err_m": rec.max_step_pos_err_m, "max_frame_pos_err_m": rec.max_frame_pos_err_m,
+                            "max_core_jerk_xy": float(rec.step_jerk_xy.max()) if len(rec.step_jerk_xy) else 0.0,
+                            "max_core_accel_xy": float(rec.step_accel_xy.max()) if len(rec.step_accel_xy) else 0.0,
+                            "max_10hz_diff_jerk_xy": float(np.linalg.norm(d10, axis=1).max()) if len(d10) else 0.0,
+                            "tube_exceeded_0p5": bool(rec.max_step_pos_err_m > 0.5)}
+    return out
+
+
+def group_reference_curves(ctx, group, res):
+    """指令 5.4：c_after(s) = c_before(s) + (1/N)Σ_i[p_i^opt(t_i(s)) − s_i(t_i(s))]。c_before 为骨架编组参考
+    （汇合→终点），t_i(s) 按 build_candidate 同一构造（参考 → 槽位 → 车道 s_ref → 成员弧长 → 名义时间）重建。"""
+    from ..motion.formation import derive_members, formation_slots
+    from ..motion.intents.monitoring import build_reference
+    from ..motion.nominal import member_nominal
+    from ..motion.skeleton import NominalPVA, reference_guidance
+    plan = res["plan"]
+    P, form = plan.proposal, plan.formation
+    spacing = ctx.params["curve_spacing_m"]
+    slots = formation_slots(group, ctx.family, None, formation=form["realized"],
+                            lateral_step_m=form["lateral_step_m"] if form["realized"] == "echelon" else None,
+                            order=tuple(form["order"]))
+    ext = slots.max_longitudinal_m
+    ref, _ = build_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
+    s_c, s_t = ref.marks["collect"], ref.marks["terminal"]
+    lanes = derive_members(ref, slots, (s_c, s_t), spacing_m=spacing)
+    sel = (ref.s >= s_c - 1e-9) & (ref.s <= s_t + 1e-9)
+    S = ref.s[sel]
+    before = np.asarray(ref.xy[sel], float)
+    G = reference_guidance()
+    disp = np.zeros_like(before)
+    opt = res["opt"]["solution"].references
+    for m in sorted(plan.members):
+        mp = plan.members[m]
+        xy = np.asarray(mp.curve_xy, float)
+        cum = np.r_[0.0, np.cumsum(np.hypot(*np.diff(xy, axis=0).T))]
+        lane = lanes[m]
+        ci = len(xy) - len(lane.xy)
+        l = slots.offsets[m][0]
+        sig = np.clip(S + l, lane.s_ref[0], lane.s_ref[-1])
+        sm = np.interp(sig, lane.s_ref, cum[ci:ci + len(lane.xy)])
+        nom = member_nominal(mp, guidance=G)
+        f = NominalPVA(nom)
+        t = np.interp(sm, nom.curve.s, nom.t_nodes) + nom.release_s
+        disp += opt[m].evaluate(t) - np.asarray(f(t)[0])
+    after = before + disp / len(plan.members)
+    return before, after
+
+
+def _pool_task(task):
+    """一个合同（全量或多样性种子）的工作进程入口；按族缓存上下文，不跨进程共享随机流。"""
+    import time as _t
+    from ..motion.optimize import load_settings
+    from ..scene.context import load_context
+    from ..diagnostics.diversity import resample_polyline
+    kind, entry, draw, branch, data_root, cache_dir, out_dir, deadline = task
+    g = globals().setdefault("_WCTX", {})
+    if entry["order"] not in g:
+        g.clear()
+        g[entry["order"]] = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
+    ctx = g[entry["order"]]
+    settings = load_settings()
+    t0 = _t.perf_counter()
+    try:
+        holder = {}
+        rec = run_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=Path(out_dir),
+                           should_stop=lambda: _t.time() > deadline, keep=holder)
+        row = _record_row(rec)
+        row.update(kind=kind, incomplete=rec.get("incomplete", False), wall_s=_t.perf_counter() - t0,
+                   deviation=rec.get("deviation"), tracking=rec.get("tracking"),
+                   nominal_duration_s=rec.get("nominal_duration_s"), formation=rec.get("formation"),
+                   topology=rec.get("topology"), stage_timing=rec.get("stage_timing"),
+                   attempt_stages=[a["stage"] for a in rec["attempt_log"]],
+                   nit=[(a.get("timing") or {}).get("nit") for a in rec["attempt_log"]])
+        if kind == "diversity" and rec["success"]:
+            from ..contract.monitoring import monitoring_mission
+            from ..sampler.common import sample_common
+            group = monitoring_mission(ctx, sample_common(ctx.family, draw)).groups[0]
+            before, after = group_reference_curves(ctx, group, holder["result"])
+            row["curve_before"] = resample_polyline(before, FRECHET_SPACING_M).tolist()
+            row["curve_after"] = resample_polyline(after, FRECHET_SPACING_M).tolist()
+        row["lateral_spacing_m"] = float(ctx.family.lateral_spacing_m)
+        return row
+    except Exception as exc:
+        return {"contract_id": contract_id(entry, draw, branch), "family_id": entry["family_id"], "kind": kind,
+                "draw_index": draw, "branch": branch, "success": False, "attempts": None,
+                "error": repr(exc), "traceback": traceback.format_exc()}
+
+
+def run_pool(tasks, *, workers, deadline, log=print):
+    """固定顺序派发；到 deadline 停止派发，进行中的合同在下一 attempt 前合作退出。返回 (rows, 未派发 keys)。"""
+    import multiprocessing as mp
+    from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
+    rows, pending, unsent = [], set(), []
+    it = iter(tasks)
+    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
+        def submit_next():
+            for t in it:
+                if time.time() > deadline:
+                    unsent.append(contract_id(t[1], t[2], t[3]))
+                    continue
+                pending.add(ex.submit(_pool_task, t))
+                return True
+            return False
+        for _ in range(workers):
+            if not submit_next():
+                break
+        while pending:
+            done, _ = wait(pending, return_when=FIRST_COMPLETED)
+            for fut in done:
+                pending.discard(fut)
+                row = fut.result()
+                rows.append(row)
+                log(f"[{len(rows)}] {row['contract_id']} {row.get('kind')}: success={row.get('success')} "
+                    f"attempts={row.get('attempts')} incomplete={row.get('incomplete')} "
+                    f"wall={row.get('wall_s', 0):.0f}s err={row.get('error')}")
+                submit_next()
+    return rows, unsent
+
+
+def compare_dirs(source, repeat):
+    src = {p.relative_to(source).as_posix() for p in Path(source).rglob("*") if p.is_file()}
+    rep = {p.relative_to(repeat).as_posix() for p in Path(repeat).rglob("*") if p.is_file()}
+    same = src == rep and all((Path(source) / n).read_bytes() == (Path(repeat) / n).read_bytes() for n in src)
+    diff = sorted(n for n in src & rep if (Path(source) / n).read_bytes() != (Path(repeat) / n).read_bytes())
+    return {"files": sorted(src), "file_sets_equal": src == rep, "bytes_equal": same, "differing": diff,
+            "only_source": sorted(src - rep), "only_repeat": sorted(rep - src)}
+
+
+def frechet_blocks(div_rows, key="curve_after"):
+    from ..diagnostics.diversity import discrete_frechet
+    fam = {}
+    for r in div_rows:
+        fam.setdefault(r["family_id"], []).append(r)
+    blocks = []
+    for fid, rs in sorted(fam.items()):
+        ok = [np.asarray(r[key], float) for r in sorted(rs, key=lambda x: x["branch"]) if r.get("success") and key in r]
+        d = [float(discrete_frechet(ok[i], ok[j])) for i in range(len(ok)) for j in range(i + 1, len(ok))]
+        blocks.append({"family_id": fid, "spacing_m": float(rs[0].get("lateral_spacing_m") or 0.0) or 1.0,
+                       "distances_m": d, "attempted": len(rs), "success": len(ok)})
+    return blocks
+
+
+def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
+    """全量 200 合同 + 多样性 10 族 × 10 种子，共用 2 小时预算；复跑键在开始前写 rerun_keys.json。"""
+    from .monitoring import select_diversity_families
+    out = Path(out_dir)
+    t_start = time.time()
+    deadline = t_start + WALL_BUDGET_S
+    ordered = sorted(entries, key=lambda e: e["order"])
+    keys = [(int(e["order"]), d) for e in ordered for d in range(DRAWS)]
+    write_json(out / "rerun_keys.json", {"keys": [list(k) for k in keys[:5]],
+                                         "rule": "全量开始前按 (order, draw) 字典序取前 5 个合同"}, indent=1)
+    by_order = {int(e["order"]): e for e in entries}
+    tasks = [("full", by_order[o], d, None, str(data_root), str(cache_dir), str(out), deadline) for o, d in keys]
+    div_fams = select_diversity_families(entries)
+    (out / "diversity").mkdir()
+    tasks += [("diversity", e, 0, b, str(data_root), str(cache_dir), str(out / "diversity"), deadline)
+              for e in div_fams for b in range(DIVERSITY_SEEDS)]
+    rows, unsent = run_pool(tasks, workers=workers, deadline=deadline, log=log)
+    full_rows = sorted([r for r in rows if r.get("kind") == "full"], key=lambda r: r["contract_id"])
+    div_rows = sorted([r for r in rows if r.get("kind") == "diversity"], key=lambda r: r["contract_id"])
+    write_json(out / "records.json", [{k: v for k, v in r.items() if k not in ("curve_before", "curve_after")}
+                                      for r in full_rows], indent=1)
+    write_json(out / "diversity" / "records.json", div_rows, indent=1)
+    blocks_after = frechet_blocks(div_rows, "curve_after")
+    blocks_before = frechet_blocks(div_rows, "curve_before")
+    complete = (len(full_rows) == len(keys) and not unsent
+                and not any(r.get("incomplete") or r.get("error") for r in full_rows))
+    chk = JR.full_checkpoint([r for r in full_rows if not r.get("error")], blocks_after) if full_rows else None
+    summary = {"stage": "full", "expected_count": len(keys), "completed": len(full_rows), "complete": complete,
+               "unsent": unsent, "incomplete": [r["contract_id"] for r in full_rows if r.get("incomplete")],
+               "errors": [r["contract_id"] for r in rows if r.get("error")],
+               "diversity_expected": len(div_fams) * DIVERSITY_SEEDS, "diversity_completed": len(div_rows),
+               "checkpoint": chk, "frechet_after_pooled": JR.pooled_frechet(blocks_after),
+               "frechet_before_pooled": JR.pooled_frechet(blocks_before),
+               "frechet_blocks_after": blocks_after, "frechet_blocks_before": blocks_before,
+               "wall_s": time.time() - t_start, "workers": workers}
+    write_json(out / "summary.json", summary, indent=1)
+    return summary
+
+
+def rerun_stage(entries, *, data_root, cache_dir, out_dir, keys_path, compare_to, log=print):
+    from ..motion.optimize import load_settings
+    from ..scene.context import load_context
+    out = Path(out_dir)
+    keys = [tuple(k) for k in json.loads(Path(keys_path).read_text(encoding="utf-8"))["keys"]]
+    by_order = {int(e["order"]): e for e in entries}
+    settings = load_settings()
+    comps = []
+    ctx = None
+    for o, d in keys:
+        e = by_order[int(o)]
+        if ctx is None or ctx.family.family_id != e["family_id"]:
+            ctx = load_context(e, data_root=Path(data_root), cache_dir=Path(cache_dir))
+        rec = run_contract(ctx, e, int(d), settings=settings, out_dir=out)
+        cid = rec["contract_id"]
+        cmp_ = compare_dirs(Path(compare_to) / "contracts" / cid, out / "contracts" / cid)
+        comps.append({"contract_id": cid, "success": rec["success"],
+                      "source_dir": str((Path(compare_to) / "contracts" / cid).resolve()),
+                      "repeat_dir": str((out / "contracts" / cid).resolve()), **cmp_})
+        log(f"复跑 {cid}: success={rec['success']} bytes_equal={cmp_['bytes_equal']} files={len(cmp_['files'])}")
+    doc = {"comparisons": comps, "all_equal": all(c["bytes_equal"] for c in comps), "workers_source": 8,
+           "workers_repeat": 1}
+    write_json(out / "reproduction.json", doc, indent=1)
+    return doc

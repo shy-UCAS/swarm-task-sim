@@ -7,6 +7,8 @@
 
 ## 结论（先看这里）
 
+> **2026-11-04 V8-13b 返工：** 结果见文末"V8-13b"一节，优先于下方第 4–6 节关于第 3–5 部分的结论。标定通过；快速批次 20/20 成功，检查点 2 因成功合同尝试次数中位数 2.5 > 1 触发，停在第 4 部分。
+
 **状态：第 1、2 部分完成；第 3 部分实现完成但数值标定无合格权重（"优化设置未确定"）；第 4 部分代码与预置测试完成、快速集已选定，但 20 合同完整链路因权重缺失未运行，检查点 2"未完成"；第 5 部分未开展。** 没有触发任何 P0；两个止损检查点：检查点 1 明确未触发，检查点 2 未形成数据。
 
 - **检查点 1（未触发）：** J ∈ {2,4,6,8,10,14} × 11 个合法格点（附录 9.1）全部完成，J=2 最大积分步跟踪误差 0.0862 m ≤ 0.5 m；\(J_{\rm plan}=14\) m/s³，实测管 0.0971 m，已写入 `configs/v08/joint_opt.json`。
@@ -355,3 +357,107 @@ python -B -m unittest discover -s tests/v08/V8-13 -p "test_preset_numeric_checkp
 4. V8-12 执行方自加测试 `test_own_part3.py` 的两条 `≤ 1800 s` 断言随决定 50 失效，建议后续工作项正式退役或改写这两条（本项不改旧测试）。
 5. 第 2 部分所有 J 行都合格（最大 0.097 m），J_plan 取到 14 = 冻结核心上限；直线案例误差随 J 只从 0.062 增到 0.072 m，说明在 0.5 m 管下 jerk 不是跟踪的约束项。
 6. 交叉大夹具的构造（相邻两对横向平移恰为 D_lane = 3 m）使同向邻居的参考间距从头到尾都低于 3.25 m 缓冲，间距罚全程激活；这类夹具实际在测"把整片编组撑开 0.25 m"，与"交叉互换"本意不同。若审查方复核标定集，建议平移步距取 D_lane 加缓冲或更大。
+
+## V8-13b：按规划审查方求解形式裁定返工（2026-11-04）
+
+依据 `_handoff\2026-11-03_V8-13_joint-opt\V8-13b_优化器求解形式裁定_20261104.md`（原样归档 `claude/v08/`，SHA256 `69a5b0e8f36d6db8b3d2af1d386da3fa53e27d74fe7ef3a4af3767de6e258293`）。裁定第 2 节优先；其余照 V8-13 指令与附录。止损与 P0 规则不变。
+
+### V8-13b.0 结论（先看这里）
+
+**状态：按裁定返工后，第 3 部分标定通过；第 4 部分快速批次 20 合同全部完成，检查点 2 触发一项（`attempts`：成功合同尝试次数中位数 2.5 > 1），按规则停在第 4 部分，未做第 5 部分。** 没有触发任何 P0。
+
+| 检查点 2 项（U D.3.4，严格比较） | 实测 | 结果 |
+|---|---|---|
+| 成功 < 16/20 | 20/20 | 未触发 |
+| 成功合同尝试次数中位数 > 1 | **2.5**（1×7、2×3、3×3、4×3、5、6、8、9 各 1） | **触发** |
+| 单合同优化耗时中位数 > 60 s | 19.7 s（20 个合同全部进入优化；最大 85.4 s） | 未触发 |
+| 保留段违反 P0 门禁 | 0（`retained_p0_violations=[]`；6.5 节冻结 V8-11 核验对 20 个保留合同独立复核 3/3 通过） | 未触发 |
+
+**重复尝试的来源（62 次 attempt 中失败 42 次，[v13b/part4/attempt_analysis.txt](v13b/part4/attempt_analysis.txt)）：** 34 次是骨架随机构造失败（巡逻形状 17、折返掉头 8、起点路由 4、边界穿越 3、入圈 1、出圈 1）；8 次是优化后的语义硬检查失败（掉头曲率半径低于 8/25 m 6 次、驻留 3 次、重访 1 次；同一 attempt 可同时多项）。**联合优化的物理硬检查、仿真、段核验、有效性检查没有一次失败。** 检查点 2 的触发主要来自骨架构造层：V8-12 在单个 attempt 内部有 `N_REDRAWS` 重抽与下游退让，这些失败被吸收在 1 次 attempt 里；V8-13 第 4.1 节按要求删除了这些循环，失败就显式落到 20 次预算上。
+
+
+### V8-13b.1 我对裁定第 2 节的理解与落实
+
+| 条 | 理解 | 落实位置 |
+|---|---|---|
+| 2.1 PHR 增广拉格朗日 | 目标 f = F_ref + λ_j F_smooth；不等式 g_k ≤ 0 逐采样点（同 V8-13 3.3 的点：0.1 s 网格 ∪ 端点 ∪ 节点；jerk 每节点区间一个；间距为共同可见 10 Hz 帧），阈值为缓冲值：间距 (3.25−d)/3、几何 −(g_c−1)/m_c（m_c 取 3.3 节的 35/10）、速度/法向/切向/jerk 上限 ×0.95；L = f + (ρ/2)Σ max(0,g+λ/ρ)² − Σλ²/(2ρ)，Σ 为逐约束直接求和（不加积分权）；λ=0、ρ=1；每轮内层 L-BFGS-B maxiter 200、SciPy 默认 ftol/gtol、热启动；每轮后原阈值硬检查（V8-13 3.6 + 附录第 4 节），过则停；否则 λ ← max(0, λ+ρg)，最大违反量 max_k max(g_k,0) 未降到上一轮的 1/4 以下则 ρ×10（首轮与初值比）；最多 8 轮；成功 = 有限且硬检查全过，SciPy success 只记录；用完仍不过 → `optimize_residual`（附最坏约束）。预条件、破对称、等式消元不变。 | `v08/motion/optimize.py`（`_blocks`、`value_grad`、`update_multipliers`、`max_violation`、`solve_joint`） |
+| 2.2 λ_j = 1 | 取消 E/Q；配置 `weight_smooth=1`（definitional） | `configs/v08/joint_opt.json` |
+| 2.3 取消 μ 搜索 | 固定设置把全部夹具在 h=1、0.5 各跑一次；h=1 下应成功夹具全过即通过；h=0.5 只诊断 | `joint_calibration.calibrate_optimizer` |
+| 2.4 大夹具 | 相邻成员对横向平移 15 m，保留对向交叉 | `joint_calibration.CROSS_LATERAL_M` |
+| 2.5 参考加速度留余量 | 骨架名义时间以 a_lat_ref = 2.7、a_lon_ref = 1.8 调同一个 `speed_profile`：通过 `member_nominal(..., guidance=reference_guidance())` 传参（`LoadedConfig.values` 的副本），不改 `v08/sim/`、`nominal.py`、`connect.py`、冻结配置；`build_candidate` 的释放延迟改用 monitoring.py 内与 `connect.release_delays` 同算法、只换 guidance 的 `_release_delays_ref`；T_upper 与 `map_speed_events` 也用同一参考参数；`references_from_skeleton` 与 `check_monitoring` 的名义时间同源 | `skeleton.reference_guidance`、`intents/monitoring.py` |
+| 2.6 旧 1800 s 断言 | 删除 `tests/v08/V8-12/test_own_part3.py` 中两条 `nominal_duration_s ≤ 1800`（依据决定 50）；同文件 `rec["duration_s"] ≤ 1800` 那条位于已不会进入的 `radius_shift_budget` 分支内，不在裁定所列两条之中，未动 | 该测试文件 |
+
+**与裁定无关、为可运行而做的实现改动（不改数学）：**
+- 连续动力学极值改为向量化（批量伴随矩阵求根；候选点规则与逐区间版相同）。300 条随机样条与 66 条第 2 部分参考上与逐区间版逐值一致（最大相对差 6.2e-16），3600 区间耗时 0.064 s 对 3.96 s。逐区间版保留为 `dynamic_extrema_loop`。
+- `SplineTrajectory.pva` 标量快路径（预存每区间多项式系数）；跟踪器每个积分步只取一次参考（原来取两次，数值完全相同）。
+- 第 5 部分运行器、复跑比较、多样性编组参考曲线（指令 5.4 定义）、5.5 分布与三图；失败合同另存最后一个 attempt 的骨架/优化/违规见证（`failure_witness.json`，确定性载荷）。
+
+### V8-13b.2 第 3 部分重新标定（通过）
+
+固定设置（`configs/v08/joint_opt.json` SHA256 `f4cb99514eaf5b9f9751e52d02ca7a938bc3a9cd62753102e331d4282ad4a7c1`），10 个夹具 × h=1、0.5 各一次（[v13b/part3/numerics.json](v13b/part3/numerics.json)、[numerics_run.log](v13b/part3/numerics_run.log)）：
+
+| 夹具 | h=1（判定） | h=0.5（诊断） |
+|---|---|---|
+| 常值 8.3 s / 2000.3 s、语义直线 | 通过，1 轮，0 次迭代 | 通过 |
+| 对向互换 | 通过，1 轮 19 次，间距 3.23 m | 通过，1 轮 31 次 |
+| 圆障碍 | 通过，2 轮 400 次（第 1 轮最大违反 0.31，ρ→10 后通过） | 通过，2 轮 400 次 |
+| 超法向加速度（允许失败） | 通过（λ_j=1 下平滑成近静止，动力学在上限内） | 通过 |
+| 交叉 4 人 × 1000/2000 s（15 m 平移） | 通过，1 轮 10–16 次，0.2–0.35 s | 通过 |
+| 交叉 12 人 × 1000/2000 s | 通过，1 轮 3–11 次，0.9–1.5 s | 通过 |
+
+h=1 下应成功夹具全部通过硬检查 → 标定通过。预置 `test_preset_numeric_optimizer.py` 7/7 通过（V8-13 时因前提未完成未运行）。
+
+### V8-13b.3 第 4 部分快速批次
+
+快速集与 V8-13 相同（`quick_selection.json` 逐字节一致）：o01–o09、o11 × draw 0/1。单进程，墙钟 2051 s。输出 `_handoff\2026-11-03_V8-13_joint_opt\out\quick_v13b\`（393 MB，原始轨迹不入库）；入库 [v13b/part4/records.json](v13b/part4/records.json)、[summary.json](v13b/part4/summary.json)、[quick_run.log](v13b/part4/quick_run.log)。
+
+**分布（[v13b/part4/distributions.txt](v13b/part4/distributions.txt)，20 个成功合同、99 个成员）：**
+- 骨架→优化水平偏离（移动期，10 Hz 评价点）：逐成员最大值 p10/p50/p90/max = 2.43 / 2.79 / 3.32 / 3.47 m，RMS p50 0.11 m；
+- 每合同成功 attempt 的内层迭代：p50 = 200（第 1 轮用满 maxiter 后硬检查即通过），最少 35；
+- 名义时长 1767–3649 s，19/20 超过旧 1800 s（只作对照）；
+- 各阶段耗时（成功合同合计全部 attempt）：骨架 3–33 s、优化 5.9–85 s、仿真 8–153 s、核验 0.4–19 s；仿真随人数线性增长（12 人约 130–150 s）。
+
+**测试（[tests_v13b_part4.txt](tests_v13b_part4.txt)）：** `numeric_flow` 4/4、`numeric_checkpoint` 5/5、`local_e2e`（quick 输出，冻结 V8-11 `verify_segments` 与 `check_validity` 独立重算）3/3。`local_reproduction` 属第 5 部分，未运行。
+
+**边界：** 160 个登记输入 SHA256/大小/mtime 与 V8-12 快照一致（[v13b/inputs_snapshot_v13b.json](v13b/inputs_snapshot_v13b.json)）；冻结工作树 HEAD 不变且干净；未写 `SwarmData\v07_*`；未装包；未推 `main`、未强推。
+
+### V8-13b.4 未做与已备
+
+- 第 5 部分未运行（检查点 2 触发）。代码已备好（8 进程 spawn 池、2 h 截止与合作退出、复跑逐字节比较 `reproduction.json`、多样性 10 族 × 10 种子与 5.4 节编组参考曲线、合并 Fréchet、`full_checkpoint`、5.5 节分布与三图），**均未在真实数据上执行**，不能视为已验证。
+- 快速批次运行时的 `result.json` 还没有逐成员偏离/跟踪统计字段（这些字段是在批次进行中为第 5 部分加入的，只影响记录，不影响算法）；上面的偏离分布取自 `optimized.json` 的优化诊断。
+
+### V8-13b.5 测试汇总
+
+| 测试 | 结果 |
+|---|---|
+| V8-13 预置 tracking / optimizer / flow / checkpoint | 4/4、7/7、4/4、5/5 |
+| V8-13 预置 local_e2e（quick） | 3/3 |
+| V8-13 预置 local_reproduction | 未运行（第 5 部分） |
+| V8-08 / V8-11 预置 / V8-12 geometry / motion / own_part3 | 24/24、30/30、4/4、7/7、3/3（own_part3 已按 2.6 删两条断言） |
+
+预置测试 6 个文件 SHA256 不变。疑似预期错误：无。按 2.4 要求检查：预置测试中没有写死旧夹具构造、μ 搜索或 E/Q 规则的断言；`test_head_on_swap`、`test_circle_obstacle_exact_clearance` 仍对 h=0.5 断言成功，这与 2.3"h=0.5 只作诊断"不冲突（本次两者都通过）。
+
+### V8-13b.6 提交
+
+| 提交 | 内容 |
+|---|---|
+| `525f502` | V8-13b 第 3 部分：增广拉格朗日、λ_j=1、15 m 大夹具、参考加速度 0.9、删两条 1800 s 断言、重新标定 |
+| 本节所在提交 | 第 4 部分快速批次证据、第 5 部分运行器（未运行）、报告 |
+
+### V8-13b.7 复跑命令
+
+在 `Multi-UAV SimpleGC` 下，conda `llm`，单线程环境变量同第 9 节：
+
+```powershell
+python -B tools/v08/run_joint_monitoring.py --stage numerics --out "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-03_V8-13_joint_opt/out_rerun/numerics_v13b"
+python -B tools/v08/run_joint_monitoring.py --stage quick --devset "../docs/v08/V8-03/devset_v08.json" --data-root "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData" --cache "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-03_V8-13_joint_opt/cache" --out "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-03_V8-13_joint_opt/out_rerun/quick_v13b" --workers 1
+```
+
+预期：numerics 退出 0（约 11 s）；quick 退出 2（检查点 2 触发 `attempts`，约 35 分钟）。
+
+### V8-13b.8 执行方观察（与事实分开）
+
+1. 优化器这一层在返工后已经不是瓶颈：20 个合同里联合优化从未因物理硬检查失败，优化耗时中位数 19.7 s。检查点 2 的触发来自骨架随机构造（34/42 次失败）和少量优化后语义检查（8/42）。
+2. 第 4.1 节删除单 attempt 内重抽是正确的方向，但它把 V8-12 时代隐藏在 attempt 内部的构造失败率直接暴露为 attempt 数。若审查方希望"尝试中位数 ≤ 1"成立，可能需要的是骨架层（巡逻形状 α 缩放后仍无解、折返掉头放置、起点路由）的确定性可行集合改进，而不是再动优化器；这需要裁定，我没有改。
+3. 优化后掉头曲率半径不足的 6 次全部是略低于下界（斜切 7.0–7.3 m < 8 m；泪滴 23.1–23.3 m < 25 m）：优化在固定时间下略微"抄近"转弯。可考虑把转弯曲率也作为增广拉格朗日约束、或在掉头区间加贴近权；同样需要裁定。
+4. 驻留/重访失败（4 次）说明优化后的曲线偶尔改变了冻结检测器的判定；这类失败目前只能靠重试吸收。

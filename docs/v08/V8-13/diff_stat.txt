@@ -1,4 +1,5 @@
- Multi-UAV SimpleGC/configs/v08/joint_opt.json      |    66 +
+ Multi-UAV SimpleGC/configs/v08/joint_opt.json      |    71 +
+ .../tests/v08/V8-12/test_own_part3.py              |     2 -
  .../tests/v08/V8-13/test_preset_local_e2e.py       |   100 +
  .../v08/V8-13/test_preset_local_reproduction.py    |    47 +
  .../v08/V8-13/test_preset_numeric_checkpoint.py    |    82 +
@@ -6,23 +7,28 @@
  .../v08/V8-13/test_preset_numeric_optimizer.py     |   236 +
  .../v08/V8-13/test_preset_numeric_tracking.py      |    72 +
  .../tools/v08/run_joint_monitoring.py              |    76 +
- .../v08/diagnostics/joint_calibration.py           |   640 +
- .../v08/motion/intents/monitoring.py               |   549 +-
- Multi-UAV SimpleGC/v08/motion/optimize.py          |   819 +
- Multi-UAV SimpleGC/v08/motion/optimize_checks.py   |   310 +
+ .../v08/diagnostics/joint_calibration.py           |   570 +
+ .../v08/motion/intents/monitoring.py               |   574 +-
+ Multi-UAV SimpleGC/v08/motion/optimize.py          |   920 +
+ Multi-UAV SimpleGC/v08/motion/optimize_checks.py   |   425 +
  Multi-UAV SimpleGC/v08/motion/plan.py              |    11 +-
- Multi-UAV SimpleGC/v08/motion/skeleton.py          |   121 +
- Multi-UAV SimpleGC/v08/runner/joint_monitoring.py  |   388 +
- Multi-UAV SimpleGC/v08/runner/joint_report.py      |   123 +
- Multi-UAV SimpleGC/v08/sim/tracking.py             |   218 +
+ Multi-UAV SimpleGC/v08/motion/skeleton.py          |   134 +
+ Multi-UAV SimpleGC/v08/runner/joint_monitoring.py  |   679 +
+ Multi-UAV SimpleGC/v08/runner/joint_report.py      |   314 +
+ Multi-UAV SimpleGC/v08/sim/tracking.py             |   223 +
  ...44\270\216\350\243\201\345\256\232_20261103.md" |    58 +
  ...50\241\214\346\214\207\344\273\244_20261103.md" |  1964 +
- docs/v08/V8-13/REPORT.md                           |   145 +
+ ...45\274\217\350\243\201\345\256\232_20261104.md" |    67 +
+ docs/v08/V8-13/REPORT.md                           |   463 +
+ docs/v08/V8-13/diff_stat.txt                       |     0
  docs/v08/V8-13/env.txt                             |    69 +
  docs/v08/V8-13/inputs_snapshot_part4.json          |   802 +
  docs/v08/V8-13/part2/cases.json                    | 13261 ++++++
  docs/v08/V8-13/part2/summary.json                  |    91 +
  docs/v08/V8-13/part2/tracking_run.log              |    76 +
+ docs/v08/V8-13/part3/diagnostic.json               | 14974 +++++++
+ docs/v08/V8-13/part3/diagnostic_run.log            |    83 +
+ docs/v08/V8-13/part3/diagnostic_summary.txt        |    80 +
  docs/v08/V8-13/part3/numerics.json                 | 43574 +++++++++++++++++++
  docs/v08/V8-13/part3/numerics_run.log              |   409 +
  docs/v08/V8-13/part3/numerics_summary_by_k.txt     |    54 +
@@ -34,4 +40,7 @@
  docs/v08/V8-13/tests_part2.txt                     |    11 +
  docs/v08/V8-13/tests_part3.txt                     |    22 +
  docs/v08/V8-13/tests_part4.txt                     |   194 +
- 36 files changed, 67302 insertions(+), 382 deletions(-)
+ docs/v08/V8-13/tests_v13b_part3.txt                |   171 +
+ docs/v08/V8-13/v13b/part3/numerics.json            |  3444 ++
+ docs/v08/V8-13/v13b/part3/numerics_run.log         |    24 +
+ 45 files changed, 87135 insertions(+), 388 deletions(-)

@@ -10,6 +10,8 @@
 from fractions import Fraction
 from statistics import median
 
+import numpy as np
+
 QUICK_SUCCESS_FLOOR = Fraction(16, 20)      # U D.3.4
 QUICK_ATTEMPT_MEDIAN = 1                    # U D.3.4
 QUICK_OPT_MEDIAN_S = 60.0                   # U D.3.4
@@ -121,3 +123,192 @@ def full_checkpoint(records, frechet_blocks):
     if fr is not None and fr < 1.0:
         trig.append("frechet")
     return {"triggered": trig, "metrics": metrics}
+
+
+# ================================================================ 第 5.5 节分布与三张图
+
+def _q(xs):
+    xs = [float(x) for x in xs if x is not None]
+    if not xs:
+        return None
+    a = sorted(xs)
+    pick = lambda p: a[min(len(a) - 1, int(round(p * (len(a) - 1))))]
+    return {"n": len(a), "min": a[0], "p10": pick(.1), "p50": pick(.5), "p90": pick(.9), "max": a[-1],
+            "mean": sum(a) / len(a)}
+
+
+def distributions(records, div_records=(), *, legacy_budget_s=1800.0):
+    """第 5.5 节第 1–5、8 项的数值分布（第 6、7 项另由 make_figures 与复跑比较给出）。"""
+    rows = [r for r in records if not r.get("error")]
+    succ = [r for r in rows if r.get("success")]
+    dev_max, dev_mean, worst = [], [], None
+    by_speed = {0: [], 1: [], 2: []}
+    for r in succ:
+        for m, d in (r.get("deviation") or {}).items():
+            dev_max.append(d["max_m"])
+            dev_mean.append(d["mean_m"])
+            by_speed[speed_bin(r["initial_speed_m_s"])].append(d["max_m"])
+            if worst is None or d["max_m"] > worst[2]:
+                worst = (r["contract_id"], m, d["max_m"])
+    form = {}
+    for k in ("prior", "start", "realized"):
+        c = {}
+        for r in succ:
+            v = (r.get("formation") or {}).get(k)
+            c[v] = c.get(v, 0) + 1
+        form[k] = c
+    form["mapped_from_loose"] = sum(bool((r.get("formation") or {}).get("mapped_from_loose")) for r in succ)
+    form["width_retreat"] = sum((r.get("formation") or {}).get("realized") != (r.get("formation") or {}).get("start")
+                                for r in succ)
+    dur = {b: [] for b in (0, 1, 2)}
+    for r in succ:
+        if r.get("nominal_duration_s") is not None:
+            dur[speed_bin(r["initial_speed_m_s"])].append(r["nominal_duration_s"])
+    all_dur = [x for v in dur.values() for x in v]
+    topo = {}
+    for r in succ:
+        t = r.get("topology") or {}
+        key = t.get("final")
+        topo.setdefault(key, {"n": 0, "laps": [], "traversals": []})
+        topo[key]["n"] += 1
+        if t.get("laps") is not None:
+            topo[key]["laps"].append(t["laps"])
+        if t.get("traversals") is not None:
+            topo[key]["traversals"].append(t["traversals"])
+    trk = {k: [] for k in ("max_step_pos_err_m", "max_core_accel_xy", "max_core_jerk_xy", "max_10hz_diff_jerk_xy")}
+    tube = 0
+    for r in succ:
+        for m, d in (r.get("tracking") or {}).items():
+            for k in trk:
+                trk[k].append(d[k])
+            tube += bool(d.get("tube_exceeded_0p5"))
+    timing = {k: _q([(r.get("stage_timing") or {}).get(k) for r in rows]) for k in
+              ("skeleton_s", "optimize_s", "simulation_s", "verify_s")}
+    stages = {}
+    for r in rows:
+        for s_ in r.get("attempt_stages") or []:
+            stages[s_] = stages.get(s_, 0) + 1
+    fails = {}
+    for r in rows:
+        if not r.get("success"):
+            c = (r.get("failure") or {}).get("code")
+            fails[c] = fails.get(c, 0) + 1
+    return {
+        "deviation_max_m": _q(dev_max), "deviation_mean_m": _q(dev_mean), "deviation_worst": worst,
+        "deviation_max_by_speed_bin": {b: _q(v) for b, v in by_speed.items()},
+        "formation": form, "nominal_duration_by_speed_bin": {b: _q(v) for b, v in dur.items()},
+        "nominal_duration_over_legacy_1800s": {"count": sum(x > legacy_budget_s for x in all_dur), "of": len(all_dur)},
+        "topology": {k: {"n": v["n"], "laps": _q(v["laps"]), "traversals": _q(v["traversals"])} for k, v in topo.items()},
+        "tracking": {k: _q(v) for k, v in trk.items()}, "tube_exceeded_members": tube,
+        "timing_s": timing, "wall_s": _q([r.get("wall_s") for r in rows]),
+        "attempt_stages": stages, "final_failures": fails,
+        "success_attempts": _q([r["attempts"] for r in succ]),
+        "optimizer_iterations": _q([n for r in rows for n in (r.get("nit") or []) if n is not None]),
+        "retained_p0_violations": [r["contract_id"] for r in succ if not r.get("retained_p0_ok", True)],
+        "diversity": {"seeds": len(div_records), "success": sum(bool(r.get("success")) for r in div_records)},
+    }
+
+
+def _geom_xy(g):
+    if g["type"] == "Circle":
+        a = np.linspace(0, 2 * np.pi, 361)
+        return g["center_m"][0] + g["radius_m"] * np.cos(a), g["center_m"][1] + g["radius_m"] * np.sin(a)
+    v = np.asarray(g.get("vertices_m") or g.get("vertices"), float)
+    b = float(g.get("buffer_m", 0.0))
+    if b <= 0.0:
+        v = np.vstack([v, v[:1]])
+        return v[:, 0], v[:, 1]
+    from ..scene.exact import signed_distance
+    x0, y0 = v.min(axis=0) - b - 5
+    x1, y1 = v.max(axis=0) + b + 5
+    xs, ys = np.meshgrid(np.linspace(x0, x1, 300), np.linspace(y0, y1, 300))
+    z = signed_distance(g, np.stack([xs, ys], axis=-1))
+    return (xs, ys, z)
+
+
+def _draw_geom(ax, g, **kw):
+    r = _geom_xy(g)
+    if len(r) == 3:
+        ax.contour(r[0], r[1], r[2], levels=[0.0], colors=[kw.get("color", "k")], linewidths=kw.get("lw", 0.8))
+    else:
+        ax.plot(r[0], r[1], color=kw.get("color", "k"), lw=kw.get("lw", 0.8), ls=kw.get("ls", "-"))
+
+
+def make_figures(out_dir, entries, *, data_root, cache_dir, fig_dir):
+    """三张图：成功绕圈、成功折返、一个失败例（按最小业务 key 选；类别不存在写占位说明）。"""
+    import json as _json
+    from pathlib import Path as _P
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from ..motion.optimize import SplineTrajectory
+    from ..scene.context import load_context
+    out = _P(out_dir)
+    fig_dir = _P(fig_dir)
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    recs = _json.loads((out / "records.json").read_text(encoding="utf-8"))
+    by_fid = {e["family_id"]: e for e in entries}
+    pick = {}
+    for r in sorted(recs, key=lambda x: x["contract_id"]):
+        if r.get("success"):
+            topo = (r.get("topology") or {}).get("final")
+            name = "success_loop" if topo == "loop" else "success_retrace"
+            pick.setdefault(name, r)
+        elif (out / "contracts" / r["contract_id"] / "failure_witness.json").exists():
+            pick.setdefault("failure", r)
+    made = {}
+    for name in ("success_loop", "success_retrace", "failure"):
+        r = pick.get(name)
+        path = fig_dir / f"{name}.png"
+        fig, ax = plt.subplots(figsize=(9, 9))
+        if r is None:
+            ax.text(0.5, 0.5, "本批无此类别", ha="center", va="center", fontsize=20)
+            ax.set_axis_off()
+            fig.savefig(path, dpi=110)
+            plt.close(fig)
+            made[name] = None
+            continue
+        ctx = load_context(by_fid[r["family_id"]], data_root=data_root, cache_dir=cache_dir)
+        for f in ctx.facilities:
+            for lay, col in (("warning", "orange"), ("alert", "red")):
+                if lay in f.layers:
+                    _draw_geom(ax, f.layers[lay], color=col)
+        for _, g in ctx.obstacles:
+            _draw_geom(ax, g, color="k", lw=1.2)
+        cdir = out / "contracts" / r["contract_id"]
+        if name != "failure":
+            sk = _json.loads((cdir / "skeleton.json").read_text(encoding="utf-8"))
+            op = _json.loads((cdir / "optimized.json").read_text(encoding="utf-8"))
+            skel = {m: np.asarray(sk["arrays"][v["curve_xy"]["npz"]], float) for m, v in sk["members"].items()}
+            opt = op["members"]
+            tracks = {m: np.load(cdir / "tracks" / m / "p.npy") for m in skel}
+            wit = None
+        else:
+            fw = _json.loads((cdir / "failure_witness.json").read_text(encoding="utf-8"))
+            skel = {m: np.asarray(v, float) for m, v in fw["skeleton_members"].items()}
+            opt = fw.get("optimized") or {}
+            tracks = {m: np.asarray(v, float) for m, v in (fw.get("tracks_p") or {}).items()}
+            wit = fw
+        for i, m in enumerate(sorted(skel)):
+            ax.plot(skel[m][:, 0], skel[m][:, 1], color="0.6", lw=0.8, label="骨架" if i == 0 else None)
+            if m in opt:
+                o = opt[m]
+                tr = SplineTrajectory(m, o["release_s"], o["end_s"], 0.0, np.asarray(o["knots"]),
+                                      np.asarray(o["controls"]))
+                t = np.arange(o["release_s"], o["end_s"], 0.5)
+                xy = tr.evaluate(t)
+                ax.plot(xy[:, 0], xy[:, 1], color="C0", lw=0.9, label="优化" if i == 0 else None)
+            if m in tracks:
+                ax.plot(tracks[m][:, 0], tracks[m][:, 1], color="C2", lw=0.6, ls="--", label="实测" if i == 0 else None)
+        if wit is not None:
+            for f_ in (wit.get("physical_failures") or []) + (wit.get("monitoring_failures") or []):
+                ax.set_title(f"{r['contract_id']} 失败：{wit.get('stage')} {f_.get('kind')}", fontsize=10)
+                break
+        else:
+            ax.set_title(f"{r['contract_id']} {name}", fontsize=10)
+        ax.set_aspect("equal")
+        ax.legend(loc="upper right", fontsize=8)
+        fig.savefig(path, dpi=110)
+        plt.close(fig)
+        made[name] = r["contract_id"]
+    return made
