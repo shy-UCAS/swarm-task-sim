@@ -5,6 +5,8 @@
   证书从原几何重算，不是非空 dict；
 - approx_empty：距离场保守集或极坐标可行带为空，精确复核无证书；
 - budget_exhausted：随机构造/连接/名义判据/间距用完 20 次，只说明预算耗尽，保留各 attempt 原因；
+V8-13（指令 4.1）：删除按名义时长下界判"近似为空"的分支；只保留有几何依据的空集分类。V8-13 runner 只调用
+plan_attempt 并自管唯一的 20 次全链路预算；plan_segment 仅留作历史入口，不被 V8-13 调用。
 - 单个 attempt 的失败是 candidate_rejected（原始数值见证在 attempt_log 里）。
 规划不动公共抽签和目标：重试只加 attempt。
 """
@@ -97,12 +99,13 @@ def empty_query(ctx, group, task):
     return rec, failure
 
 
+def final_failure(ctx, group, task, log):
+    """r4 13.4 的最终失败分类（V8-13 runner 复用）：log 为各 attempt 记录，需含 stage。"""
+    return _final_failure(ctx, group, task, log)
+
+
 def _final_failure(ctx, group, task, log):
     stages = {r["stage"] for r in log}
-    if stages == {"budget_region"} or stages == {"budget_region", "patrol_region"}:
-        return Failure("approx_empty", "全部 attempt 中，几何上可行的圈心/环带都因名义总时长的下界估计超过预算而被排除"
-                                       "（预算许可集合为空；下界是估计，不是证明）",
-                       "duration_budget", {"attempts": len(log), "stages": sorted(stages)}, None)
     if stages == {"patrol_region"}:
         rec, failure = empty_query(ctx, group, task)
         if failure is not None:

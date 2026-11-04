@@ -230,3 +230,81 @@ def check_physical(problem, trajectories, settings):
         failures.append({"kind": "separation", "pair": sep["pair"], "min_m": sep["min_m"], "t_s": sep["t_s"]})
     return {"passed": not failures, "failures": failures, "separation": sep, "clearances": clear,
             "dynamic_extrema": dyn, "endpoints": endpoints, "lines": line_res, "limits": lim}
+
+
+# ---------------------------------------------------------------- 监视语义硬检查（生产 optimize_segment 负责）
+
+def check_monitoring(ctx, skeleton, trajectories, settings):
+    """dict: passed, failures, boundaries, turns, nominal_members。均在优化后的曲线上重算：
+    1) 冻结 crossing_analysis 重查单次直线穿越、两侧 10 m、目标入圈前 100 m、未穿越部分离边界 10 m（不传 skip_ranges）；
+       折线取绝对 0.1 s 时刻点 ∪ 端点（带内由法向等式保证真共线）；
+    2) 掉头区间（骨架折返掉头的圆弧图元，按骨架名义时间映射到优化曲线）的连续最小曲率半径 ≥ 15/8/25 m；
+       优化样条 C²，速度非零处曲率连续，没有"不连续异号曲率接点"，C12 连续曲率变号豁免适用；
+    3) 终点离所有 warning ≥ retreat_clearance_m；
+    4) 名义判据：释放起至移动结束 + 末端保持的 10 Hz p/v 调 screen_member：patrol_revisit、无驻留、圈层 ≤ 1。"""
+    from ..config import load_config
+    from ..scene.exact import signed_distance
+    from .connect import crossing_analysis
+    from .intents.monitoring import monitoring_constraints
+    from .nominal import member_nominal
+    from .nominal_checks import screen_member
+    from .optimize import physical_limits
+    lim = physical_limits(settings)
+    M = load_config("monitoring").values
+    target = skeleton.witnesses["target_id"]
+    cons = monitoring_constraints(ctx, target)
+    failures = []
+    boundaries, turns, nominal_members = {}, {}, {}
+    turn_ranges = skeleton.witnesses.get("turn_ranges") or {}
+    for m in sorted(trajectories):
+        tr = trajectories[m]
+        ts = _grid_times(tr)
+        xy = tr.evaluate(ts + tr.release_s, 0)
+        viol, cross = crossing_analysis(xy, cons["warnings"], target, band_m=ctx.params["pre_entry_warning_clearance_m"],
+                                        align_m=ctx.params["alignment_length_m"])
+        boundaries[m] = {"violations": viol, "crossings": [(c.facility_id, c.direction, float(c.s_m)) for c in cross]}
+        if viol:
+            failures.append({"kind": "boundary_crossing", "member": m, "first": viol[0], "count": len(viol)})
+        # 掉头曲率
+        nom = member_nominal(skeleton.members[m])
+        rows = []
+        for kind, s_a, s_b, key in turn_ranges.get(m, []):
+            ta = float(np.interp(s_a, nom.curve.s, nom.t_nodes))
+            tb = float(np.interp(s_b, nom.curve.s, nom.t_nodes))
+            need = float(M[key]) if key else None
+            rho, where = curvature_radius_min(tr.knots, tr.controls, max(ta, 0.0), min(tb, tr.duration))
+            rows.append({"kind": kind, "t_local_s": (ta, tb), "min_radius_m": rho, "required_m": need,
+                         "at_local_s": where})
+            if need is not None and not rho >= need:
+                failures.append({"kind": "turn_radius", "member": m, "turn": kind, "min_radius_m": rho,
+                                 "required_m": need})
+        turns[m] = rows
+        # 终点撤离
+        end = tr.evaluate(tr.end_s, 0)
+        for fid, geom in cons["warnings"].items():
+            sd = float(signed_distance(geom, end))
+            if not sd >= M["retreat_clearance_m"]:
+                failures.append({"kind": "terminal_clearance", "member": m, "facility": fid, "signed_m": sd})
+        # 名义判据
+        r_us = int(round(tr.release_s * 10)) * 100_000
+        e_us = int(math.floor((tr.end_s + lim["hold_s"]) * 10 + 1e-9)) * 100_000
+        t_us = np.arange(r_us, e_us + 1, 100_000, dtype=np.int64)
+        tt = t_us / US
+        p = np.zeros((len(tt), 3))
+        v = np.zeros((len(tt), 3))
+        p[:, :2] = tr.evaluate(tt, 0)
+        v[:, :2] = tr.evaluate(tt, 1)
+        p[:, 2] = tr.altitude_m
+        scr = screen_member(ctx.facilities, target, t_us, p, v)
+        nominal_members[m] = {"patrol_revisit": scr["patrol_revisit"],
+                              "dwell_anywhere": bool(scr["dwell_anywhere"]["detected"]),
+                              "max_target_layer": scr["max_target_layer"], "max_other_layer": scr["max_other_layer"]}
+        if not scr["patrol_revisit"]:
+            failures.append({"kind": "nominal_revisit", "member": m})
+        if scr["dwell_anywhere"]["detected"]:
+            failures.append({"kind": "nominal_dwell", "member": m})
+        if scr["max_target_layer"] > 1 or scr["max_other_layer"] > 1:
+            failures.append({"kind": "nominal_layers", "member": m, **{k: nominal_members[m][k]
+                                                                       for k in ("max_target_layer", "max_other_layer")}})
+    return {"passed": not failures, "failures": failures, "boundaries": boundaries, "turns": turns,
+            "nominal_members": nominal_members}

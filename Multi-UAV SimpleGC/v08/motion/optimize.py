@@ -788,3 +788,32 @@ def solve_joint(problem, settings, *, knot_s=1.0):
     if not phys["passed"]:
         return JointSolution(False, trajs, "optimize_residual", diag)
     return JointSolution(True, trajs, None, diag)
+
+
+def optimize_segment(ctx, skeleton, key, settings):
+    """从实际骨架建立问题，solve_joint 后运行全部语义硬检查；不能省略任何设施。
+    skeleton 为 plan_attempt 返回的成功 SegmentPlan。返回 dict：ok、stage、reason、solution、monitoring、
+    references、lines（含元数据）、problem。"""
+    from .intents.monitoring import monitoring_constraints
+    from .optimize_checks import check_monitoring
+    from .skeleton import references_from_skeleton
+    target = skeleton.witnesses["target_id"]
+    cons = monitoring_constraints(ctx, target)
+    base = tuple(cons["base"])
+    field = ctx.field("route", list(base))
+    refs, lines, maps = references_from_skeleton(
+        skeleton, warnings=cons["warnings"], target_id=target,
+        band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
+    problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines))
+    sol = solve_joint(problem, settings, knot_s=float(settings["knot_s"]))
+    out = {"ok": False, "stage": "optimize", "reason": sol.reason, "solution": sol, "monitoring": None,
+           "references": refs, "lines": lines, "problem": problem, "maps": maps}
+    if not sol.ok:
+        return out
+    mon = check_monitoring(ctx, skeleton, sol.references, settings)
+    out["monitoring"] = mon
+    if not mon["passed"]:
+        out.update(stage="optimize_monitoring", reason="optimize_residual")
+        return out
+    out.update(ok=True, stage="optimized", reason=None)
+    return out

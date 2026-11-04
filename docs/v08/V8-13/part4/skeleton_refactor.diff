@@ -1,0 +1,804 @@
+diff --git a/Multi-UAV SimpleGC/v08/motion/intents/monitoring.py b/Multi-UAV SimpleGC/v08/motion/intents/monitoring.py
+index 0ab610a..ae9d616 100644
+--- a/Multi-UAV SimpleGC/v08/motion/intents/monitoring.py	
++++ b/Multi-UAV SimpleGC/v08/motion/intents/monitoring.py	
+@@ -2,8 +2,13 @@
+ 
+ build_candidate 不重抽任何已给提案：先验抽样在外层完成（plan.py）。给定完整提案，它做确定性的构造：
+ 参考路径（汇合点 → 入圈直线 → 巡逻 → 出圈直线 → 终点）→ 队形槽位 → 成员车道 + 各自的起点连接 →
+-速度剖面 → 释放延迟 → 逐成员精确几何、边界穿越、名义判据预筛选 → 连续时间间距 → 1800 s 预算。
+-任一检查不过，返回带 Failure 的 SegmentPlan（candidate_rejected，保留原始数值见证），不放宽任何余量。
++速度剖面 → 释放延迟 → 逐成员精确几何、边界穿越与终点撤离。任一检查不过，返回带 Failure 的
++SegmentPlan（candidate_rejected，保留原始数值见证），不放宽任何余量。
++
++V8-13（指令 4.1、决定 50）：名义总时长只记录不拒绝；连续时间间距与名义重访/驻留/圈层筛查不再拒绝骨架
++（间距与物理约束交给联合优化，名义判据移到优化后的硬检查）；速度事件按真实参考曲线的名义用时上界生成，
++不再按 1800 s 截断；队形只由走廊宽度确定（skeleton.width_then_build），下游失败不退让；一个 attempt 只抽
++一套形状、圈数与穿行次数按原抽样一次构造。
+ 
+ 提案字典的键（单位 m、rad、m/s）：
+   topology: "loop" | "retrace"；center_xy、rho0_m、coefficients_m、phase_rad、direction(±1)；
+@@ -23,14 +28,16 @@ from ...config import load_config
+ from ...contract.monitoring import Failure, MemberPlan, SegmentPlan
+ from ...scene.exact import polyline_clearance, signed_distance
+ from ...scene.field import Clearance
+-from ...sim.guidance import make_curve
++from ...sim.guidance import make_curve, nominal_time, speed_profile
++from ...sim.kernel import member_config
+ from ...sim.types import SimContractError
+ from ..connect import crossing_analysis, release_delays
+ from ..formation import derive_members, formation_slots, make_reference, retreat_chain
+-from ..nominal import (continuous_minimum, member_nominal, piece_arrays, release_us, sample_nominal)
++from ..nominal import member_nominal, release_us, sample_nominal
+ from ..nominal_checks import screen_member
+ from ..path import PathError, periodic_radius_derivs, sample_primitives
+-from ..speed import map_speed_events
++from ..skeleton import width_then_build
++from ..speed import draw_speed_events, map_speed_events
+ 
+ NODE_TOL_M = 1e-6
+ FAR_M = 5.0   # polyline_clearance 快速路径：真实余量小于它的弦仍精确
+@@ -169,8 +176,9 @@ def _plan(failure, **kw):
+                        failure=failure, **kw)
+ 
+ 
+-def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_only=False):
+-    """duration_only=True 时，名义总时长检查通过就返回一个没有成员曲线的占位计划（只供预算修复的搜索使用）。"""
++def build_candidate(ctx, group, task, states, occupied, key, proposal):
++    """给定完整提案，确定性地构造一次完整骨架。提案未显式给 speed_events 时，按真实参考曲线（汇合→终点）
++    在恒定最小指令速度下的名义用时上界 T_upper 一次生成速度事件（draw_speed_events 原接口），再顺序映射。"""
+     P = proposal
+     cfg_m = load_config("monitoring").values
+     G = load_config("guidance").values
+@@ -210,20 +218,38 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_
+         lane_off[m] = len(sb.xy) - 1
+     cum = {m: np.r_[0.0, np.cumsum(np.hypot(*np.diff(curves[m], axis=0).T))] for m in curves}
+ 
+-    # 速度剖面
++    # 速度剖面：T_upper = 恒定最小指令速度（冻结 4 m/s）、v0=v_end=0 的名义用时；4–10 m/s 事件逐点不低于该剖面，
++    # 故 T_upper 是有限的名义用时上界，只作事件时域，不作拒绝阈值。
+     v0 = float(group.speed_profile.initial_speed_m_s)
+-    ev = P.get("speed_events") or {"times_s": (), "speeds_m_s": ()}
+-    speed_info = {"errors_s": (), "dropped": (), "events": len(ev["times_s"])}
++    try:
++        ref_curve = make_curve(ref.xy[mark_idx["collect"]:mark_idx["terminal"] + 1],
++                               max_chord_m=G["max_chord_m"], max_turn_rad=G["max_turn_per_chord_rad"])
++    except SimContractError as exc:
++        return _plan(_reject(f"参考曲线不满足引导接口：{exc}", "reference/speed", {"error": str(exc)}), **base_fail)
++    ev = P.get("speed_events")
++    t_upper = None
++    if ev is None:
++        v_slow = speed_profile(ref_curve, ((0.0, float(cfg_m["speed_min_m_s"])),), a_lat=G["a_lat_m_s2"],
++                               a_lon=G["a_lon_m_s2"], v_max=member_config().vehicle_profile.max_speed_xy_m_s,
++                               v0=0.0, v_end=0.0, stops=(ref_curve.length,))
++        t_upper = float(nominal_time(ref_curve, v_slow, 0.0, ref_curve.length))
++        sev = draw_speed_events(group.speed_profile,
++                                RngKey(key.family_id, key.draw, "speed", mission=key.mission, branch=key.branch,
++                                       group=key.group, segment=key.segment, attempt=key.attempt),
++                                horizon_s=t_upper)
++        ev = {"times_s": tuple(sev.times_s), "speeds_m_s": tuple(sev.speeds_m_s)}
++        P = {**P, "speed_events": ev}
++        base_fail = dict(proposal=P, business_key=_key_dict(key))
++    speed_info = {"errors_s": (), "dropped": (), "events": len(ev["times_s"]), "T_upper_s": t_upper,
++                  "times_s": tuple(ev["times_s"]), "speeds_m_s": tuple(ev["speeds_m_s"])}
+     breaks_ref = ((0.0, v0),)
+     if len(ev["times_s"]):
+         try:
+-            ref_curve = make_curve(ref.xy[mark_idx["collect"]:mark_idx["terminal"] + 1],
+-                                   max_chord_m=G["max_chord_m"], max_turn_rad=G["max_turn_per_chord_rad"])
+             smap = map_speed_events(ref_curve, ev["times_s"], ev["speeds_m_s"], (), None, initial_speed_m_s=v0)
+         except SimContractError as exc:
+             return _plan(_reject(f"参考曲线不满足引导接口：{exc}", "reference/speed", {"error": str(exc)}), **base_fail)
+         breaks_ref = smap.breaks
+-        speed_info = {"errors_s": smap.errors_s, "dropped": smap.dropped, "events": len(ev["times_s"])}
++        speed_info.update(errors_s=smap.errors_s, dropped=smap.dropped)
+     breaks = {}
+     for m in slots.order:
+         lane = lanes[m]
+@@ -258,8 +284,7 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_
+     anchors = {"collect_s": s_c, "patrol_start_s": ref.marks["patrol_start"], "patrol_end_s": ref.marks["patrol_end"],
+                "terminal_s": s_t}
+     p_lo, p_hi = ref.marks["patrol_start"], ref.marks["patrol_end"]
+-    # 名义总时长与 1800 s 预算：自首名成员释放到最后成员停止保持结束，不含共同的 20 s 预保持。
+-    # 它只依赖名义时钟，比几何、判据和间距检查便宜得多，所以先查（失败的原因链仍记录第一个失败阶段）。
++    # 名义总时长：自首名成员释放到最后成员停止保持结束，不含共同的 20 s 预保持。只记录（决定 50），不拒绝。
+     order = list(slots.order)
+     wit["patrol_time_s"] = {}
+     for m in order:
+@@ -272,13 +297,6 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_
+     t1 = max(nominals[m].end_s for m in order)
+     duration = float(t1 - t0)
+     wit["nominal_duration_s"] = duration
+-    if duration > cfg_m["nominal_budget_s"]:
+-        return _fail_with(P, key, f"名义总时长 {duration:.1f} s 超过预算 {cfg_m['nominal_budget_s']} s", "duration_budget",
+-                          {"duration_s": duration, "budget_s": cfg_m["nominal_budget_s"],
+-                           "patrol_time_s": dict(wit["patrol_time_s"])}, wit)
+-    if duration_only:
+-        return SegmentPlan(members={}, reference_xy=(), nominal_duration_s=duration, anchors=anchors, repairs=(),
+-                           failure=None, proposal=P, business_key=_key_dict(key), witnesses=wit)
+     crossing_log = {}
+     for m in slots.order:
+         xy = curves[m]
+@@ -311,8 +329,10 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_
+                                   "terminal_clearance", {"member": m, "facility": fid, "signed_m": sd,
+                                                          "required_m": retreat}, wit)
+     wit["crossings"] = crossing_log
++    wit["target_id"] = target
++    wit["turn_ranges"] = _turn_ranges(P, ref, slots, coll_idx, lanes, cum, spacing)
+ 
+-    # 名义判据预筛选（冻结检测器的纯 NumPy 函数体）：逐成员
++    # 名义判据预筛选（冻结检测器的纯 NumPy 函数体）：逐成员只记录；V8-13 在优化后的曲线上硬检查（check_monitoring）
+     for m in slots.order:
+         smp = sample_nominal(members[m], include_prerelease=False, nominal=nominals[m])
+         scr = screen_member(ctx.facilities, target, smp.time_us, smp.p, smp.v)
+@@ -320,33 +340,8 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_
+                             "max_target_layer": scr["max_target_layer"], "max_other_layer": scr["max_other_layer"],
+                             "revisit": {k: scr["revisit"][k] for k in ("detected", "t1", "t2", "distance_m",
+                                                                       "departure_m", "azimuth_coverage_deg")}}
+-        if not scr["patrol_revisit"]:
+-            return _fail_with(P, key, f"成员 {m} 的名义轨迹没有取得合格重访", "nominal_revisit", {"member": m}, wit)
+-        if scr["dwell_anywhere"]["detected"]:
+-            return _fail_with(P, key, f"成员 {m} 的名义轨迹在全窗口上检出驻留", "nominal_dwell",
+-                              {"member": m, "dwell": {k: scr["dwell_anywhere"][k] for k in ("frame_index", "t_s")}}, wit)
+-        if scr["max_target_layer"] > 1 or scr["max_other_layer"] > 1:
+-            return _fail_with(P, key, f"成员 {m} 进入了不允许的圈层", "nominal_layers",
+-                              {"member": m, "max_target_layer": scr["max_target_layer"],
+-                               "max_other_layer": scr["max_other_layer"]}, wit)
+-
+-    # 连续时间间距：D_lane = 冻结的 2 m + 2 × 跟踪管 0.5 m
+-    d_lane = 2.0 + 2.0 * cfg_m["tracking_tube_m"]
+-    arrays = {m: piece_arrays(nominal=nominals[m]) for m in slots.order}
+-    worst = None
+-    for i in range(len(order)):
+-        for j in range(i + 1, len(order)):
+-            r = continuous_minimum(arrays[order[i]], arrays[order[j]])
+-            if worst is None or r.min_distance_m < worst["min_distance_m"]:
+-                worst = {"min_distance_m": r.min_distance_m, "time_s": r.time_s, "pair": (order[i], order[j]),
+-                         "relative": r.r0}
+-    wit["separation"] = worst
+-    wit["required_separation_m"] = d_lane
+-    if worst is not None and not worst["min_distance_m"] >= d_lane:
+-        return _fail_with(P, key, f"成员对 {worst['pair']} 的连续时间最小间距 {worst['min_distance_m']:.3f} m < {d_lane} m",
+-                          "separation", worst, wit)
+-
+     ref_xy = tuple((float(a), float(b)) for a, b in ref.xy[mark_idx["collect"]:mark_idx["terminal"] + 1])
++    wit["required_separation_m"] = None    # V8-13：间距不在骨架上判定，交给联合优化与实测门禁
+     formation = {"prior": slots.prior, "start": slots.start, "realized": slots.realized,
+                  "mapped_from_loose": slots.mapped_from_loose, "retreat_chain": list(retreat_chain(slots.start)),
+                  "order": list(slots.order), "offsets": {m: list(v) for m, v in slots.offsets.items()},
+@@ -360,6 +355,42 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal, duration_
+                        member_nominal_s={m: float(nominals[m].travel_s) for m in order}, witnesses=wit)
+ 
+ 
++TURN_MIN_KEYS = {"u": "turn_u_min_m", "oblique": "turn_oblique_min_m", "teardrop": "turn_teardrop_min_m"}
++
++
++def _turn_ranges(P, ref, slots, coll_idx, lanes, cum, spacing):
++    """折返掉头的圆弧图元在参考上的站点区间 → 各成员曲线上的弧长区间（V8-13 优化后曲率复核用）。
++    {成员: [(掉头类型, s_from_m, s_to_m, 下界配置键)]}；绕圈为空。"""
++    if P.get("topology") != "retrace" or not P.get("turns"):
++        return {}
++    infos = (P.get("topology_info") or {}).get("turns") or []
++    pat = patrol_primitives(P)
++    smp = sample_primitives(pat, spacing)
++    s_loc = np.r_[0.0, np.cumsum(np.hypot(*np.diff(smp.xy, axis=0).T))]
++    base = float(ref.marks["patrol_start"])
++    stations = []
++    k_prim = 0
++    for k, (a, b) in enumerate(P["passes"]):
++        k_prim += 1
++        if k < len(P["passes"]) - 1:
++            kind = infos[k]["kind"] if k < len(infos) else None
++            for prim in P["turns"][k]:
++                lo, hi = smp.intervals[k_prim]
++                if prim[0] == "arc":
++                    stations.append((kind, base + float(s_loc[lo]), base + float(s_loc[hi])))
++                k_prim += 1
++    out = {}
++    for m in slots.order:
++        sref = np.concatenate([np.full(coll_idx[m], -1.0), lanes[m].s_ref])
++        rows = []
++        for kind, ta, tb in stations:
++            idx = np.flatnonzero((sref >= ta - 1e-9) & (sref <= tb + 1e-9))
++            if len(idx):
++                rows.append((kind, float(cum[m][idx[0]]), float(cum[m][idx[-1]]), TURN_MIN_KEYS.get(kind)))
++        out[m] = rows
++    return out
++
++
+ def _key_dict(key):
+     return {"family_id": key.family_id, "draw": key.draw, "mission": key.mission, "branch": key.branch,
+             "group": key.group, "segment": key.segment, "attempt": key.attempt}
+@@ -380,13 +411,11 @@ from ..connect import (MIN_STRAIGHT_M, corner_radius_bounds, fillet_route, left_
+                        unit)
+ from ..formation import MIN_LATERAL_STEP_M, formation_key, mapped_start  # noqa: E402
+ from ..path import connect_poses, interpolating_coefficients, sample_loop  # noqa: E402
+-from ..speed import draw_speed_events  # noqa: E402
+ 
+ PHI_ROWS = 360
+ R_STEP_M = 2.0
+ N_CENTERS = 6
+ N_ENTRIES = 12
+-N_REDRAWS = 6
+ ALPHA_SCAN = tuple(float(x) for x in np.round(np.linspace(1.0, 0.0, 21), 3))
+ CURV_DERATE = 0.98
+ 
+@@ -432,10 +461,6 @@ class _Setup:
+         self.v_cap = self.M["speed_max_m_s"]
+         self.G = load_config("guidance").values
+         self.stats = {}
+-        self.sev = draw_speed_events(group.speed_profile,
+-                                     RngKey(key.family_id, key.draw, "speed", mission=key.mission, branch=key.branch,
+-                                            group=key.group, segment=key.segment, attempt=key.attempt),
+-                                     horizon_s=self.M["nominal_budget_s"])
+         self.v0 = float(group.speed_profile.initial_speed_m_s)
+ 
+     def rng(self, purpose):
+@@ -637,56 +662,6 @@ def _center_candidates(S, rng, n):
+     return out
+ 
+ 
+-def _time_for_length(sev, v0, length):
+-    """速度剖面（时间上的分段常数：v0，之后每个事件换一个速度）下走完 length 米所需的时间。"""
+-    ts = [0.0] + [float(t) for t in sev.times_s]
+-    vs = [float(v0)] + [float(v) for v in sev.speeds_m_s]
+-    for k in range(len(ts)):
+-        t_end = ts[k + 1] if k + 1 < len(ts) else math.inf
+-        seg = vs[k] * (t_end - ts[k])
+-        if length <= seg:
+-            return ts[k] + length / vs[k]
+-        length -= seg
+-    return math.inf
+-
+-
+-BUDGET_SLACK = 1.1       # 屏蔽估计里给样条超出内边界曲线的长度、曲率限速留的余量（只用来筛掉明显不可能的圈心）
+-
+-
+-def _inner_edge(comp, rs):
+-    """分量在每个方位行上的最小合法半径（行号 → 米）。"""
+-    return {row: float(rs[min(lo for lo, _ in runs)]) for row, runs in comp["rows"].items()}
+-
+-
+-def _budget_ok(S, center, comp, rs, need_rows, *, loop):
+-    """用该圈心下分量的内边界做名义总时长的粗下界（预算许可集合是否为空，第 3.6 节）：
+-    绕圈：圈数下限 × ∫ r_in dφ；折返：穿行次数下限 × 最短满足覆盖的弧。汇合段取各成员到圈心的距离减平均内半径。
+-    这是筛选圈心的廉价估计，不是证明；通过后仍由真实构造和修复核对。"""
+-    r_in = _inner_edge(comp, rs)
+-    dphi = 2.0 * math.pi / PHI_ROWS
+-    if loop:
+-        length = sum(r_in.values()) * dphi
+-        n_rows = len(r_in)
+-        lap_lo = float(S.ctx.params["monitoring"]["laps"][0])
+-        patrol = lap_lo * length
+-        rbar = length / (2.0 * math.pi)
+-    else:
+-        rows = sorted(r_in)
+-        best = math.inf
+-        for k in range(len(rows)):
+-            win = [(rows[k] + i) % PHI_ROWS for i in range(need_rows)]
+-            if all(w in r_in for w in win):
+-                best = min(best, sum(r_in[w] for w in win) * dphi)
+-        if not math.isfinite(best):
+-            return False
+-        t_min = float(min(S.ctx.params["monitoring"]["traversals"]))
+-        patrol = t_min * best
+-        rbar = float(np.mean(list(r_in.values())))
+-    transit = max(float(np.hypot(*(np.asarray(S.states[m].p[:2], float) - center))) - rbar for m in S.group.member_ids)
+-    total = max(transit, 0.0) + BUDGET_SLACK * patrol + S.M["retreat_clearance_m"]
+-    return _time_for_length(S.sev, S.v0, total) <= S.M["nominal_budget_s"]
+-
+-
+ def _warning_bbox(S):
+     key = ("warning_bbox", S.target)
+     if key not in S.ctx.extra:
+@@ -695,13 +670,12 @@ def _warning_bbox(S):
+     return S.ctx.extra[key]
+ 
+ 
+-def _find_ring(S, slots, rng, prior_topology, sigma):
++def _find_ring(S, slots, centers, prior_topology, sigma):
++    """在同一批圈心候选上求该队形车道偏移下的环/弧可行集合（只由几何、走廊宽度与重访覆盖决定）。"""
+     shifts = sorted({d for _, d in slots.offsets.values()})
+-    ctx = S.ctx
+     need_rows = int(math.ceil(S.criteria["min_azimuth_coverage_deg"] / 360.0 * PHI_ROWS))
+-    info = {"centers_tried": 0, "loop_feasible": 0, "retrace_feasible": 0, "loop_budget_rejected": 0,
+-            "retrace_budget_rejected": 0}
+-    for center in _center_candidates(S, rng, N_CENTERS):
++    info = {"centers_tried": 0, "loop_feasible": 0, "retrace_feasible": 0}
++    for center in centers:
+         info["centers_tried"] += 1
+         # 巡逻点都在目标预警圈内，半径超过圈心到预警外接框最远角的部分一定不可行，没必要扫
+         wx0, wy0, wx1, wy1 = _warning_bbox(S)
+@@ -711,11 +685,6 @@ def _find_ring(S, slots, rng, prior_topology, sigma):
+         comps = _components(mask)
+         loops = [c for c in comps if c["wrapping"]]
+         arcs = [c for c in comps if c["n_rows"] >= need_rows]
+-        n_loops, n_arcs = len(loops), len(arcs)
+-        loops = [c for c in loops if _budget_ok(S, center, c, rs, need_rows, loop=True)]
+-        arcs = [c for c in arcs if _budget_ok(S, center, c, rs, need_rows, loop=False)]
+-        info["loop_budget_rejected"] += n_loops - len(loops)
+-        info["retrace_budget_rejected"] += n_arcs - len(arcs)
+         if loops:
+             info["loop_feasible"] += 1
+         if arcs:
+@@ -728,31 +697,24 @@ def _find_ring(S, slots, rng, prior_topology, sigma):
+             topo, forced = "loop", prior_topology != "loop"
+         else:
+             topo, forced = "retrace", prior_topology != "retrace"
+-        reason = None
+-        if forced:
+-            reason = "budget" if (n_loops > len(loops) or n_arcs > len(arcs)) else "geometry"
++        reason = "geometry" if forced else None
+         return {"center": center, "mask_rs": rs, "comps": comps, "loops": loops, "arcs": arcs, "topology": topo,
+                 "forced": forced, "forced_reason": reason, "shifts": shifts, "sigma": sigma, "info": info,
+                 "need_rows": need_rows}
+-    if info["loop_budget_rejected"] or info["retrace_budget_rejected"]:
+-        return {"empty": True, "budget": True, "info": info}
+     return {"empty": True, "info": info}
+ 
+ 
+ def _draw_loop(S, ring, rng):
++    """一个 attempt 只抽一套形状；同一形状的合法 α 缩放保留并记账。"""
+     sizes = np.array([c["n_rows"] for c in ring["loops"]], float)
+     sg = ring["sigma"]
+-    out = None
+-    for redraw in range(N_REDRAWS):
+-        K = int(rng.integers(int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"]) + 1))
+-        comp = ring["loops"][int(rng.choice(len(ring["loops"]), p=sizes / sizes.sum()))]
+-        got = [_draw_radius(rng, comp, int(round(j * PHI_ROWS / K)) % PHI_ROWS, ring["mask_rs"], True)
+-               for j in range(K)]
+-        radii = np.array([g[0] for g in got])
+-        runs = tuple(g[1] for g in got)
+-        out = _scale_alpha(S, ring["center"], radii, 0.0, sg * 2 * np.pi, ring["shifts"])
+-        if out is not None:
+-            break
++    K = int(rng.integers(int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"]) + 1))
++    comp = ring["loops"][int(rng.choice(len(ring["loops"]), p=sizes / sizes.sum()))]
++    got = [_draw_radius(rng, comp, int(round(j * PHI_ROWS / K)) % PHI_ROWS, ring["mask_rs"], True)
++           for j in range(K)]
++    radii = np.array([g[0] for g in got])
++    runs = tuple(g[1] for g in got)
++    out = _scale_alpha(S, ring["center"], radii, 0.0, sg * 2 * np.pi, ring["shifts"])
+     if out is None:
+         return None
+     rho0, coef, alpha, tried = out
+@@ -760,8 +722,7 @@ def _draw_loop(S, ring, rng):
+     phase = float(rng.uniform(0.0, 2 * np.pi))
+     return {"topology": "loop", "center_xy": tuple(map(float, ring["center"])), "rho0_m": rho0,
+             "coefficients_m": coef, "phase_rad": phase, "direction": int(sg), "laps": laps, "K": K,
+-            "sampled_radii_m": tuple(map(float, radii)), "knot_runs": runs, "alpha": alpha, "alpha_tried": tried,
+-            "redraws": redraw}
++            "sampled_radii_m": tuple(map(float, radii)), "knot_runs": runs, "alpha": alpha, "alpha_tried": tried}
+ 
+ 
+ def _draw_arc_once(S, ring, rng):
+@@ -819,12 +780,8 @@ def _draw_arc_once(S, ring, rng):
+ 
+ 
+ def _draw_arc(S, ring, rng):
+-    for redraw in range(N_REDRAWS):
+-        out = _draw_arc_once(S, ring, rng)
+-        if out is not None:
+-            out["redraws"] = redraw
+-            return out
+-    return None
++    """一个 attempt 只抽一套形状（不重抽到过关）。"""
++    return _draw_arc_once(S, ring, rng)
+ 
+ 
+ # ---------------------------------------------------------------- 掉头
+@@ -1190,21 +1147,15 @@ def _patrol_poses(spec, passes=None):
+ 
+ 
+ 
+-# ---------------------------------------------------------------- 形状确定之后的构造链与预算修复
+-
+-def _is_budget(plan):
+-    return plan.failure is not None and plan.failure.feasible_set == "duration_budget"
+-
++# ---------------------------------------------------------------- 形状确定之后的构造链
+ 
+ class _Build:
+-    """一个 attempt 内、形状确定之后的构造链：转弯 → 入圈 → 起点 → 出圈 → 候选检查。
+-    同一个对象可以对"形状略有不同"的多个 spec 重复构造（预算修复），每次用各自的随机流。"""
++    """一个 attempt 内、形状确定之后的构造链：转弯 → 入圈 → 起点 → 出圈 → 候选检查。只构造一次。"""
+ 
+     def __init__(self, S, ctx, group, task, states, key, slots, ring, repairs, steps_log, prior_topology, sigma):
+         self.S, self.ctx, self.group, self.task, self.states, self.key = S, ctx, group, task, states, key
+         self.slots, self.ring, self.repairs, self.steps_log = slots, ring, repairs, steps_log
+         self.prior_topology, self.sigma = prior_topology, sigma
+-        self.sev = S.sev
+ 
+     def prepare(self, spec, rng, crng):
+         S, slots, key = self.S, self.slots, self.key
+@@ -1230,7 +1181,7 @@ class _Build:
+                                      {"route_stats": dict(S.stats)})
+         return {"spec": spec, "passes": passes, "turn_info": turn_info, "ing": ing, "starts": starts, "meta": meta}, None
+ 
+-    def assemble(self, prep, spec_now, rng, crng, extra_repairs=(), duration_only=False):
++    def assemble(self, prep, spec_now, rng, crng, extra_repairs=()):
+         S, slots, key, ring = self.S, self.slots, self.key, self.ring
+         _, E0 = _patrol_poses(spec_now, prep["passes"])
+         eg = _plan_egress(S, slots, E0, rng, crng)
+@@ -1242,7 +1193,6 @@ class _Build:
+              "member_slot_order": slots.order, "formation": slots.realized,
+              "lateral_step_m": slots.lateral_step_m if slots.realized == "echelon" else None,
+              "start_connections": prep["starts"], "reference_ingress": ing["prims"], "reference_egress": eg["prims"],
+-             "speed_events": {"times_s": self.sev.times_s, "speeds_m_s": self.sev.speeds_m_s},
+              "repairs": tuple(self.repairs) + tuple(extra_repairs),
+              "topology_info": {"prior_draw": self.prior_topology, "forced": ring["forced"],
+                                "forced_reason": ring.get("forced_reason"), "ring": ring["info"],
+@@ -1250,222 +1200,32 @@ class _Build:
+                                "entry": {k: ing[k] for k in ("D", "t_in", "depth_min", "tried")},
+                                "exit": {k: eg[k] for k in ("D", "t_out", "depth_min", "tried")},
+                                "starts": prep["meta"]}}
+-        return P, build_candidate(self.ctx, self.group, self.task, self.states, (), key, P, duration_only=duration_only)
+-
+-
+-def _shift_spec(S, ring, spec, delta):
+-    """预算修复的唯一自由度：把各结点半径同时向各自合法径向区间的内端移动 delta（并夹在区间内）。
+-    这是"线性长度约束 + 区间箱约束"下离原抽样欧氏距离最近的点（各结点对长度的权重相同）；
+-    再按第 3.3 节求最大可行 α。返回新 spec，或 None（该偏移下没有任何可行 α，含 α=0）。"""
+-    radii = np.asarray(spec["sampled_radii_m"], float)
+-    new = np.array([min(max(r - delta, lo), hi) for r, (lo, hi) in zip(radii, spec["knot_runs"])])
+-    if spec["topology"] == "loop":
+-        p0, p1 = 0.0, ring["sigma"] * 2 * np.pi
+-    else:
+-        p0, p1 = spec["phi_a"], spec["phi_b"]
+-    out = _scale_alpha(S, ring["center"], new, p0, p1, ring["shifts"])
+-    if out is None:
+-        return None
+-    rho0, coef, alpha, tried = out
+-    return {**spec, "rho0_m": rho0, "coefficients_m": coef, "alpha": alpha, "alpha_tried": tried,
+-            "repaired_radii_m": tuple(map(float, new))}
+-
+-
+-REPAIR_ITERS = 4
+-BUDGET_TARGET = 0.97       # 修复目标：名义总时长落在预算的 97% 以内，吸收线性模型的误差
+-
+-
+-def _delta_for_mean(radii, runs, target_mean):
+-    """各结点半径同时内移 delta（夹在各自合法区间内）后均值等于 target_mean 的最小 delta；
+-    不可达时返回能达到的最大 delta。均值对 delta 单调不增，所以二分是严格的（不涉及随机构造）。"""
+-    r = np.asarray(radii, float)
+-    lo = np.array([a for a, _ in runs])
+-    hi = np.array([b for _, b in runs])
+-
+-    def mean_at(d):
+-        return float(np.mean(np.clip(r - d, lo, hi)))
+-
+-    if mean_at(0.0) <= target_mean:
+-        return 0.0
+-    d_hi = float(np.max(r - lo))
+-    if mean_at(d_hi) > target_mean:
+-        return d_hi
+-    a, b = 0.0, d_hi
+-    for _ in range(60):
+-        mid = 0.5 * (a + b)
+-        if mean_at(mid) > target_mean:
+-            a = mid
+-        else:
+-            b = mid
+-    return b
+-
+-
+-def _repair_budget(B, ring, spec, make, rng, first_duration_s, first_patrol_s):
+-    """名义总时长在允许的最小圈数/穿行次数下仍超 1800 s：在已求出的可行集合内做局部修复（第 3.9 节）。
+-
+-    时间模型：总时长 = 与形状无关的汇合/撤离部分 + 巡逻部分；巡逻部分近似正比于巡逻路径长度。需要的缩短比例
+-    frac = (D − 0.97 预算)/巡逻用时。折返先缩短弧跨度（不低于覆盖下限），其余由各结点半径同时向各自合法区间内端
+-    移动补足（"线性长度约束 + 区间箱约束"下离原抽样欧氏距离最近的点），再求最大可行 α。每一轮只用 duration_only
+-    的廉价构造核对并更新 D 与巡逻用时，随机流固定为同一对种子，所以不同轮之间的差异只来自几何。
+-    返回 (plan, 记录)。plan 为失败计划表示该 attempt 失败（原因保留）。"""
+-    S = B.S
+-    budget = float(S.M["nominal_budget_s"])
+-    target = BUDGET_TARGET * budget
+-    seeds = (int(rng.integers(0, 2 ** 62)), int(rng.integers(0, 2 ** 62)))
+-    radii0 = np.asarray(spec["sampled_radii_m"], float)
+-    runs = spec["knot_runs"]
+-    d_cap = float(np.max(radii0 - np.array([a for a, _ in runs])))
+-    retrace = spec["topology"] == "retrace"
+-    span0 = (spec["phi_b"] - spec["phi_a"]) if retrace else None
+-    span_min = 2.0 * math.pi * (ring["need_rows"] - 1) / PHI_ROWS if retrace else None
+-    D, Tp = float(first_duration_s), float(first_patrol_s)
+-    cur_mean = float(np.mean(radii0))
+-    span = span0
+-    log = [{"step": "start", "duration_s": D, "patrol_s": Tp}]
+-
+-    def fail(reason, stage):
+-        return _stage_fail(stage, reason, None, B.key, {"repair_log": log, "max_shift_m": d_cap})
+-
+-    best = None
+-    for it in range(REPAIR_ITERS):
+-        frac = min(max((D - target) / max(Tp, 1.0), 0.0), 0.95)
+-        keep = 1.0 - frac
+-        if retrace and span > span_min + 1e-9:
+-            new_span = max(span_min, span * keep)
+-            keep = keep / (new_span / span)         # 弧跨度已承担的部分之外，半径还要承担的比例
+-            span = new_span
+-        goal_mean = cur_mean * min(keep, 1.0)
+-        base = {**spec, "phi_b": spec["phi_a"] + span, "arc_span_rad": span} if retrace else spec
+-        delta = _delta_for_mean(radii0, runs, goal_mean)
+-        sp = None
+-        for back in (1.0, 0.8, 0.6, 0.4, 0.2, 0.0):
+-            sp = _shift_spec(S, ring, base, delta * back)
+-            if sp is not None:
+-                delta *= back
+-                break
+-        if sp is None:
+-            log.append({"step": it, "span_rad": span, "result": "no_feasible_alpha"})
+-            return fail("半径内移后在任何回退量下都没有可行的 α", "budget_repair_shape"), log
+-        prep, plan = make(sp, seeds, True, ())
+-        if plan.failure is None:
+-            kind, D_new, Tp_new = "ok", float(plan.nominal_duration_s), None
+-        elif _is_budget(plan):
+-            w = plan.failure.witness
+-            kind, D_new = "over", float(w["duration_s"])
+-            Tp_new = float(np.mean(list(w["patrol_time_s"].values()))) if w.get("patrol_time_s") else Tp
+-        else:
+-            log.append({"step": it, "span_rad": span, "delta_m": delta, "result": "other",
+-                        "stage": plan.failure.feasible_set})
+-            return plan, log
+-        log.append({"step": it, "span_rad": span, "delta_m": delta, "alpha": sp["alpha"], "duration_s": D_new,
+-                    "result": kind})
+-        if kind == "ok":
+-            best = (sp, delta, D_new)
+-            break
+-        if D_new >= D - 1e-6 and delta >= d_cap - 1e-9 and (not retrace or span <= span_min + 1e-9):
+-            break                                      # 两个自由度都到了尽头
+-        D, Tp = D_new, Tp_new
+-        cur_mean = float(np.mean(sp["repaired_radii_m"]))
+-    if best is None:
+-        return fail(f"局部修复后名义总时长仍为 {D:.1f} s > {budget} s", "duration_budget"), log
+-    sp, delta, D_ok = best
+-    rec = ({"kind": "radius_shift_budget", "delta_m": delta, "max_shift_m": d_cap, "alpha": sp["alpha"],
+-            "span_rad": span, "span_original_rad": span0, "duration_s": D_ok, "log": log},)
+-    prep, plan = make(sp, seeds, False, rec)
+-    return plan, log
++        return P, build_candidate(self.ctx, self.group, self.task, self.states, (), key, P)
+ 
+ 
+ def _finish_loop(B, ring, spec, rng, crng):
+-    S, ctx = B.S, B.ctx
+-    lap_lo, lap_hi = (float(x) for x in ctx.params["monitoring"]["laps"])
+-    drawn = float(spec["laps"])
+-
+-    def make(sp, seeds, duration_only, extra):
+-        r1, r2 = (np.random.default_rng(x) for x in seeds)
+-        prep, fail = B.prepare(sp, r1, r2)
+-        if fail is not None:
+-            return None, fail
+-        _, plan = B.assemble(prep, {**prep["spec"], "laps": lap_lo}, r1, r2, extra_repairs=extra,
+-                             duration_only=duration_only)
+-        return prep, plan
+-
++    """用原 spec 抽到的圈数一次 prepare/assemble。"""
+     prep, fail = B.prepare(spec, rng, crng)
+     if fail is not None:
+         return fail
+-    _, plan = B.assemble(prep, {**prep["spec"], "laps": lap_lo}, rng, crng)
+-    if plan.failure is not None:
+-        if not _is_budget(plan):
+-            return plan
+-        w = plan.failure.witness
+-        got, _ = _repair_budget(B, ring, spec, make, rng, float(w["duration_s"]),
+-                                float(np.mean(list(w["patrol_time_s"].values()))))
+-        return got          # 修复目标是预算的 97%，圈数停在下限；修复记录已在 plan.repairs 里
+-    budget = S.M["nominal_budget_s"]
+-    per_lap = float(np.mean(list(plan.witnesses["patrol_time_s"].values()))) / lap_lo
+-    slack = budget - plan.nominal_duration_s
+-    cap = min(lap_hi, lap_lo + max(slack, 0.0) / per_lap * 0.98)
+-    laps = float(rng.uniform(lap_lo, cap)) if cap > lap_lo else lap_lo
+-    if laps <= lap_lo + 1e-9:
+-        return plan
+-    final_spec = {**prep["spec"], "laps": laps}
+-    carried = tuple(plan.repairs[len(B.repairs):])
+-    _, plan2 = B.assemble(prep, final_spec, rng, crng, extra_repairs=carried + (
+-        {"kind": "laps_budget_cap", "drawn": drawn, "cap": cap, "used": laps},))
+-    if plan2.failure is None:
+-        return plan2
+-    return replace_repairs(plan, ({"kind": "laps_fallback_to_min", "tried": laps, "reason": plan2.failure.feasible_set},))
++    _, plan = B.assemble(prep, prep["spec"], rng, crng)
++    return plan
+ 
+ 
+ def _finish_retrace(B, ring, spec, rng, crng):
+-    S, ctx = B.S, B.ctx
+-    trav_all = sorted(int(t) for t in ctx.params["monitoring"]["traversals"])
+-    budget = S.M["nominal_budget_s"]
+-
+-    def make_t(t):
+-        def make(sp, seeds, duration_only, extra):
+-            r1, r2 = (np.random.default_rng(x) for x in seeds)
+-            prep, fail = B.prepare({**sp, "traversals": t}, r1, r2)
+-            if fail is not None:
+-                return None, fail
+-            _, plan = B.assemble(prep, prep["spec"], r1, r2, extra_repairs=extra, duration_only=duration_only)
+-            return prep, plan
+-        return make
+-
+-    t_drawn = int(spec["traversals"])
++    """用原 spec 抽到的穿行次数一次 prepare/assemble。"""
+     prep, fail = B.prepare(spec, rng, crng)
+     if fail is not None:
+         return fail
+     _, plan = B.assemble(prep, prep["spec"], rng, crng)
+-    if plan.failure is None or not _is_budget(plan):
+-        return plan
+-    # 穿行次数：{2,3,4} 与预算许可集合相交后均匀取（许可集合由"每次穿行用时近似相同"的线性估计给出，随后用真实构造核对）
+-    D0 = float(plan.failure.witness["duration_s"])
+-    t_pass = float(np.mean(list(plan.failure.witness["patrol_time_s"].values()))) / max(t_drawn, 1)
+-    allowed = [t for t in trav_all if t != t_drawn and D0 - (t_drawn - t) * t_pass <= budget]
+-    while allowed:
+-        t = int(rng.choice(np.array(allowed)))
+-        seeds = (int(rng.integers(0, 2 ** 62)), int(rng.integers(0, 2 ** 62)))
+-        rec = ({"kind": "traversals_budget_cap", "drawn": t_drawn, "used": t, "allowed_estimate": list(allowed)},)
+-        _, plan_t = make_t(t)(spec, seeds, False, rec)
+-        if plan_t.failure is None or not _is_budget(plan_t):
+-            return plan_t
+-        allowed = [a for a in allowed if a < t]
+-    t_min = trav_all[0]
+-    d_start = D0 - (t_drawn - t_min) * t_pass if t_min != t_drawn else D0
+-    got, _ = _repair_budget(B, ring, spec, make_t(t_min), rng, d_start, t_pass * t_min)
+-    return got
+-
+-
+-RETREAT_STAGES = frozenset({"turns", "ingress", "start_route", "egress", "separation", "patrol_shape",
+-                            "budget_repair_shape", "boundary_crossing"})
++    return plan
+ 
+ 
+ def _build_with_ring(S, ctx, group, task, states, key, slots, ring, used, b, steps_log, prior_topology, sigma, rng, crng):
+     """给定队形与已找到的环带，抽形状并完成构造；返回 SegmentPlan（失败时 failure 非空）。"""
+     repairs = []
+     if slots.realized != slots.start:
+-        repairs.append({"kind": "formation_retreat", "from": slots.start, "to": slots.realized,
+-                        "forced_by": [x.get("downstream_failure") for x in steps_log if x.get("downstream_failure")]})
++        repairs.append({"kind": "formation_retreat", "from": slots.start, "to": slots.realized, "forced_by": "width"})
+     if used is not None and used < b - 1e-9:
+         repairs.append({"kind": "echelon_lateral_step", "from_m": b, "to_m": used})
+     spec = _draw_loop(S, ring, rng) if ring["topology"] == "loop" else _draw_arc(S, ring, rng)
+@@ -1480,10 +1240,53 @@ def _build_with_ring(S, ctx, group, task, states, key, slots, ring, used, b, ste
+     return _finish_retrace(B, ring, spec, rng, crng)
+ 
+ 
++def _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma, b, steps_log):
++    """梯形：在冻结槽位 l 不变下，对横向步长 b_lat ∈ [3, b] 求几何走廊可容纳的最大值。
++    候选 b_lat 来自单车道极坐标可行带的实际径向区间：每行每段 [lo, hi] 给出 (hi − lo)/(n − 1)；
++    先试 b 本身，再在 [3, b) 内的候选上按降序二分找最大可行值（宽度越小越容易容纳），最后以真实
++    _find_ring 核对选定值。不用下游曲率、时长、间距或连接是否成功来缩 b_lat。"""
++    def probe(st):
++        slots = formation_slots(group, fam, fkey, formation="echelon", lateral_step_m=st, order=order)
++        r = _find_ring(S, slots, centers, prior_topology, sigma)
++        steps_log.append({"formation": "echelon", "lateral_step_m": st, "found": "empty" not in r, "info": r["info"]})
++        return None if "empty" in r else {"slots": slots, "ring": r, "lateral_step_m": st}
++
++    got = probe(b)
++    if got is not None:
++        return got
++    n = len(group.member_ids)
++    if n < 2:
++        return None
++    widths = set()
++    for center in centers:
++        wx0, wy0, wx1, wy1 = _warning_bbox(S)
++        r_hi = float(max(np.hypot(wx - center[0], wy - center[1]) for wx in (wx0, wx1) for wy in (wy0, wy1)))
++        rs = np.arange(R_STEP_M, r_hi + R_STEP_M, R_STEP_M)
++        mask = _polar_mask(S, center, sigma, [0.0], rs)
++        for row in mask:
++            edges = np.flatnonzero(np.diff(np.r_[False, row, False].astype(np.int8)))
++            for lo, hi in zip(edges[::2].tolist(), edges[1::2].tolist()):
++                widths.add(float(rs[hi - 1] - rs[lo]))
++    cands = sorted({w / (n - 1) for w in widths if MIN_LATERAL_STEP_M - 1e-9 <= w / (n - 1) < b}, reverse=True)
++    if not cands or cands[-1] > MIN_LATERAL_STEP_M + 1e-9:
++        cands.append(MIN_LATERAL_STEP_M)
++    lo, hi = 0, len(cands) - 1
++    best = None
++    while lo <= hi:
++        mid = (lo + hi) // 2
++        res = probe(cands[mid])
++        if res is not None:
++            best = res
++            hi = mid - 1
++        else:
++            lo = mid + 1
++    return best
++
++
+ def propose_and_build(ctx, group, task, states, key):
+-    """一次随机构造（一个 attempt）：队形链 → 极坐标可行带 → 形态 → 入圈/出圈 → 起点路由 → 速度 → 候选检查。
+-    队形退让（abreast → echelon → column；echelon → column）既发生在环带容不下该队形时，也发生在该队形的
+-    掉头、入圈、起点路由、间距等几何构造失败时（第 3.4 节"失败 → 下一队形"）；预算超限不触发退让。"""
++    """一次随机构造（一个 attempt）：宽度先定队形（skeleton.width_then_build）→ 极坐标可行带 → 形态 →
++    入圈/出圈 → 起点路由 → 速度 → 骨架几何检查。队形只按走廊横向宽度选择（abreast → echelon → column；
++    echelon 先求最大可容纳横向步长）；宽度确定后只构造一次，下游任何失败原样返回，不改队形。"""
+     S = _Setup(ctx, group, task, states, key)
+     rng, crng = S.rng("shape"), S.rng("connect")
+     fam = ctx.family
+@@ -1494,36 +1297,26 @@ def propose_and_build(ctx, group, task, states, key):
+     b = float(fam.lateral_spacing_m)
+     fkey = RngKey(key.family_id, key.draw, "formation", mission=key.mission, branch=key.branch, group=key.group,
+                   segment=key.segment, attempt=key.attempt)
+-    order = None
++    order = formation_slots(group, fam, fkey, formation=chain[0]).order
++    centers = _center_candidates(S, rng, N_CENTERS)
+     steps_log = []
+-    last = None
+-    for name in chain:
+-        steps = [None] if name != "echelon" else [b] + [b * f for f in (0.75, 0.5, 0.33)] + [MIN_LATERAL_STEP_M]
+-        steps = [s for s in steps if s is None or s >= MIN_LATERAL_STEP_M - 1e-9]
+-        for st in steps:
+-            slots = formation_slots(group, fam, fkey, formation=name, lateral_step_m=st, order=order)
+-            order = slots.order
+-            r = _find_ring(S, slots, rng, prior_topology, sigma)
+-            steps_log.append({"formation": name, "lateral_step_m": st, "found": "empty" not in r, "info": r["info"],
+-                              "budget": bool(r.get("budget"))})
+-            if "empty" in r:
+-                continue
+-            plan = _build_with_ring(S, ctx, group, task, states, key, slots, r, st, b, steps_log, prior_topology, sigma,
+-                                    rng, crng)
+-            if plan.failure is None:
+-                return plan
+-            last = plan
+-            stage = plan.failure.feasible_set
+-            steps_log[-1]["downstream_failure"] = str(stage)
+-            if stage not in RETREAT_STAGES:
+-                return plan
+-            break               # 该队形的几何构造失败：直接退到链上的下一个队形，不再逐级缩小横向步长
+-    if last is not None:
+-        return last
+-    stage = "budget_region" if steps_log and all(x.get("budget") for x in steps_log) else "patrol_region"
+-    text = ("所有队形下，满足几何条件的环/弧都因名义总时长下界超过预算而被排除" if stage == "budget_region"
+-            else "所有队形下目标环带都没有满足条件的环/弧")
+-    return _stage_fail(stage, text, None, key, {"formations": steps_log})
++
++    def width_probe(name):
++        if name == "echelon":
++            return _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma, b, steps_log)
++        slots = formation_slots(group, fam, fkey, formation=name, order=order)
++        r = _find_ring(S, slots, centers, prior_topology, sigma)
++        steps_log.append({"formation": name, "lateral_step_m": None, "found": "empty" not in r, "info": r["info"]})
++        return None if "empty" in r else {"slots": slots, "ring": r, "lateral_step_m": None}
++
++    def build(name, payload):
++        return _build_with_ring(S, ctx, group, task, states, key, payload["slots"], payload["ring"],
++                                payload["lateral_step_m"], b, steps_log, prior_topology, sigma, rng, crng)
++
++    plan = width_then_build(chain, width_probe, build)
++    if plan is not None:
++        return plan
++    return _stage_fail("patrol_region", "所有队形下目标环带都没有满足条件的环/弧", None, key, {"formations": steps_log})
+ 
+ 
+ def replace_repairs(plan, extra):
+diff --git a/Multi-UAV SimpleGC/v08/motion/plan.py b/Multi-UAV SimpleGC/v08/motion/plan.py
+index 6517b24..556b659 100644
+--- a/Multi-UAV SimpleGC/v08/motion/plan.py	
++++ b/Multi-UAV SimpleGC/v08/motion/plan.py	
+@@ -5,6 +5,8 @@
+   证书从原几何重算，不是非空 dict；
+ - approx_empty：距离场保守集或极坐标可行带为空，精确复核无证书；
+ - budget_exhausted：随机构造/连接/名义判据/间距用完 20 次，只说明预算耗尽，保留各 attempt 原因；
++V8-13（指令 4.1）：删除按名义时长下界判"近似为空"的分支；只保留有几何依据的空集分类。V8-13 runner 只调用
++plan_attempt 并自管唯一的 20 次全链路预算；plan_segment 仅留作历史入口，不被 V8-13 调用。
+ - 单个 attempt 的失败是 candidate_rejected（原始数值见证在 attempt_log 里）。
+ 规划不动公共抽签和目标：重试只加 attempt。
+ """
+@@ -97,12 +99,13 @@ def empty_query(ctx, group, task):
+     return rec, failure
+ 
+ 
++def final_failure(ctx, group, task, log):
++    """r4 13.4 的最终失败分类（V8-13 runner 复用）：log 为各 attempt 记录，需含 stage。"""
++    return _final_failure(ctx, group, task, log)
++
++
+ def _final_failure(ctx, group, task, log):
+     stages = {r["stage"] for r in log}
+-    if stages == {"budget_region"} or stages == {"budget_region", "patrol_region"}:
+-        return Failure("approx_empty", "全部 attempt 中，几何上可行的圈心/环带都因名义总时长的下界估计超过预算而被排除"
+-                                       "（预算许可集合为空；下界是估计，不是证明）",
+-                       "duration_budget", {"attempts": len(log), "stages": sorted(stages)}, None)
+     if stages == {"patrol_region"}:
+         rec, failure = empty_query(ctx, group, task)
+         if failure is not None:
