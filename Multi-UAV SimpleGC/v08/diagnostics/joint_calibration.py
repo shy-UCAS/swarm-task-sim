@@ -445,9 +445,12 @@ def _excess_normal():
     return TimeReference("a", FIX_RELEASE, FIX_RELEASE + 8.0, FIX_ALT, pva)
 
 
-def calibration_fixtures(d_lane):
-    """(名称, 构造函数, 应成功, 恒定)。大夹具：N 人 = N/2 对互换直线，第 k 对横向平移 k·D_lane，
-    时长 1000/2000 s，空间长度 = 4 m/s × 时长（J 第 3 节交叉参考）。"""
+CROSS_LATERAL_M = 15.0     # V8-13b 裁定 2.4：相邻成员对横向平移 15 m = S1.5 lateral_spacing_m ~ U[15,25] 的下限
+
+
+def calibration_fixtures(d_lane=None):
+    """(名称, 构造函数, 应成功, 恒定)。大夹具：N 人 = N/2 对互换直线，第 k 对横向平移 k·15 m（V8-13b 裁定 2.4），
+    时长 1000/2000 s，空间长度 = 4 m/s × 时长（J 第 3 节交叉参考）。d_lane 参数保留只为兼容旧调用，不再使用。"""
     from ..motion.optimize import JointProblem
     from ..scene.field import Clearance, build_distance_field
 
@@ -475,7 +478,7 @@ def calibration_fixtures(d_lane):
             L = 4.0 * T
             refs = []
             for k in range(N // 2):
-                y = k * d_lane
+                y = k * CROSS_LATERAL_M
                 refs.append(_rest_move(f"m{2 * k:02d}", (-L / 2, y), (L / 2, y), T))
                 refs.append(_rest_move(f"m{2 * k + 1:02d}", (L / 2, y), (-L / 2, y), T))
             return JointProblem(tuple(refs))
@@ -531,78 +534,32 @@ def _summarize_solution(sol, lim, settings):
     }
 
 
-def _base_settings(jerk_plan, lam_j, mu):
-    from ..motion.optimize import EPS as _E
-    return {"jerk_plan_m_s3": float(jerk_plan), "knot_s": 1.0, "weight_smooth": float(lam_j),
-            "weight_separation": mu, "weight_geometry": mu, "weight_speed": mu, "weight_normal": mu,
-            "weight_tangential": mu, "weight_jerk": mu, "maxiter": 500, "maxls": 20, "maxcor": 10,
-            "maxfun": 1 + 500 * 20, "ftol": _E, "gtol": math.sqrt(_E),
-            "buffer_separation_m": 3.25, "buffer_geometry_m": 1.0, "buffer_dynamic_factor": 0.95}
-
-
-def calibrate_optimizer(*, tracking_config=None, out_dir, k_max=None, log=print):
-    """λ_j = 所有非恒定夹具 × h∈{1,.5} 的 E/Q 中位数；其余六项共同 μ=2^k，k 从 0 递增，选第一个令全部
-    "应成功"夹具在两种 h 下都通过独立硬检查且 L-BFGS-B 正常收敛的 k。每个候选 × 夹具 × h 只求解一次。
-    同一 k 下一旦某个应成功夹具失败，该 k 已不合格，其余夹具记为"未运行（同 k 已失败）"（不影响选择）。"""
-    from ..config import load_config
-    from ..motion.optimize import physical_limits, prepare_problem, solve_joint
+def calibrate_optimizer(*, tracking_config=None, out_dir, log=print):
+    """V8-13b 裁定 2.3：用 joint_opt 的固定设置（增广拉格朗日，λ_j=1）把全部夹具在 h=1 与 h=0.5 各跑一次。
+    要求：h=1 下所有应成功夹具通过硬检查；h=0.5 只作诊断。返回 dict，selected 为通过时的设置哈希，否则 None。"""
+    from ..motion.optimize import load_settings, physical_limits, solve_joint
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=False)
-    cfg = load_config("joint_opt")
-    jerk_plan = cfg.values["jerk_plan_m_s3"]
-    probe = _base_settings(jerk_plan, 0.0, 1.0)
-    lim = physical_limits(probe)
-    fixtures = calibration_fixtures(lim["d_lane"])
+    st = load_settings()
+    lim = physical_limits(st)
     t0 = time.perf_counter()
-    # ---- λ_j
-    lam_rows = []
-    for name, build, _, constant in fixtures:
+    rows = []
+    for name, build, should, _ in calibration_fixtures():
         for h in (1.0, 0.5):
-            prep = prepare_problem(build(), probe, knot_s=h)
-            _, _, F = prep.value_grad(prep.x_ls, terms=True)
-            S2 = sum(float(np.sum(m.w_e * (m.S_e[:, 0] ** 2 + m.S_e[:, 1] ** 2))) for m in prep.members)
-            noise = EPS * S2 / prep.L0 ** 2 / prep.sumT
-            E, Q = F["ref"], F["smooth"]
-            valid = (not constant) and E > noise and Q > 0.0
-            lam_rows.append({"fixture": name, "knot_s": h, "E": E, "Q": Q, "rounding_bound_E": noise,
-                             "constant": constant, "valid": bool(valid), "ratio": E / Q if Q > 0 else None})
-            log(f"λ_j 测量 {name} h={h}: E={E:.3e} Q={Q:.3e} 噪声界={noise:.3e} 有效={valid}")
-    ratios = [r["ratio"] for r in lam_rows if r["valid"]]
-    lam_j = float(np.median(ratios)) if ratios else None
-    result = {"lambda_rows": lam_rows, "lambda_j": lam_j, "candidates": [], "selected": None,
-              "limits": lim, "jerk_plan_m_s3": jerk_plan, "joint_opt_sha256_at_start": cfg.sha256}
-    if lam_j is None:
-        result["status"] = "λ_j 无有效格点：优化设置未确定"
-        _dump(out / "numerics.json", result)
-        return result
-    # ---- μ = 2^k
-    kmax = k_max if k_max is not None else int(round(-math.log2(EPS)))
-    for k in range(kmax + 1):
-        mu = float(2.0 ** k)
-        st = _base_settings(jerk_plan, lam_j, mu)
-        rows, qualified, failed_at = [], True, None
-        for name, build, should, _ in fixtures:
-            for h in (1.0, 0.5):
-                if failed_at is not None:
-                    rows.append({"fixture": name, "knot_s": h, "should_succeed": should,
-                                 "not_run": "同 k 已有应成功夹具失败（" + failed_at + "）"})
-                    continue
-                sol = solve_joint(build(), st, knot_s=h)
-                s = _summarize_solution(sol, lim, st)
-                s.update({"fixture": name, "knot_s": h, "should_succeed": should})
-                rows.append(s)
-                log(f"k={k} mu={mu:g} {name} h={h}: ok={sol.ok} {sol.reason} nit={s['nit']} "
-                    f"{s['message']} solve={(s['solve_s'] or 0):.2f}s")
-                if should and not sol.ok:
-                    qualified = False
-                    failed_at = f"{name} h={h}"
-        result["candidates"].append({"k": k, "mu": mu, "qualified": qualified, "rows": rows})
-        _dump(out / "numerics.json", result)
-        if qualified:
-            result["selected"] = {"k": k, "mu": mu, "lambda_j": lam_j, "settings": st}
-            break
-    result["status"] = "selected" if result["selected"] else "优化设置未确定"
-    result["wall_s"] = time.perf_counter() - t0
+            sol = solve_joint(build(), st, knot_s=h)
+            r = _summarize_solution(sol, lim, st)
+            r.update({"fixture": name, "knot_s": h, "should_succeed": should, "role": "required" if h == 1.0
+                      else "diagnostic", "outer_rounds": sol.diagnostics.get("outer_rounds"),
+                      "rounds": sol.diagnostics.get("rounds"), "check_s": sol.diagnostics.get("check_s")})
+            rows.append(r)
+            log(f"{name} h={h}: ok={sol.ok} {sol.reason} rounds={r['outer_rounds']} nit={r['nit']} "
+                f"solve={(r['solve_s'] or 0):.2f}s check={(r['check_s'] or 0):.2f}s")
+            _dump(out / "numerics.json", {"rows": rows, "settings": st, "limits": lim})
+    required = [r for r in rows if r["knot_s"] == 1.0 and r["should_succeed"]]
+    failed = [f'{r["fixture"]}@h={r["knot_s"]}' for r in required if not r["ok"]]
+    result = {"rows": rows, "settings": st, "limits": lim, "required_failed": failed,
+              "selected": None if failed else {"settings_sha256": st["_sha256"]},
+              "status": "selected" if not failed else "优化设置未确定", "wall_s": time.perf_counter() - t0}
     _dump(out / "numerics.json", result)
     return result
 
@@ -611,30 +568,3 @@ def _dump(path, obj):
     from ..runner.monitoring import jsonable
     Path(path).write_bytes(json.dumps(jsonable(obj), ensure_ascii=False, sort_keys=True, indent=1).encode("utf-8")
                            + b"\n")
-
-
-def diagnose_all_fixtures(k_values, lam_j, *, out_dir, log=print):
-    """补充诊断（不参与选择、不写配置）：在给定的若干 k 上把全部夹具 × h 都跑一次（不因前面失败而跳过），
-    让审查方看到圆障碍与大编组夹具在同一组候选权重下的收敛与残差。"""
-    from ..config import load_config
-    from ..motion.optimize import physical_limits, solve_joint
-    out = Path(out_dir)
-    out.mkdir(parents=True, exist_ok=False)
-    jerk_plan = load_config("joint_opt").values["jerk_plan_m_s3"]
-    lim = physical_limits(_base_settings(jerk_plan, lam_j, 1.0))
-    fixtures = calibration_fixtures(lim["d_lane"])
-    res = {"purpose": "补充诊断：不参与 μ 选择", "lambda_j": lam_j, "candidates": []}
-    for k in k_values:
-        st = _base_settings(jerk_plan, lam_j, float(2.0 ** k))
-        rows = []
-        for name, build, should, _ in fixtures:
-            for h in (1.0, 0.5):
-                sol = solve_joint(build(), st, knot_s=h)
-                s = _summarize_solution(sol, lim, st)
-                s.update({"fixture": name, "knot_s": h, "should_succeed": should})
-                rows.append(s)
-                log(f"[诊断] k={k} {name} h={h}: ok={sol.ok} {sol.reason} nit={s['nit']} {s['message']} "
-                    f"solve={(s['solve_s'] or 0):.1f}s")
-        res["candidates"].append({"k": k, "mu": float(2.0 ** k), "rows": rows})
-        _dump(out / "diagnostic.json", res)
-    return res

@@ -65,7 +65,7 @@ def _eval_dyn(x, y, tau):
     return speed, at, an
 
 
-def dynamic_extrema(knots, controls, lo, hi):
+def dynamic_extrema_loop(knots, controls, lo, hi):
     """[lo,hi]（局部秒）上 |v|、|a_t|、a_n、|j| 的连续时间峰值及其时刻。"""
     worst = {"speed": (0.0, lo), "tangential": (0.0, lo), "normal": (0.0, lo), "jerk": (0.0, lo),
              "accel": (0.0, lo)}
@@ -89,6 +89,119 @@ def dynamic_extrema(knots, controls, lo, hi):
                 if val > worst[name][0]:
                     worst[name] = (val, tau + a0)
     return {k: {"value": float(v), "t_local_s": float(t)} for k, (v, t) in worst.items()}
+
+
+# ---- 向量化版本（与 dynamic_extrema_loop 同一数学：端点 + 导数分子多项式全部根的实部作候选）
+
+def _pmul(a, b):
+    """逐行多项式乘法，系数升幂 (N, da+1) × (N, db+1)。"""
+    out = np.zeros((a.shape[0], a.shape[1] + b.shape[1] - 1))
+    for i in range(a.shape[1]):
+        out[:, i:i + b.shape[1]] += a[:, i:i + 1] * b
+    return out
+
+
+def _pder(a):
+    if a.shape[1] <= 1:
+        return np.zeros((a.shape[0], 1))
+    return a[:, 1:] * np.arange(1, a.shape[1])[None, :]
+
+
+def _psub(a, b):
+    n = max(a.shape[1], b.shape[1])
+    out = np.zeros((a.shape[0], n))
+    out[:, :a.shape[1]] += a
+    out[:, :b.shape[1]] -= b
+    return out
+
+
+def _batched_roots(c):
+    """逐行求升幂多项式全部根的实部；返回 (N, d) 数组，无根处为 nan。有效次数逐行确定（相对 ε 截去首项）。"""
+    N, n = c.shape
+    d = n - 1
+    out = np.full((N, max(d, 1)), np.nan)
+    if d < 1:
+        return out
+    scale = np.max(np.abs(c), axis=1)
+    eps = float(np.finfo(float).eps)
+    eff = np.zeros(N, dtype=np.int64)
+    for k in range(d, 0, -1):
+        mask = (eff == 0) & (np.abs(c[:, k]) > eps * scale)
+        eff[mask] = k
+    for k in range(1, d + 1):
+        rows = np.flatnonzero(eff == k)
+        if not len(rows):
+            continue
+        cc = c[rows, :k + 1] / c[rows, k:k + 1]
+        comp = np.zeros((len(rows), k, k))
+        if k > 1:
+            comp[:, 1:, :-1] = np.eye(k - 1)[None]
+        comp[:, :, -1] = -cc[:, :k]
+        ev = np.linalg.eigvals(comp)
+        out[rows, :k] = np.real(ev)
+    return out
+
+
+def _coeffs(knots, controls):
+    from scipy.interpolate import PPoly
+    knots = np.asarray(knots, float)
+    c = np.asarray(controls, float)
+    px = PPoly.from_spline((knots, c[:, 0], 3))
+    py = PPoly.from_spline((knots, c[:, 1], 3))
+    return px.x, px.c[::-1].T, py.c[::-1].T          # 升幂 (nint, 4)
+
+
+def dynamic_extrema(knots, controls, lo, hi):
+    """[lo,hi]（局部秒）上 |v|、|a_t|、a_n、|j|、|a| 的连续时间峰值及其时刻（向量化）。"""
+    xs, X, Y = _coeffs(knots, controls)
+    a0, a1 = xs[:-1], xs[1:]
+    A, B = np.maximum(a0, lo), np.minimum(a1, hi)
+    keep = B > A
+    a0, A, B, X, Y = a0[keep], A[keep], B[keep], X[keep], Y[keep]
+    tlo, thi = A - a0, B - a0
+    worst = {k: (0.0, float(lo)) for k in ("speed", "tangential", "normal", "jerk", "accel")}
+    if not len(a0):
+        return {k: {"value": v, "t_local_s": t} for k, (v, t) in worst.items()}
+    vx, vy = _pder(X), _pder(Y)
+    ax, ay = _pder(vx), _pder(vy)
+    jx, jy = 6.0 * X[:, 3], 6.0 * Y[:, 3]
+    jn = np.hypot(jx, jy)
+    k = int(np.argmax(jn))
+    worst["jerk"] = (float(jn[k]), float(A[k]))
+    s2 = _psub(_pmul(vx, vx), -_pmul(vy, vy))
+    dot = _psub(_pmul(vx, ax), -_pmul(vy, ay))
+    cross = _psub(_pmul(vx, ay), _pmul(vy, ax))
+    s2d = _pder(s2)
+    polys = [s2d, _psub(_pmul(_pder(_pmul(dot, dot)), s2), _pmul(_pmul(dot, dot), s2d)),
+             _psub(_pmul(_pder(_pmul(cross, cross)), s2), _pmul(_pmul(cross, cross), s2d)), s2]
+    cand = [tlo[:, None], thi[:, None]]
+    for poly in polys:
+        r = _batched_roots(poly)
+        r = np.where((r > tlo[:, None]) & (r < thi[:, None]), r, np.nan)
+        cand.append(r)
+    T = np.concatenate(cand, axis=1)
+    rows = np.broadcast_to(np.arange(len(a0))[:, None], T.shape)
+    ok = ~np.isnan(T)
+    t = T[ok]
+    i = rows[ok]
+
+    def ev(c, tt, ii):
+        out = np.zeros_like(tt)
+        for p in range(c.shape[1] - 1, -1, -1):
+            out = out * tt + c[ii, p]
+        return out
+    Vx, Vy, Ax, Ay = ev(vx, t, i), ev(vy, t, i), ev(ax, t, i), ev(ay, t, i)
+    sp = np.hypot(Vx, Vy)
+    pos = sp > 0
+    ssafe = np.where(pos, sp, 1.0)
+    at = np.where(pos, np.abs(Vx * Ax + Vy * Ay) / ssafe, np.hypot(Ax, Ay))
+    an = np.where(pos, np.abs(Vx * Ay - Vy * Ax) / ssafe, 0.0)
+    acc = np.hypot(Ax, Ay)
+    for name, val in (("speed", sp), ("tangential", at), ("normal", an), ("accel", acc)):
+        k = int(np.argmax(val))
+        if val[k] > worst[name][0]:
+            worst[name] = (float(val[k]), float(t[k] + a0[i[k]]))
+    return {k: {"value": float(v), "t_local_s": float(tt)} for k, (v, tt) in worst.items()}
 
 
 def curvature_radius_min(knots, controls, lo, hi):
@@ -256,6 +369,8 @@ def check_monitoring(ctx, skeleton, trajectories, settings):
     failures = []
     boundaries, turns, nominal_members = {}, {}, {}
     turn_ranges = skeleton.witnesses.get("turn_ranges") or {}
+    from .skeleton import reference_guidance
+    G_ref = reference_guidance()
     for m in sorted(trajectories):
         tr = trajectories[m]
         ts = _grid_times(tr)
@@ -266,7 +381,7 @@ def check_monitoring(ctx, skeleton, trajectories, settings):
         if viol:
             failures.append({"kind": "boundary_crossing", "member": m, "first": viol[0], "count": len(viol)})
         # 掉头曲率
-        nom = member_nominal(skeleton.members[m])
+        nom = member_nominal(skeleton.members[m], guidance=G_ref)
         rows = []
         for kind, s_a, s_b, key in turn_ranges.get(m, []):
             ta = float(np.interp(s_a, nom.curve.s, nom.t_nodes))

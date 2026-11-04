@@ -10,6 +10,19 @@ import math
 import numpy as np
 
 
+def reference_guidance():
+    """V8-13b 裁定 2.5：骨架名义时间用 a_lat_ref = f·a_lat、a_lon_ref = f·a_lon（f = joint_opt.reference_accel_factor
+    = 0.9）调用同一个 speed_profile；只替换调用参数（LoadedConfig.values 的副本），不改 v08/sim/ 或冻结配置。"""
+    from dataclasses import replace
+    from ..config import load_config
+    G = load_config("guidance")
+    f = float(load_config("joint_opt").values["reference_accel_factor"])
+    vals = dict(G.values)
+    vals["a_lat_m_s2"] = f * vals["a_lat_m_s2"]
+    vals["a_lon_m_s2"] = f * vals["a_lon_m_s2"]
+    return replace(G, values=vals)
+
+
 def width_then_build(candidates, width_probe, build):
     """candidates 固定顺序；width_probe(c)->payload 或 None。
     选到第一个 payload 后只调用一次 build(c,payload)，原样返回包括失败的结果；全为空返回 None。"""
@@ -111,7 +124,7 @@ def references_from_skeleton(skeleton, *, warnings=None, target_id=None, band_m=
     refs, lines, maps = [], [], {}
     for m in sorted(skeleton.members):
         mp = skeleton.members[m]
-        nom = member_nominal(mp)
+        nom = member_nominal(mp, guidance=reference_guidance())
         f = NominalPVA(nom)
         refs.append(TimeReference(m, float(nom.release_s), float(nom.release_s + nom.travel_s),
                                   float(nom.altitude_m), f))

@@ -31,12 +31,12 @@ from ...scene.field import Clearance
 from ...sim.guidance import make_curve, nominal_time, speed_profile
 from ...sim.kernel import member_config
 from ...sim.types import SimContractError
-from ..connect import crossing_analysis, release_delays
+from ..connect import crossing_analysis
 from ..formation import derive_members, formation_slots, make_reference, retreat_chain
 from ..nominal import member_nominal, release_us, sample_nominal
 from ..nominal_checks import screen_member
 from ..path import PathError, periodic_radius_derivs, sample_primitives
-from ..skeleton import width_then_build
+from ..skeleton import reference_guidance, width_then_build
 from ..speed import draw_speed_events, map_speed_events
 
 NODE_TOL_M = 1e-6
@@ -182,6 +182,8 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
     P = proposal
     cfg_m = load_config("monitoring").values
     G = load_config("guidance").values
+    G_ref_cfg = reference_guidance()          # V8-13b 裁定 2.5：名义时间的加速度参数取 0.9 倍
+    G_ref = G_ref_cfg.values
     spacing = ctx.params["curve_spacing_m"]
     target = task.target_id
     cons = monitoring_constraints(ctx, target)
@@ -229,8 +231,8 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
     ev = P.get("speed_events")
     t_upper = None
     if ev is None:
-        v_slow = speed_profile(ref_curve, ((0.0, float(cfg_m["speed_min_m_s"])),), a_lat=G["a_lat_m_s2"],
-                               a_lon=G["a_lon_m_s2"], v_max=member_config().vehicle_profile.max_speed_xy_m_s,
+        v_slow = speed_profile(ref_curve, ((0.0, float(cfg_m["speed_min_m_s"])),), a_lat=G_ref["a_lat_m_s2"],
+                               a_lon=G_ref["a_lon_m_s2"], v_max=member_config().vehicle_profile.max_speed_xy_m_s,
                                v0=0.0, v_end=0.0, stops=(ref_curve.length,))
         t_upper = float(nominal_time(ref_curve, v_slow, 0.0, ref_curve.length))
         sev = draw_speed_events(group.speed_profile,
@@ -245,7 +247,7 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
     breaks_ref = ((0.0, v0),)
     if len(ev["times_s"]):
         try:
-            smap = map_speed_events(ref_curve, ev["times_s"], ev["speeds_m_s"], (), None, initial_speed_m_s=v0)
+            smap = map_speed_events(ref_curve, ev["times_s"], ev["speeds_m_s"], (), G_ref_cfg, initial_speed_m_s=v0)
         except SimContractError as exc:
             return _plan(_reject(f"参考曲线不满足引导接口：{exc}", "reference/speed", {"error": str(exc)}), **base_fail)
         breaks_ref = smap.breaks
@@ -267,8 +269,8 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
 
     # 释放延迟（同时拿到各成员的名义运动，避免对同一条曲线重复做 make_curve / speed_profile）
     try:
-        delays, travel_to_coll, nom0 = release_delays(
-            curves, {m: float(cum[m][coll_idx[m]]) for m in curves}, breaks, return_nominals=True)
+        delays, travel_to_coll, nom0 = _release_delays_ref(
+            curves, {m: float(cum[m][coll_idx[m]]) for m in curves}, breaks, G_ref_cfg)
     except SimContractError as exc:
         return _plan(_reject(f"曲线不满足引导接口：{exc}", "guidance", {"error": str(exc)}), **base_fail)
 
@@ -389,6 +391,21 @@ def _turn_ranges(P, ref, slots, coll_idx, lanes, cum, spacing):
                 rows.append((kind, float(cum[m][idx[0]]), float(cum[m][idx[-1]]), TURN_MIN_KEYS.get(kind)))
         out[m] = rows
     return out
+
+
+def _release_delays_ref(member_curves, collection_s, speed_breaks, guidance):
+    """与冻结 connect.release_delays 同一算法（到汇合槽位名义用时 T_i，δ_i = ceil_0.1s(max T − T_i)），
+    只把名义运动的 guidance 换成裁定 2.5 的参考加速度参数。返回 ({δ_i}, {T_i}, {Nominal})。"""
+    from ...contract.monitoring import MemberPlan
+    from ..connect import ceil_tenth
+    times, noms = {}, {}
+    for m, xy in member_curves.items():
+        plan = MemberPlan(m, 0, tuple(map(tuple, xy)), 0.0, 0.0, 0.0, tuple(speed_breaks[m]))
+        nom = member_nominal(plan, guidance=guidance)
+        noms[m] = nom
+        times[m] = nom.time_at_s(collection_s[m])
+    top = max(times.values())
+    return {m: ceil_tenth(top - t) for m, t in times.items()}, times, noms
 
 
 def _key_dict(key):

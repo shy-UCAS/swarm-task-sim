@@ -80,10 +80,14 @@ def reference_velocity(reference, time_us, snapshot, *, tau, k_pos):
     """time_us 为统一时钟绝对微秒；返回 shape=(1,3) 的期望速度，直接交 InjectableEngine.step。"""
     p_ref, v_ref, a_ref = _pva(reference, time_us / US)
     x = np.asarray(snapshot.p, float).reshape(-1, 3)[0]
+    return _command(p_ref, v_ref, a_ref, x, float(reference.altitude_m), tau, k_pos)
+
+
+def _command(p_ref, v_ref, a_ref, x, alt, tau, k_pos):
     u = np.empty(3)
     u[0] = v_ref[0] + tau * a_ref[0] + k_pos * (p_ref[0] - x[0])
     u[1] = v_ref[1] + tau * a_ref[1] + k_pos * (p_ref[1] - x[1])
-    u[2] = k_pos * (float(reference.altitude_m) - x[2])
+    u[2] = k_pos * (alt - x[2])
     return u[None]
 
 
@@ -132,6 +136,7 @@ def run_tracking_segment(reference, state, *, final=True, guidance=None, sim=Non
     budget_s = (T - r) * (1.0 + G["budget_factor"]) + G["budget_const_s"] + r + hold_s
     budget_us = math.ceil(budget_s * 10.0) * FRAME_US
     hold_us = int(round(hold_s * 10.0)) * FRAME_US
+    alt = float(reference.altitude_m)
     p0, v0, a0 = (np.asarray(x, dtype=float) for x in (state.p, state.v, state.a))
     engine = InjectableEngine(cfg, PlantState(p0[None], v0[None], a0[None]), None, tau0)
 
@@ -149,7 +154,7 @@ def run_tracking_segment(reference, state, *, final=True, guidance=None, sim=Non
             break
         x = engine.state
         xp, xv = x.p[0], x.v[0]
-        p_ref, v_ref, _ = _pva(reference, t_abs_us / US)
+        p_ref, v_ref, a_ref = _pva(reference, t_abs_us / US)
         step_t.append(t)
         step_pe.append(math.hypot(p_ref[0] - xp[0], p_ref[1] - xp[1]))
         step_ve.append(math.hypot(v_ref[0] - xv[0], v_ref[1] - xv[1]))
@@ -160,7 +165,7 @@ def run_tracking_segment(reference, state, *, final=True, guidance=None, sim=Non
             holding = True
             hold_start = t_abs_us
             hold_end_us = t + hold_us
-        vdes = reference_velocity(reference, t_abs_us, x, tau=tau, k_pos=k)
+        vdes = _command(p_ref, v_ref, a_ref, xp, alt, tau, k)       # 与 reference_velocity 同一式子
         engine.step(vdes)
         lj = engine.last_jerk[0]
         step_j.append(math.hypot(lj[0], lj[1]))

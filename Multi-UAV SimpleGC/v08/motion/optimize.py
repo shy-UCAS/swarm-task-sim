@@ -7,11 +7,14 @@ p(u) = [1,u,u²,u³]·M_B·[c_k..c_{k+3}]，u=(t−kh)/h，导数按链式法则
 等式：p(0)=p_init、p(T)=p_end、v=a=0（两端），语义直线对与开区间相交的每个基函数支撑加 n·(c_k−q)=0。
 按变量连通块做带主元 QR 消元 c = c* + Z z；秩冲突返回 optimize_equalities_inconsistent 及见证。
 
-代价（附录裁定 9.2：罚函数阈值含优化目标缓冲，硬检查用原阈值）：
-F = F_ref + λ_j F_smooth + λ_sep F_sep + λ_geo F_geo + λ_v F_v + λ_n F_n + λ_t F_t + λ_jerk F_jerk，
-贴近/几何/动态项在"绝对 0.1 s 网格 ∪ 移动端点 ∪ 节点"上梯形积分并除以 Σ_i T_i；
-jerk 与平滑项按节点区间解析求和；间距项只取两成员都已释放且都可见（释放至移动结束 + 末端保持）的
-共同 10 Hz 帧，除以共同帧总时长。H(x)=max(x,0)²。
+求解形式（V8-13b 裁定 2.1、2.2）：PHR 增广拉格朗日，内层 L-BFGS-B。
+目标 f = F_ref + λ_j·F_smooth（λ_j = 1；F_ref 在"绝对 0.1 s 网格 ∪ 移动端点 ∪ 节点"上梯形积分并除以 Σ_i T_i，
+F_smooth 按节点区间解析求和）。不等式约束 g_k ≤ 0 逐采样点（与 V8-13 指令 3.3 同一批点）、无量纲、阈值取附录
+裁定 9.2 的缓冲值：间距 (3.25−d)/3（共同可见 10 Hz 帧）、几何 −(g_c−1)/m_c（m_c = 35/10）、速度 ‖v‖/(0.95·12)−1、
+法向 a_n/(0.95·3)−1、切向 |a_t|/(0.95·2)−1、jerk ‖j‖/(0.95·J_plan)−1（每节点区间一个）。
+L(c;λ,ρ) = f + (ρ/2)·Σ_k max(0, g_k + λ_k/ρ)² − Σ_k λ_k²/(2ρ)。
+外循环：λ=0、ρ=1；每轮内层 L-BFGS-B（maxiter 200，SciPy 默认 ftol/gtol，热启动）后用原阈值硬检查，通过即结束；
+否则 λ_k ← max(0, λ_k + ρ·g_k)，最大违反量未降到上一轮 1/4 以下则 ρ ← 10ρ；最多 8 轮。成功 = 有限且硬检查全过。
 
 预条件：H0 = Zᵀ(∂²(F_ref+λ_j F_smooth)/∂c²)Z，按成员带状 Cholesky H0=UᵀU，变量 y=Uz。
 初值：带等式的加权最小二乘骨架投影；精确对称冲突时一次确定性破对称。之后 L-BFGS-B 只调用一次。
@@ -21,6 +24,7 @@ jerk 与平滑项按节点区间解析求和；间距项只取两成员都已释
 import math
 import time
 from dataclasses import dataclass, field as dc_field
+from functools import cached_property
 
 import numpy as np
 
@@ -30,12 +34,10 @@ MB = np.array([[1.0, 4.0, 1.0, 0.0],
                [3.0, -6.0, 3.0, 0.0],
                [-1.0, 3.0, -3.0, 1.0]]) / 6.0
 FRAME_S = 0.1
-REQUIRED_KEYS = ("jerk_plan_m_s3", "knot_s", "weight_smooth", "weight_separation", "weight_geometry",
-                 "weight_speed", "weight_normal", "weight_tangential", "weight_jerk", "maxiter", "maxls",
-                 "maxcor", "maxfun", "ftol", "gtol", "buffer_separation_m", "buffer_geometry_m",
+REQUIRED_KEYS = ("jerk_plan_m_s3", "knot_s", "weight_smooth", "maxiter", "alm_max_rounds", "alm_rho0",
+                 "alm_rho_growth", "alm_violation_ratio", "buffer_separation_m", "buffer_geometry_m",
                  "buffer_dynamic_factor")
-WEIGHT_KEYS = ("weight_smooth", "weight_separation", "weight_geometry", "weight_speed", "weight_normal",
-               "weight_tangential", "weight_jerk")
+WEIGHT_KEYS = ("weight_smooth",)
 
 
 class SettingsIncomplete(ValueError):
@@ -93,8 +95,30 @@ class SplineTrajectory:
             out = np.where(inside[:, None], out, 0.0)
         return out.reshape(shape + (2,))
 
+    @cached_property
+    def _pp(self):
+        """每个节点区间以局部 τ−kh 为变量的三次多项式系数 (M, 4, 2)。"""
+        C = np.asarray(self.controls, float)
+        M = len(self.knots) - 7
+        idx = np.arange(M)[:, None] + np.arange(4)[None, :]
+        co = np.einsum("ij,kjd->kid", MB, C[idx])
+        return co * (self.h ** -np.arange(4.0))[None, :, None]
+
     def pva(self, t_abs_s):
-        return self.evaluate(t_abs_s, 0), self.evaluate(t_abs_s, 1), self.evaluate(t_abs_s, 2)
+        if np.ndim(t_abs_s) != 0:
+            return self.evaluate(t_abs_s, 0), self.evaluate(t_abs_s, 1), self.evaluate(t_abs_s, 2)
+        tau = float(t_abs_s) - float(self.release_s)
+        T = self.duration
+        inside = 0.0 <= tau <= T
+        tc = min(max(tau, 0.0), T)
+        pp = self._pp
+        k = min(int(math.floor(tc / self.h)), len(pp) - 1)
+        x = tc - k * self.h
+        c0, c1, c2, c3 = pp[k]
+        p = c0 + x * (c1 + x * (c2 + x * c3))
+        if not inside:
+            return p, np.zeros(2), np.zeros(2)
+        return p, c1 + x * (2.0 * c2 + 3.0 * x * c3), 2.0 * c2 + 6.0 * x * c3
 
 
 # ---------------------------------------------------------------- 配置
@@ -268,7 +292,7 @@ class _FieldEval:
         self.items = []
         for c in clearances:
             grid = np.asarray(field.values[c.name], float)
-            self.items.append((c.name, grid, float(c.minimum_m) + buffer_m))
+            self.items.append((c.name, grid, float(c.minimum_m)))
         self.buffer = buffer_m
 
     def eval(self, pts, grid):
@@ -351,7 +375,9 @@ class Prepared:
         self.cap_t = f * self.lim["a_t"]
         self.cap_j = f * self.J0
         self.dbuf = float(settings["buffer_separation_m"])
-        self.lam = {k: float(settings[k]) for k in WEIGHT_KEYS}
+        self.lam_j = float(settings["weight_smooth"])
+        self.rho = float(settings["alm_rho0"])
+        self.mult = {}
         self.knot_s = float(knot_s)
         self.hold = self.lim["hold_s"]
         refs = tuple(sorted(problem.references, key=lambda r: r.member_id))
@@ -448,7 +474,7 @@ class Prepared:
     def _gram(self, m):
         from scipy.sparse import diags, kron, identity
         W = diags(m.w_e)
-        G = (m.B0.T @ W @ m.B0) / self.L0 ** 2 + self.lam["weight_smooth"] * (m.D3.T @ diags(m.lens) @ m.D3) / self.J0 ** 2
+        G = (m.B0.T @ W @ m.B0) / self.L0 ** 2 + self.lam_j * (m.D3.T @ diags(m.lens) @ m.D3) / self.J0 ** 2
         G = G * (2.0 / self.sumT)
         return kron(G, identity(2), format="csr")
 
@@ -515,7 +541,7 @@ class Prepared:
     def _ls_grad_c(self, m, C):
         g = (m.B0.T @ ((m.B0 @ C - m.S_e) * m.w_e[:, None])) / self.L0 ** 2
         J = m.D3 @ C
-        g = g + self.lam["weight_smooth"] * (m.D3.T @ (J * m.lens[:, None])) / self.J0 ** 2
+        g = g + self.lam_j * (m.D3.T @ (J * m.lens[:, None])) / self.J0 ** 2
         return g * (2.0 / self.sumT)
 
     def _least_squares(self):
@@ -595,13 +621,12 @@ class Prepared:
             info["applied"] = True
         return x1, info
 
-    # -------------------------------------------------------- 代价与梯度
-    def value_grad(self, x, *, terms=False):
-        Cs = self.coeffs(x)
-        lam = self.lam
-        sumT = self.sumT
-        F = {k: 0.0 for k in ("ref", "smooth", "sep", "geo", "v", "n", "t", "jerk")}
-        gCs = []
+    # -------------------------------------------------------- 增广拉格朗日（V8-13b 裁定 2.1）
+    def _blocks(self, Cs, want_grad):
+        """逐类不等式约束 g_k ≤ 0（无量纲，阈值为附录 9.2 缓冲值）。产出 (键, g, 回传函数)；
+        回传函数 bp(coef) 把 Σ coef_k·∂g_k 累加到成员 p/v/a/j 梯度缓存。"""
+        out = []
+        gbuf = self._gbuf
         Pf = []
         for mi, m in enumerate(self.members):
             C = Cs[mi]
@@ -609,101 +634,150 @@ class Prepared:
             V = m.B1 @ C
             A = m.B2 @ C
             J = m.D3 @ C
-            w = m.w_e
-            gP = np.zeros_like(P)
-            gV = np.zeros_like(V)
-            gA = np.zeros_like(A)
-            # 贴近
-            E = P - m.S_e
-            F["ref"] += float(np.sum(w * (E[:, 0] ** 2 + E[:, 1] ** 2))) / self.L0 ** 2 / sumT
-            gP += 2.0 * w[:, None] * E / self.L0 ** 2 / sumT
-            # 平滑与 jerk（区间常值，解析积分）
-            jn = np.hypot(J[:, 0], J[:, 1])
-            F["smooth"] += float(np.sum(m.lens * jn ** 2)) / self.J0 ** 2 / sumT
-            gJ = lam["weight_smooth"] * 2.0 * m.lens[:, None] * J / self.J0 ** 2 / sumT
-            xj = jn / self.cap_j - 1.0
-            act = np.maximum(xj, 0.0)
-            F["jerk"] += float(np.sum(m.lens * act ** 2)) / sumT
-            safe = np.where(jn > 0, jn, 1.0)
-            gJ += lam["weight_jerk"] * (m.lens * 2.0 * act / self.cap_j / safe)[:, None] * J / sumT
-            # 速度
+            self._pvaj[mi] = (P, V, A, J)
             s = np.hypot(V[:, 0], V[:, 1])
-            ss = np.where(s > 0, s, 1.0)
-            xv = s / self.cap_v - 1.0
-            act = np.maximum(xv, 0.0)
-            F["v"] += float(np.sum(w * act ** 2)) / sumT
-            gV += lam["weight_speed"] * (w * 2.0 * act / self.cap_v / ss)[:, None] * V / sumT
-            # 切向/法向
-            u = V / ss[:, None]
-            at = np.where(s > 0, u[:, 0] * A[:, 0] + u[:, 1] * A[:, 1], np.hypot(A[:, 0], A[:, 1]))
-            Wv = A - at[:, None] * u
-            an = np.where(s > 0, np.hypot(Wv[:, 0], Wv[:, 1]), 0.0)
-            xt = np.abs(at) / self.cap_t - 1.0
-            act = np.maximum(xt, 0.0)
-            F["t"] += float(np.sum(w * act ** 2)) / sumT
-            dt_ = lam["weight_tangential"] * w * 2.0 * act / self.cap_t * np.sign(at) / sumT
             pos = s > 0
-            gA += np.where(pos[:, None], dt_[:, None] * u, 0.0)
-            gV += np.where(pos[:, None], dt_[:, None] * Wv / ss[:, None], 0.0)
-            zero_v = ~pos
-            if np.any(zero_v):
-                an0 = np.hypot(A[:, 0], A[:, 1])
-                sa = np.where(an0 > 0, an0, 1.0)
-                gA += np.where(zero_v[:, None], dt_[:, None] * A / sa[:, None], 0.0)
-            xn = an / self.cap_n - 1.0
-            act = np.maximum(xn, 0.0)
-            F["n"] += float(np.sum(w * act ** 2)) / sumT
-            dn = lam["weight_normal"] * w * 2.0 * act / self.cap_n / sumT
-            sn = np.where(an > 0, an, 1.0)
-            ok = pos & (an > 0) & (dn != 0.0)
-            if np.any(ok):
-                q = np.zeros_like(dn)
-                q[ok] = dn[ok] / sn[ok]
-                gA += q[:, None] * Wv
-                q2 = np.zeros_like(dn)
-                q2[ok] = -q[ok] * (at[ok] / ss[ok])
-                gV += q2[:, None] * Wv
+            ss = np.where(pos, s, 1.0)
+            u = V / ss[:, None]
+            at = np.where(pos, u[:, 0] * A[:, 0] + u[:, 1] * A[:, 1], np.hypot(A[:, 0], A[:, 1]))
+            Wv = A - at[:, None] * u
+            an = np.where(pos, np.hypot(Wv[:, 0], Wv[:, 1]), 0.0)
+            # 速度
+            gv = s / self.cap_v - 1.0
+
+            def bp_v(coef, mi=mi, V=V, ss=ss):
+                gbuf[mi][1][:] += (coef / self.cap_v / ss)[:, None] * V
+            out.append((("v", mi), gv, bp_v))
+            # 切向
+            gt = np.abs(at) / self.cap_t - 1.0
+
+            def bp_t(coef, mi=mi, at=at, u=u, Wv=Wv, ss=ss, pos=pos, A=A):
+                c = coef * np.sign(at) / self.cap_t
+                gbuf[mi][2][:] += np.where(pos[:, None], c[:, None] * u, 0.0)
+                gbuf[mi][1][:] += np.where(pos[:, None], (c / ss)[:, None] * Wv, 0.0)
+                if np.any(~pos):
+                    an0 = np.hypot(A[:, 0], A[:, 1])
+                    sa = np.where(an0 > 0, an0, 1.0)
+                    gbuf[mi][2][:] += np.where((~pos)[:, None], (coef / self.cap_t / sa)[:, None] * A, 0.0)
+            out.append((("t", mi), gt, bp_t))
+            # 法向
+            gn = an / self.cap_n - 1.0
+
+            def bp_n(coef, mi=mi, an=an, at=at, Wv=Wv, ss=ss, pos=pos):
+                ok = pos & (an > 0) & (coef != 0.0)
+                if np.any(ok):
+                    q = np.zeros_like(coef)
+                    q[ok] = coef[ok] / (an[ok] * self.cap_n)
+                    gbuf[mi][2][:] += q[:, None] * Wv
+                    q2 = np.zeros_like(coef)
+                    q2[ok] = -q[ok] * (at[ok] / ss[ok])
+                    gbuf[mi][1][:] += q2[:, None] * Wv
+            out.append((("n", mi), gn, bp_n))
+            # jerk（每个节点区间一个约束；长度为 0 的区间不计）
+            jn = np.hypot(J[:, 0], J[:, 1])
+            gj = np.where(m.lens > 0, jn / self.cap_j - 1.0, -1.0)
+
+            def bp_j(coef, mi=mi, J=J, jn=jn):
+                sj = np.where(jn > 0, jn, 1.0)
+                gbuf[mi][3][:] += (coef / self.cap_j / sj)[:, None] * J
+            out.append((("j", mi), gj, bp_j))
             # 几何
             if self.geo.ok:
                 Pab = P + m.p0
-                for name, grid, mc in self.geo.items:
+                for ci, (name, grid, mc) in enumerate(self.geo.items):
                     val, gx, gy = self.geo.eval(Pab, grid)
-                    y = -(val - self.geo.buffer) / mc
-                    act = np.maximum(y, 0.0)
-                    F["geo"] += float(np.sum(w * act ** 2)) / sumT
-                    coef = lam["weight_geometry"] * w * 2.0 * act * (-1.0 / mc) / sumT
-                    gP[:, 0] += coef * gx
-                    gP[:, 1] += coef * gy
-            gC = m.B0.T @ gP + m.B1.T @ gV + m.B2.T @ gA + m.D3.T @ gJ
-            gCs.append(gC)
+                    gg = -(val - self.geo.buffer) / mc
+
+                    def bp_g(coef, mi=mi, gx=gx, gy=gy, mc=mc):
+                        gbuf[mi][0][:, 0] += -coef * gx / mc
+                        gbuf[mi][0][:, 1] += -coef * gy / mc
+                    out.append((("geo", mi, ci), gg, bp_g))
             Pf.append(m.Bf @ C + m.p0)
-        # 间距
-        gPf = [np.zeros_like(p) for p in Pf]
-        if self.pairs and self.pair_time > 0:
-            for a, b, lo, hi, nvec in self.pairs:
-                A, B = self.members[a], self.members[b]
-                sa, sb = slice(lo - A.f0, hi - A.f0 + 1), slice(lo - B.f0, hi - B.f0 + 1)
-                dP = Pf[a][sa] - Pf[b][sb]
-                d = np.hypot(dP[:, 0], dP[:, 1])
-                xs = (self.dbuf - d) / self.dbuf
-                act = np.maximum(xs, 0.0)
-                F["sep"] += float(np.sum(act ** 2)) * FRAME_S / self.pair_time
-                if np.any(act > 0):
-                    sd = np.where(d > 0, d, 1.0)
-                    dirn = np.where((d > 0)[:, None], dP / sd[:, None], nvec[None, :])
-                    coef = lam["weight_separation"] * FRAME_S / self.pair_time * 2.0 * act * (-1.0 / self.dbuf)
-                    g = coef[:, None] * dirn
-                    gPf[a][sa] += g
-                    gPf[b][sb] -= g
-        total = (F["ref"] + lam["weight_smooth"] * F["smooth"] + lam["weight_separation"] * F["sep"]
-                 + lam["weight_geometry"] * F["geo"] + lam["weight_speed"] * F["v"] + lam["weight_normal"] * F["n"]
-                 + lam["weight_tangential"] * F["t"] + lam["weight_jerk"] * F["jerk"])
+        self._Pf = Pf
+        for pi, (a, b, lo, hi, nvec) in enumerate(self.pairs):
+            A_, B_ = self.members[a], self.members[b]
+            sa, sb = slice(lo - A_.f0, hi - A_.f0 + 1), slice(lo - B_.f0, hi - B_.f0 + 1)
+            dP = Pf[a][sa] - Pf[b][sb]
+            d = np.hypot(dP[:, 0], dP[:, 1])
+            gs = (self.dbuf - d) / self.L0
+
+            def bp_s(coef, a=a, b=b, sa=sa, sb=sb, dP=dP, d=d, nvec=nvec):
+                sd = np.where(d > 0, d, 1.0)
+                dirn = np.where((d > 0)[:, None], dP / sd[:, None], nvec[None, :])
+                g = (-coef / self.L0)[:, None] * dirn
+                self._gPf[a][sa] += g
+                self._gPf[b][sb] -= g
+            out.append((("sep", pi), gs, bp_s))
+        return out
+
+    def _alloc(self):
+        self._gbuf = [[np.zeros((len(m.tau_e), 2)), np.zeros((len(m.tau_e), 2)), np.zeros((len(m.tau_e), 2)),
+                       np.zeros((m.M, 2))] for m in self.members]
+        self._gPf = [np.zeros((m.f1 - m.f0 + 1, 2)) for m in self.members]
+        self._pvaj = [None] * len(self.members)
+
+    def constraint_values(self, x):
+        Cs = self.coeffs(x)
+        self._alloc()
+        return {k: g for k, g, _ in self._blocks(Cs, False)}
+
+    def max_violation(self, x):
+        vals = self.constraint_values(x)
+        worst = 0.0
+        for g in vals.values():
+            if len(g):
+                worst = max(worst, float(np.max(g)))
+        return max(worst, 0.0)
+
+    def update_multipliers(self, x):
+        vals = self.constraint_values(x)
+        for k, g in vals.items():
+            lam = self.mult.get(k)
+            if lam is None:
+                lam = np.zeros_like(g)
+            self.mult[k] = np.maximum(0.0, lam + self.rho * g)
+        return vals
+
+    def value_grad(self, x, *, terms=False):
+        Cs = self.coeffs(x)
+        self._alloc()
+        sumT = self.sumT
+        rho = self.rho
+        F = {"ref": 0.0, "smooth": 0.0, "alm": 0.0}
+        blocks = self._blocks(Cs, True)
+        alm = 0.0
+        for k, g, bp in blocks:
+            lam = self.mult.get(k)
+            if lam is None:
+                shifted = g
+                lam2 = 0.0
+            else:
+                shifted = g + lam / rho
+                lam2 = float(np.sum(lam * lam))
+            act = np.maximum(shifted, 0.0)
+            alm += 0.5 * rho * float(np.sum(act * act)) - lam2 / (2.0 * rho)
+            if np.any(act > 0):
+                bp(rho * act)
+        F["alm"] = alm
+        gCs = []
+        for mi, m in enumerate(self.members):
+            P, V, A, J = self._pvaj[mi]
+            w = m.w_e
+            E = P - m.S_e
+            F["ref"] += float(np.sum(w * (E[:, 0] ** 2 + E[:, 1] ** 2))) / self.L0 ** 2 / sumT
+            gP = self._gbuf[mi][0] + 2.0 * w[:, None] * E / self.L0 ** 2 / sumT
+            jn2 = J[:, 0] ** 2 + J[:, 1] ** 2
+            F["smooth"] += float(np.sum(m.lens * jn2)) / self.J0 ** 2 / sumT
+            gJ = self._gbuf[mi][3] + self.lam_j * 2.0 * m.lens[:, None] * J / self.J0 ** 2 / sumT
+            gC = m.B0.T @ gP + m.B1.T @ self._gbuf[mi][1] + m.B2.T @ self._gbuf[mi][2] + m.D3.T @ gJ \
+                + m.Bf.T @ self._gPf[mi]
+            gCs.append(gC)
+        total = F["ref"] + self.lam_j * F["smooth"] + alm
         grad = np.zeros(self.nvar)
         for mi, m in enumerate(self.members):
             if not m.nz:
                 continue
-            gC = gCs[mi] + m.Bf.T @ gPf[mi]
-            gz = m.Z.T @ gC.reshape(-1)
+            gz = m.Z.T @ gCs[mi].reshape(-1)
             grad[m.off:m.off + m.nz] = self._gy_from_gz(m, gz)
         if terms:
             return total, grad, F
@@ -728,47 +802,79 @@ def prepare_problem(problem, settings, *, knot_s=1.0):
     return Prepared(problem, settings, knot_s)
 
 
-def _lbfgs_options(settings):
-    return {"maxiter": int(settings["maxiter"]), "maxls": int(settings["maxls"]), "maxfun": int(settings["maxfun"]),
-            "maxcor": int(settings["maxcor"]), "ftol": float(settings["ftol"]), "gtol": float(settings["gtol"])}
-
-
 def solve_joint(problem, settings, *, knot_s=1.0):
-    """单次求解物理层；返回 JointSolution，不重抽骨架，不自动调用自己。"""
+    """单次求解物理层（增广拉格朗日外循环 + 内层 L-BFGS-B）；返回 JointSolution，不重抽骨架。
+    成功 = 结果有限且原阈值硬检查全过；SciPy success 只记录。外循环用完仍不过 → optimize_residual（附最坏约束）。"""
     from scipy.optimize import minimize
     from .optimize_checks import check_physical
     t0 = time.perf_counter()
-    diag = {"knot_s": float(knot_s), "settings_sha256": settings.get("_sha256")}
+    diag = {"knot_s": float(knot_s), "settings_sha256": settings.get("_sha256"), "rounds": []}
     try:
         prep = prepare_problem(problem, settings, knot_s=knot_s)
     except EqualityInconsistent as exc:
-        diag["witness"] = exc.witness
-        diag["member"] = exc.member
-        diag["wall_s"] = time.perf_counter() - t0
+        diag.update(witness=exc.witness, member=exc.member, wall_s=time.perf_counter() - t0)
         return JointSolution(False, {}, "optimize_equalities_inconsistent", diag)
     except _Conditioning as exc:
-        diag["member"] = exc.member
-        diag["error"] = str(exc)
-        diag["wall_s"] = time.perf_counter() - t0
+        diag.update(member=exc.member, error=str(exc), wall_s=time.perf_counter() - t0)
         return JointSolution(False, {}, "optimize_conditioning", diag)
-    diag["prepare_s"] = prep.prep_s
-    diag["nvar"] = prep.nvar
-    diag["conditioning"] = prep.cond
-    diag["symmetry_break"] = prep.break_info
-    f_init, _, F_init = prep.value_grad(prep.x0, terms=True)
-    diag["initial_value"] = f_init
-    diag["initial_terms"] = F_init
-    ts = time.perf_counter()
-    if prep.nvar:
-        res = minimize(prep.value_grad, prep.x0, jac=True, method="L-BFGS-B", options=_lbfgs_options(settings))
-        x, success, nit, nfev, msg = res.x, bool(res.success), int(res.nit), int(res.nfev), str(res.message)
-    else:
-        x, success, nit, nfev, msg = prep.x0, True, 0, 0, "no free variables"
-    diag["solve_s"] = time.perf_counter() - ts
-    val, grad, F = prep.value_grad(x, terms=True)
-    diag.update({"nit": nit, "nfev": nfev, "message": msg, "success": success, "value": val, "terms": F,
-                 "max_abs_grad": float(np.max(np.abs(grad))) if len(grad) else 0.0})
+    diag.update(prepare_s=prep.prep_s, nvar=prep.nvar, conditioning=prep.cond, symmetry_break=prep.break_info)
+    x = prep.x0
+    v_prev = prep.max_violation(x)
+    diag["initial_max_violation"] = v_prev
+    rounds = int(settings["alm_max_rounds"])
+    growth = float(settings["alm_rho_growth"])
+    ratio = float(settings["alm_violation_ratio"])
+    opts = {"maxiter": int(settings["maxiter"])}
+    nit = nfev = 0
+    phys = None
+    passed = False
+    finite = True
+    solve_s = check_s = 0.0
     trajs = prep.decode(x)
+    for r in range(rounds):
+        ts = time.perf_counter()
+        if prep.nvar:
+            res = minimize(prep.value_grad, x, jac=True, method="L-BFGS-B", options=opts)
+            x = res.x
+            info = {"nit": int(res.nit), "nfev": int(res.nfev), "message": str(res.message),
+                    "scipy_success": bool(res.success)}
+        else:
+            info = {"nit": 0, "nfev": 0, "message": "no free variables", "scipy_success": True}
+        solve_s += time.perf_counter() - ts
+        nit += info["nit"]
+        nfev += info["nfev"]
+        val, grad, F = prep.value_grad(x, terms=True)
+        finite = bool(np.isfinite(val) and np.all(np.isfinite(x)))
+        trajs = prep.decode(x)
+        tc = time.perf_counter()
+        phys = check_physical(problem, trajs, settings) if finite else {"passed": False, "failures": [
+            {"kind": "nonfinite"}]}
+        check_s += time.perf_counter() - tc
+        info.update(round=r + 1, rho=prep.rho, value=val, terms=F, max_abs_grad=float(np.max(np.abs(grad)))
+                    if len(grad) else 0.0, hard_passed=bool(phys["passed"]),
+                    hard_failures=phys["failures"][:20])
+        if finite and phys["passed"]:
+            info["max_violation"] = prep.max_violation(x)
+            diag["rounds"].append(info)
+            passed = True
+            break
+        if not finite:
+            diag["rounds"].append(info)
+            break
+        prep.update_multipliers(x)
+        v = prep.max_violation(x)
+        info["max_violation"] = v
+        info["violation_ratio_vs_previous"] = (v / v_prev) if v_prev > 0 else None
+        diag["rounds"].append(info)
+        if not v <= ratio * v_prev:
+            prep.rho *= growth
+        v_prev = v
+    diag.update(nit=nit, nfev=nfev, solve_s=solve_s, check_s=check_s, physical=phys,
+                message=diag["rounds"][-1]["message"] if diag["rounds"] else None,
+                success=passed, value=diag["rounds"][-1]["value"] if diag["rounds"] else None,
+                terms=diag["rounds"][-1]["terms"] if diag["rounds"] else None,
+                max_abs_grad=diag["rounds"][-1]["max_abs_grad"] if diag["rounds"] else None,
+                outer_rounds=len(diag["rounds"]))
     diag["ls_controls"] = {m: t.controls for m, t in prep.decode(prep.x_ls).items()}
     diag["init_controls"] = {m: t.controls for m, t in prep.decode(prep.x0).items()}
     dev = []
@@ -779,15 +885,10 @@ def solve_joint(problem, settings, *, knot_s=1.0):
         dev.append({"member": m.mid, "max_m": float(e.max()),
                     "rms_m": float(math.sqrt(np.sum(m.w_e * e ** 2) / m.T)) if m.T > 0 else 0.0})
     diag["reference_deviation"] = dev
-    finite = bool(np.isfinite(val) and np.all(np.isfinite(x)))
-    phys = check_physical(problem, trajs, settings)
-    diag["physical"] = phys
     diag["wall_s"] = time.perf_counter() - t0
-    if not (success and finite):
-        return JointSolution(False, trajs, "optimize_not_converged", diag)
-    if not phys["passed"]:
-        return JointSolution(False, trajs, "optimize_residual", diag)
-    return JointSolution(True, trajs, None, diag)
+    if passed:
+        return JointSolution(True, trajs, None, diag)
+    return JointSolution(False, trajs, "optimize_residual", diag)
 
 
 def optimize_segment(ctx, skeleton, key, settings):
