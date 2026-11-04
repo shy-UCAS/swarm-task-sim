@@ -1248,13 +1248,27 @@ def _build_with_ring(S, ctx, group, task, states, key, slots, ring, used, b, ste
     spec = _draw_loop(S, ring, rng) if ring["topology"] == "loop" else _draw_arc(S, ring, rng)
     if spec is None:
         return _stage_fail("patrol_shape", "可行带内抽到的形状在任何 α（含 0）下都不满足精确余量", None, key,
-                           {"topology": ring["topology"]})
+                           {"topology": ring["topology"],
+                            "draw": {"topology": ring["topology"], "formation": slots.realized}})
     if spec["alpha"] < 1.0:
         repairs.append({"kind": "alpha_scaling", "alpha": spec["alpha"], "tried": spec["alpha_tried"]})
     B = _Build(S, ctx, group, task, states, key, slots, ring, repairs, steps_log, prior_topology, sigma)
     if spec["topology"] == "loop":
-        return _finish_loop(B, ring, spec, rng, crng)
-    return _finish_retrace(B, ring, spec, rng, crng)
+        plan = _finish_loop(B, ring, spec, rng, crng)
+    else:
+        plan = _finish_retrace(B, ring, spec, rng, crng)
+    if plan.failure is not None:
+        # V8-13c 裁定 3：记下本次抽到的形状（只作骨架重试偏差诊断，不参与任何构造决定）
+        w = dict(plan.failure.witness or {})
+        w["draw"] = draw_summary(spec, slots.realized)
+        plan = replace(plan, failure=replace(plan.failure, witness=w))
+    return plan
+
+
+def draw_summary(spec, formation):
+    """骨架抽样摘要：拓扑、巡逻平均半径（周期 B 样条系数均值 ρ0）、圈数或往返次数、实际队形。"""
+    return {"topology": spec.get("topology"), "rho0_m": spec.get("rho0_m"), "laps": spec.get("laps"),
+            "traversals": spec.get("traversals"), "formation": formation}
 
 
 def _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma, b, steps_log):

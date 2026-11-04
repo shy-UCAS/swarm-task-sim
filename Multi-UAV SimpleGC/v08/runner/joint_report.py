@@ -15,6 +15,7 @@ import numpy as np
 QUICK_SUCCESS_FLOOR = Fraction(16, 20)      # U D.3.4
 QUICK_ATTEMPT_MEDIAN = 1                    # U D.3.4
 QUICK_OPT_MEDIAN_S = 60.0                   # U D.3.4
+QUICK_POST_OPT_MEDIAN = 0                   # V8-13c 裁定 2：进入优化后失败次数中位数 > 0 触发
 FULL_SUCCESS_FLOOR = Fraction(80, 100)      # U D.4.4
 FULL_GAP = Fraction(20, 100)                # U D.4.4：20 个百分点
 
@@ -60,17 +61,23 @@ def _rate(rows):
 
 
 def quick_checkpoint(records):
+    """V8-13c 裁定 2 修正尝试次数项：成功合同中"进入优化之后失败的尝试次数"的中位数 > 0 即触发
+    （post_optimization_failures）；原"成功合同尝试次数中位数"与骨架构造失败只作诊断。缺该字段的成功记录
+    使该项无法判定（记 attempts_undetermined，不当作通过也不当作触发）。"""
     rows = list(records)
     n = len(rows)
     succ = [r for r in rows if r["success"]]
     rate = _rate(rows)
-    att = _median_or_none(r["attempts"] for r in succ)
+    att_all = _median_or_none(r["attempts"] for r in succ)
+    post = [r.get("post_optimization_failures") for r in succ]
+    undetermined = any(p is None for p in post)
+    att = None if undetermined else _median_or_none(post)
     opt = _median_or_none(float(r["optimization_s"]) for r in rows)
     bad_p0 = [r["contract_id"] for r in rows if not r.get("retained_p0_ok", True)]
     trig = []
     if rate is not None and rate < QUICK_SUCCESS_FLOOR:
         trig.append("success_rate")
-    if att is not None and att > QUICK_ATTEMPT_MEDIAN:
+    if att is not None and att > QUICK_POST_OPT_MEDIAN:
         trig.append("attempts")
     if opt is not None and opt > QUICK_OPT_MEDIAN_S:
         trig.append("optimization_time")
@@ -78,7 +85,10 @@ def quick_checkpoint(records):
         trig.append("retained_p0")
     return {"triggered": trig,
             "metrics": {"contracts": n, "successes": len(succ), "success_rate": None if rate is None else float(rate),
-                        "success_attempts_median": att, "optimization_s_median": opt,
+                        "post_optimization_failures_median": att, "attempts_undetermined": undetermined,
+                        "success_attempts_median_diagnostic": att_all,
+                        "skeleton_failures_total_diagnostic": sum(r.get("skeleton_failures") or 0 for r in rows),
+                        "optimization_s_median": opt,
                         "optimization_entered": sum(float(r["optimization_s"]) > 0.0 for r in rows),
                         "retained_p0_violations": bad_p0}}
 
@@ -312,3 +322,62 @@ def make_figures(out_dir, entries, *, data_root, cache_dir, fig_dir):
         plt.close(fig)
         made[name] = r["contract_id"]
     return made
+
+
+# ================================================================ V8-13c 裁定 3：骨架重试偏差诊断（只报告，不设门禁）
+
+def ks_statistic(a, b):
+    """两样本 Kolmogorov–Smirnov 统计量 D = sup|F_a − F_b|（经验分布在合并样本点上求值）。"""
+    a = np.sort(np.asarray([x for x in a if x is not None], float))
+    b = np.sort(np.asarray([x for x in b if x is not None], float))
+    if not len(a) or not len(b):
+        return None
+    pts = np.concatenate([a, b])
+    fa = np.searchsorted(a, pts, side="right") / len(a)
+    fb = np.searchsorted(b, pts, side="right") / len(b)
+    return float(np.max(np.abs(fa - fb)))
+
+
+def cramers_v(a, b):
+    """两组类别样本的 Cramér's V = sqrt(χ²/(n·(min(r,c)−1)))，表为 2 × 类别数。"""
+    a = [x for x in a if x is not None]
+    b = [x for x in b if x is not None]
+    cats = sorted({*map(str, a), *map(str, b)})
+    if not a or not b or len(cats) < 2:
+        return None
+    table = np.array([[sum(str(x) == c for x in g) for c in cats] for g in (a, b)], float)
+    n = table.sum()
+    exp = table.sum(1, keepdims=True) * table.sum(0, keepdims=True) / n
+    chi2 = float(np.sum((table - exp) ** 2 / np.where(exp > 0, exp, 1.0)))
+    return float(np.sqrt(chi2 / (n * (min(table.shape) - 1))))
+
+
+def skeleton_bias(records):
+    """按初速/人数/设施数分档报告平均骨架尝试次数（= attempt 数，每次 attempt 构造一次骨架）与平均骨架构造失败数；
+    比较"全部抽到的骨架"（所有合同所有 attempt 中已抽到形状者）与"最终保留的骨架"（成功合同的最后一次）的分布。"""
+    rows = [r for r in records if not r.get("error") and r.get("attempts")]
+    bins = {}
+    for name, key in (("speed", lambda r: speed_bin(r["initial_speed_m_s"])), ("group", lambda r: group_bin(r["group_size"])),
+                      ("facility", lambda r: int(r["facility_count"]))):
+        out = {}
+        for r in rows:
+            out.setdefault(key(r), []).append(r)
+        bins[name] = {k: {"contracts": len(v), "mean_attempts": float(np.mean([x["attempts"] for x in v])),
+                          "mean_skeleton_failures": float(np.mean([x.get("skeleton_failures") or 0 for x in v]))}
+                      for k, v in sorted(out.items())}
+    drawn = [d for r in rows for d in (r.get("draws") or []) if d]
+    kept = [(r.get("draws") or [None])[-1] for r in rows if r.get("success")]
+    kept = [d for d in kept if d]
+    loops = lambda ds: [d.get("laps") for d in ds if d.get("topology") == "loop"]
+    travs = lambda ds: [d.get("traversals") for d in ds if d.get("topology") == "retrace"]
+    comp = {
+        "patrol_mean_radius_rho0_ks": ks_statistic([d.get("rho0_m") for d in drawn], [d.get("rho0_m") for d in kept]),
+        "laps_ks": ks_statistic(loops(drawn), loops(kept)),
+        "traversals_ks": ks_statistic(travs(drawn), travs(kept)),
+        "topology_cramers_v": cramers_v([d.get("topology") for d in drawn], [d.get("topology") for d in kept]),
+        "formation_cramers_v": cramers_v([d.get("formation") for d in drawn], [d.get("formation") for d in kept]),
+    }
+    counts = {"drawn": len(drawn), "kept": len(kept),
+              "drawn_with_shape": sum(d.get("rho0_m") is not None for d in drawn),
+              "attempts_without_draw": sum(1 for r in rows for d in (r.get("draws") or []) if not d)}
+    return {"bins": bins, "drawn_vs_kept": comp, "counts": counts}

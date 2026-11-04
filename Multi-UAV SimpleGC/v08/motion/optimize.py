@@ -36,7 +36,7 @@ MB = np.array([[1.0, 4.0, 1.0, 0.0],
 FRAME_S = 0.1
 REQUIRED_KEYS = ("jerk_plan_m_s3", "knot_s", "weight_smooth", "maxiter", "alm_max_rounds", "alm_rho0",
                  "alm_rho_growth", "alm_violation_ratio", "buffer_separation_m", "buffer_geometry_m",
-                 "buffer_dynamic_factor")
+                 "buffer_dynamic_factor", "buffer_turn_factor")
 WEIGHT_KEYS = ("weight_smooth",)
 
 
@@ -52,6 +52,7 @@ class JointProblem:
     clearances: tuple = ()     # 现有 Clearance，生产含 world/所有障碍/所有 alert
     field: object = None       # 现有 DistanceField；纯无障碍夹具可为 None
     lines: tuple = ()          # (member_id, t0, t1, point_xy, unit_tangent_xy)
+    turns: tuple = ()          # (member_id, t0_abs, t1_abs, R_min_m)：骨架标记的掉头区间（V8-13c 裁定 1）
 
 
 @dataclass(frozen=True)
@@ -359,6 +360,7 @@ class _Member:
     nz: int = 0
     eq_info: list = dc_field(default_factory=list)
     line_rows: list = dc_field(default_factory=list)
+    turns: list = dc_field(default_factory=list)     # [(评价点下标数组, R_min)]
 
 
 class Prepared:
@@ -374,6 +376,7 @@ class Prepared:
         self.cap_n = f * self.lim["a_n"]
         self.cap_t = f * self.lim["a_t"]
         self.cap_j = f * self.J0
+        self.turn_buffer = float(settings["buffer_turn_factor"])
         self.dbuf = float(settings["buffer_separation_m"])
         self.lam_j = float(settings["weight_smooth"])
         self.rho = float(settings["alm_rho0"])
@@ -385,7 +388,15 @@ class Prepared:
         self.geo = _FieldEval(problem.field, problem.clearances, float(settings["buffer_geometry_m"]))
         self.members = []
         for ref in refs:
-            self.members.append(self._member(ref, problem.lines))
+            mem = self._member(ref, problem.lines)
+            for (mid, t0, t1, rmin) in getattr(problem, "turns", ()):
+                if mid != ref.member_id:
+                    continue
+                ta = mem.tau_e + mem.r
+                idx = np.flatnonzero((ta >= float(t0)) & (ta <= float(t1)))
+                if len(idx):
+                    mem.turns.append((idx, float(rmin)))
+            self.members.append(mem)
         self.sumT = float(sum(m.T for m in self.members))
         self.pairs = []
         for a in range(len(self.members)):
@@ -681,6 +692,27 @@ class Prepared:
                 sj = np.where(jn > 0, jn, 1.0)
                 gbuf[mi][3][:] += (coef / self.cap_j / sj)[:, None] * J
             out.append((("j", mi), gj, bp_j))
+            # 掉头曲率（V8-13c 裁定 1）：g = κ·1.05·R_min − 1，κ = |v×a|/|v|³
+            for ti, (idx, rmin) in enumerate(m.turns):
+                Vi, Ai = V[idx], A[idx]
+                si = np.hypot(Vi[:, 0], Vi[:, 1])
+                ci = Vi[:, 0] * Ai[:, 1] - Vi[:, 1] * Ai[:, 0]
+                okv = si > 0
+                s3 = np.where(okv, si ** 3, 1.0)
+                kap = np.where(okv, np.abs(ci) / s3, 0.0)
+                fac = self.turn_buffer * rmin
+                gk = np.where(okv, kap * fac - 1.0, -1.0)
+
+                def bp_k(coef, mi=mi, idx=idx, Vi=Vi, Ai=Ai, si=si, ci=ci, okv=okv, s3=s3, fac=fac):
+                    c = np.where(okv, coef * fac, 0.0)
+                    sg = np.sign(ci)
+                    s5 = np.where(okv, si ** 5, 1.0)
+                    dv = (sg / s3)[:, None] * np.stack([Ai[:, 1], -Ai[:, 0]], 1) \
+                        - (3.0 * np.abs(ci) / s5)[:, None] * Vi
+                    da = (sg / s3)[:, None] * np.stack([-Vi[:, 1], Vi[:, 0]], 1)
+                    np.add.at(gbuf[mi][1], idx, c[:, None] * dv)
+                    np.add.at(gbuf[mi][2], idx, c[:, None] * da)
+                out.append((("turn", mi, ti), gk, bp_k))
             # 几何
             if self.geo.ok:
                 Pab = P + m.p0
@@ -905,7 +937,19 @@ def optimize_segment(ctx, skeleton, key, settings):
     refs, lines, maps = references_from_skeleton(
         skeleton, warnings=cons["warnings"], target_id=target,
         band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
-    problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines))
+    # V8-13c 裁定 1：骨架标记的掉头区间（按与 check_monitoring 相同的名义时间映射）进入增广拉格朗日
+    from ..config import load_config
+    Mcfg = load_config("monitoring").values
+    turns = []
+    for m, rows in sorted((skeleton.witnesses.get("turn_ranges") or {}).items()):
+        nom = maps[m]["nominal"]
+        for kind, s_a, s_b, key_ in rows:
+            if key_ is None:
+                continue
+            ta = float(np.interp(s_a, nom.curve.s, nom.t_nodes)) + float(nom.release_s)
+            tb = float(np.interp(s_b, nom.curve.s, nom.t_nodes)) + float(nom.release_s)
+            turns.append((m, ta, tb, float(Mcfg[key_])))
+    problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines), tuple(turns))
     sol = solve_joint(problem, settings, knot_s=float(settings["knot_s"]))
     out = {"ok": False, "stage": "optimize", "reason": sol.reason, "solution": sol, "monitoring": None,
            "references": refs, "lines": lines, "problem": problem, "maps": maps}

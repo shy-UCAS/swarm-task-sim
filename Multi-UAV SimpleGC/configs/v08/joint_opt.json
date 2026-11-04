@@ -66,6 +66,11 @@
       "value": 0.9,
       "kind": "engineering_margin",
       "source": "V8-13b 优化器求解形式裁定（2026-11-04） 2.5：骨架名义时间用 a_lat_ref = 0.9×3.0、a_lon_ref = 0.9×2.0 调用同一 speed_profile，使参考落在缓冲后上限（0.95 倍）之内"
+    },
+    "buffer_turn_factor": {
+      "value": 1.05,
+      "kind": "engineering_margin",
+      "source": "V8-13c 掉头约束与检查点口径裁定（2026-11-04）第 1 条：骨架标记的掉头区间内约束 κ ≤ 1/(1.05·R_min)（R_min = 15/8/25 m，configs/v08/monitoring.json turn_*_min_m），与动力学 0.95 同属优化缓冲；硬检查仍用原下界"
     }
   }
 }

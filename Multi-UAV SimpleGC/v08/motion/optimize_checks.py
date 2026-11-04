@@ -323,6 +323,19 @@ def check_physical(problem, trajectories, settings):
                 failures.append({"kind": "clearance", "member": m, "constraint": c.name,
                                  "margin_m": float(margin[k]), "t_abs_s": float(ts[k] + tr.release_s)})
         clear[m] = per
+    # 掉头曲率（V8-13c 裁定 1；硬检查用原下界 15/8/25 m，连续区间极值）
+    turns = []
+    for (mid, t0, t1, rmin) in getattr(problem, "turns", ()):
+        tr = trajectories[mid]
+        lo, hi = max(float(t0) - tr.release_s, 0.0), min(float(t1) - tr.release_s, tr.duration)
+        if hi <= lo:
+            continue
+        rho, where = curvature_radius_min(tr.knots, tr.controls, lo, hi)
+        turns.append({"member": mid, "t_abs": (float(t0), float(t1)), "min_radius_m": rho, "required_m": float(rmin),
+                      "at_abs_s": where + tr.release_s})
+        if not rho >= float(rmin):
+            failures.append({"kind": "turn_radius", "member": mid, "min_radius_m": rho, "required_m": float(rmin),
+                             "t_abs_s": where + tr.release_s})
     # 间距：共同可见整数 10 Hz 帧
     sep = {"min_m": None, "pair": None, "t_s": None, "pairs_without_common_frames": []}
     frames = {m: _frames(trajectories[m], lim["hold_s"]) for m in order}
@@ -342,7 +355,7 @@ def check_physical(problem, trajectories, settings):
     if sep["min_m"] is not None and not sep["min_m"] >= lim["d_lane"]:
         failures.append({"kind": "separation", "pair": sep["pair"], "min_m": sep["min_m"], "t_s": sep["t_s"]})
     return {"passed": not failures, "failures": failures, "separation": sep, "clearances": clear,
-            "dynamic_extrema": dyn, "endpoints": endpoints, "lines": line_res, "limits": lim}
+            "dynamic_extrema": dyn, "endpoints": endpoints, "lines": line_res, "limits": lim, "turns": turns}
 
 
 # ---------------------------------------------------------------- 监视语义硬检查（生产 optimize_segment 负责）

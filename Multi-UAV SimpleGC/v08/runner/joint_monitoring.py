@@ -167,6 +167,14 @@ def _attempt_summary(rec, key):
     if "feasible_set" in rec:
         s["feasible_set"] = rec["feasible_set"]
         s["witness"] = jsonable(rec.get("witness"))
+    plan = rec.get("plan")
+    if plan is not None and plan.failure is None:
+        from ..motion.intents.monitoring import draw_summary
+        s["draw"] = jsonable(draw_summary(plan.proposal or {}, (plan.formation or {}).get("realized")))
+    elif isinstance(rec.get("witness"), dict) and rec["witness"].get("draw") is not None:
+        s["draw"] = jsonable(rec["witness"]["draw"])
+    else:
+        s["draw"] = None
     opt = rec.get("opt")
     if opt is not None:
         d = opt["solution"].diagnostics
@@ -240,6 +248,10 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
            "settings_sha256": settings.get("_sha256"),
            "release_us": None, "retained_p0_ok": True}
     rec["incomplete"] = bool(out.get("incomplete", False))
+    # V8-13c 裁定 2：进入优化之后失败的尝试（优化、硬检查、跟踪仿真、段核验与有效性检查）与骨架构造失败分开计数
+    rec["post_optimization_failures"] = sum(1 for s in summaries if not s["ok"] and s["stage"] != "skeleton")
+    rec["skeleton_failures"] = sum(1 for s in summaries if not s["ok"] and s["stage"] == "skeleton")
+    rec["draws"] = [s.get("draw") for s in summaries]
     rec["stage_timing"] = {k: float(sum((s["timing"] or {}).get(k, 0.0) for s in summaries))
                            for k in ("skeleton_s", "optimize_s", "simulation_s", "verify_s")}
     if out["success"]:
@@ -297,6 +309,8 @@ def save_contract(out, rec, result, last_failed=None):
     result_doc = {"success": rec["success"], "attempts": rec["attempts"], "failure": rec["failure"],
                   "attempt_log": det_attempts, "release_us": rec["release_us"], "settings_sha256": rec["settings_sha256"],
                   "retained_p0_ok": rec["retained_p0_ok"], "incomplete": rec.get("incomplete", False),
+                  "post_optimization_failures": rec["post_optimization_failures"],
+                  "skeleton_failures": rec["skeleton_failures"],
                   "deviation": rec.get("deviation"), "tracking": rec.get("tracking"),
                   "nominal_duration_s": rec.get("nominal_duration_s"), "formation": rec.get("formation"),
                   "topology": rec.get("topology")}
@@ -353,7 +367,7 @@ def save_contract(out, rec, result, last_failed=None):
 def _record_row(rec):
     keys = ("contract_id", "family_id", "draw_index", "branch", "facility_count", "initial_speed_m_s", "group_size",
             "success", "attempts", "optimization_s", "retained_p0_ok", "member_ids", "target_id", "release_us",
-            "failure", "order", "vehicle_count")
+            "failure", "order", "vehicle_count", "post_optimization_failures", "skeleton_failures", "draws")
     return {k: rec.get(k) for k in keys}
 
 
@@ -430,6 +444,11 @@ def cli(args, out):
         return 2 if chk["triggered"] else 0
     if args.stage == "full":
         summary = full_stage(entries, data_root=data_root, cache_dir=cache, out_dir=out, workers=args.workers)
+        try:
+            figs = JR.make_figures(out, entries, data_root=data_root, cache_dir=cache, fig_dir=out / "figures")
+            write_json(out / "figures.json", figs, indent=1)
+        except Exception:
+            (out / "figures_error.txt").write_text(traceback.format_exc(), encoding="utf-8")
         chk = summary["checkpoint"]
         print("全量诊断：", json.dumps(chk, ensure_ascii=False))
         if not summary["complete"]:
@@ -649,6 +668,11 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
                "frechet_before_pooled": JR.pooled_frechet(blocks_before),
                "frechet_blocks_after": blocks_after, "frechet_blocks_before": blocks_before,
                "wall_s": time.time() - t_start, "workers": workers}
+    good = [r for r in full_rows if not r.get("error")]
+    summary["post_optimization_failures_median"] = JR._median_or_none(
+        r.get("post_optimization_failures") for r in good if r.get("success"))
+    summary["distributions"] = JR.distributions(good, div_rows)
+    summary["skeleton_bias"] = JR.skeleton_bias(good)
     write_json(out / "summary.json", summary, indent=1)
     return summary
 
