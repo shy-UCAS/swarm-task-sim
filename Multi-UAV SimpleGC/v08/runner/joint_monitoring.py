@@ -579,6 +579,20 @@ def _pool_task(task):
                 "error": repr(exc), "traceback": traceback.format_exc()}
 
 
+def _pool_family_task(ftask):
+    """同一族的全部合同（全量 draw 与多样性种子）在同一进程内顺序执行：V8-12 的场景缓存只按单进程设计，
+    不同进程并行处理同一族会在 Windows 上争用同一缓存文件的原子替换（第一次全量的 23 次 PermissionError）。"""
+    import time as _t
+    rows = []
+    for t in ftask:
+        if _t.time() > t[-1]:
+            rows.append({"contract_id": contract_id(t[1], t[2], t[3]), "family_id": t[1]["family_id"], "kind": t[0],
+                         "draw_index": t[2], "branch": t[3], "success": False, "attempts": 0, "unsent": True})
+            continue
+        rows.append(_pool_task(t))
+    return rows
+
+
 def run_pool(tasks, *, workers, deadline, log=print):
     """固定顺序派发；到 deadline 停止派发，进行中的合同在下一 attempt 前合作退出。返回 (rows, 未派发 keys)。"""
     import multiprocessing as mp
@@ -589,9 +603,9 @@ def run_pool(tasks, *, workers, deadline, log=print):
         def submit_next():
             for t in it:
                 if time.time() > deadline:
-                    unsent.append(contract_id(t[1], t[2], t[3]))
+                    unsent.extend(contract_id(x[1], x[2], x[3]) for x in t)
                     continue
-                pending.add(ex.submit(_pool_task, t))
+                pending.add(ex.submit(_pool_family_task, t))
                 return True
             return False
         for _ in range(workers):
@@ -601,11 +615,14 @@ def run_pool(tasks, *, workers, deadline, log=print):
             done, _ = wait(pending, return_when=FIRST_COMPLETED)
             for fut in done:
                 pending.discard(fut)
-                row = fut.result()
-                rows.append(row)
-                log(f"[{len(rows)}] {row['contract_id']} {row.get('kind')}: success={row.get('success')} "
-                    f"attempts={row.get('attempts')} incomplete={row.get('incomplete')} "
-                    f"wall={row.get('wall_s', 0):.0f}s err={row.get('error')}")
+                for row in fut.result():
+                    if row.get("unsent"):
+                        unsent.append(row["contract_id"])
+                        continue
+                    rows.append(row)
+                    log(f"[{len(rows)}] {row['contract_id']} {row.get('kind')}: success={row.get('success')} "
+                        f"attempts={row.get('attempts')} incomplete={row.get('incomplete')} "
+                        f"wall={row.get('wall_s', 0):.0f}s err={row.get('error')}")
                 submit_next()
     return rows, unsent
 
@@ -644,11 +661,19 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
     write_json(out / "rerun_keys.json", {"keys": [list(k) for k in keys[:5]],
                                          "rule": "全量开始前按 (order, draw) 字典序取前 5 个合同"}, indent=1)
     by_order = {int(e["order"]): e for e in entries}
-    tasks = [("full", by_order[o], d, None, str(data_root), str(cache_dir), str(out), deadline) for o, d in keys]
     div_fams = select_diversity_families(entries)
+    div_orders = {int(e["order"]) for e in div_fams}
     (out / "diversity").mkdir()
-    tasks += [("diversity", e, 0, b, str(data_root), str(cache_dir), str(out / "diversity"), deadline)
-              for e in div_fams for b in range(DIVERSITY_SEEDS)]
+    fam_tasks = []
+    for e in ordered:
+        o = int(e["order"])
+        ft = [("full", e, d, None, str(data_root), str(cache_dir), str(out), deadline) for d in range(DRAWS)]
+        if o in div_orders:
+            ft += [("diversity", e, 0, b, str(data_root), str(cache_dir), str(out / "diversity"), deadline)
+                   for b in range(DIVERSITY_SEEDS)]
+        fam_tasks.append(ft)
+    # 派发顺序只由任务规模与登记 order 决定（合同多的族先派，均衡 8 进程），与结果无关
+    tasks = sorted(fam_tasks, key=lambda ft: (-len(ft), int(ft[0][1]["order"])))
     rows, unsent = run_pool(tasks, workers=workers, deadline=deadline, log=log)
     full_rows = sorted([r for r in rows if r.get("kind") == "full"], key=lambda r: r["contract_id"])
     div_rows = sorted([r for r in rows if r.get("kind") == "diversity"], key=lambda r: r["contract_id"])

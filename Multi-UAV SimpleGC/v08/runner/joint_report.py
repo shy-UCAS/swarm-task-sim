@@ -251,6 +251,8 @@ def make_figures(out_dir, entries, *, data_root, cache_dir, fig_dir):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "DejaVu Sans"]   # 图中中文标签
+    plt.rcParams["axes.unicode_minus"] = False
     from ..motion.optimize import SplineTrajectory
     from ..scene.context import load_context
     out = _P(out_dir)
@@ -264,8 +266,8 @@ def make_figures(out_dir, entries, *, data_root, cache_dir, fig_dir):
             topo = (r.get("topology") or {}).get("final")
             name = "success_loop" if topo == "loop" else "success_retrace"
             pick.setdefault(name, r)
-        elif (out / "contracts" / r["contract_id"] / "failure_witness.json").exists():
-            pick.setdefault("failure", r)
+        else:
+            pick.setdefault("failure", r)      # 最小失败 key，不论最后一次 attempt 停在哪个阶段
     made = {}
     for name in ("success_loop", "success_retrace", "failure"):
         r = pick.get(name)
@@ -294,7 +296,17 @@ def make_figures(out_dir, entries, *, data_root, cache_dir, fig_dir):
             tracks = {m: np.load(cdir / "tracks" / m / "p.npy") for m in skel}
             wit = None
         else:
-            fw = _json.loads((cdir / "failure_witness.json").read_text(encoding="utf-8"))
+            fwp = cdir / "failure_witness.json"
+            if fwp.exists():
+                fw = _json.loads(fwp.read_text(encoding="utf-8"))
+            else:
+                res = _json.loads((cdir / "result.json").read_text(encoding="utf-8"))
+                last = res["attempt_log"][-1] if res["attempt_log"] else {}
+                fw = {"skeleton_members": {}, "stage": last.get("stage"),
+                      "physical_failures": [{"kind": f"最后一次 attempt 停在 {last.get('feasible_set') or last.get('stage')}，"
+                                                     f"无骨架/优化曲线；最终 {(res.get('failure') or {}).get('code')}"}]}
+                p0 = np.array([s_["position_enu_m"][:2] for s_ in ctx.family.initial_states.values()], float)
+                ax.plot(p0[:, 0], p0[:, 1], "k^", ms=5, label="成员起点")
             skel = {m: np.asarray(v, float) for m, v in fw["skeleton_members"].items()}
             opt = fw.get("optimized") or {}
             tracks = {m: np.asarray(v, float) for m, v in (fw.get("tracks_p") or {}).items()}
