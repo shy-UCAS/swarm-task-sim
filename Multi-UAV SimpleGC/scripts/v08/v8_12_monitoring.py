@@ -51,7 +51,7 @@ def run_sim_stage(args, run, entries, data_root, cache, out, devset):
     t0 = time.perf_counter()
     summary = sim.simulate_devset(plan_dir, stage=args.stage, quick_dir=args.quick_input, out_dir=out, entries=entries,
                                   data_root=data_root, cache_dir=cache, devset_path=devset, contracts=contracts,
-                                  wall_budget_s=args.wall_budget_s)
+                                  wall_budget_s=args.wall_budget_s, rerun_every=args.rerun_every)
     c = summary["counts"]
     print(f"\n阶段 {args.stage}：执行 {c['all_executed']} 个合同，保留 {c['retained']}，失败 {c['failed']}，"
           f"中断 {c['interrupted']}，未运行 {c['not_run']}；复跑一致 {c['rerun_equal']}，待复跑 {c['pending_rerun']}，"
@@ -74,6 +74,8 @@ def main(argv=None):
     ap.add_argument("--limit-families", type=int)
     ap.add_argument("--draws", type=int, default=5)
     ap.add_argument("--no-diversity", action="store_true")
+    ap.add_argument("--rerun-every", type=int, default=1,
+                    help="第 5 部分：队列中每 N 个合同复跑 1 个（默认 1 = 全部复跑）；其余记待复跑")
     ap.add_argument("--contracts", help="只用于调试：逗号分隔的合同 ID；结果标记为不完整")
     ap.add_argument("--wall-budget-s", type=float, help="只用于调试：覆盖 7200 s 的资源边界；结果标记为不完整时才可用")
     args = ap.parse_args(argv)

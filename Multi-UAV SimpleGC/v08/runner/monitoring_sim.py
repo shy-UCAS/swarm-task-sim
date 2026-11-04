@@ -589,7 +589,11 @@ def run_contract(entry, rec4, *, plan_dir, data_root, cache_dir, out_dir, quick,
         digest_first = plan_digest(accepted_plan_first)
         first_comp = payload_components(rec4["plan_sha256"], digest_first, first)
         out["accepted_plan_digest"] = digest_first
-        if do_rerun and not clock.exceeded():
+        if not do_rerun:
+            out["rerun"] = {"status": "pending", "wall_s": 0.0, "reason": "not_selected_by_rerun_policy"}
+        elif clock.exceeded():
+            out["rerun"] = {"status": "pending", "wall_s": 0.0, "reason": "wall_budget"}
+        else:
             out["rerun"] = rerun_contract(entry, rec4, first_comp, a0, mission_id=(cid, rec4["order"]),
                                           data_root=data_root, cache_dir=cache_dir, quick=quick, log=log)
         if out["rerun"]["status"] == "mismatch":
@@ -645,7 +649,7 @@ def rerun_contract(entry, rec4, first_components, a0, *, mission_id, data_root, 
 
 
 def simulate_devset(plan_dir, *, stage, quick_dir, out_dir, entries, data_root, cache_dir, devset_path=None,
-                    contracts=None, wall_budget_s=None, quick_count=None, log=print):
+                    contracts=None, wall_budget_s=None, quick_count=None, rerun_every=1, log=print):
     """第 5 部分：stage = quick（10 合同）或 full（第 4 部分成功集合的其余合同；快速 10 条直接计入）。"""
     from ..config import load_config
 
@@ -704,7 +708,7 @@ def simulate_devset(plan_dir, *, stage, quick_dir, out_dir, entries, data_root, 
             f"拓扑={rec4['metrics']['topology']} 计划 {rec4['plan']['nominal_duration_s']:.0f}s  累计 {clock.elapsed():.0f}s")
         try:
             res = run_contract(entry, rec4, plan_dir=plan_dir, data_root=data_root, cache_dir=cache_dir, out_dir=out,
-                               quick=(stage == "quick"), clock=clock, log=say)
+                               quick=(stage == "quick"), clock=clock, do_rerun=(i % int(rerun_every) == 0), log=say)
         except P0Stop as exc:
             p0 = {"kind": exc.kind, "message": str(exc), "contract_id": cid, "detail": M.jsonable(exc.detail)}
             say(f"P0 停止：{exc}")
@@ -733,7 +737,7 @@ def simulate_devset(plan_dir, *, stage, quick_dir, out_dir, entries, data_root, 
             break
     from . import monitoring_sim_report as SR
 
-    summary = SR.build_sim_summary(stage=stage, queue=queue, results=results, not_run=not_run, p0=p0,
+    summary = SR.build_sim_summary(rerun_every=int(rerun_every), stage=stage, queue=queue, results=results, not_run=not_run, p0=p0,
                                    quick_results=quick_results, selection=selection, successes=succ,
                                    wall_s=clock.elapsed(), budget_s=budget, subset=subset)
     summary["meta"] = {"plan_dir": str(plan_dir), "plan_summary_sha256": M._sha256_file(plan_summary_path)

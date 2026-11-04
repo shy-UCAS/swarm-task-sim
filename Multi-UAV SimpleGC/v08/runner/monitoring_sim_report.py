@@ -57,7 +57,7 @@ def _quartile_bins(entries):
     return out
 
 
-def build_sim_summary(*, stage, queue, results, not_run, p0, quick_results, selection, successes, wall_s, budget_s, subset):
+def build_sim_summary(*, rerun_every=1, stage, queue, results, not_run, p0, quick_results, selection, successes, wall_s, budget_s, subset):
     allr = list(quick_results) + list(results)
     executed = [r for r in allr if r["status"] in ("retained", "failed")]
     retained = [r for r in allr if r["status"] == "retained"]
@@ -198,10 +198,14 @@ def build_sim_summary(*, stage, queue, results, not_run, p0, quick_results, sele
                                                        "attempts": len(r["attempts"]), "group_size": r["group_size"],
                                                        "plan_nominal_duration_s": r["plan_nominal_duration_s"]}
                                     for r in allr}},
-        "rerun": {"equal": [r["contract_id"] for r in rerun_equal],
+        "rerun": {"policy": {"every": int(rerun_every),
+                             "rule": "队列第 i 个合同（i 从 0 起）当 i % every == 0 时复跑；快速阶段 every=1。"
+                                     "2 小时边界内不能把每个合同都复跑，规则是确定性的、不看结果"},
+                  "equal": [r["contract_id"] for r in rerun_equal],
                   "mismatch": [{"contract_id": r["contract_id"], "mismatches": r["rerun"]["mismatches"]}
                                for r in rerun_mismatch],
                   "pending": [r["contract_id"] for r in pending_rerun],
+                  "pending_by_reason": _count(r["rerun"].get("reason") for r in pending_rerun),
                   "compared_components": ["plan_chain_sha256", "accepted_plan_digest", "attempts_json_sha256",
                                           "tracks", "verdict_json_sha256"],
                   "excluded": ["wall_s", "sim_wall_s", "diag_wall_s", "member_wall_s", "seconds", "planned_by",
