@@ -1,0 +1,97 @@
+### CMD: python -B -m unittest discover -s tests/v08/V8-08 -p "test_*.py" -v
+test_bad_stops (test_own_v8_08.TestOwnInputChecks.test_bad_stops) ... ok
+test_curve_readonly (test_own_v8_08.TestOwnInputChecks.test_curve_readonly) ... ok
+test_header_checks (test_own_v8_08.TestOwnInputChecks.test_header_checks) ... ok
+test_record_fields (test_own_v8_08.TestOwnInterfaces.test_record_fields) ... ok
+test_release_delay_and_tau_offset (test_own_v8_08.TestOwnInterfaces.test_release_delay_and_tau_offset) ... ok
+test_vehicle_overrides_change_result (test_own_v8_08.TestOwnInterfaces.test_vehicle_overrides_change_result) ... ok
+test_circle_curvature (test_preset_v8_08.TestCurve.test_circle_curvature) ... ok
+test_rejects (test_preset_v8_08.TestCurve.test_rejects) ... ok
+test_straight (test_preset_v8_08.TestCurve.test_straight) ... ok
+test_controller_inverse (test_preset_v8_08.TestGuidanceLaw.test_controller_inverse) ... ok
+test_projection_window_on_self_overlap (test_preset_v8_08.TestGuidanceLaw.test_projection_window_on_self_overlap) ... ok
+test_arc_speed_and_tube (test_preset_v8_08.TestGuidedRun.test_arc_speed_and_tube) ... ok
+test_determinism_and_timeout (test_preset_v8_08.TestGuidedRun.test_determinism_and_timeout) ... ok
+test_disturbance_offset (test_preset_v8_08.TestGuidedRun.test_disturbance_offset) ... ok
+test_input_checks (test_preset_v8_08.TestGuidedRun.test_input_checks) ... ok
+test_speed_change_mid_arc (test_preset_v8_08.TestGuidedRun.test_speed_change_mid_arc) ... ok
+test_split_and_resume (test_preset_v8_08.TestGuidedRun.test_split_and_resume) ... ok
+test_stop_and_hold (test_preset_v8_08.TestGuidedRun.test_stop_and_hold) ... ok
+test_straight_final (test_preset_v8_08.TestGuidedRun.test_straight_final) ... ok
+test_injectable_engine_identity (test_preset_v8_08.TestKernel.test_injectable_engine_identity) ... ok
+test_member_config (test_preset_v8_08.TestKernel.test_member_config) ... ok
+test_curvature_cap (test_preset_v8_08.TestSpeedProfile.test_curvature_cap) ... ok
+test_speed_break_and_stop (test_preset_v8_08.TestSpeedProfile.test_speed_break_and_stop) ... ok
+test_trapezoid (test_preset_v8_08.TestSpeedProfile.test_trapezoid) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 3.436s
+
+OK
+### EXIT: 0
+### CMD: python -B -m unittest discover -s tests/v08/V8-11 -p "test_preset_*.py" -v
+test_detects_tampering (test_preset_v8_11_regress.TestRegressScript.test_detects_tampering) ... ok
+test_list (test_preset_v8_11_regress.TestRegressScript.test_list) ... ok
+test_zero_mismatch (test_preset_v8_11_regress.TestRegressScript.test_zero_mismatch) ... ok
+test_values (test_preset_v8_11_segment.TestConfig.test_values) ... ok
+test_close_observation_too_short (test_preset_v8_11_segment.TestCounterexamples.test_close_observation_too_short)
+只停 10 s，不足 20 s 驻留窗口 → observation_dwell 不满足。 ... ok
+test_contract_errors (test_preset_v8_11_segment.TestCounterexamples.test_contract_errors) ... ok
+test_coverage_short (test_preset_v8_11_segment.TestCounterexamples.test_coverage_short)
+两名成员扫同一条 y = 380：足迹只覆盖 y ∈ [320, 440]，侦察区域 y ∈ [340, 500] 的格点不到 80%。 ... ok
+test_feint_not_exited (test_preset_v8_11_segment.TestCounterexamples.test_feint_not_exited)
+佯动段在 (−230, 0)（警戒层，距圆心 230 ≤ 300）结束：未退出警戒层； ... ok
+test_final_not_withdrawn (test_preset_v8_11_segment.TestCounterexamples.test_final_not_withdrawn)
+最后一段（抵近观察）停在 (−500, 0)：距圆心 500 ≤ 550，仍在预警圈内 → 未到终止区域。 ... ok
+test_monitoring_hover (test_preset_v8_11_segment.TestCounterexamples.test_monitoring_hover)
+监视段中途在 (0, −425)（预警层）悬停 25 s：含抵近观察的定义性证据 → semantic_ambiguous。 ... ok
+test_other_facility_alert (test_preset_v8_11_segment.TestCounterexamples.test_other_facility_alert)
+过境 A 后经 (1500, 100)：到 B 圆心 141 ≤ 230，进入 B 的警戒层 → constraint_violation。 ... ok
+test_pre_release_frames_excluded (test_preset_v8_11_segment.TestCounterexamples.test_pre_release_frames_excluded)
+释放前在起点静止 20 s：若窗口从 0 开始（release = 0），全窗口驻留会误报；按释放时刻切则不报。 ... ok
+test_target_too_deep (test_preset_v8_11_segment.TestCounterexamples.test_target_too_deep)
+监视绕圈半径 280 < 300：进入目标警戒层 → target_within_limit 不满足。 ... ok
+test_transit_starts_inside (test_preset_v8_11_segment.TestCounterexamples.test_transit_starts_inside)
+监视后直接接过境：过境段首帧在预警层内（距圆心约 425）→ started_outside_target_warning 不满足。 ... ok
+test_area_search_group (test_preset_v8_11_segment.TestPass.test_area_search_group)
+两名成员各扫一条（y = 380、460），全组足迹合并覆盖侦察区域；之后撤到 (±1000, y)，在所有预警圈外。 ... ok
+test_close_observation_dwell_allowed (test_preset_v8_11_segment.TestPass.test_close_observation_dwell_allowed)
+抵近观察在 (−425, 0)（预警层）停 30 s：驻留是它的定义性证据，不受"全窗口不驻留"约束。 ... ok
+test_monitoring_then_intrusion (test_preset_v8_11_segment.TestPass.test_monitoring_then_intrusion)
+圈内切换：监视（绕 1.5 圈）→ 突入（径向进到 (130, 0)：距圆心 130 ≤ 150 保护层，到轮廓 30 ≤ 50）。 ... ok
+test_invalid (test_preset_v8_11_validity.TestInputs.test_invalid) ... ok
+test_boundary_is_inside (test_preset_v8_11_validity.TestRestricted.test_boundary_is_inside)
+恰在限制区边界上（到圆心 100 m）记为进入（闭边界，不加容差）；外 1 cm 不记。 ... ok
+test_outside_world_record_only (test_preset_v8_11_validity.TestRestricted.test_outside_world_record_only) ... ok
+test_interframe_near_miss (test_preset_v8_11_validity.TestSeparation.test_interframe_near_miss)
+采样都 ≥ 2 m、帧间插值 1.9 m：门禁通过（10 Hz 采样口径，r4 6.8），插值只作诊断。 ... ok
+test_interp_not_above_sampled (test_preset_v8_11_validity.TestSeparation.test_interp_not_above_sampled) ... ok
+test_matches_v07 (test_preset_v8_11_validity.TestSeparation.test_matches_v07)
+全员全程可见时，与 v0.7 measure_criteria 的最小间距、限制区帧数相同。 ... ok
+test_parallel (test_preset_v8_11_validity.TestSeparation.test_parallel) ... ok
+test_visibility_and_offsets (test_preset_v8_11_validity.TestSeparation.test_visibility_and_offsets)
+未释放的帧不比较；编组出发时刻平移后只在公共帧上比较。 ... ok
+test_full_windows (test_preset_v8_11_window.TestWindowMatchesV07.test_full_windows) ... ok
+test_prefix_windows (test_preset_v8_11_window.TestWindowMatchesV07.test_prefix_windows) ... ok
+test_dwell_anywhere (test_preset_v8_11_window.TestWindowProperties.test_dwell_anywhere)
+v0.8 用的"全窗口驻留"：预警圈外的停留也算（v0.7 只看作业区间）。 ... ok
+test_invalid_inputs (test_preset_v8_11_window.TestWindowProperties.test_invalid_inputs) ... ok
+test_time_shift (test_preset_v8_11_window.TestWindowProperties.test_time_shift)
+整体平移时间轴：条件、帧号不变，时刻平移同一常数（窗口不要求从 0 开始）。 ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 3.515s
+
+OK
+### EXIT: 0
+### CMD: python -B -m unittest discover -s tests/v08/V8-12 -p "test_preset_numpy_geometry.py" -v
+test_circle_polygon_buffer (test_preset_numpy_geometry.TestExactGeometry.test_circle_polygon_buffer) ... ok
+test_column_band_empty_certificate (test_preset_numpy_geometry.TestExactGeometry.test_column_band_empty_certificate) ... ok
+test_field_is_conservative (test_preset_numpy_geometry.TestExactGeometry.test_field_is_conservative) ... ok
+test_narrow_legal_channel_is_not_proven_empty (test_preset_numpy_geometry.TestExactGeometry.test_narrow_legal_channel_is_not_proven_empty) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.098s
+
+OK
+### EXIT: 0
