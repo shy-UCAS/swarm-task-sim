@@ -5,14 +5,15 @@
 
 ## 结论（先看这里）
 
-**状态：第 1–4 部分完成；第 4 部分按协议完整执行，止损一项都没有触发，但检查点状态是"未完成"；第 5 部分未开展，等规划审查方裁决。**
+**状态：第 1–4 部分完成；第 5 部分已按用户指示取消（改用联合时空优化方案），未完成。** 取消前已完成 35 个合同的仿真与核验（快速 10 + 全量 25），全部通过段核验与有效性检查，汇总见 `part5_partial.md`；全量还有 140 个合同未运行。
 
 - **第 4 部分数字（登记的 40 个开发族 × 5 draw = 200 合同，单进程、只规划）：** 规划成功 **176/200 = 88.0%**；按设施数 1/2/3 档 83/85 = 97.6%、66/85 = 77.6%、27/30 = 90.0%（最大差距 10.35 个百分点）；失败 24 个合同**全是 `budget_exhausted`**（每个的最主要 attempt 级原因都是 `duration_budget`），没有 `proven_infeasible`、没有 `approx_empty`；每合同净规划用时中位数 **13.2 s**（p95 111 s）。
-- **逐条止损：** `success_rate` 88.0% ≥ 80%、`facility_gap` 10.35 < 20 个百分点、`failure_evidence` 无对象、`planning_time` 13.2 s ≤ 30 s、`frechet` 合并中位数 119（< 1 才触发）——**均未触发**。但 `frechet` 的数据**不完整**：10 个多样性族里 order 2、order 10 各只取得 9/10 个成功种子（失败种子 `o02_d0_b6`、`o10_d0_b0`，`duration_budget`），按指令 4.3 不能拿少量路径通过，所以检查点返回"未完成"（CLI 状态 3）。我把它当作"缺失 → 检查未完成"而不是自行豁免，因此**没有进入第 5 部分**。需要审查方回答：这两个失败种子按"失败也报告，不补第 11 个种子"处理后，是否仍允许进入第 5 部分。
-- **预置测试：** `test_preset_numpy_geometry` 4/4、`test_preset_numpy_motion` 7/7、`test_preset_local_monitoring` 3/3、`test_preset_local_devset` 1/1 通过；`test_preset_numpy_checkpoint` 3/4，**1 项失败 = 疑似预期错误**（`test_each_diagnostic_threshold` 的 Fréchet 断言按指令 4.4 的"逐族"语义写，与附录补充裁定"合并中位数 < 1"冲突；我按附录实现、没有改测试）。`test_preset_local_simulation` 属于第 5 部分，未放入。
+- **逐条止损：** `success_rate` 88.0% ≥ 80%、`facility_gap` 10.35 < 20 个百分点、`failure_evidence` 无对象、`planning_time` 13.2 s ≤ 30 s、`frechet` 合并中位数 119（< 1 才触发）——**均未触发**。但 `frechet` 的数据**不完整**：10 个多样性族里 order 2、order 10 各只取得 9/10 个成功种子（失败种子 `o02_d0_b6`、`o10_d0_b0`，`duration_budget`），按指令 4.3 不能拿少量路径通过，所以检查点返回"未完成"（CLI 状态 3）。我把它当作"缺失 → 检查未完成"而不是自行豁免，因此当时**没有进入第 5 部分**。后续：规划审查方 2026-11-03 裁定「两个缺种子的多样性族按失败报告、不补种子，检查点视为完成、未触发」并放行第 5 部分；之后用户取消了第 5 部分（见下一条）。
+- **预置测试：** `test_preset_numpy_geometry` 4/4、`test_preset_numpy_motion` 7/7、`test_preset_local_monitoring` 3/3、`test_preset_local_devset` 1/1 通过；`test_preset_numpy_checkpoint` 3/4，**1 项失败 = 疑似预期错误**（`test_each_diagnostic_threshold` 的 Fréchet 断言按指令 4.4 的"逐族"语义写，与附录补充裁定"合并中位数 < 1"冲突；我按附录实现、没有改测试）。`test_preset_local_simulation.py` 在第 5 部分放行后按原文放入（SHA256 `ef4acb7a…08f3` 一致），运行 1/1 通过（33.9 s）；审查方 11-03 裁定接受 checkpoint 那 1 项失败（指令修订，不改测试）。
 - **独立复核：** 176 个成功合同的 803 条成员曲线用 shapely 重算全局物理约束（world 内缩、限制区、alert、终点离预警圈、总时长、延迟网格），0 个问题，最小余量均满足。
 - **必须知道的限制：** (1) 构造在这 40 个评估族上迭代过 6 轮（59.5% → 88.0%），88.0% 不是对新场景的无偏估计；(2) 1800 s 预算在多数成功合同里是约束（103 个用了半径内移、24 个降圈数、10 个降穿行次数），生成的环半径分布因此被压向小半径；(3) 成功合同的实际队形明显偏向纵列（58%，抽签倾向只有 24%）；(4) v0.7 同条件参照**缺失**（开发族的监视样本只有 4 条，且都不在多样性的 10 个族里）；(5) 近似为空与精确复核的四类对照本次全是 0（没有合同走到那一步）。
 - **边界：** 冻结工作树（`641a9b3`、`de4d115`）与 `SwarmData\v07_*` 未被写入，160 个登记输入文件的 SHA256/大小/mtime 前后一致；没有推 `main`、没有强制推送。
+- **第 5 部分（已取消，未完成）：** 快速 10 合同完整跑完：10/10 保留，10/10 同键复跑逐位一致，无候选失败，用时 1618 s。全量（`--rerun-every 4`）在 166 个队列合同中完成 25 个，第 26 个（`o31_d0`）仿真中途被终止，其余 140 个未运行。**已完成的 35 个合同：** 35/35 通过段核验和有效性检查；实测最小间距（10 Hz 采样）最小 3.450 m（门禁 ≥ 2 m），限制区内帧、世界外帧、非目标设施 alert 以上帧均为 0；跟踪偏差在快速 10 个合同里最大 0.286 m，但全量里 `o17_d0` 的 5 个成员各有 8–9 帧超过 0.5 m（最大 0.589 m，共 41 帧，首次超出都在约 (2828, 2733) m 附近；诊断项，不触发重做，合同仍保留）；复跑一致 17、待复跑 18（按规则未选中）、不一致 0。这是 35/176 的样本（19.9%），按 draw 轮转的顺序取到的是各族的 draw 0，不能当作全部合同的通过率，也没有失败样本可供分析失败条件。详见 `part5_partial.md`。
 - 输出目录：`_handoff\2026-11-02_V8-12_monitoring\out\plan`（原始合同，不入库）；汇总、多样性、失败原始记录在 `docs/v08/V8-12/part4/`。
 
 ## 1. 开工复述与执行前提
@@ -383,7 +384,13 @@
 
 ## 5. 第 5 部分
 
-**未运行。** 指令第 5 部分的前提是"第 4 部分完整执行且未触发止损"。本次止损一项也没有触发，但检查点的 Fréchet 条件因两个族少一个种子而是"未完成"（不是通过）。我判断这属于指令 4.4 的"缺失或待决 → 检查未完成，不能当作通过"，而不是我可以自行豁免的情形，所以停在第 4 部分，把决定留给规划审查方。**需要审查方回答一个问题：** 这两个失败种子（`o02_d0_b6`：9 人、2 设施、`loose`、初速 6.3 m/s，`duration_budget`×14；`o10_d0_b0`：5 人、1 设施、`loose`、初速 5.0 m/s，`duration_budget`×13）是否按"失败也报告，不补第 11 个种子"处理后，仍允许进入第 5 部分？如果允许，第 5 部分还需要实现 `try_segment`/`simulate_devset` 及 `--stage quick|full`（目前 CLI 对这两个阶段直接返回错误码 1 并说明未实现）。第 5 部分的预置测试 `test_preset_local_simulation.py` 也还没有放入。
+**已取消（用户 2026-11-03 指示：改用联合时空优化方案；V8-12 第 5 部分取消）。** 取消前的状态：
+
+- **放行与实现。** 规划审查方 11-03 放行，并裁定：缺种子的多样性族按失败报告、检查点视为完成；`test_each_diagnostic_threshold` 的失败属指令修订、接受、不改测试；下游几何失败触发的队形退让偏离了指令 3.4，不回退、在第 5 部分报告里单列；第 5 部分只用第 4 部分已规划成功的 176 个合同、不重新规划，1800 s 上限不动。实现提交 `bc6a679`（运行前）、`dd968e3`（全量阶段的 `--rerun-every`）：`v08/runner/monitoring_sim.py`（`try_segment`、`simulate_devset`、同键整链复跑逐位比较、跟踪管/变速冲高/边界/驻留诊断）、`monitoring_sim_report.py`、`plan_segment` 的 `attempt_start`/`prior_log`、CLI `--stage quick|full`；预置 `test_preset_local_simulation.py` 原样放入并通过，自加 `test_own_part5.py` 13 项通过。
+- **快速 10 合同：完整跑完。** 选择规则：设施数 1/2/3 各一（`o01_d0`、`o02_d0`、`o03_d0`）、全族 `vehicle_count` 最大（12，`o11_d3`）、第 0 组人数最大（12，`o17_d1`，两种「最大机数」口径都是 12 但落在不同合同），其余按 order/draw 补足。10/10 保留、10/10 复跑逐位一致、无候选失败、无 P0，墙钟 1618 s。
+- **全量：被取消中断。** 完成 25 个，第 26 个被终止，140 个未运行；`out/full/` 无 `summary.json`。
+- **数字与局限：** 见 `part5_partial.md`（逐合同是否通过段核验、未通过条件、实测最小间距、跟踪偏差，以及没有跑完的部分）。没有运行实测轨迹的独立 shapely 复核；没有候选失败，重试路径只被单元测试覆盖。
+- **资源估计（取消前的判断）：** 按实测 0.0063 s 墙钟/仿真秒，176 个合同只跑一遍约 2.3 小时，超过 2 小时边界；所以全量阶段加了确定性的复跑规则（每 4 个合同复跑 1 个）来多覆盖首次执行。
 
 ## 6. 失败样例完整清单
 
@@ -424,7 +431,7 @@
 ## 8. 分支与提交
 
 - `dev/v0.8`：第 1 部分快进 `2bbe8ad → 4d2cf5d`；本项没有再动它。
-- 审查分支 `review/v08/V8-12-monitoring`：`e05dcf2`（第 1 部分）、`cdeff15`（第 2 部分）、`693ccb5`（第 3 部分）、`e5b7419`（第 4 部分运行器与检查点，运行前）、第 4 部分结果提交（含本报告的这一版）。每次推送后的真实远端头提交以 `git ls-remote origin refs/heads/review/v08/V8-12-monitoring` 的输出为准，见对话回报。报告不能包含自己的最终提交号，这里不伪造自引用。
+- 审查分支 `review/v08/V8-12-monitoring`：`e05dcf2`（第 1 部分）、`cdeff15`（第 2 部分）、`693ccb5`（第 3 部分）、`e5b7419`（第 4 部分运行器与检查点，运行前）、`cb6b58e`（第 4 部分结果）、`bc6a679`（第 5 部分运行器，运行前）、`dd968e3`（全量阶段的复跑规则）、第 5 部分取消提交「V8-12 第5部分（已取消，未完成）」（含 `part5_partial.md` 与本报告的这一版）。每次推送后的真实远端头提交以 `git ls-remote origin refs/heads/review/v08/V8-12-monitoring` 的输出为准，见对话回报。报告不能包含自己的最终提交号，这里不伪造自引用。
 - 不推 `main`、不强制推送；冻结工作树 `Simulation-fe-prod-r3` 仍是 `641a9b3`、`Simulation-fe-s3` 仍是 `de4d115`，`git status` 均干净。
 
 ## 9. 改动清单
@@ -433,7 +440,7 @@
 
 ## 10. 测试
 
-SHA256（与指令 6.9 逐项一致，原样提取，未改一字）：`test_preset_numpy_geometry.py` `6b62666b…adf24`、`synth_v8_12.py` `0c97df28…024d9`、`test_preset_numpy_motion.py` `e250477a…f3471`、`test_preset_local_monitoring.py` `ff12bdfa…1beb`、`test_preset_local_devset.py` `1e73d193…8d88`、`test_preset_numpy_checkpoint.py` `fc667b35…fa56`；`test_preset_local_simulation.py`（`ef4acb7a…08f3`）尚未放入（第 5 部分）。
+SHA256（与指令 6.9 逐项一致，原样提取，未改一字）：`test_preset_numpy_geometry.py` `6b62666b…adf24`、`synth_v8_12.py` `0c97df28…024d9`、`test_preset_numpy_motion.py` `e250477a…f3471`、`test_preset_local_monitoring.py` `ff12bdfa…1beb`、`test_preset_local_devset.py` `1e73d193…8d88`、`test_preset_numpy_checkpoint.py` `fc667b35…fa56`；`test_preset_local_simulation.py`（`ef4acb7a…08f3`）已在第 5 部分放入，与指令 6.9 一致。自加 `test_own_part5.py`（13 项）通过；第 5 部分提交前对较早测试回归：checkpoint 仍是 3/4（同一项疑似预期错误，审查方已接受），其余通过。
 
 | 测试 | 结果 | 命令（cwd = `Multi-UAV SimpleGC`，conda `llm`） | 完整输出 | 退出码 / 耗时 |
 |---|---|---|---|---|
@@ -442,7 +449,7 @@ SHA256（与指令 6.9 逐项一致，原样提取，未改一字）：`test_pre
 | 预置 `test_preset_numpy_motion.py` | 7/7 通过 | 同上 | `tests_part3.txt`、`tests_part4.txt` | 0 / 2 s |
 | 预置 `test_preset_local_monitoring.py` | 3/3 通过 | 同上 | `tests_part3.txt`、`tests_part4.txt` | 0 / 3 s |
 | 预置 `test_preset_numpy_checkpoint.py` | **3/4 通过，1 项失败**：`test_each_diagnostic_threshold` 的 Fréchet 断言 | 同上 | `tests_part4.txt` | 1 / 1 s |
-| 预置 `test_preset_local_simulation.py` | 未运行（第 5 部分） | — | — | — |
+| 预置 `test_preset_local_simulation.py` | 1/1 通过（真实 `run_guided_segment`/`stitch`/V8-11，两次运行逐位一致） | 同上换文件名，需 `V8_12_DATA_ROOT` | `tests_part5_preset.txt` | 0 / 33.9 s |
 | 自加 `test_own_part2.py`、`test_own_part3.py`、`test_own_part4.py`、`test_own_imports.py` | 全部通过（5/5（1 跳过）、3/3、12/12、1/1） | 同上 | `tests_part3.txt`、`tests_part4.txt` | 0 |
 
 `test_each_diagnostic_threshold` 的前三个断言（`success_rate`、`facility_gap`、`planning_time`）通过，**第四个断言失败**：`'frechet' not found in ()`，输入是"10 个族里 1 个族中位数 19 m、其余 9 个族 20 m，间距均 20 m"。这是第 11 节的**疑似预期错误**，我没有改测试。
@@ -461,6 +468,7 @@ SHA256（与指令 6.9 逐项一致，原样提取，未改一字）：`test_pre
 7. 额外新增 `scripts/v08/v8_12_figures.py`（指令 0.2 的新增清单未列）；独立复核脚本未入库。
 8. `approx_empty` 的精确复核（0.5 m 取点）已实现并单元验证路径，但本次运行没有任何合同走到这一步（见 3.1 的"近似为空与精确复核"：0 个查询）。四类对照因此全是 0，不能据此说明复核方法在真实场景上的表现。
 9. 预算修复把"目标 97% 预算"作为常数；它不是业务阈值，是线性模型的误差余量，随记录保存。
+10. **第 5 部分（已取消）的选择：** (a) 全量按 `(draw_index, order)` 轮转而不是 `(order, draw)` 取合同，这样 2 小时边界截断时覆盖的是各族而不是前几个族；(b) 全量阶段每 4 个合同复跑 1 个（`--rerun-every 4`），不是每个合同都复跑，是因为复跑约占一半时间、而快速 10 个合同的复跑已全部一致；其余记「待复跑」，不计入已验证保留数；(c) 一个成员仿真超时就整个 attempt 作废，不再仿真其余成员；(d) 时间线不连续按附录裁定 10 作为 P0 停批次，而不是指令 5.2 失败代码表里的候选失败。
 
 ## 12. 复跑命令、环境与模型
 
