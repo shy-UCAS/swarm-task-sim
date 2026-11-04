@@ -1,0 +1,22 @@
+### CMD: python -B -m unittest discover -s tests/v08/V8-13 -p "test_preset_numeric_optimizer.py" -v
+F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\tests\v08\V8-13\test_preset_numeric_optimizer.py:4: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)
+  from scipy.interpolate import BSpline, PPoly
+setUpClass (test_preset_numeric_optimizer.OptimizerPreset) ... ERROR
+
+======================================================================
+ERROR: setUpClass (test_preset_numeric_optimizer.OptimizerPreset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\tests\v08\V8-13\test_preset_numeric_optimizer.py", line 101, in setUpClass
+    cls.settings = load_settings()  # 前提：第2、3部分测得，不能在测试里猜权重
+                   ^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\optimize.py", line 109, in load_settings
+    raise SettingsIncomplete(f"joint_opt 缺少 {missing}（第 2/3 部分测量未完成，不能默认补数）")
+v08.motion.optimize.SettingsIncomplete: joint_opt 缺少 ['knot_s', 'weight_smooth', 'weight_separation', 'weight_geometry', 'weight_speed', 'weight_normal', 'weight_tangential', 'weight_jerk', 'maxiter', 'maxls', 'maxcor', 'maxfun', 'ftol', 'gtol', 'buffer_separation_m', 'buffer_geometry_m', 'buffer_dynamic_factor']（第 2/3 部分测量未完成，不能默认补数）
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.002s
+
+FAILED (errors=1)
+ERROR conda.cli.main_run:execute(142): `conda run python -B -m unittest discover -s tests/v08/V8-13 -p test_preset_numeric_optimizer.py -v` failed. (See above for error)
+### EXIT: 5

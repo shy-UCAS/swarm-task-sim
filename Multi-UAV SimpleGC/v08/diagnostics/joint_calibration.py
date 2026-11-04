@@ -412,3 +412,229 @@ def measure_tracking_cases(*, out_dir, jerks=JERK_SCAN, log=print):
     sdata = json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=1).encode("utf-8") + b"\n"
     (out / "summary.json").write_bytes(sdata)
     return summary
+
+
+# ================================================================ 第 3 部分：优化器数值标定（指令 3.4）
+# 合成夹具：与第 6.2 节同一构造（五次 smoothstep 静止到静止），在本模块独立实现，不从测试导入。
+
+def _rest_move(member, start, finish, duration, release=FIX_RELEASE):
+    start, finish = np.asarray(start, float), np.asarray(finish, float)
+    delta = finish - start
+
+    def pva(t):
+        raw = (np.asarray(t, float) - release) / duration
+        u = np.clip(raw, 0.0, 1.0)
+        f = 10 * u ** 3 - 15 * u ** 4 + 6 * u ** 5
+        df = (30 * u ** 2 - 60 * u ** 3 + 30 * u ** 4) / duration
+        ddf = (60 * u - 180 * u ** 2 + 120 * u ** 3) / duration ** 2
+        active = (raw >= 0.0) & (raw <= 1.0)
+        return (start + f[..., None] * delta, (df * active)[..., None] * delta, (ddf * active)[..., None] * delta)
+    return TimeReference(member, release, release + duration, FIX_ALT, pva)
+
+
+def _excess_normal():
+    def pva(t):
+        t = np.asarray(t, float) - FIX_RELEASE
+        u = np.clip(t / 8.0, 0.0, 1.0)
+        theta = 80.0 * (10 * u ** 3 - 15 * u ** 4 + 6 * u ** 5)
+        w = 10.0 * (30 * u ** 2 - 60 * u ** 3 + 30 * u ** 4)
+        aa = (80.0 / 64.0) * (60 * u - 180 * u ** 2 + 120 * u ** 3)
+        er = np.stack([np.cos(theta), np.sin(theta)], axis=-1)
+        et = np.stack([-np.sin(theta), np.cos(theta)], axis=-1)
+        return er, w[..., None] * et, aa[..., None] * et - w[..., None] ** 2 * er
+    return TimeReference("a", FIX_RELEASE, FIX_RELEASE + 8.0, FIX_ALT, pva)
+
+
+def calibration_fixtures(d_lane):
+    """(名称, 构造函数, 应成功, 恒定)。大夹具：N 人 = N/2 对互换直线，第 k 对横向平移 k·D_lane，
+    时长 1000/2000 s，空间长度 = 4 m/s × 时长（J 第 3 节交叉参考）。"""
+    from ..motion.optimize import JointProblem
+    from ..scene.field import Clearance, build_distance_field
+
+    def const(T):
+        return lambda: JointProblem((_rest_move("a", (6.25, -2.5), (6.25, -2.5), T),))
+
+    def swap():
+        return JointProblem((_rest_move("a", (-30.0, 0.0), (30.0, 0.0), 60.3),
+                             _rest_move("b", (30.0, 0.0), (-30.0, 0.0), 60.3)))
+
+    def circle():
+        cs = (Clearance("obstacle:c", {"type": "Circle", "center_m": [0.0, 0.0], "radius_m": 10.0}, 1, 35.0),)
+        field = build_distance_field(cs, (-200.0, -200.0, 200.0, 200.0), spacing_m=5.0)
+        return JointProblem((_rest_move("a", (-100.0, 0.0), (100.0, 0.0), 120.3),), cs, field)
+
+    def line():
+        ref = _rest_move("a", (0.0, 0.0), (20.0, 0.0), 30.3)
+        return JointProblem((ref,), lines=(("a", ref.release_s, ref.end_s, (0.0, 0.0), (1.0, 0.0)),))
+
+    def excess():
+        return JointProblem((_excess_normal(),))
+
+    def cross(N, T):
+        def build():
+            L = 4.0 * T
+            refs = []
+            for k in range(N // 2):
+                y = k * d_lane
+                refs.append(_rest_move(f"m{2 * k:02d}", (-L / 2, y), (L / 2, y), T))
+                refs.append(_rest_move(f"m{2 * k + 1:02d}", (L / 2, y), (-L / 2, y), T))
+            return JointProblem(tuple(refs))
+        return build
+
+    return [("constant_8.3s", const(8.3), True, True), ("constant_2000.3s", const(2000.3), True, True),
+            ("line_equality", line, True, False), ("head_on_swap", swap, True, False),
+            ("circle_obstacle", circle, True, False), ("excess_normal", excess, False, False),
+            ("cross_4x1000s", cross(4, 1000.0), True, False), ("cross_4x2000s", cross(4, 2000.0), True, False),
+            ("cross_12x1000s", cross(12, 1000.0), True, False), ("cross_12x2000s", cross(12, 2000.0), True, False)]
+
+
+def _peak_rss():
+    try:
+        import psutil
+        mi = psutil.Process().memory_info()
+        return int(getattr(mi, "peak_wset", mi.rss))
+    except Exception:
+        return None
+
+
+def _summarize_solution(sol, lim, settings):
+    d = sol.diagnostics
+    phys = d.get("physical") or {}
+    sep = (phys.get("separation") or {}).get("min_m")
+    clear = [v["min_margin_m"] for per in (phys.get("clearances") or {}).values() for v in per.values()
+             if v["min_margin_m"] is not None]
+    dyn = phys.get("dynamic_extrema") or {}
+    f = settings["buffer_dynamic_factor"]
+    peaks = {}
+    for q, cap in (("speed", lim["v_max"]), ("tangential", lim["a_t"]), ("normal", lim["a_n"]), ("jerk", lim["jerk"])):
+        vals = [dd[q]["value"] for dd in dyn.values()]
+        if vals:
+            peaks[q] = {"max": max(vals), "cap": cap, "buffered_cap": f * cap, "ratio_to_cap": max(vals) / cap}
+    endp = max((max(e["errors"].values()) for e in (phys.get("endpoints") or {}).values()), default=None)
+    return {
+        "ok": sol.ok, "reason": sol.reason, "nit": d.get("nit"), "nfev": d.get("nfev"), "message": d.get("message"),
+        "lbfgs_success": d.get("success"), "value": d.get("value"), "terms": d.get("terms"),
+        "max_abs_projected_grad": d.get("max_abs_grad"), "reference_deviation": d.get("reference_deviation"),
+        "residual_vs_original": {"separation_min_minus_3": None if sep is None else sep - lim["d_lane"],
+                                 "clearance_min_margin_m": min(clear) if clear else None,
+                                 "dynamic": {q: v["max"] - v["cap"] for q, v in peaks.items()}},
+        "residual_vs_buffered": {"separation_min_minus_buffer": None if sep is None
+                                 else sep - settings["buffer_separation_m"],
+                                 "clearance_min_margin_minus_buffer_m": None if not clear
+                                 else min(clear) - settings["buffer_geometry_m"],
+                                 "dynamic": {q: v["max"] - v["buffered_cap"] for q, v in peaks.items()}},
+        "dynamic_peaks": peaks, "endpoint_max_error": endp,
+        "physical_failures": phys.get("failures"), "nvar": d.get("nvar"),
+        "prepare_s": d.get("prepare_s"), "solve_s": d.get("solve_s"), "wall_s": d.get("wall_s"),
+        "symmetry_break": d.get("symmetry_break"), "conditioning": d.get("conditioning"),
+        "peak_rss_bytes": _peak_rss(), "witness": d.get("witness"),
+    }
+
+
+def _base_settings(jerk_plan, lam_j, mu):
+    from ..motion.optimize import EPS as _E
+    return {"jerk_plan_m_s3": float(jerk_plan), "knot_s": 1.0, "weight_smooth": float(lam_j),
+            "weight_separation": mu, "weight_geometry": mu, "weight_speed": mu, "weight_normal": mu,
+            "weight_tangential": mu, "weight_jerk": mu, "maxiter": 500, "maxls": 20, "maxcor": 10,
+            "maxfun": 1 + 500 * 20, "ftol": _E, "gtol": math.sqrt(_E),
+            "buffer_separation_m": 3.25, "buffer_geometry_m": 1.0, "buffer_dynamic_factor": 0.95}
+
+
+def calibrate_optimizer(*, tracking_config=None, out_dir, k_max=None, log=print):
+    """λ_j = 所有非恒定夹具 × h∈{1,.5} 的 E/Q 中位数；其余六项共同 μ=2^k，k 从 0 递增，选第一个令全部
+    "应成功"夹具在两种 h 下都通过独立硬检查且 L-BFGS-B 正常收敛的 k。每个候选 × 夹具 × h 只求解一次。
+    同一 k 下一旦某个应成功夹具失败，该 k 已不合格，其余夹具记为"未运行（同 k 已失败）"（不影响选择）。"""
+    from ..config import load_config
+    from ..motion.optimize import physical_limits, prepare_problem, solve_joint
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=False)
+    cfg = load_config("joint_opt")
+    jerk_plan = cfg.values["jerk_plan_m_s3"]
+    probe = _base_settings(jerk_plan, 0.0, 1.0)
+    lim = physical_limits(probe)
+    fixtures = calibration_fixtures(lim["d_lane"])
+    t0 = time.perf_counter()
+    # ---- λ_j
+    lam_rows = []
+    for name, build, _, constant in fixtures:
+        for h in (1.0, 0.5):
+            prep = prepare_problem(build(), probe, knot_s=h)
+            _, _, F = prep.value_grad(prep.x_ls, terms=True)
+            S2 = sum(float(np.sum(m.w_e * (m.S_e[:, 0] ** 2 + m.S_e[:, 1] ** 2))) for m in prep.members)
+            noise = EPS * S2 / prep.L0 ** 2 / prep.sumT
+            E, Q = F["ref"], F["smooth"]
+            valid = (not constant) and E > noise and Q > 0.0
+            lam_rows.append({"fixture": name, "knot_s": h, "E": E, "Q": Q, "rounding_bound_E": noise,
+                             "constant": constant, "valid": bool(valid), "ratio": E / Q if Q > 0 else None})
+            log(f"λ_j 测量 {name} h={h}: E={E:.3e} Q={Q:.3e} 噪声界={noise:.3e} 有效={valid}")
+    ratios = [r["ratio"] for r in lam_rows if r["valid"]]
+    lam_j = float(np.median(ratios)) if ratios else None
+    result = {"lambda_rows": lam_rows, "lambda_j": lam_j, "candidates": [], "selected": None,
+              "limits": lim, "jerk_plan_m_s3": jerk_plan, "joint_opt_sha256_at_start": cfg.sha256}
+    if lam_j is None:
+        result["status"] = "λ_j 无有效格点：优化设置未确定"
+        _dump(out / "numerics.json", result)
+        return result
+    # ---- μ = 2^k
+    kmax = k_max if k_max is not None else int(round(-math.log2(EPS)))
+    for k in range(kmax + 1):
+        mu = float(2.0 ** k)
+        st = _base_settings(jerk_plan, lam_j, mu)
+        rows, qualified, failed_at = [], True, None
+        for name, build, should, _ in fixtures:
+            for h in (1.0, 0.5):
+                if failed_at is not None:
+                    rows.append({"fixture": name, "knot_s": h, "should_succeed": should,
+                                 "not_run": "同 k 已有应成功夹具失败（" + failed_at + "）"})
+                    continue
+                sol = solve_joint(build(), st, knot_s=h)
+                s = _summarize_solution(sol, lim, st)
+                s.update({"fixture": name, "knot_s": h, "should_succeed": should})
+                rows.append(s)
+                log(f"k={k} mu={mu:g} {name} h={h}: ok={sol.ok} {sol.reason} nit={s['nit']} "
+                    f"{s['message']} solve={(s['solve_s'] or 0):.2f}s")
+                if should and not sol.ok:
+                    qualified = False
+                    failed_at = f"{name} h={h}"
+        result["candidates"].append({"k": k, "mu": mu, "qualified": qualified, "rows": rows})
+        _dump(out / "numerics.json", result)
+        if qualified:
+            result["selected"] = {"k": k, "mu": mu, "lambda_j": lam_j, "settings": st}
+            break
+    result["status"] = "selected" if result["selected"] else "优化设置未确定"
+    result["wall_s"] = time.perf_counter() - t0
+    _dump(out / "numerics.json", result)
+    return result
+
+
+def _dump(path, obj):
+    from ..runner.monitoring import jsonable
+    Path(path).write_bytes(json.dumps(jsonable(obj), ensure_ascii=False, sort_keys=True, indent=1).encode("utf-8")
+                           + b"\n")
+
+
+def diagnose_all_fixtures(k_values, lam_j, *, out_dir, log=print):
+    """补充诊断（不参与选择、不写配置）：在给定的若干 k 上把全部夹具 × h 都跑一次（不因前面失败而跳过），
+    让审查方看到圆障碍与大编组夹具在同一组候选权重下的收敛与残差。"""
+    from ..config import load_config
+    from ..motion.optimize import physical_limits, solve_joint
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=False)
+    jerk_plan = load_config("joint_opt").values["jerk_plan_m_s3"]
+    lim = physical_limits(_base_settings(jerk_plan, lam_j, 1.0))
+    fixtures = calibration_fixtures(lim["d_lane"])
+    res = {"purpose": "补充诊断：不参与 μ 选择", "lambda_j": lam_j, "candidates": []}
+    for k in k_values:
+        st = _base_settings(jerk_plan, lam_j, float(2.0 ** k))
+        rows = []
+        for name, build, should, _ in fixtures:
+            for h in (1.0, 0.5):
+                sol = solve_joint(build(), st, knot_s=h)
+                s = _summarize_solution(sol, lim, st)
+                s.update({"fixture": name, "knot_s": h, "should_succeed": should})
+                rows.append(s)
+                log(f"[诊断] k={k} {name} h={h}: ok={sol.ok} {sol.reason} nit={s['nit']} {s['message']} "
+                    f"solve={(s['solve_s'] or 0):.1f}s")
+        res["candidates"].append({"k": k, "mu": float(2.0 ** k), "rows": rows})
+        _dump(out / "diagnostic.json", res)
+    return res

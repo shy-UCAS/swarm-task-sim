@@ -11,6 +11,56 @@
       "value": 0.09705848391448185,
       "kind": "pending_measurement",
       "source": "V8-13 第 2 部分实测：J=14 行的积分步（20 ms）最大水平跟踪误差，最坏案例近圆 V=4（原始参考 SHA256 f3d208e9db1cf5e3edd69bbea3e26c5b0f2e719f1e2a76cda215dca6265c3e78）；同上证据与提交。只作诊断，规划 D_lane 仍为 3 m"
+    },
+    "knot_s": {
+      "value": 1.0,
+      "kind": "definitional",
+      "source": "U D.2.1、C.4：三次均匀样条节点间隔 1 s；0.5 s 只作数值收敛对照（指令 3.2）"
+    },
+    "maxiter": {
+      "value": 500,
+      "kind": "execution",
+      "source": "U C.4 与 J 第 3 节云端测量的每次求解迭代上限（指令 3.5）；不代表一定收敛"
+    },
+    "maxls": {
+      "value": 20,
+      "kind": "execution",
+      "source": "SciPy L-BFGS-B 文档化默认线搜索上限；本机 scipy 1.14.1 _minimize_lbfgsb 默认 maxls=20 已核对（docs/v08/V8-13/env.txt）"
+    },
+    "maxfun": {
+      "value": 10001,
+      "kind": "execution",
+      "source": "指令 3.5：1 + 500×20，初值加每迭代 maxls 次目标/梯度联合评价"
+    },
+    "maxcor": {
+      "value": 10,
+      "kind": "execution",
+      "source": "本机 scipy 1.14.1 _minimize_lbfgsb 默认 maxcor=10（docs/v08/V8-13/env.txt）"
+    },
+    "ftol": {
+      "value": 2.220446049250313e-16,
+      "kind": "execution",
+      "source": "指令 3.5：ftol = float64 机器精度 ε = 2^-52"
+    },
+    "gtol": {
+      "value": 1.4901161193847656e-08,
+      "kind": "execution",
+      "source": "指令 3.5：gtol = √ε（归一且预条件化变量上的梯度尺度）"
+    },
+    "buffer_separation_m": {
+      "value": 3.25,
+      "kind": "engineering_margin",
+      "source": "附录裁定 9.2 优化目标缓冲（Project Instructions 第五节第 7 条第三类）：间距罚阈值 3.25 m；硬检查仍为 3 m"
+    },
+    "buffer_geometry_m": {
+      "value": 1.0,
+      "kind": "engineering_margin",
+      "source": "附录裁定 9.2：几何罚余量 36/11/36 m，即在 lower_clearance（已减 35/10/35）上再留 1 m；硬检查仍为 35/10/35 m"
+    },
+    "buffer_dynamic_factor": {
+      "value": 0.95,
+      "kind": "engineering_margin",
+      "source": "附录裁定 9.2：速度、法向/切向加速度、jerk 罚上限各取 0.95 倍；硬检查仍为原上限"
     }
   }
 }

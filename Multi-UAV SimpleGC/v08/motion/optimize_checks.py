@@ -109,3 +109,124 @@ def curvature_radius_min(knots, controls, lo, hi):
             if k2 > best:
                 best, where = k2, tau + a0
     return (math.inf if best == 0.0 else 1.0 / math.sqrt(best)), float(where)
+
+
+# ---------------------------------------------------------------- 物理硬检查（solve_joint 负责）
+
+def _grid_times(tr):
+    """绝对 0.1 s 网格 ∪ 移动端点（局部秒）。"""
+    r, e = float(tr.release_s), float(tr.end_s)
+    g0, g1 = math.ceil(r * 10 - 1e-9), math.floor(e * 10 + 1e-9)
+    grid = np.arange(g0, g1 + 1, dtype=np.int64) / 10.0 - r
+    T = e - r
+    return np.unique(np.concatenate([grid[(grid >= 0.0) & (grid <= T)], [0.0, T]]))
+
+
+def _frames(tr, hold_s):
+    """成员可见的整数 10 Hz 帧号（释放起，至移动结束 + 末端保持）。"""
+    f0 = math.ceil(float(tr.release_s) * 10 - 1e-9)
+    f1 = math.floor((float(tr.end_s) + hold_s) * 10 + 1e-9)
+    return f0, f1
+
+
+def equality_bound(tr):
+    """等式残差的数值比较界（与预置测试同口径）：√ε·max(1, max|控制点|)。只用于等式，不放宽任何不等式阈值。"""
+    return math.sqrt(float(np.finfo(float).eps)) * max(1.0, float(np.max(np.abs(tr.controls))))
+
+
+def check_physical(problem, trajectories, settings):
+    """dict: passed, failures, separation, clearances, dynamic_extrema, endpoints。从最终系数重算。"""
+    from ..scene.exact import polyline_clearance
+    from .optimize import physical_limits
+    lim = physical_limits(settings)
+    failures = []
+    refs = {r.member_id: r for r in problem.references}
+    order = sorted(refs)
+    # 端点与语义直线等式
+    endpoints = {}
+    for m in order:
+        ref, tr = refs[m], trajectories[m]
+        bound = equality_bound(tr)
+        p0 = np.asarray(ref.pva(ref.release_s)[0], float).reshape(2)
+        p1 = np.asarray(ref.pva(ref.end_s)[0], float).reshape(2)
+        errs = {}
+        for name, t, want in (("start", tr.release_s, p0), ("end", tr.end_s, p1)):
+            # 端点导数取域内单侧值：在域内点 t（=端点本身）上求多项式，不用域外零值
+            errs[name + "_p"] = float(np.max(np.abs(tr.evaluate(t, 0) - want)))
+            errs[name + "_v"] = float(np.max(np.abs(tr.evaluate(t, 1))))
+            errs[name + "_a"] = float(np.max(np.abs(tr.evaluate(t, 2))))
+        same_time = (float(tr.release_s) == float(ref.release_s)) and (float(tr.end_s) == float(ref.end_s))
+        endpoints[m] = {"errors": errs, "bound": bound, "fixed_time": same_time}
+        if not same_time or any(v > bound for v in errs.values()):
+            failures.append({"kind": "endpoint", "member": m, "errors": errs, "bound": bound})
+    line_res = []
+    for (mid, t0, t1, q, tg) in problem.lines:
+        tr = trajectories[mid]
+        tg = np.asarray(tg, float) / math.hypot(*tg)
+        nrm = np.array([-tg[1], tg[0]])
+        h = tr.h
+        a, b = float(t0) - tr.release_s, float(t1) - tr.release_s
+        worst = 0.0
+        for j in range(len(tr.controls)):
+            if (j - 3) * h < b and (j + 1) * h > a:
+                worst = max(worst, abs(float(nrm @ (np.asarray(tr.controls[j]) - np.asarray(q, float)))))
+        bound = equality_bound(tr)
+        line_res.append({"member": mid, "max_normal_residual_m": worst, "bound": bound})
+        if worst > bound:
+            failures.append({"kind": "line_equality", "member": mid, "residual": worst, "bound": bound})
+    # 动力学连续极值（原上限，不加容差）
+    dyn = {}
+    for m in order:
+        tr = trajectories[m]
+        d = dynamic_extrema(tr.knots, tr.controls, 0.0, tr.duration)
+        dyn[m] = d
+        for key, cap in (("speed", lim["v_max"]), ("tangential", lim["a_t"]), ("normal", lim["a_n"]),
+                         ("jerk", lim["jerk"])):
+            if not d[key]["value"] <= cap:
+                failures.append({"kind": "dynamic", "member": m, "quantity": key, "value": d[key]["value"],
+                                 "cap": cap, "t_abs_s": d[key]["t_local_s"] + tr.release_s})
+    # 几何：弦精确余量 − 弦高上界 a_max·Δt²/8 ≥ 0（polyline_clearance 已减 minimum_m）
+    clear = {}
+    for m in order:
+        tr = trajectories[m]
+        ts = _grid_times(tr)
+        xy = tr.evaluate(ts + tr.release_s, 0)
+        acc = tr.evaluate(ts + tr.release_s, 2)
+        an = np.hypot(acc[:, 0], acc[:, 1])
+        dt = np.diff(ts)
+        sag = np.maximum(an[:-1], an[1:]) * dt ** 2 / 8.0
+        per = {}
+        for c in problem.clearances:
+            if len(xy) < 2:
+                vals = np.array([])
+            else:
+                vals = polyline_clearance(c.geometry, xy, sense=c.sense, minimum_m=c.minimum_m, fast_far_m=1.0)
+            margin = vals - sag
+            k = int(np.argmin(margin)) if len(margin) else None
+            per[c.name] = {"min_margin_m": float(margin[k]) if k is not None else None,
+                           "t_abs_s": float(ts[k] + tr.release_s) if k is not None else None,
+                           "max_sag_m": float(sag.max()) if len(sag) else 0.0}
+            if k is not None and not margin[k] >= 0.0:
+                failures.append({"kind": "clearance", "member": m, "constraint": c.name,
+                                 "margin_m": float(margin[k]), "t_abs_s": float(ts[k] + tr.release_s)})
+        clear[m] = per
+    # 间距：共同可见整数 10 Hz 帧
+    sep = {"min_m": None, "pair": None, "t_s": None, "pairs_without_common_frames": []}
+    frames = {m: _frames(trajectories[m], lim["hold_s"]) for m in order}
+    for i in range(len(order)):
+        for j in range(i + 1, len(order)):
+            a, b = order[i], order[j]
+            lo, hi = max(frames[a][0], frames[b][0]), min(frames[a][1], frames[b][1])
+            if hi < lo:
+                sep["pairs_without_common_frames"].append((a, b))
+                continue
+            t = np.arange(lo, hi + 1, dtype=np.int64) / 10.0
+            d = np.hypot(*(trajectories[a].evaluate(t) - trajectories[b].evaluate(t)).T)
+            k = int(np.argmin(d))
+            if sep["min_m"] is None or d[k] < sep["min_m"]:
+                sep.update(min_m=float(d[k]), pair=(a, b), t_s=float(t[k]))
+    sep["required_m"] = lim["d_lane"]
+    if sep["min_m"] is not None and not sep["min_m"] >= lim["d_lane"]:
+        failures.append({"kind": "separation", "pair": sep["pair"], "min_m": sep["min_m"], "t_s": sep["t_s"]})
+    return {"passed": not failures, "failures": failures, "separation": sep, "clearances": clear,
+            "dynamic_extrema": dyn, "endpoints": endpoints, "lines": line_res, "limits": lim}
