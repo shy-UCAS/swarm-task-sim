@@ -239,16 +239,13 @@ def plan_contract(ctx, entry, draw, *, branch=None):
     return rec, plan
 
 
-def save_contract(out_dir, rec, plan):
-    sub = Path(out_dir) / "contracts"
-    sub.mkdir(parents=True, exist_ok=True)
+def finalize_record(rec, plan):
+    """填入 rec 的 plan / arrays_sha256 / plan_sha256，返回数组字典。save_contract 与第 5 部分复跑比较共用。"""
     arrays = {}
     if plan is not None and plan.failure is None:
         rec["plan"], arrays = plan_to_record(plan)
     rec["plan_sha256"] = None
-    base = sub / rec["contract_id"]
     if arrays:
-        np.savez_compressed(str(base) + ".npz", **arrays)
         rec["arrays_sha256"] = {k: hashlib.sha256(np.ascontiguousarray(v).tobytes()).hexdigest()
                                 for k, v in sorted(arrays.items())}
     # 复现比较用的摘要：计划、失败、数组摘要和逐 attempt 记录；耗时字段（seconds、planning）不参与
@@ -256,6 +253,16 @@ def save_contract(out_dir, rec, plan):
         "plan": rec.get("plan"), "failure": rec.get("failure"), "arrays": rec.get("arrays_sha256"),
         "attempts": [{k: v for k, v in a.items() if k != "seconds"} for a in rec.get("attempt_log", [])],
         "common_groups": rec.get("common_groups"), "target_id": rec.get("target_id")})).hexdigest()
+    return arrays
+
+
+def save_contract(out_dir, rec, plan):
+    sub = Path(out_dir) / "contracts"
+    sub.mkdir(parents=True, exist_ok=True)
+    arrays = finalize_record(rec, plan)
+    base = sub / rec["contract_id"]
+    if arrays:
+        np.savez_compressed(str(base) + ".npz", **arrays)
     write_json(str(base) + ".json", rec)
 
 

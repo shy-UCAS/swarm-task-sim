@@ -115,17 +115,21 @@ def _final_failure(ctx, group, task, log):
                    {"attempts": len(log), "stages": sorted(str(s) for s in stages)}, None)
 
 
-def plan_segment(ctx, group, task, states, occupied, rng):
-    """rng 是该合同的不可变 RngKey（attempt=0），不是共享的可变 Generator。"""
+def plan_segment(ctx, group, task, states, occupied, rng, *, attempt_start=0, prior_log=()):
+    """rng 是该合同的不可变 RngKey（attempt=0），不是共享的可变 Generator。
+
+    attempt_start > 0 时从该 attempt 接着用共享的 20 次预算（指令 3.9：规划和仿真共用一份预算）：prior_log 是此前
+    各 attempt 的记录（规划和仿真的失败），返回的 attempt_log 以它开头。"""
     key0 = rng
-    cert = _band_certificate(ctx, group, task)
-    if cert is not None and certificate_valid(cert):
-        return SegmentPlan(members={}, reference_xy=(), nominal_duration_s=float("nan"), anchors={}, repairs=(),
-                           failure=cert, business_key={"family_id": key0.family_id, "draw": key0.draw},
-                           attempt_log=())
+    if attempt_start == 0:
+        cert = _band_certificate(ctx, group, task)
+        if cert is not None and certificate_valid(cert):
+            return SegmentPlan(members={}, reference_xy=(), nominal_duration_s=float("nan"), anchors={}, repairs=(),
+                               failure=cert, business_key={"family_id": key0.family_id, "draw": key0.draw},
+                               attempt_log=())
     budget = int(ctx.params["shape_attempts"])
-    log = []
-    for a in range(budget):
+    log = list(prior_log)
+    for a in range(attempt_start, budget):
         key = RngKey(key0.family_id, key0.draw, key0.purpose, mission=key0.mission, branch=key0.branch,
                      group=key0.group, segment=key0.segment, attempt=a)
         t0 = time.perf_counter()

@@ -8,7 +8,8 @@ CORE = ("v08.scene.exact", "v08.scene.field", "v08.scene.context", "v08.contract
         "v08.motion.feasible")
 OPTIONAL = ("v08.sampler.common", "v08.motion.path", "v08.motion.formation", "v08.motion.connect",
             "v08.motion.speed", "v08.motion.nominal", "v08.motion.nominal_checks", "v08.motion.plan",
-            "v08.motion.intents.monitoring", "v08.runner.monitoring_report", "v08.runner.monitoring")
+            "v08.motion.intents.monitoring", "v08.runner.monitoring_report", "v08.runner.monitoring",
+            "v08.runner.monitoring_sim", "v08.runner.monitoring_sim_report")
 
 PROGRAM = """
 import importlib, importlib.abc, importlib.util, sys
