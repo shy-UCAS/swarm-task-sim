@@ -112,3 +112,34 @@ V8-12 分支上 `cb6b58e` 之后的 `bc6a679`、`dd968e3`、`73714b4`（第 5 �
 | `python -B -m unittest discover -s tests/v08/V8-08 -p "test_*.py" -v` | 24/24 OK | 0 |
 | `python -B -m unittest discover -s tests/v08/V8-11 -p "test_preset_*.py" -v` | 30/30 OK | 0 |
 | `python -B -m unittest discover -s tests/v08/V8-12 -p "test_preset_numpy_geometry.py" -v` | 4/4 OK | 0 |
+
+## 3. 第 2 部分：按时间跟踪与检查点 1
+
+**结论：检查点 1 未触发（J=2 最大误差 0.0862 m ≤ 0.5 m），测量 complete。\(J_{\rm plan}=14\) m/s³，实测管（J=14 行）0.0971 m。** 已写入 `configs/v08/joint_opt.json`（`kind=pending_measurement`，source 含证据哈希与测量代码提交 `145a85a`）。规划 D_lane 仍为 3 m。
+
+**实现：**
+- `v08/sim/tracking.py`：`TimeReference`、`reference_velocity`（\(u_{xy}=v_{\rm ref}+\tau a_{\rm ref}+k_{\rm pos}(p_{\rm ref}-p_{xy})\)，\(u_z=k_{\rm pos}(h-p_z)\)，每个 20 ms 积分步按绝对时刻求参考）、`run_tracking_segment`（冻结 `member_config()` 无覆盖、无扰动；释放须在 0.1 s 网格且 = 20 s + 0.1 s 网格延迟；参考起点距当前位置 ≤ 1e-6 m、高度一致；移动结束后首次满足 1 m / 0.15 m/s 才开始 2 s 保持；预算 \(B=1.1(T-r)+30+r+2\) 向上取整到帧，超出为 `sim_timeout`；final 的 `end_state/executed_switch_tau_us=None`；`pieces` 放 `TrackingRecord`，含积分步/输出帧两套误差、核心饱和比例、积分末态）、`select_jerk_plan`（任一行未完成或缺 J=2 行即 `incomplete`；J=2 > 0.5 触发；否则取最大合格 J，不假设单调）。
+- `v08/diagnostics/joint_calibration.py`：三类合成参考（直线 S 曲线兼刹停/保持、近圆、U 形），均从静止起、含 20 s 预释放与 2 s 保持；所有峰值从最终系数按区间多项式求连续极值（`optimize_checks.dynamic_extrema`）。
+- `tools/v08/run_joint_monitoring.py --stage tracking`：薄入口。
+
+**构造事实：**
+- 直线：七段 S 曲线 → 内部单节点、两端钳制的三次 B 样条，Greville 点带状插值；各段多项式复核残差（无量纲）≤ 4.5e-13；缩放后峰值恰为 A=2、J、V（全部 24 例）。
+- 近圆：按附录 9.1 只有 (J=2, V=4) 受 J 约束（\(\sqrt{8}=2.828<3\)）。恒速段 jerk = \(a_n^2/v\) 恰为 J，smoothstep 起止过渡使峰值 jerk 严格大于 J，K 倍增不能终止（与指令 2.2"9/V>J 不做无意义倍增"同理），故此格不倍增，保持峰值速度、空间与时间同乘 \(f=\sqrt{j_{\rm peak}/J}\)，**实际法向 2.744 m/s²（请求 2.828）**、jerk 2.000、切向 0.728，如实报告，见第 8 节偏离。其余 23 个近圆格点 K=1 即满足切向 ≤ 2、jerk ≤ J，实际法向 3.000（舍入超 1 ulp 时同法吸收）。拟合用均匀三次 B 样条、原型节点 1 s，静止端点按 \(c_0=c_1=c_2=p(0)\)（末端同理）精确消元，法方程带状求解。
+- U 形：先按实际最小曲率半径归一到 15 m（首末节点区间由精确消元是直线、v→0 处浮点残差会造出伪曲率，故最小半径在 \([h,T-h]\) 上求），再取 \(\alpha=\max(V_b/V,\sqrt{A_{nb}/3},\sqrt{A_{tb}/2},\sqrt[3]{J_b/J})\)。三档实际峰值：V=4.000/6.000/6.708，法向 0.742/1.781/2.313——速度是约束项，最大法向未到 3（1 s 节点拟合的半圆在低速端曲率最大），如实报告。
+
+**每个 J 一行**（积分步口径；完整 66 例见 [part2/cases.json](part2/cases.json)，汇总 [part2/summary.json](part2/summary.json)，运行日志 [part2/tracking_run.log](part2/tracking_run.log)）：
+
+| J (m/s³) | 例数 | complete | 最大位置误差 m（积分步 / 输出帧） | 最大速度误差 m/s | 最坏案例 | 核心加速度/jerk 饱和比例最大 | 超时 |
+|---|---|---|---|---|---|---|---|
+| 2 | 11/11 | 是 | 0.0862 / 0.0861 | 见 summary | 近圆 V=4（受 J 约束） | 0 / 0 | 0 |
+| 4 | 11/11 | 是 | 0.0971 / 0.0971 | 见 summary | 近圆 V=4 | 0 / 0 | 0 |
+| 6 | 11/11 | 是 | 0.0971 / 0.0971 | 见 summary | 近圆 V=4 | 0 / 0 | 0 |
+| 8 | 11/11 | 是 | 0.0971 / 0.0971 | 见 summary | 近圆 V=4 | 0 / 0 | 0 |
+| 10 | 11/11 | 是 | 0.0971 / 0.0971 | 见 summary | 近圆 V=4 | 0 / 0 | 0 |
+| 14 | 11/11 | 是 | 0.0971 / 0.0971 | 见 summary | 近圆 V=4 | 0 / 0 | 0 |
+
+直线案例误差随 J 从 0.062（J=2）增至 0.072 m（J=14）；近圆在 J≥4 各行相同（这些格点不受 J 约束，参考与 J 无关）。所有案例 `status=ok`，窗口（预释放、加速、匀速/减速、结束后、保持）分项误差在 cases.json 的 `measurement.windows`。`select_jerk_plan` 输出 `{"triggered": false, "j_plan": 14.0, "reason": "selected"}`。
+
+**局限：** 66 个合成参考下的事实，不证明所有三次样条都在 0.5 m 管内（附录 9.5）；生产中管只作诊断。
+
+**测试：** `test_preset_numeric_tracking.py` 4/4 OK（[tests_part2.txt](tests_part2.txt)，退出码 0）。
