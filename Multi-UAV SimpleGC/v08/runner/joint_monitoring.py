@@ -394,8 +394,14 @@ def _record_row(rec):
     keys = ("contract_id", "family_id", "draw_index", "branch", "facility_count", "initial_speed_m_s", "group_size",
             "success", "attempts", "optimization_s", "retained_p0_ok", "member_ids", "target_id", "release_us",
             "failure", "order", "vehicle_count", "post_optimization_failures", "skeleton_failures", "draws",
-            "unknown_attempts", "shape_audit_failed_attempts", "incomplete", "phase_metrics")
-    return {k: rec.get(k) for k in keys}
+            "unknown_attempts", "shape_audit_failed_attempts", "incomplete", "phase_metrics", "formation_prior",
+            "formation", "topology", "deviation")
+    row = {k: rec.get(k) for k in keys}
+    # V8-14 8.7：逐 attempt 的进入事件与形状复核标记（精简，确定性；不含 timing/witness）
+    row["attempt_log"] = [{k: a.get(k) for k in ("attempt", "ok", "stage", "skeleton_stage", "code",
+                                                  "optimization_entered", "shape_audit_failed")}
+                          for a in rec.get("attempt_log") or []]
+    return row
 
 
 def run_batch(entries, *, stage, data_root, cache_dir, out_dir, workers=8, keys=None, settings=None, log=print):
@@ -627,6 +633,8 @@ def _pool_task(task):
                            should_stop=lambda: _t.time() > deadline, keep=holder)
         row = _record_row(rec)
         row.update(kind=kind, incomplete=rec.get("incomplete", False), wall_s=_t.perf_counter() - t0,
+                   lp_seconds=[((a.get("timing") or {}).get("skeleton_detail") or {}).get("lp_seconds")
+                               for a in rec["attempt_log"]],
                    attempt_log_flags=[{"ok": a["ok"], "stage": a["stage"], "optimization_entered": a.get("optimization_entered"),
                                        "shape_audit_failed": a.get("shape_audit_failed")} for a in rec["attempt_log"]],
                    deviation=rec.get("deviation"), tracking=rec.get("tracking"),
@@ -774,6 +782,8 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
         r.get("post_optimization_failures") for r in good if r.get("success"))
     summary["distributions"] = JR.distributions(good, div_rows)
     summary["skeleton_bias"] = JR.skeleton_bias(good)
+    summary["formation_vs_prior"] = JR.formation_vs_prior(good)                       # V8-14b 第 4 节
+    summary["lp_seconds_per_attempt"] = JR._q([x for r in good for x in (r.get("lp_seconds") or []) if x is not None])
     write_json(out / "summary.json", summary, indent=1)
     return summary
 

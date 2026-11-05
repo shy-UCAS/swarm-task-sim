@@ -422,8 +422,34 @@ def skeleton_bias(records):
         "traversals_ks": ks_statistic(travs(drawn), travs(kept)),
         "topology_cramers_v": cramers_v([d.get("topology") for d in drawn], [d.get("topology") for d in kept]),
         "formation_cramers_v": cramers_v([d.get("formation") for d in drawn], [d.get("formation") for d in kept]),
+        # V8-14 指令 7.2：首次确定的随机量（圆心、K、logit 分位数）与弧端点；drawn = 每 attempt 首次确定者
+        "center_x_ks": ks_statistic([(d.get("center_xy") or [None])[0] for d in drawn],
+                                    [(d.get("center_xy") or [None])[0] for d in kept]),
+        "center_y_ks": ks_statistic([(d.get("center_xy") or [None, None])[1] for d in drawn],
+                                    [(d.get("center_xy") or [None, None])[1] for d in kept]),
+        "K_cramers_v": cramers_v([d.get("K") for d in drawn], [d.get("K") for d in kept]),
+        "logit_quantile_ks": ks_statistic([q for d in drawn for q in (d.get("logit_quantiles") or [])],
+                                          [q for d in kept for q in (d.get("logit_quantiles") or [])]),
+        "arc_param_span_ks": ks_statistic([(a[1] - a[0]) for d in drawn for a in [d.get("arc_rows")] if a],
+                                          [(a[1] - a[0]) for d in kept for a in [d.get("arc_rows")] if a]),
+        "direction_cramers_v": cramers_v([d.get("direction") for d in drawn], [d.get("direction") for d in kept]),
     }
     counts = {"drawn": len(drawn), "kept": len(kept),
               "drawn_with_shape": sum(d.get("rho0_m") is not None for d in drawn),
               "attempts_without_draw": sum(1 for r in rows for d in (r.get("draws") or []) if not d)}
     return {"bins": bins, "drawn_vs_kept": comp, "counts": counts}
+
+
+def formation_vs_prior(records):
+    """V8-14b 第 4 节：实际队形与抽签倾向对照，按人数档（成功合同；失败合同另计）。"""
+    out = {}
+    for r in records:
+        if r.get("error"):
+            continue
+        b = group_bin(r["group_size"])
+        f = r.get("formation") or {}
+        key = f"{r.get('formation_prior') or f.get('prior')}->{f.get('realized') if r.get('success') else 'FAILED'}"
+        out.setdefault(b, {})
+        out[b][key] = out[b].get(key, 0) + 1
+    return {str(k): dict(sorted(v.items())) for k, v in sorted(out.items())}
+
