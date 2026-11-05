@@ -15,24 +15,31 @@ def row(i, success=True, speed=8., size=6):
 class CheckpointPreset(unittest.TestCase):
     def test_quick_exact_boundaries(self):
         rs = [row(i, i < 16) for i in range(20)]
+        for r in rs:
+            r["post_optimization_failures"] = 0
         self.assertEqual(quick_checkpoint(rs)["triggered"], [],
-                         "U D.3.4：16/20、median=1、60s本身均不触发")
+                         "U14 D.4/C13：16/20、post失败median=0、60s均不触发")
         rs[15]["success"] = False
         self.assertIn("success_rate", quick_checkpoint(rs)["triggered"],
-                      "15/20严格小于16/20")
+                      "独立计数15/20严格小于16/20")
         rs = [row(i) for i in range(20)]
         for r in rs:
             r["attempts"] = 2
-        self.assertIn("attempts", quick_checkpoint(rs)["triggered"],
-                      "成功尝试中位数2>1")
+            r["post_optimization_failures"] = 0
+        self.assertNotIn("attempts", quick_checkpoint(rs)["triggered"],
+                         "U14授权修订：总尝试2但首次进入优化成功，不触发")
         for r in rs:
-            r["attempts"] = 1
+            r["post_optimization_failures"] = 1
+        self.assertIn("attempts", quick_checkpoint(rs)["triggered"],
+                      "C13独立计数：成功合同post失败median=1>0")
+        for r in rs:
+            r["post_optimization_failures"] = 0
             r["optimization_s"] = np.nextafter(60., np.inf)
         self.assertIn("optimization_time", quick_checkpoint(rs)["triggered"],
-                      "优化耗时中位数严格大于60")
+                      "原阈值不变：最小可表示的严格大于60")
         rs[0]["retained_p0_ok"] = False
         self.assertIn("retained_p0", quick_checkpoint(rs)["triggered"],
-                      "U D.3.4最后一行：任何误收段")
+                      "原P0门禁不变：任何误收段")
 
     def test_pooled_not_per_family_and_no_success_quota(self):
         blocks = [
