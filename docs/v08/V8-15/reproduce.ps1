@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $manifestPath = Join-Path $here 'manifest.json'
-if (-not (Test-Path $manifestPath)) { Write-Error "缺少 $manifestPath：未运行"; exit 3 }
+if (-not (Test-Path $manifestPath)) { [Console]::Error.WriteLine("缺少 $manifestPath：未运行"); exit 3 }
 $m = Get-Content $manifestPath -Raw -Encoding utf8 | ConvertFrom-Json
 $proj = $m.project_dir
 $conda = $m.conda_exe
@@ -24,7 +24,7 @@ Write-Host "baseline         = $($m.baseline)"
 Write-Host "devset           = $($m.devset)"
 Write-Host "worker_selection = $($m.worker_selection)"
 foreach ($p in $proj, $conda, $m.data_root, $m.cache, $m.baseline, $m.devset) {
-    if (-not (Test-Path $p)) { Write-Error "前提路径不存在：$p（未运行）"; exit 3 }
+    if (-not (Test-Path $p)) { [Console]::Error.WriteLine("前提路径不存在：$p（未运行）"); exit 3 }
 }
 Push-Location $proj
 try {
@@ -52,8 +52,8 @@ try {
         Write-Host "失败套件数：$fail（V8-12 未列入：其 2 项已知失败见 REPORT 第 2.4 节）"
         exit ([int]($fail -ne 0))
     }
-    if (-not $Out) { Write-Error '-Scope quick 需要 -Out <不存在的新目录>（未运行）'; exit 3 }
-    if (Test-Path $Out) { Write-Error "输出目录已存在：$Out（未运行，不覆盖）"; exit 3 }
+    if (-not $Out) { [Console]::Error.WriteLine('-Scope quick 需要 -Out <不存在的新目录>（未运行）'); exit 3 }
+    if (Test-Path $Out) { [Console]::Error.WriteLine("输出目录已存在：$Out（未运行，不覆盖）"); exit 3 }
     Write-Host "out              = $Out"
     & $conda run -n $m.conda_env --no-capture-output python -B tools/v08/run_separation_v15.py --mode production-quick `
         --baseline $m.baseline --devset $m.devset --data-root $m.data_root --cache $m.cache --out $Out

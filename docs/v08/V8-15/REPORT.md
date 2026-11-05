@@ -507,3 +507,125 @@ V8-12 的两个失败和一个跳过，按**测试名与原因**逐项对照 V8-
 **本部分发现的工具问题：**
 - `make_part6.py` 初版按 shapely 对象画圈层，但 `Facility.layers` 实际是几何字典（Circle/Polygon/BufferedPolygon），两张图因此漏画目标层；失败图初版只有空坐标轴。
 - 已改为按字典绘制，并加入最后一次 attempt 的抽签几何后重新生成。只影响作图，不影响任何数值。
+
+## 7. 第 7 部分：生产不变量与日常流程（2026-11-05 07:59 → 08:10）
+
+**结论：** 改过生产模块（只改默认进程数）。20 个快速合同用 24 进程运行，与 `full_v14c` 同键比较，**20/20 文件集与全部字节一致**，排除清单为空，**P0-4 未触发**。已有测试回归结果与第 2 部分、基线逐项相同。
+
+### 7.1 `git diff 2dbb2a4` 的生产导入关系
+
+| 文件 | 改动 | 被谁导入 |
+|---|---|---|
+| `v08/runner/runtime_defaults.py`（新） | 只有 `DEFAULT_WORKERS = 24`，导入时不读文件 | `joint_monitoring`、`skeleton_monitoring`、两个 CLI 的 parser 内、`run_separation_v15` |
+| `v08/runner/joint_monitoring.py` | 导入常量；`run_batch(workers=DEFAULT_WORKERS)`（原 8）。函数体仍串行、不使用该参数 | 生产入口 `run_joint_monitoring.py`、V8-13/14 测试、v15 工具 |
+| `v08/runner/skeleton_monitoring.py` | 导入常量；`run_skeleton_batch(workers=DEFAULT_WORKERS)`（原 8） | `run_skeleton_monitoring.py`、v15 工具 |
+| `tools/v08/run_joint_monitoring.py` | parser `--workers` 缺省 1 → `DEFAULT_WORKERS`；文档串 | 命令行。`--stage quick` 在 `joint_monitoring.cli` 中硬编码 1、`rerun` 单进程，两处都不变（附录裁定 4） |
+| `tools/v08/run_skeleton_monitoring.py` | parser `--workers` 缺省 8 → `DEFAULT_WORKERS`；文档串 | 命令行 |
+| `tools/v08/{v15_metrics,v15_artifacts,v15_memory,analyze_separation_v15,run_separation_v15,profile_monitoring_v15}.py`（新） | 本项实验工具 | **生产代码不导入**：在 `v08/` 与旧 `tools/v08` 中检索 `v15_` 和三个入口名，零命中 |
+| `tests/v08/V8-15/test_preset_*.py`（新） | 预置测试原文 | 只被 unittest 发现 |
+| `Multi-UAV SimpleGC/README.md` | 顶部 v0.8 日常流程说明 | — |
+
+`configs/`、`v08/motion|sim|criteria|sampler|scene/`、合同类型与失败类别都未改动（第 8.2 节快照对照）。
+
+### 7.2 20 合同快速批次（P0-4）
+
+- **入口：** `run_separation_v15.py --mode production-quick --workers 24`，命令见外部 `logs/run_part7.sh`。名单由 `select_quick` 既有协议生成（[quick_selection.json](part7/quick_selection.json)：10 族 × draw 0/1，`present_in_baseline` 全真），用第 4 部分的名单派发器真实按 24 进程并行，没有用旧 quick 串行入口冒充。
+- **结果：** [production_reproduction.json](part7/production_reproduction.json)（SHA256 `e390b0e8…6263`）。
+  - 20 个合同全部 `success=True`。
+  - `only_source`、`only_repeat`、`differing` 全部为空，`file_sets_equal` 与 `bytes_equal` 全部为真，共比较 575 个文件。
+  - 两侧逐合同目录摘要完全相同（`dir_digest_sha256.source == repeat`）。
+- **耗时：** 调度墙钟 289 s（含预建缓存 291.5 s），单合同忙时合计 1997 s，并行效率 0.29。长尾是 o02_d0（4 次 attempt，288 s）与 o11_d1（3 次，277 s）。全机内存峰值 52.4%，单进程峰值最大 1.26 GiB。
+- **缓存：** 运行前后 `cache` 259 个文件，无新增、删除、改动，日志 [production_quick.log](part7/production_quick.log)。
+
+### 7.3 已有测试回归（生产改动之后；日志 [part7/tests_part7.txt](part7/tests_part7.txt)、[tests_part7_v812_data.txt](part7/tests_part7_v812_data.txt)）
+
+运行时 `V8_15_WORKER_SELECTION = …/docs/v08/V8-15/part4/worker_choice.json`；commit 566cb3f，工作区只有本部分的未提交文档。
+
+| 套件 | 第 7 部分 | 第 2 部分 / 基线 |
+|---|---|---|
+| V8-15 numeric_protocol | 5/5 | 5/5 |
+| V8-15 local_formation | 4/4 | 4/4 |
+| V8-15 local_injection | 3/3 | 3/3 |
+| V8-15 local_stress | 1/1 | 1/1 |
+| V8-15 local_defaults | 2/2（非 skip） | 2/2 |
+| V8-15 `test_extra_*` | 0 项（本项未新增 extra 测试，unittest 返回 5 "NO TESTS RAN"） | 同 |
+| V8-11 全目录 | 30/30 | 30/30 |
+| V8-12 全目录 | 37 通过、2 失败、1 跳过 | 37/2/1，同名同因 |
+| V8-12（设 `V8_12_DATA_ROOT`） | 39/40，只剩 `frechet` 一项 | 39/40 |
+| V8-13 numeric / extra | 20/20、8/8 | 同 |
+| V8-14 numeric / extra / local_geometry | 17/17、14/14、1/1 | 同 |
+
+V8-12 两项失败（`root_text` 为 None：未设数据根；`'frechet' not found in ()`：V8-12 期既有疑似预期错误）与一项跳过（`TestFieldOnRealScene` 需要数据根），测试名与原因都和第 2.4 节、V8-14 日志相同。
+
+### 7.4 日常流程文档
+
+- README 与 [RUNNING.md](RUNNING.md) 已在提交 ae7766d 写明以下内容：
+  - 日常迭代只跑"只骨架检查 + 20 合同快速批次"；全量 200 + 100 只在规划审查方明确要求验收时运行，本项未跑全量。
+  - 新名单快速入口与旧串行 quick 的区别、确定性名单、输出位置。
+  - profile 与历史复跑必须单进程，不随新默认值变化。
+- 本部分实测命令与 RUNNING 第 2(b) 节一致（另显式写了 `--workers 24`）。
+
+## 8. 第 8 部分：预置测试、冻结复核与复现
+
+### 8.1 预置测试
+
+- **哈希复核：** 收尾时重新计算 5 个预置文件的 SHA256，与指令 8.7 表格逐一相同，未改动：numeric_protocol `e0df2b3a…6676`、local_formation `94b96566…528f`、local_injection `a4160370…f809`、local_defaults `de3ff62b…2a9e`、local_stress `68e31d08…0290`。
+- **结果：** 5 个文件 15 个方法，第 2、7 部分两次运行都通过，无 skip，见 7.3 表。`local_defaults` 读取真实 `worker_choice.json`，没有跳过。
+
+### 8.2 冻结与输入复核（[snapshot_end.json](snapshot_end.json) 对 [snapshot_part1.json](snapshot_part1.json)）
+
+| 项 | 结果 |
+|---|---|
+| 160 个开发集输入 SHA256/大小/mtime_ns | 相同；且仍等于 V8-14 v14c 结束快照 |
+| `SwarmData\v07_*` 22 个目录（文件数、总字节、最大 mtime、目录 mtime） | 相同 |
+| 冻结工作树 | `Simulation-fe-prod-r3@641a9b3`、`Simulation-fe-s3@de4d115`，都干净，相同 |
+| 基线 `full_v14c` 8551 个文件 SHA256/大小/mtime_ns | 相同 |
+| 模块（configs、v08、tools/v08、tests/v08） | 新增 7 个：6 个 v15 工具 + `runtime_defaults.py`；改动 4 个：两个 runner、两个 CLI；删除 0。全部在指令 0.2 白名单内，`configs/` 未变 |
+
+外部运行缓存在第 3、4、7 部分前后各做了快照对照，均无变化；第 6 部分批次 summary 的 `cache_write_during_workers` 也为空。
+
+### 8.3 复现
+
+- [reproduce.ps1](reproduce.ps1) 从同目录 [manifest.json](manifest.json) 读取本机路径。
+  - `-Scope tests` 跑 7.3 表中的套件，V8-12 不列入（已知两项失败）。
+  - `-Scope quick -Out <新目录>` 跑 20 合同快速批次并与基线比较。
+  - 不隐式执行 full / diversity。
+- **收尾自检：** 已核对 manifest 的 7 个路径全部存在，两个参数守卫（缺 `-Out`、`-Out` 已存在）都返回 3、不运行。
+- **修正：** 初版用 `Write-Error` 后接 `exit 3`，在 `$ErrorActionPreference='Stop'` 下会先抛出终止异常、返回 1；已改为写 stderr 后 `exit 3`。
+
+## 9. 偏差、异常与交审查事项（不属于四条停止条件）
+
+1. **第 4 部分内存测量的混杂：**
+   - 测 8、16 两档时，用户进程 PBZ（约 15.7 GB）在运行，24 档运行时它已退出。按 60% 规则只有 24 档合格。
+   - 第 6 部分 12 机压力合同在 24 进程下，全机峰值 66.1%，超过 60%（6.2 节）。
+   - 选定值 24 是在"普通规模合同 + 机器相对空闲"条件下测得的。大机数合同或常驻大进程时可能超过 60%，交审查方判断是否另设上限。
+2. **余量批次中断：** 用户要求暂停，我停掉了 24 进程余量首跑（6/33）。目录 `out/stress_v15/rest` 原样保留，未删除；重跑写入新目录 `rest_r2`。中断前完成的 6 个合同与重跑逐字节一致。
+3. **压力预算估计偏低：** 估计 294.6 s，实测 1300 s（4.4 倍），仍在 3600 s 内，不影响执行范围。原因是检查点只代表最快的 o11 族、1 次成功的合同。
+4. **`dev_analysis_try1`：** 第 3 部分开发调试时我自己创建的一个空外部目录，我已删除；其余既有输出都没有覆盖或删除（第 3 节已披露）。
+5. **工具缺陷修复（只影响本项新工具）：**
+   - `v15_metrics.pair_minima` 空集合 reshape 报错，已修复并重跑受影响分析。
+   - `make_part6.py` 圈层作图修正。
+   - `reproduce.ps1` 退出码修正。
+6. **生产侧疑似问题（只记录）：**
+   - V8-12 `frechet` 预期疑似错误，沿用以前的判断。
+   - o08_d4/uav_02 撤离途中低速，以及 o34_d2/uav_08 巡逻途中低速，第 3.4 节交审查。
+   - 压力集 o17 abreast/echelon 有 3 个合同用尽预算，主要是骨架起点/入圈路由不可用（6.3 节）。
+7. **未运行：** `--stage full`、`--stage diversity`。V8-13 e2e 的两个计数类方法与压力目录布局不兼容，未运行（附录裁定 1）。
+
+## 10. 提交与推送
+
+- **审查分支：** `review/v08/V8-15-separation`，起点 `2dbb2a4`。逐部分提交：
+
+| 提交 | 内容 |
+|---|---|
+| cf1d6d8 | 第 1 部分：分支、基线与输入锁定，预置测试落盘 |
+| 8d98c39 | 第 2 部分：合成测试与注入重做 |
+| f14afb3、7125b6d | 第 3 部分：只读间距/速度分析与表述更正 |
+| 52f3915 | 第 4 部分：8/16/24 测量与选定 |
+| ae7766d | 第 4 部分联动：默认值、CLI、README/RUNNING |
+| 15aa7c6 | 第 5 部分：剖析 |
+| 566cb3f | 第 6 部分：压力合同集 |
+| （本提交） | 第 7、8 部分与报告收尾 |
+
+- **推送：** 只推 `review/v08/V8-15-separation`，不合并 `dev/v0.8`、不推 main、不强推。推送后用 `git ls-remote` 核对远端 SHA 等于本地 HEAD，结果在执行回复中给出。
+- **结束时间：** 2026-11-05 08:2x（本机 −0800）。
