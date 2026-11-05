@@ -153,3 +153,101 @@ V8-12 的两个失败和一个跳过，按**测试名与原因**逐项对照 V8-
 - 环境变量：`V8_12_DATA_ROOT = F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData`（resolve 后同一路径）。`V812_DATA_ROOT` 未设，`test_own_part3` 用其代码默认值，即同一 SwarmData。
 - 两个数据测试都只读输入、用系统临时缓存。
 - 结果 39/40：devset 测试通过，跳过的真实场景测试通过；仍失败的只有上面 `frechet` 那一项，原因相同。
+
+## 3. 第 3 部分：只读分析 full_v14c
+
+### 3.1 运行与口径
+
+- **入口与输出：** [analyze_separation_v15.py](../../../Multi-UAV%20SimpleGC/tools/v08/analyze_separation_v15.py)（恢复对象用 [v15_artifacts.py](../../../Multi-UAV%20SimpleGC/tools/v08/v15_artifacts.py)，距离与分位用 [v15_metrics.py](../../../Multi-UAV%20SimpleGC/tools/v08/v15_metrics.py)）。
+  - 输出 `_handoff\2026-11-05_V8-15_separation\out\analysis\`，8 进程按族派发，墙钟 85.6 s。
+  - 日志 `logs\part3_analysis.log`。
+  - 仓库副本 [part3/](part3/)：summary、by_group.csv、失败 attempt 行、速度样例、图；`pairs.csv`（7.2 MB，70576 行）留外部，哈希见 [part3/external_hashes.json](part3/external_hashes.json)。
+- **只读：** 输入是基线 `full_v14c` 的 JSON/NPY，以及从 V8-14 运行根按内容复制到本项运行根的缓存。缓存 259 个文件在分析前后 SHA256/大小/mtime 完全相同（`logs\cache_before_part3.json` / `cache_after_part3.json`）。基线不写回（第 8 节快照复核）。
+- **口径：**
+  - **优化：** `optimize_checks._frames` 帧（`hold_s` 读自 `physical_limits(load_settings())`），XY 水平距离。
+  - **实测：** `visible_track` 后的真实整数 `tau_us` 共同帧，三维距离，含已存末端保持帧。
+  - **插值：** 只在相差 100000 µs 的相邻共同帧之间计算，并按两成员全部阶段/掉头边界切小区间，逐小区间解析求最小。
+- **恢复正确性的两项内部核对：**
+  - 用恢复对象调用生产 `phase_diagnostics`，198/198 与已存 `phase_metrics` **逐字节相同**（规范 JSON 比较）。
+  - 每合同实测采样全程最小值，198/198 与保留 attempt 已存的 `validity.min_separation_m` **精确相等**。
+- **P0-1（附录裁定 1）：** 不重算段核验与 validity，直接引用 V8-14 的 e2e 结果 [tests_v14c_full.txt](../V8-14/v14c/tests_v14c_full.txt)（SHA256 `c9973f7a12c3323fdd30f2fc4d7d553c6f4734d464dca25325ea2c2ea71f784b`）。该文件中 `RUN_OUT = …\out\full_v14c`，`test_preset_local_e2e.py` 3/3 ok：`test_every_retained_contract_with_frozen_verifiers` 用冻结 V8-11 核验器逐段独立重算了全部保留合同。本项分析另行确认：历史字段 `retained_p0_ok` 198 真 / 0 假（只作对照）；保留合同实测间距最小值 3.097 m，远高于 2 m。**P0-1 未触发。**
+
+### 3.2 三种间距（198 个保留合同）
+
+- **合同数：** 198 个保留合同中，14 个只有 1 名成员（没有成员对），184 个合同共 2657 个成员对。
+- **无共同帧：** 0 个成员对（`empty_pairs` 为空）。
+- **统计单位：** 每个样本 = 一个合同中一个成员对在某分档的最小值，不按帧数加权。
+
+| 距离来源 | 成员对全程最小值：min / p10 / 中位数 / p90 / max (m) | 合同级最小值：min / p10 / 中位数 / p90 / max (m) |
+|---|---|---|
+| 优化 XY 采样 | **3.171** / 3.852 / 19.81 / 63.64 / 191.4 | 3.171 / 3.249 / 5.334 / 18.16 / 26.00 |
+| 实测三维采样 | **3.097** / 3.883 / 19.80 / 63.64 / 191.4 | 3.097 / 3.247 / 5.312 / 18.12 / 25.99 |
+| 实测三维插值 | **3.097** / 3.872 / 19.80 / 63.64 / 191.4 | 3.097 / 3.240 / 5.301 / 18.12 / 25.99 |
+
+- **诊断预期对照（指令 0.5）：**
+  - 优化后最小 3.171 m ≥ 3.0 m，没有出现"硬检查未生效"的迹象。
+  - 实测最小 3.097 m ≥ 历史推导 2.69 m。
+  - 插值最小值没有低于采样最小值超过 0.04 m：最大的差在 o34_d2 uav_01|uav_04，插值 3.135 m，采样 3.169 m 那一档。
+
+**按实际队形 × 拓扑：**
+
+| 队形 | 拓扑 | 有成员对的合同 | 成员对 | 优化 XY 最小 | 实测采样最小 | 实测插值最小 | 实测采样中位数 |
+|---|---|---|---|---|---|---|---|
+| abreast | loop | 48 | 650 | 3.233 | 3.096 | 3.096 | 29.02 |
+| abreast | retrace | 54 | 976 | 3.171 | 3.169 | 3.135 | 12.35 |
+| column | loop | 21 | 313 | 3.304 | 3.320 | 3.303 | 21.71 |
+| column | retrace | 18 | 184 | 3.504 | 3.478 | 3.478 | 27.77 |
+| echelon | loop | 19 | 178 | 3.319 | 3.339 | 3.338 | 31.81 |
+| echelon | retrace | 24 | 356 | 3.240 | 3.169 | 3.169 | 24.93 |
+
+**按阶段**（各来源的最小值，以及出现的合同与成员对）：
+
+| 分档 | 优化 XY | 实测采样 | 实测插值 |
+|---|---|---|---|
+| 汇合/进入 | 3.233（o24_d0 uav_05\|uav_07） | 3.096（同） | 3.096（同） |
+| 巡逻 | 3.171（o34_d2 uav_01\|uav_04） | 3.169（o03_d4 uav_01\|uav_06） | 3.135（o34_d2 uav_01\|uav_04） |
+| ├ turn 子分档（与巡逻重叠） | 3.171 / 3.235 / 3.210（a / b / 两者） | 3.198 / 3.242 / 3.169 | 3.135 / 3.206 / 3.169 |
+| 撤离 | 5.445（o05_d1 uav_03\|uav_06） | 5.448 | 5.448 |
+| 保持 | 15.13 | 15.11 | 15.11 |
+| 跨阶段（mixed） | ≥ 14.44 | ≥ 14.42 | ≥ 14.42 |
+
+- **说明：** 最危险的时刻在汇合/进入与巡逻（含掉头）。跨阶段的成员对都在 14 m 以上。
+- **完整分布：** 全部分档的 n/min/p10/median/p90/max 见 [part3/summary.json](part3/summary.json) `overall.*.by_bin`，按队形×拓扑×阶段×来源的完整表见 [part3/by_group.csv](part3/by_group.csv)。
+- **最坏 10 例：** 三种来源各一组，见 `summary.json` 的 `worst10`。实测插值最坏的是 o24_d0 uav_05|uav_07，3.097 m，t = 371.4 s，abreast/loop。
+- **图：** [part3/separation_by_phase.png](part3/separation_by_phase.png)。turn 与巡逻重叠，图中用橙色区分。
+
+### 3.3 失败 attempt（全部 200 合同）
+
+- **总量：** 200 合同共 396 个 attempt，其中失败 198 个。
+- **按 stage/reason：** skeleton 145（入圈 71、出圈 16、整体掉头空集 16、起点路由与边界穿越其余）；`optimize_monitoring/optimize_residual` 49；`optimize/optimize_residual` 4。
+- **底层代码：** `monitoring:nominal_dwell` 27、`nominal_revisit` 23、`boundary_crossing` 1；`physical:dynamic` 3、`separation` 3、`turn_radius` 1。
+  - 注意 `reason="optimize_residual"` 是顶层 reason，不是 stage。
+- **间距相关：**
+  - `physical_failures` 含 `kind="separation"` 的 attempt 共 **3** 个（o08_d2、o36_d0、o36_d1）。其中只含间距的 0 个，与其他物理失败（dynamic 等）混合的 3 个。
+  - `validity.codes` 含 `separation_violation` 的 attempt **0** 个，与历史预期 0 一致。
+  - 优化阶段失败缺 `physical_failures` 字段的 attempt 有 0 个。
+- **"最坏约束为间距"的精确计数：N/A。** `_attempt_summary` 没有保存 AL 的最大约束键和每轮违反量（指令 11.7）；不重新优化，也不拿不同单位的残差排序。
+
+### 3.4 阶段最低速度最坏样例
+
+- **选样：** 按已存 `phase_metrics` 选出 patrol 或 egress 中 `measured_ratio < 0.8` 或 `measured_along_max_m > 10` 的样例，共 **967** 个（成员×阶段）。
+- **重算：** 用同一批"参考速度 ≥ 0.5 m/s"的帧重新求值。967/967 的速度比与沿迹最大值都与已存值**逐位相等**。
+- **结果：** 无 moving 样本（N/A）0 个。
+
+| 阶段 | 末尾 20 s 内 | 途中 |
+|---|---|---|
+| 撤离 egress | **945** | **1** |
+| 巡逻 patrol | 0 | **21**（7 个合同：o03_d4、o11_d1、o17_d4、o22_d1、o22_d4、o25_d4、o34_d2） |
+
+**指定两例（由数据得出）：**
+
+| 样例 | 阶段区间 (s) | 最低速度时刻 / 距阶段末尾 | 参考 / 实测最低速度 | 速度比 | 沿迹最大偏离 | 归类 |
+|---|---|---|---|---|---|---|
+| o34_d2 uav_08 patrol | [1807.6, 4492.2) | 3236.1 s / 1256.1 s | 4.138 / 1.674 m/s | 0.4045（= 已存 0.404） | 25.70 m | **途中** |
+| o08_d4 uav_02 egress | [1379.7, 1886.5] | 1488.3 s / 398.2 s | 0.621 / 0.0011 m/s | 0.00179（= 已存 0.0018） | 37.86 m（= 已存 37.9） | **途中** |
+
+- **撤离：** 946 个撤离样例中 945 个的最低速度出现在阶段末尾 20 s 内，与"终点刹停时间对不齐"的解释一致。
+- **o08_d4 uav_02：** 是唯一的撤离途中样例，在距撤离结束约 398 s 处几乎停住（0.0011 m/s）。不能归为终点刹停，交审查。
+- 每条样例的位置、参考/优化/实测速度、沿迹最大值位置见 [part3/speed_cases.json](part3/speed_cases.json)。
+
+**说明：** 开发时我在 `out\` 下留下过一个因脚本错误中断、只建了空目录的 `dev_analysis_try1`，已删除。另一个 3 合同自检目录 `dev_analysis_try2` 保留。两者都是本项新建的开发输出，不是基线或既有产物。
