@@ -3,7 +3,7 @@
 一个合同：固定一次 sample_common(family, draw)、一次 monitoring_mission(ctx, common)；每个 attempt 只递增
 RngKey.attempt（没有进程号、墙钟、hash() 或完成顺序参与）。attempt 顺序：
 plan_attempt（随机骨架）→ optimize_segment（全体成员固定时间联合求解一次 + 全部语义硬检查）→
-每成员 run_tracking_segment 一次（任一超时拒收）→ stitch → verify_segments → visible_track + check_validity。
+每编组 run_tracking_group 一次（V8-14c；与逐成员 run_tracking_segment 逐位相同；任一超时拒收）→ stitch → verify_segments → visible_track + check_validity。
 全部通过才 success；否则记失败码与原始对象进入下一 attempt。20 次预算贯穿上述全链路；不调用 plan_segment，
 不嵌套第二层预算，不在优化器内多次求解择优。
 
@@ -119,7 +119,7 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
     from ..motion.optimize import optimize_segment
     from ..motion.plan import plan_attempt
     from ..sim.stitch import stitch
-    from ..sim.tracking import run_tracking_segment
+    from ..sim.tracking_batch import LAST_GROUP_STATS, run_tracking_group
     t = {"skeleton_s": 0.0, "optimize_s": 0.0, "simulation_s": 0.0, "verify_s": 0.0}
     t0 = time.perf_counter()
     plan = plan_attempt(ctx, group, task, states, (), key)
@@ -143,13 +143,13 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
         return _fail(opt["stage"], t, plan=plan, opt=opt, code="candidate_rejected", reason=opt["reason"],
                      optimization_entered=True)
     t0 = time.perf_counter()
-    results, timeouts = [], []
-    for m in sorted(opt["solution"].references):
-        res = run_tracking_segment(_member_reference(opt["solution"].references[m]), states[m], final=True)
-        results.append(res)
-        if res.status != "ok":
-            timeouts.append(m)
+    # V8-14c 3.3：每个编组一次批量跟踪（与逐成员 run_tracking_segment 逐位相同，门禁 1–3）
+    members_sorted = sorted(opt["solution"].references)
+    results = run_tracking_group([_member_reference(opt["solution"].references[m]) for m in members_sorted],
+                                 [states[m] for m in members_sorted], final=True)
+    timeouts = [m for m, res in zip(members_sorted, results) if res.status != "ok"]
     t["simulation_s"] = time.perf_counter() - t0
+    t["simulation_detail"] = dict(LAST_GROUP_STATS)
     if timeouts:
         return _fail("simulation", t, plan=plan, opt=opt, results=results, code="candidate_rejected",
                      reason="sim_timeout", members=timeouts, optimization_entered=True)
@@ -619,11 +619,15 @@ def _pool_task(task):
     from ..motion.optimize import load_settings
     from ..scene.context import load_context
     from ..diagnostics.diversity import resample_polyline
-    kind, entry, draw, branch, data_root, cache_dir, out_dir, deadline = task
+    kind, entry, draw, branch, data_root, cache_dir, out_dir, deadline = task[:8]
     g = globals().setdefault("_WCTX", {})
     if entry["order"] not in g:
-        g.clear()
+        # V8-14c 3.4：缓存已在派发前由单进程预建，worker 只读；上下文按最近使用保留 3 个（任务不再按族成组）
+        while len(g) >= 3:
+            g.pop(next(iter(g)))
         g[entry["order"]] = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
+    else:
+        g[entry["order"]] = g.pop(entry["order"])
     ctx = g[entry["order"]]
     settings = load_settings()
     t0 = _t.perf_counter()
@@ -732,6 +736,66 @@ def frechet_blocks(div_rows, key="curve_after"):
     return blocks
 
 
+def prewarm_cache(ordered, *, data_root, cache_dir, log=print):
+    """V8-14c 3.4.1：单进程为 40 族建好场景上下文与全部几何的原始距离场（世界、障碍、各设施警戒/预警层；
+    以每个设施作目标的完整巡逻约束覆盖），并取各 draw 第 0 编组人数作派发成本。返回统计。"""
+    from ..contract.monitoring import monitoring_mission
+    from ..motion.intents.monitoring import monitoring_constraints
+    from ..sampler.common import sample_common
+    from ..scene.context import load_context
+    t0 = time.time()
+    misses = hits = 0
+    sizes = {}
+    for e in ordered:
+        ctx = load_context(e, data_root=Path(data_root), cache_dir=Path(cache_dir))
+        for f in ctx.facilities:
+            cons = monitoring_constraints(ctx, f.id)
+            ctx.field(("prewarm", f.id), cons["base"] + cons["patrol"])
+        ctx.field("route", list(monitoring_constraints(ctx, ctx.facilities[0].id)["base"]))
+        st = ctx.cache_stats()
+        misses += st["misses"]
+        hits += st["hits"]
+        for d in range(DRAWS):
+            g = monitoring_mission(ctx, sample_common(ctx.family, d)).groups[0]
+            sizes[f"{int(e['order'])}:{d}"] = len(g.member_ids)
+    out = {"families": len(ordered), "raw_cache_hits": hits, "raw_cache_misses_written": misses,
+           "group_size": sizes, "wall_s": time.time() - t0}
+    log(f"预建缓存：{len(ordered)} 族，命中 {hits}，新写 {misses}，{out['wall_s']:.0f}s")
+    return out
+
+
+def run_pool_singles(tasks, *, workers, deadline, log=print):
+    """V8-14c 3.4.2：单合同任务动态派发（一次提交一个，worker 空闲即取下一个）；到 deadline 停止派发，
+    进行中的合同在下一 attempt 前合作退出。返回 (rows, 未派发 contract_id)。"""
+    import multiprocessing as mp
+    from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
+    rows, pending, unsent = [], set(), []
+    it = iter(tasks)
+    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
+        def submit_next():
+            for t in it:
+                if time.time() > deadline:
+                    unsent.append(contract_id(t[1], t[2], t[3]))
+                    continue
+                pending.add(ex.submit(_pool_task, t))
+                return True
+            return False
+        for _ in range(workers):
+            if not submit_next():
+                break
+        while pending:
+            done, _ = wait(pending, return_when=FIRST_COMPLETED)
+            for fut in done:
+                pending.discard(fut)
+                row = fut.result()
+                rows.append(row)
+                log(f"[{len(rows)}] {row['contract_id']} {row.get('kind')}: success={row.get('success')} "
+                    f"attempts={row.get('attempts')} incomplete={row.get('incomplete')} "
+                    f"wall={row.get('wall_s', 0):.0f}s err={row.get('error')}", flush=True)
+                submit_next()
+    return rows, unsent
+
+
 def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
     """全量 200 合同 + 多样性 10 族 × 10 种子，共用 2 小时预算；复跑键在开始前写 rerun_keys.json。"""
     from .monitoring import select_diversity_families
@@ -754,9 +818,24 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
             ft += [("diversity", e, 0, b, str(data_root), str(cache_dir), str(out / "diversity"), deadline)
                    for b in range(DIVERSITY_SEEDS)]
         fam_tasks.append(ft)
-    # 派发顺序只由任务规模与登记 order 决定（合同多的族先派，均衡 8 进程），与结果无关
-    tasks = sorted(fam_tasks, key=lambda ft: (-len(ft), int(ft[0][1]["order"])))
-    rows, unsent = run_pool(tasks, workers=workers, deadline=deadline, log=log)
+    # V8-14c 3.4：派发前单进程预建全部场景上下文与距离场缓存（之后 worker 只读）；合同与多样性种子一律单任务、
+    # 按预计成本（第 0 编组人数 × 地图边长）降序、动态分配、chunksize = 1。派发顺序与结果无关（输出按业务键）。
+    prewarm = prewarm_cache(ordered, data_root=data_root, cache_dir=cache_dir, log=log)
+    write_json(out / "prewarm.json", prewarm, indent=1)
+    t_dispatch = time.time()
+    deadline = t_dispatch + WALL_BUDGET_S
+    singles = []
+    for ft in fam_tasks:
+        for t in ft:
+            e, d = t[1], t[2]
+            size = prewarm["group_size"][f"{int(e['order'])}:{int(d)}"]
+            cost = size * float(e["map_side_m"])
+            singles.append((cost, (t[0] != "full"), int(e["order"]), int(d), -1 if t[3] is None else int(t[3]),
+                            t[:7] + (deadline,)))
+    singles.sort(key=lambda x: (-x[0], x[1], x[2], x[3], x[4]))
+    write_json(out / "dispatch_order.json", [{"kind": x[5][0], "order": x[2], "draw": x[3], "branch": x[5][3],
+                                             "cost": x[0]} for x in singles], indent=1)
+    rows, unsent = run_pool_singles([x[5] for x in singles], workers=workers, deadline=deadline, log=log)
     full_rows = sorted([r for r in rows if r.get("kind") == "full"], key=lambda r: r["contract_id"])
     div_rows = sorted([r for r in rows if r.get("kind") == "diversity"], key=lambda r: r["contract_id"])
     write_json(out / "records.json", [{k: v for k, v in r.items() if k not in ("curve_before", "curve_after")}
@@ -783,6 +862,15 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
     summary["distributions"] = JR.distributions(good, div_rows)
     summary["skeleton_bias"] = JR.skeleton_bias(good)
     summary["formation_vs_prior"] = JR.formation_vs_prior(good)                       # V8-14b 第 4 节
+    # V8-14c 第 5 节：分环节 CPU（各进程单线程，合同内各环节墙钟即 CPU 时间）、并行效率
+    allr = [r for r in rows if not r.get("error")]
+    stage_cpu = {k: float(sum((r.get("stage_timing") or {}).get(k, 0.0) for r in allr))
+                 for k in ("skeleton_s", "optimize_s", "simulation_s", "verify_s")}
+    busy = float(sum(r.get("wall_s") or 0.0 for r in allr))
+    disp_wall = time.time() - t_dispatch
+    summary["v14c"] = {"prewarm_s": prewarm["wall_s"], "dispatch_wall_s": disp_wall, "stage_cpu_s": stage_cpu,
+                       "contract_busy_s": busy, "parallel_efficiency": busy / (disp_wall * workers) if disp_wall else None,
+                       "contracts_run": len(allr)}
     summary["lp_seconds_per_attempt"] = JR._q([x for r in good for x in (r.get("lp_seconds") or []) if x is not None])
     write_json(out / "summary.json", summary, indent=1)
     return summary
