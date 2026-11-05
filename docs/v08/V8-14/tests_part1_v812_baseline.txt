@@ -1,0 +1,25 @@
+.....s...............F...F..............
+
+检查的模块: v08.scene.exact, v08.scene.field, v08.scene.context, v08.contract.monitoring, v08.motion.feasible, v08.sampler.common, v08.motion.path, v08.motion.formation, v08.motion.connect, v08.motion.speed, v08.motion.nominal, v08.motion.nominal_checks, v08.motion.plan, v08.motion.intents.monitoring, v08.runner.monitoring_report, v08.runner.monitoring
+======================================================================
+FAIL: test_registered_files_hash_and_read_only (test_preset_local_devset.TestRegisteredDevset.test_registered_files_hash_and_read_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\tests\v08\V8-12\test_preset_local_devset.py", line 19, in test_registered_files_hash_and_read_only
+    self.assertIsNotNone(root_text,
+AssertionError: unexpectedly None : 本地测试前提：显式数据根；缺数据不能skip后声称通过
+
+======================================================================
+FAIL: test_each_diagnostic_threshold (test_preset_numpy_checkpoint.TestCheckpoint.test_each_diagnostic_threshold)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\tests\v08\V8-12\test_preset_numpy_checkpoint.py", line 61, in test_each_diagnostic_threshold
+    self.assertIn("frechet", checkpoint(item).triggers,
+AssertionError: 'frechet' not found in () : 上层D.4：同条件中位数19<场景间距20
+
+----------------------------------------------------------------------
+Ran 40 tests in 10.486s
+
+FAILED (failures=2, skipped=1)
+ERROR conda.cli.main_run:execute(142): `conda run python -B -m unittest discover -s tests/v08/V8-12 -p test_*.py` failed. (See above for error)
+exit=1

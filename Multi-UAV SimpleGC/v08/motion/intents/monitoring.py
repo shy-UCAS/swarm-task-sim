@@ -20,6 +20,7 @@ V8-13（指令 4.1、决定 50）：名义总时长只记录不拒绝；连续�
   speed_events {"times_s", "speeds_m_s"}（可选）。
 """
 import math
+import time
 from dataclasses import replace
 
 import numpy as np
@@ -38,6 +39,10 @@ from ..nominal_checks import screen_member
 from ..path import PathError, periodic_radius_derivs, sample_primitives
 from ..skeleton import reference_guidance, width_then_build
 from ..speed import draw_speed_events, map_speed_events
+from ..monitoring_band import (arc_certificate, build_band_query, construct_band,  # noqa: E402  V8-14
+                               logit_from_quantiles)
+from ..monitoring_turn import (TurnSetup, choose_joint_turn, collapse_length_m, column_offsets,  # V8-14
+                               derive_deforming_members, sample_joint_turn)
 
 NODE_TOL_M = 1e-6
 FAR_M = 5.0   # polyline_clearance 快速路径：真实余量小于它的弦仍精确
@@ -127,7 +132,8 @@ def patrol_primitives(P):
 
 # ---------------------------------------------------------------- 参考路径
 
-def build_reference(P, ext_m, spacing):
+def build_reference_parts(P, ext_m, spacing):
+    """build_reference 加上各图元在采样上的区间与巡逻首图元下标（V8-14：掉头收拢/核心/接回/展开的参考站点）。"""
     ing = list(P["reference_ingress"])
     eg = list(P["reference_egress"])
     pat = patrol_primitives(P)
@@ -150,7 +156,37 @@ def build_reference(P, ext_m, spacing):
     marks = {"collect": i_collect, "patrol_start": i_pat0, "patrol_end": i_pat1, "terminal": i_term}
     segs = [("ingress", i_collect, i_pat0), ("patrol", i_pat0, i_pat1), ("egress", i_pat1, i_term)]
     ref = make_reference(s, marks, segs)
-    return ref, {k: int(v) for k, v in marks.items()}
+    return ref, {k: int(v) for k, v in marks.items()}, {"intervals": iv, "patrol_first": h + n_i}
+
+
+def build_reference(P, ext_m, spacing):
+    ref, marks, _ = build_reference_parts(P, ext_m, spacing)
+    return ref, marks
+
+
+def turn_schedule(P, ref, pinfo):
+    """V8-14：每次掉头的参考站点 s_A（收拢起点）、s_B（核心起点）、s_D（展开起点）、s_E（接回点）与收拢长度 L。
+    旧提案（无 turn_parts）返回空表：成员按常数槽位派生。"""
+    if P.get("topology") != "retrace" or not P.get("turn_parts"):
+        return []
+    iv = pinfo["intervals"]
+    idx = pinfo["patrol_first"]
+    out = []
+    n_pass = len(P["passes"])
+    for k in range(n_pass):
+        idx += 1
+        if k == n_pass - 1:
+            break
+        pt = P["turn_parts"][k]
+        n_tot = pt["collapse"] + pt["core"] + pt["connector"] + pt["expand"]
+        first = idx
+        s_A = float(ref.s[iv[first][0]])
+        s_B = float(ref.s[iv[first + pt["collapse"]][0]])
+        s_E = float(ref.s[iv[first + n_tot - 1][1]])
+        s_D = float(ref.s[iv[first + n_tot - 1][0]]) if pt["expand"] else s_E
+        out.append({"s_A": s_A, "s_B": s_B, "s_D": s_D, "s_E": s_E, "L": float(P["turn_L_m"])})
+        idx += n_tot
+    return out
 
 
 # ---------------------------------------------------------------- 检查
@@ -192,9 +228,13 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
         slots = formation_slots(group, ctx.family, key, formation=P.get("formation"),
                                 lateral_step_m=P.get("lateral_step_m"), order=P.get("member_slot_order"))
         ext = slots.max_longitudinal_m
-        ref, mark_idx = build_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
+        ref, mark_idx, pinfo = build_reference_parts(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
         s_c, s_t = ref.marks["collect"], ref.marks["terminal"]
-        lanes = derive_members(ref, slots, (s_c, s_t), spacing_m=spacing)
+        # V8-14 指令 3.3：变队形成员（收拢/单车道/展开），对应表贯穿速度事件、巡逻时间、掉头区间与成员映射
+        schedule = turn_schedule(P, ref, pinfo)
+        lanes, scheds, _l_star = derive_deforming_members(
+            ref, slots, schedule, (s_c, s_t), spacing_m=spacing,
+            marks=(ref.marks["patrol_start"], ref.marks["patrol_end"]))
     except (PathError, ValueError) as exc:
         return _plan(_reject(f"构造失败：{exc}", "reference/lanes", {"error": str(exc)}), **base_fail)
 
@@ -255,12 +295,11 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
     breaks = {}
     for m in slots.order:
         lane = lanes[m]
-        l = slots.offsets[m][0]
         lane_cum = np.r_[0.0, np.cumsum(np.hypot(*np.diff(lane.xy, axis=0).T))]
         base_s = cum[m][coll_idx[m]]
         out = [(0.0, v0)]
         for s_rel, v in breaks_ref[1:]:
-            s_member = base_s + float(np.interp(s_c + s_rel + l, lane.s_ref, lane_cum))
+            s_member = base_s + float(np.interp(float(scheds[m].q(s_c + s_rel)), lane.s_ref, lane_cum))
             if s_member > out[-1][0] + 1e-9:
                 out.append((s_member, float(v)))
             else:
@@ -332,7 +371,10 @@ def build_candidate(ctx, group, task, states, occupied, key, proposal):
                                                          "required_m": retreat}, wit)
     wit["crossings"] = crossing_log
     wit["target_id"] = target
-    wit["turn_ranges"] = _turn_ranges(P, ref, slots, coll_idx, lanes, cum, spacing)
+    wit["turn_ranges"] = (_turn_ranges_v14(P, schedule, slots, coll_idx, lanes, cum) if schedule
+                          else _turn_ranges(P, ref, slots, coll_idx, lanes, cum, spacing))
+    wit["member_map_v14"] = _member_map(slots, lanes, coll_idx, cum, ref)
+    wit["turn_schedule_v14"] = schedule
 
     # 名义判据预筛选（冻结检测器的纯 NumPy 函数体）：逐成员只记录；V8-13 在优化后的曲线上硬检查（check_monitoring）
     for m in slots.order:
@@ -393,6 +435,38 @@ def _turn_ranges(P, ref, slots, coll_idx, lanes, cum, spacing):
     return out
 
 
+def _turn_ranges_v14(P, schedule, slots, coll_idx, lanes, cum):
+    """V8-14：掉头核心与接回连接（q ∈ [s_B, s_D]）在各成员曲线上的弧长区间；不含收拢/展开直线。"""
+    infos = (P.get("topology_info") or {}).get("turns") or []
+    out = {}
+    for m in slots.order:
+        ln = lanes[m]
+        rows = []
+        for k, ev in enumerate(schedule):
+            kind = infos[k]["kind"] if k < len(infos) else None
+            idx = np.flatnonzero((ln.s_ref >= ev["s_B"] - 1e-9) & (ln.s_ref <= ev["s_D"] + 1e-9))
+            if len(idx):
+                rows.append((kind, float(cum[m][coll_idx[m] + idx[0]]), float(cum[m][coll_idx[m] + idx[-1]]),
+                             TURN_MIN_KEYS.get(kind)))
+        out[m] = rows
+    return out
+
+
+def _member_map(slots, lanes, coll_idx, cum, ref):
+    """member-map-v14：逐成员 (reference_s, shifted_reference_s, member_s, lateral_m, turn_mask) 与巡逻起止成员弧长。
+    member_s 含起点连接长度；巡逻站点按成员几何点所在参考站点 q（与候选检查的巡逻范围同一口径）。"""
+    out = {}
+    for m in slots.order:
+        ln = lanes[m]
+        ms = np.asarray(cum[m][coll_idx[m]:coll_idx[m] + len(ln.xy)], float)
+        pa = float(np.interp(ref.marks["patrol_start"], ln.s_ref, ms))
+        pb = float(np.interp(ref.marks["patrol_end"], ln.s_ref, ms))
+        out[m] = {"reference_s": ln.s_group.tolist(), "shifted_reference_s": ln.s_ref.tolist(), "member_s": ms.tolist(),
+                  "lateral_m": ln.lateral_m.tolist(), "turn_mask": [bool(x) for x in ln.turn_mask],
+                  "patrol_member_s": [pa, pb]}
+    return {"schema": "member-map-v14", "members": out}
+
+
 def _release_delays_ref(member_curves, collection_s, speed_breaks, guidance):
     """与冻结 connect.release_delays 同一算法（到汇合槽位名义用时 T_i，δ_i = ceil_0.1s(max T − T_i)），
     只把名义运动的 guidance 换成裁定 2.5 的参考加速度参数。返回 ({δ_i}, {T_i}, {Nominal})。"""
@@ -433,7 +507,6 @@ PHI_ROWS = 360
 R_STEP_M = 2.0
 N_CENTERS = 6
 N_ENTRIES = 12
-ALPHA_SCAN = tuple(float(x) for x in np.round(np.linspace(1.0, 0.0, 21), 3))
 CURV_DERATE = 0.98
 
 
@@ -479,6 +552,24 @@ class _Setup:
         self.G = load_config("guidance").values
         self.stats = {}
         self.v0 = float(group.speed_profile.initial_speed_m_s)
+
+    def warning_bbox(self):
+        return _warning_bbox(self)
+
+    def polar_mask_single(self, center, rs):
+        """V8-13 单车道极坐标掩码 _polar_mask(..., shifts=[0])：宽相位筛选（保守），精确复核只收缩。"""
+        return _polar_mask(self, np.asarray(center, float), 1, [0.0], rs)
+
+    def band_geometry(self, center):
+        """同一 attempt、同一圈心的射线余量与原始分量只算一次，供各队形宽度查询与构造共用。"""
+        from ..monitoring_band import BandGeometry
+        cache = self.__dict__.setdefault("_bands", {})
+        k = (float(center[0]), float(center[1]))
+        if k not in cache:
+            t0 = time.perf_counter()
+            cache[k] = BandGeometry(self, center)
+            _tick(self, "band_geometry_s", time.perf_counter() - t0)
+        return cache[k]
 
     def rng(self, purpose):
         k = self.key
@@ -603,21 +694,6 @@ def _components(mask):
     return out
 
 
-def _draw_radius(rng, comp, row, rs, with_run=False):
-    runs = comp["rows"][row]
-    w = np.array([hi - lo + 1 for lo, hi in runs], float)
-    lo, hi = runs[int(rng.choice(len(runs), p=w / w.sum()))]
-    r = float(rs[lo]) if hi == lo else float(rs[lo] + rng.random() * (rs[hi] - rs[lo]))
-    return (r, (float(rs[lo]), float(rs[hi]))) if with_run else r
-
-
-def _spline_from_radii(radii, alpha):
-    c = interpolating_coefficients(radii)
-    rho0 = float(np.mean(c))
-    a = (c - rho0) * alpha
-    return rho0, tuple(float(x) for x in a)
-
-
 def _ring_ok(S, center, rho0, coef, phi0, phi1, shifts):
     try:
         xy, th, kp, _ = sample_loop(center, rho0, coef, phi0, phi1, 1.0)
@@ -654,16 +730,43 @@ def _polyline_dwell(S, xy, kappa, v_cmd):
     return bool(frozen_dwell(pts, (frames * 1e6).astype(np.int64), np.ones(len(frames), bool))["detected"])
 
 
-def _scale_alpha(S, center, radii, phi0, phi1, shifts):
-    """把全部系数同乘 α∈[0,1]，取最大的可行 α（不假设单调；α=0 即固定圆，如实记录）。"""
-    tried = []
-    for a in ALPHA_SCAN:
-        rho0, coef = _spline_from_radii(radii, a)
-        ok = _ring_ok(S, center, rho0, coef, phi0, phi1, shifts)
-        tried.append((a, bool(ok)))
-        if ok:
-            return rho0, coef, a, tried
-    return None
+def _ring_audit(S, center, rho0, coef, phi0, phi1, shifts):
+    """只读诊断：按 _ring_ok 同一数据与阈值分别标出三项原因（不改布尔判定）。"""
+    out = {"reasons": []}
+    try:
+        xy, th, kp, ph = sample_loop(center, rho0, coef, phi0, phi1, 1.0)
+    except PathError as exc:
+        out["reasons"].append("sample_error")
+        out["error"] = str(exc)
+        return out
+    from ..path import kappa_limit, lane_curvature_ok
+    limit = kappa_limit(S.ctx.params["curve_spacing_m"], S.G["max_turn_per_chord_rad"])
+    kpos, kneg = float(max(kp.max(), 0.0)), float(min(kp.min(), 0.0))
+    out.update(kpos=kpos, kneg=kneg, limit=limit)
+    lanes_bad = []
+    for d in shifts:
+        if not lane_curvature_ok(kpos, kneg, d, limit):
+            lanes_bad.append({"d_m": float(d), "check": "curvature"})
+            continue
+        pts = _lane_points(xy, th, d)
+        ok = S.cg_patrol.ok(pts)
+        if not np.all(ok):
+            val = S.cg_patrol.value(pts) - S.cg_patrol.field.eps
+            k = int(np.argmin(val))
+            lanes_bad.append({"d_m": float(d), "check": "grid", "worst_value_m": float(val[k]),
+                              "worst_phi_rad": float(ph[k]), "n_bad": int((~ok).sum())})
+    if any(b["check"] == "curvature" for b in lanes_bad):
+        out["reasons"].append("curvature")
+    if any(b["check"] == "grid" for b in lanes_bad):
+        out["reasons"].append("lane_geometry")
+    out["lanes"] = lanes_bad
+    v_low = S.M["speed_min_m_s"]
+    inner = max(shifts, key=lambda d: d * (1.0 if kpos >= -kneg else -1.0)) if shifts else 0.0
+    lane = _lane_points(xy, th, inner)
+    kl = kp / np.maximum(np.abs(1.0 - kp * inner), 1e-9)
+    if _polyline_dwell(S, lane, kl, v_low):
+        out["reasons"].append("dwell")
+    return out
 
 
 def _center_candidates(S, rng, n):
@@ -687,118 +790,107 @@ def _warning_bbox(S):
     return S.ctx.extra[key]
 
 
-def _find_ring(S, slots, centers, prior_topology, sigma):
-    """在同一批圈心候选上求该队形车道偏移下的环/弧可行集合（只由几何、走廊宽度与重访覆盖决定）。"""
+def _band_probe(S, slots, centers, prior_topology, sigma):
+    """V8-14（裁定 1）：同一批圈心候选上，按局部证书判定该队形能否放下巡逻形状；只由几何与重访覆盖决定。
+    先查先验拓扑，不行再查另一拓扑（forced）；第一个通过的圈心即用。"""
     shifts = sorted({d for _, d in slots.offsets.values()})
-    need_rows = int(math.ceil(S.criteria["min_azimuth_coverage_deg"] / 360.0 * PHI_ROWS))
-    info = {"centers_tried": 0, "loop_feasible": 0, "retrace_feasible": 0}
+    info = {"centers_tried": 0, "per_center": []}
     for center in centers:
         info["centers_tried"] += 1
-        # 巡逻点都在目标预警圈内，半径超过圈心到预警外接框最远角的部分一定不可行，没必要扫
-        wx0, wy0, wx1, wy1 = _warning_bbox(S)
-        r_hi = float(max(np.hypot(wx - center[0], wy - center[1]) for wx in (wx0, wx1) for wy in (wy0, wy1)))
-        rs = np.arange(R_STEP_M, r_hi + R_STEP_M, R_STEP_M)
-        mask = _polar_mask(S, center, sigma, shifts, rs)
-        comps = _components(mask)
-        loops = [c for c in comps if c["wrapping"]]
-        arcs = [c for c in comps if c["n_rows"] >= need_rows]
-        if loops:
-            info["loop_feasible"] += 1
-        if arcs:
-            info["retrace_feasible"] += 1
-        if not loops and not arcs:
-            continue
-        if loops and arcs:
-            topo, forced = prior_topology, False
-        elif loops:
-            topo, forced = "loop", prior_topology != "loop"
+        t0 = time.perf_counter()
+        q1 = build_band_query(S, center, slots, topology=prior_topology)
+        if q1["feasible"]:
+            query, topo, forced = q1, prior_topology, False
         else:
-            topo, forced = "retrace", prior_topology != "retrace"
-        reason = "geometry" if forced else None
-        return {"center": center, "mask_rs": rs, "comps": comps, "loops": loops, "arcs": arcs, "topology": topo,
-                "forced": forced, "forced_reason": reason, "shifts": shifts, "sigma": sigma, "info": info,
-                "need_rows": need_rows}
+            other = "retrace" if prior_topology == "loop" else "loop"
+            q2 = build_band_query(S, center, slots, topology=other)
+            query, topo, forced = (q2, other, True) if q2["feasible"] else (None, None, None)
+        G = q1["geometry"]
+        _tick(S, "band_query_s", time.perf_counter() - t0)
+        rec = {"D_m": q1["D"], "q_m": G.q, "eta_m": G.eta, "r_star_m": G.r_star, "components": len(G.components),
+               "wrapping_components": sum(bool(c["wrapping"]) for c in G.components), "feasible": query is not None,
+               "topology": topo}
+        if query is not None:
+            rec["candidates"] = len(query["loops"]) if topo == "loop" else len(query["arcs"])
+        info["per_center"].append(rec)
+        if query is None:
+            continue
+        return {"center": np.asarray(center, float), "query": query, "topology": topo, "forced": forced,
+                "forced_reason": "geometry" if forced else None, "shifts": shifts, "sigma": sigma, "info": info}
     return {"empty": True, "info": info}
 
 
-def _draw_loop(S, ring, rng):
-    """一个 attempt 只抽一套形状；同一形状的合法 α 缩放保留并记账。"""
-    sizes = np.array([c["n_rows"] for c in ring["loops"]], float)
-    sg = ring["sigma"]
-    K = int(rng.integers(int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"]) + 1))
-    comp = ring["loops"][int(rng.choice(len(ring["loops"]), p=sizes / sizes.sum()))]
-    got = [_draw_radius(rng, comp, int(round(j * PHI_ROWS / K)) % PHI_ROWS, ring["mask_rs"], True)
-           for j in range(K)]
-    radii = np.array([g[0] for g in got])
-    runs = tuple(g[1] for g in got)
-    out = _scale_alpha(S, ring["center"], radii, 0.0, sg * 2 * np.pi, ring["shifts"])
-    if out is None:
-        return None
-    rho0, coef, alpha, tried = out
-    laps = float(rng.uniform(*S.ctx.params["monitoring"]["laps"]))
-    phase = float(rng.uniform(0.0, 2 * np.pi))
-    return {"topology": "loop", "center_xy": tuple(map(float, ring["center"])), "rho0_m": rho0,
-            "coefficients_m": coef, "phase_rad": phase, "direction": int(sg), "laps": laps, "K": K,
-            "sampled_radii_m": tuple(map(float, radii)), "knot_runs": runs, "alpha": alpha, "alpha_tried": tried}
+def _band_record(G, comp, cert, *, rows=None):
+    """证书摘要（入提案）：q、η、阈值、D、诊断 e_g/e_s/e、最小余量与制约方位、所选分量、完整约束名、区间数组（全局 360 行）。"""
+    P = 360
 
-
-def _draw_arc_once(S, ring, rng):
-    arcs = ring["arcs"]
-    w = np.array([c["n_rows"] for c in arcs], float)
-    comp = arcs[int(rng.choice(len(arcs), p=w / w.sum()))]
-    rows = sorted(comp["rows"])
-    P = PHI_ROWS
-    need = ring["need_rows"]
-    if comp["wrapping"]:
-        start = int(rng.integers(0, P))
-        max_span = P - 2
-    else:
-        rs_set = set(rows)
-        first = next(r for r in rows if (r - 1) % P not in rs_set)
-        start = (first + int(rng.integers(0, len(rows) - need + 1))) % P
-        max_span = len(rows) - ((start - first) % P)
-    span = int(rng.integers(need, max(need, max_span) + 1))
-    idx = [(start + k) % P for k in range(span)]
-    if not all(i in comp["rows"] for i in idx):
-        return None
-    phi_a = 2 * np.pi * start / P
-    phi_b = phi_a + 2 * np.pi * (span - 1) / P
-    K = int(rng.integers(int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"]) + 1))
-    knots, kruns = [], []
-    for j in range(K):
-        row = int(round(j * P / K)) % P
-        if row in idx:
-            r, run = _draw_radius(rng, comp, row, ring["mask_rs"], True)
-            knots.append(r)
-            kruns.append(run)
+    def full(a):
+        out = np.full(P, np.nan)
+        if rows is None:
+            out[:] = a
         else:
-            knots.append(None)
-            kruns.append(None)
-    inside = [j for j, v in enumerate(knots) if v is not None]
-    if not inside:
-        row = idx[len(idx) // 2]
-        j = int(round(row * K / P)) % K
-        knots[j], kruns[j] = _draw_radius(rng, comp, row, ring["mask_rs"], True)
-        inside = [j]
-    for j in range(K):
-        if knots[j] is None:
-            near = min(inside, key=lambda i: min((i - j) % K, (j - i) % K))
-            knots[j], kruns[j] = knots[near], kruns[near]
-    radii = np.array(knots, float)
-    out = _scale_alpha(S, ring["center"], radii, phi_a, phi_b, ring["shifts"])
-    if out is None:
-        return None
-    rho0, coef, alpha, tried = out
-    trav = int(rng.choice(np.array(S.ctx.params["monitoring"]["traversals"], dtype=int)))
-    return {"topology": "retrace", "center_xy": tuple(map(float, ring["center"])), "rho0_m": rho0,
-            "coefficients_m": coef, "phi_a": float(phi_a), "phi_b": float(phi_b), "direction": int(ring["sigma"]),
-            "traversals": trav, "arc_span_rad": float(phi_b - phi_a), "K": K, "alpha": alpha, "alpha_tried": tried,
-            "sampled_radii_m": tuple(map(float, radii)), "knot_runs": tuple(kruns)}
+            out[np.asarray(rows) % P] = a
+        return [None if not np.isfinite(x) else float(x) for x in out]
+
+    return {"component": int(comp["id"]), "component_rows": int(comp["n_rows"]), "wrapping": bool(comp["wrapping"]),
+            "q_m": float(G.q), "eta_m": float(G.eta), "r_star_m": float(G.r_star),
+            "threshold_m": float(cert["threshold_m"]), "half_span_m": float(cert["half_span_m"]),
+            "e_geom_m": cert["e_geom_m"], "e_smooth_m": cert["e_smooth_m"], "e_m": cert["e_m"],
+            "min_slack_m": cert["min_slack_m"], "worst": cert["worst"], "constraints": [c.name for c in G.cons],
+            "periodic": bool(cert["periodic"]), "row_start": int(cert["row_start"]),
+            "lo_m": full(cert["lo"]), "hi_m": full(cert["hi"]), "lower_m": full(cert["lower_m"]),
+            "upper_m": full(cert["upper_m"]), "A_m": full(cert["A_m"]), "B_m": full(cert["B_m"])}
 
 
-def _draw_arc(S, ring, rng):
-    """一个 attempt 只抽一套形状（不重抽到过关）。"""
-    return _draw_arc_once(S, ring, rng)
+def _draw_shape(S, ring, rng):
+    """队形与圈心确定后只抽一次：分量/弧端点对 → K ~ U{4..8} → K 个均匀分位数 → logit → 环带内直接构造；
+    之后只运行一次原 _ring_ok 三项复核（不重抽、不缩向正圆）。返回 (spec, ok, audit)。"""
+    q = ring["query"]
+    G = q["geometry"]
+    sg = int(ring["sigma"])
+    kmin, kmax = int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"])
+    step = 2.0 * math.pi / 360.0
+    if ring["topology"] == "loop":
+        loops = q["loops"]
+        w = np.array([c["n_rows"] for c, _ in loops], float)
+        comp, cert = loops[int(rng.choice(len(loops), p=w / w.sum()))]
+        K = int(rng.integers(kmin, kmax + 1))
+        v = rng.random(K)
+        z = logit_from_quantiles(v)
+        curve = construct_band(cert, z)
+        laps = float(rng.uniform(*S.ctx.params["monitoring"]["laps"]))
+        phase = float(rng.uniform(0.0, 2 * np.pi))
+        spec = {"topology": "loop", "center_xy": tuple(map(float, ring["center"])), "rho0_m": curve.rho0_m,
+                "coefficients_m": tuple(float(x) for x in curve.coefficients_m), "phase_rad": phase, "direction": sg,
+                "laps": laps, "K": K, "logit_quantiles": tuple(map(float, v)),
+                "logit_coefficients": tuple(map(float, z)), "band": _band_record(G, comp, cert),
+                "candidates_certified": len(loops)}
+        phi0, phi1 = 0.0, sg * 2 * np.pi
+    else:
+        arcs = q["arcs"]
+        comp, ids, rows_mod, (s0, e0, cov), (lo, hi, tl, tu, thr) = arcs[int(rng.integers(0, len(arcs)))]
+        K = int(rng.integers(kmin, kmax + 1))
+        v = rng.random(K)
+        z = logit_from_quantiles(v)
+        cert = arc_certificate(lo[rows_mod], hi[rows_mod], tl[rows_mod], tu[rows_mod], s0, e0, q["offsets"],
+                               int(ids[s0]))
+        cert["threshold_m"] = thr
+        curve = construct_band(cert, z)
+        phi_a, phi_b = float(ids[s0]) * step, float(ids[e0]) * step
+        trav = int(rng.choice(np.array(S.ctx.params["monitoring"]["traversals"], dtype=int)))
+        spec = {"topology": "retrace", "center_xy": tuple(map(float, ring["center"])), "rho0_m": curve.rho0_m,
+                "coefficients_m": tuple(float(x) for x in curve.coefficients_m), "phi_a": phi_a, "phi_b": phi_b,
+                "direction": sg, "traversals": trav, "arc_span_rad": phi_b - phi_a, "K": K,
+                "logit_quantiles": tuple(map(float, v)), "logit_coefficients": tuple(map(float, z)),
+                "arc_rows": (int(ids[s0]), int(ids[e0])), "param_span_deg": float(e0 - s0),
+                "coverage_lower_bound_deg": float(cov), "candidates_certified": len(arcs),
+                "band": _band_record(G, comp, cert, rows=ids[s0:e0 + 1])}
+        phi0, phi1 = phi_a, phi_b
+    shifts = ring["shifts"]
+    c = np.asarray(ring["center"], float)
+    ok = _ring_ok(S, c, spec["rho0_m"], spec["coefficients_m"], phi0, phi1, shifts)
+    audit = None if ok else _ring_audit(S, c, spec["rho0_m"], spec["coefficients_m"], phi0, phi1, shifts)
+    return spec, bool(ok), audit
 
 
 # ---------------------------------------------------------------- 掉头
@@ -832,85 +924,55 @@ def teardrop_primitives(pos, h, R, L, side):
     return prims
 
 
-def _build_turn(S, spec, shifts, phi_e, dir_k, kind, side, R, rng, merge_choices):
-    """在 pass 末端 φ_e 做一次掉头；返回 (图元列表, 下一 pass 的起始相位) 或 None。"""
-    c, rho0, coef = spec["center"], spec["rho0"], spec["coef"]
-    pos, h = _loop_pose(c, rho0, coef, phi_e, dir_k)
-    if kind == "teardrop":
-        prims = teardrop_primitives(pos, h, R, MIN_STRAIGHT_M, side)
-        if _proxy_prims(S, prims, shifts, S.cg_patrol):
-            return prims, phi_e
-        return None
-    if kind == "u":
-        arc, end, h2 = _turn_arcs(pos, h, R, side, math.pi)
-    else:
-        arc, end, h2 = _turn_arcs(pos, h, R, side, 5.0 * math.pi / 6.0)
-    if not _proxy_prims(S, [arc], shifts, S.cg_patrol):
-        return None
-    t0 = np.array([math.cos(h2), math.sin(h2)])
-    rho_mean = max(float(rho0), 1.0)
-    good = []
-    for length in merge_choices:
-        phi_m = phi_e - dir_k * length / rho_mean
-        pm, hm = _loop_pose(c, rho0, coef, phi_m, -dir_k)
-        t1 = np.array([math.cos(hm), math.sin(hm)])
-
-        def corridor(xy, _s=shifts):
-            ang = np.arctan2(np.gradient(xy[:, 1]), np.gradient(xy[:, 0]))
-            return all(np.all(S.cg_patrol.ok(_lane_points(xy, ang, d))) for d in _s)
-
-        bz = connect_poses(end, t0, pm, t1, corridor, rng, grid=5, lane_shifts=shifts)
-        if bz is not None:
-            good.append(([arc, bz], phi_m))
-    if not good:
-        return None
-    return good[int(rng.integers(0, len(good)))]
-
-
-def _draw_retrace_turns(S, spec, shifts, rng):
-    """为 traversals 次单向穿行生成相邻两次之间的掉头。返回 (passes, turns, infos) 或 None。"""
-    kinds = ["teardrop", "u", "oblique"]
-    kmin = {"teardrop": S.M["turn_teardrop_min_m"], "u": S.M["turn_u_min_m"], "oblique": S.M["turn_oblique_min_m"]}
+def _turns_v14(S, spec, slots, crng):
+    """V8-14 第 3 部分：为 traversals 次单向穿行生成相邻两次之间的整体掉头（收拢—单车道核心—接回—展开）。
+    返回 ((passes, turns, infos, parts, L), None) 或 (None, 失败见证)。"""
+    from ...sim.kernel import member_config as _mc
+    from ..path import kappa_limit
+    c = np.asarray(spec["center_xy"], float)
+    rho0, coef = spec["rho0_m"], np.asarray(spec["coefficients_m"], float)
     phi_a, phi_b = spec["phi_a"], spec["phi_b"]
     ends = (phi_a, phi_b)
     cur_from, cur_to = (phi_a, phi_b) if spec["direction"] > 0 else (phi_b, phi_a)
-    passes, turns, infos = [], [], []
-    d_max = max((abs(d) for d in shifts), default=0.0)
-    merge_choices = (30.0, 60.0, 120.0, 240.0, 480.0)
+    offs = np.array([slots.offsets[m] for m in slots.order], float)
+    kap = kappa_limit(S.ctx.params["curve_spacing_m"], S.G["max_turn_per_chord_rad"])
+    vmax = float(_mc().vehicle_profile.max_speed_xy_m_s)
+    fdyn = float(load_config("joint_opt").values["buffer_dynamic_factor"])
+    L = collapse_length_m(offs, spacing_m=slots.spacing_m, speed_max_m_s=vmax, command_max_m_s=S.M["speed_max_m_s"],
+                          dynamic_factor=fdyn, curvature_limit=kap)
+    lcol = column_offsets(len(offs), slots.spacing_m)
+    l_star = float(max(np.max(np.abs(offs[:, 0])), np.max(np.abs(lcol)))) if len(offs) else 0.0
+    band_lo, band_hi = spec["band"]["lo_m"], spec["band"]["hi_m"]
+    rmin = {"u": S.M["turn_u_min_m"], "oblique": S.M["turn_oblique_min_m"], "teardrop": S.M["turn_teardrop_min_m"]}
+    step = 2.0 * math.pi / 360.0
+    passes, turns, infos, parts = [], [], [], []
     for k in range(spec["traversals"]):
         passes.append((cur_from, cur_to))
         if k == spec["traversals"] - 1:
             break
         dir_k = 1.0 if cur_to > cur_from else -1.0
-        # 掉头形状 × 侧向 共 6 种组合：按随机排列逐个核对，第一个可行者即为在可行组合中等概率的一个；
-        # 然后只对它枚举从下界起连续可行的半径（半径等概率）。其余组合不再展开，省去无谓的几何检查。
-        combos = [(kd, sd) for kd in kinds for sd in (+1, -1)]
-        chosen = None
-        tested = 0
-        for ci in rng.permutation(len(combos)):
-            kd, sd = combos[int(ci)]
-            tested += 1
-            R_lo = kmin[kd] + d_max
-            ok_R = []
-            for i in range(10):
-                R = R_lo * (1.3 ** i)
-                res = _build_turn(S, spec, shifts, cur_to, dir_k, kd, sd, R, rng, merge_choices)
-                if res is None:
-                    break
-                ok_R.append((R, res))
-            if ok_R:
-                chosen = (kd, sd, ok_R)
-                break
+        other = ends[0] if abs(cur_to - ends[1]) < 1e-9 else ends[1]
+        row = int(round(cur_to / step)) % 360
+        W = float(band_hi[row] - band_lo[row])
+        T = TurnSetup(center=c, rho0=rho0, coef=coef, phi_end=cur_to, direction=dir_k, phi_other=other, L=L,
+                      width_m=W, lateral_offsets=offs[:, 1], cons=S.cons["base"] + S.cons["patrol"], r_min=rmin,
+                      spacing_m=S.ctx.params["curve_spacing_m"], facility_center=S.tgt.center,
+                      min_true_deg=S.criteria["min_azimuth_coverage_deg"], l_star=l_star, kappa_guidance=kap)
+        records, stats = sample_joint_turn(T, crng)
+        _tick(S, "turn_query_s", float(stats.pop("seconds", 0.0)))
+        chosen = choose_joint_turn(records, crng)
+        summary = {"L_m": L, "width_m": W, "l_star_m": l_star, "merge_points": stats.get("merge_points"),
+                   "collapse_ok": stats.get("collapse_ok"), "nonempty_combos": len(records), "combos": stats["combos"]}
         if chosen is None:
-            return None
-        kd, sd, ok_R = chosen
-        R, (prims, phi_next) = ok_R[int(rng.integers(0, len(ok_R)))]
-        turns.append(tuple(prims))
-        infos.append({"kind": kd, "side": sd, "radius_m": float(R), "min_lane_radius_m": float(R - d_max),
-                      "combos_tested": tested, "radii_feasible": len(ok_R)})
-        other_end = ends[0] if abs(cur_to - ends[1]) < 1e-9 else ends[1]
-        cur_from, cur_to = phi_next, other_end
-    return tuple(passes), tuple(turns), infos
+            return None, {"turn_index": k, "query": summary}
+        turns.append(tuple(chosen["primitives"]))
+        parts.append(dict(chosen["parts"]))
+        infos.append({"kind": chosen["kind"], "side": chosen["side"], "radius_m": chosen["radius_m"],
+                      "merge_phi": chosen["merge_phi"], "merge_row": chosen["merge_row"],
+                      "merge_distance_m": chosen["merge_distance_m"], "h0_m": chosen["h0_m"], "h1_m": chosen["h1_m"],
+                      "schedule": chosen["schedule"], "certificate": chosen["certificate"], "query": summary})
+        cur_from, cur_to = chosen["merge_phi"], other
+    return (tuple(passes), tuple(turns), infos, tuple(parts), L), None
 
 
 # ---------------------------------------------------------------- 入圈直线、出圈直线、起点路由
@@ -1179,15 +1241,14 @@ class _Build:
         spec = dict(spec)
         passes = turn_info = None
         if spec["topology"] == "retrace":
-            pspec = {"center": np.asarray(spec["center_xy"], float), "rho0": spec["rho0_m"],
-                     "coef": spec["coefficients_m"], "phi_a": spec["phi_a"], "phi_b": spec["phi_b"],
-                     "direction": spec["direction"], "traversals": spec["traversals"]}
-            got = _draw_retrace_turns(S, pspec, self.ring["shifts"], crng)
+            got, fail = _turns_v14(S, spec, slots, crng)
             if got is None:
-                return None, _stage_fail("turns", "折返端点没有可放置的掉头", None, key,
-                                         {"traversals": spec["traversals"]})
-            passes, turns, turn_info = got
-            spec["passes"], spec["turns"] = passes, turns
+                self.turn_failure = fail
+                return None, _stage_fail("turns", "turn_joint_set_empty：收拢—掉头—接回—展开整体可行集合为空", None, key,
+                                         {"traversals": spec["traversals"], "turn_joint_set_empty": True,
+                                          "turn_query": fail})
+            passes, turns, turn_info, parts, L = got
+            spec["passes"], spec["turns"], spec["turn_parts"], spec["turn_L_m"] = passes, turns, parts, L
         S0, _ = _patrol_poses(spec, passes)
         ing = _plan_ingress(S, slots, S0, rng, crng)
         if ing is None:
@@ -1238,47 +1299,85 @@ def _finish_retrace(B, ring, spec, rng, crng):
     return plan
 
 
+def _tick(S, name, seconds):
+    t = S.__dict__.setdefault("timing", {})
+    t[name] = t.get(name, 0.0) + float(seconds)
+
+
+_LAST_TIMING = {}
+
+
+def last_attempt_timing():
+    """本进程最近一次 propose_and_build 的分阶段墙钟（遥测，不进入任何确定性载荷）。"""
+    return dict(_LAST_TIMING)
+
+
+def _skeleton_diag(S, slots, ring, steps_log, spec=None, audit=None, turn_failure=None):
+    """每个 attempt 的骨架诊断（只记录，不参与决定）：队形探测、圈心、证书、形状复核、掉头集合与耗时。"""
+    band = (spec or {}).get("band") or {}
+    out = {"formation": slots.realized if slots is not None else None,
+           "lateral_step_m": slots.lateral_step_m if slots is not None and slots.realized == "echelon" else None,
+           "formation_steps": [{k: v for k, v in st.items() if k != "info"} | {"centers": st["info"]["per_center"]}
+                               for st in steps_log],
+           "shape_audit_entered": spec is not None, "shape_audit_failed": audit is not None,
+           "shape_audit": audit,
+           "certificate": {k: band.get(k) for k in ("component", "component_rows", "wrapping", "q_m", "eta_m",
+                                                   "r_star_m", "threshold_m", "half_span_m", "e_geom_m",
+                                                   "e_smooth_m", "e_m", "min_slack_m", "worst")} if band else None,
+           "candidates_certified": (spec or {}).get("candidates_certified"),
+           "topology": (ring or {}).get("topology"), "forced": (ring or {}).get("forced"),
+           "turn_failure": turn_failure}
+    return out
+
+
 def _build_with_ring(S, ctx, group, task, states, key, slots, ring, used, b, steps_log, prior_topology, sigma, rng, crng):
-    """给定队形与已找到的环带，抽形状并完成构造；返回 SegmentPlan（失败时 failure 非空）。"""
+    """给定队形与已认证的环带，环带内直接构造一次形状并完成构造；返回 SegmentPlan（失败时 failure 非空）。
+    V8-14：删除 α 扫描；形状复核失败原样返回（patrol_shape_audit），由外层唯一预算决定是否进入下一 attempt。"""
     repairs = []
     if slots.realized != slots.start:
         repairs.append({"kind": "formation_retreat", "from": slots.start, "to": slots.realized, "forced_by": "width"})
     if used is not None and used < b - 1e-9:
         repairs.append({"kind": "echelon_lateral_step", "from_m": b, "to_m": used})
-    spec = _draw_loop(S, ring, rng) if ring["topology"] == "loop" else _draw_arc(S, ring, rng)
-    if spec is None:
-        return _stage_fail("patrol_shape", "可行带内抽到的形状在任何 α（含 0）下都不满足精确余量", None, key,
-                           {"topology": ring["topology"],
-                            "draw": {"topology": ring["topology"], "formation": slots.realized}})
-    if spec["alpha"] < 1.0:
-        repairs.append({"kind": "alpha_scaling", "alpha": spec["alpha"], "tried": spec["alpha_tried"]})
+    spec, ok, audit = _draw_shape(S, ring, rng)
+    if not ok:
+        diag = _skeleton_diag(S, slots, ring, steps_log, spec, audit)
+        return _stage_fail("patrol_shape_audit", "环带内直接构造的形状未通过原 _ring_ok 三项复核", None, key,
+                           {"topology": ring["topology"], "audit": audit, "shape_audit_failed": True,
+                            "draw": draw_summary(spec, slots.realized), "skeleton_diag": diag})
     B = _Build(S, ctx, group, task, states, key, slots, ring, repairs, steps_log, prior_topology, sigma)
     if spec["topology"] == "loop":
         plan = _finish_loop(B, ring, spec, rng, crng)
     else:
         plan = _finish_retrace(B, ring, spec, rng, crng)
+    diag = _skeleton_diag(S, slots, ring, steps_log, spec, None, getattr(B, "turn_failure", None))
     if plan.failure is not None:
         # V8-13c 裁定 3：记下本次抽到的形状（只作骨架重试偏差诊断，不参与任何构造决定）
         w = dict(plan.failure.witness or {})
         w["draw"] = draw_summary(spec, slots.realized)
+        w["skeleton_diag"] = diag
+        w.setdefault("shape_audit_failed", False)
         plan = replace(plan, failure=replace(plan.failure, witness=w))
+    else:
+        plan = replace(plan, witnesses={**plan.witnesses, "skeleton_diag": diag})
     return plan
 
 
 def draw_summary(spec, formation):
-    """骨架抽样摘要：拓扑、巡逻平均半径（周期 B 样条系数均值 ρ0）、圈数或往返次数、实际队形。"""
+    """骨架抽样摘要：拓扑、巡逻平均半径（周期 B 样条系数均值 ρ0）、圈数或往返次数、实际队形；
+    V8-14 另记首次确定的随机量：圈心、K、logit 分位数、弧端点。"""
     return {"topology": spec.get("topology"), "rho0_m": spec.get("rho0_m"), "laps": spec.get("laps"),
-            "traversals": spec.get("traversals"), "formation": formation}
+            "traversals": spec.get("traversals"), "formation": formation, "center_xy": spec.get("center_xy"),
+            "K": spec.get("K"), "logit_quantiles": spec.get("logit_quantiles"), "arc_rows": spec.get("arc_rows"),
+            "direction": spec.get("direction")}
 
 
 def _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma, b, steps_log):
-    """梯形：在冻结槽位 l 不变下，对横向步长 b_lat ∈ [3, b] 求几何走廊可容纳的最大值。
-    候选 b_lat 来自单车道极坐标可行带的实际径向区间：每行每段 [lo, hi] 给出 (hi − lo)/(n − 1)；
-    先试 b 本身，再在 [3, b) 内的候选上按降序二分找最大可行值（宽度越小越容易容纳），最后以真实
-    _find_ring 核对选定值。不用下游曲率、时长、间距或连接是否成功来缩 b_lat。"""
+    """梯形（指令 2.3）：在 [3, b] 内求同一局部证书可容纳的最大横向步长。先试 b，再试 3；3 通过而 b 不通过时对
+    步长确定性二分，直到区间宽 ≤ 2/(n−1) m（2 m 径向网格映射到车道跨度），返回已认证通过的下端。
+    管集合随 D 嵌套，所有探测用同一批圈心与同一份射线余量。不用下游失败缩步长。"""
     def probe(st):
         slots = formation_slots(group, fam, fkey, formation="echelon", lateral_step_m=st, order=order)
-        r = _find_ring(S, slots, centers, prior_topology, sigma)
+        r = _band_probe(S, slots, centers, prior_topology, sigma)
         steps_log.append({"formation": "echelon", "lateral_step_m": st, "found": "empty" not in r, "info": r["info"]})
         return None if "empty" in r else {"slots": slots, "ring": r, "lateral_step_m": st}
 
@@ -1288,66 +1387,65 @@ def _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma,
     n = len(group.member_ids)
     if n < 2:
         return None
-    widths = set()
-    for center in centers:
-        wx0, wy0, wx1, wy1 = _warning_bbox(S)
-        r_hi = float(max(np.hypot(wx - center[0], wy - center[1]) for wx in (wx0, wx1) for wy in (wy0, wy1)))
-        rs = np.arange(R_STEP_M, r_hi + R_STEP_M, R_STEP_M)
-        mask = _polar_mask(S, center, sigma, [0.0], rs)
-        for row in mask:
-            edges = np.flatnonzero(np.diff(np.r_[False, row, False].astype(np.int8)))
-            for lo, hi in zip(edges[::2].tolist(), edges[1::2].tolist()):
-                widths.add(float(rs[hi - 1] - rs[lo]))
-    cands = sorted({w / (n - 1) for w in widths if MIN_LATERAL_STEP_M - 1e-9 <= w / (n - 1) < b}, reverse=True)
-    if not cands or cands[-1] > MIN_LATERAL_STEP_M + 1e-9:
-        cands.append(MIN_LATERAL_STEP_M)
-    lo, hi = 0, len(cands) - 1
-    best = None
-    while lo <= hi:
-        mid = (lo + hi) // 2
-        res = probe(cands[mid])
+    best = probe(MIN_LATERAL_STEP_M)
+    if best is None:
+        return None
+    lo, hi = MIN_LATERAL_STEP_M, b
+    tol = 2.0 / (n - 1)
+    while hi - lo > tol:
+        mid = 0.5 * (lo + hi)
+        res = probe(mid)
         if res is not None:
-            best = res
-            hi = mid - 1
+            lo, best = mid, res
         else:
-            lo = mid + 1
+            hi = mid
     return best
 
 
 def propose_and_build(ctx, group, task, states, key):
-    """一次随机构造（一个 attempt）：宽度先定队形（skeleton.width_then_build）→ 极坐标可行带 → 形态 →
-    入圈/出圈 → 起点路由 → 速度 → 骨架几何检查。队形只按走廊横向宽度选择（abreast → echelon → column；
-    echelon 先求最大可容纳横向步长）；宽度确定后只构造一次，下游任何失败原样返回，不改队形。"""
+    """一次随机构造（一个 attempt）：宽度先定队形（skeleton.width_then_build）→ 环带局部证书 → 环带内直接构造 →
+    折返整体掉头 → 入圈/出圈 → 起点路由 → 速度 → 骨架几何检查。队形只由同一局部证书选择（abreast → echelon →
+    column；echelon 先求最大可容纳横向步长）；选定后只构造一次，下游任何失败原样返回，不改队形。"""
     S = _Setup(ctx, group, task, states, key)
-    rng, crng = S.rng("shape"), S.rng("connect")
-    fam = ctx.family
-    full_p = ctx.params["monitoring"]["full_probability"]
-    prior_topology = "loop" if float(rng.random()) < full_p else "retrace"
-    sigma = 1 if float(rng.random()) < 0.5 else -1
-    chain = retreat_chain(mapped_start(group.formation_prior))
-    b = float(fam.lateral_spacing_m)
-    fkey = RngKey(key.family_id, key.draw, "formation", mission=key.mission, branch=key.branch, group=key.group,
-                  segment=key.segment, attempt=key.attempt)
-    order = formation_slots(group, fam, fkey, formation=chain[0]).order
-    centers = _center_candidates(S, rng, N_CENTERS)
-    steps_log = []
+    S.timing = {}
+    _LAST_TIMING.clear()
+    t_all = time.perf_counter()
+    try:
+        rng, crng = S.rng("shape"), S.rng("connect")
+        fam = ctx.family
+        full_p = ctx.params["monitoring"]["full_probability"]
+        prior_topology = "loop" if float(rng.random()) < full_p else "retrace"
+        sigma = 1 if float(rng.random()) < 0.5 else -1
+        chain = retreat_chain(mapped_start(group.formation_prior))
+        b = float(fam.lateral_spacing_m)
+        fkey = RngKey(key.family_id, key.draw, "formation", mission=key.mission, branch=key.branch, group=key.group,
+                      segment=key.segment, attempt=key.attempt)
+        order = formation_slots(group, fam, fkey, formation=chain[0]).order
+        centers = _center_candidates(S, rng, N_CENTERS)
+        steps_log = []
 
-    def width_probe(name):
-        if name == "echelon":
-            return _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma, b, steps_log)
-        slots = formation_slots(group, fam, fkey, formation=name, order=order)
-        r = _find_ring(S, slots, centers, prior_topology, sigma)
-        steps_log.append({"formation": name, "lateral_step_m": None, "found": "empty" not in r, "info": r["info"]})
-        return None if "empty" in r else {"slots": slots, "ring": r, "lateral_step_m": None}
+        def width_probe(name):
+            if name == "echelon":
+                return _echelon_payload(S, group, fam, fkey, order, centers, prior_topology, sigma, b, steps_log)
+            slots = formation_slots(group, fam, fkey, formation=name, order=order)
+            r = _band_probe(S, slots, centers, prior_topology, sigma)
+            steps_log.append({"formation": name, "lateral_step_m": None, "found": "empty" not in r, "info": r["info"]})
+            return None if "empty" in r else {"slots": slots, "ring": r, "lateral_step_m": None}
 
-    def build(name, payload):
-        return _build_with_ring(S, ctx, group, task, states, key, payload["slots"], payload["ring"],
-                                payload["lateral_step_m"], b, steps_log, prior_topology, sigma, rng, crng)
+        def build(name, payload):
+            return _build_with_ring(S, ctx, group, task, states, key, payload["slots"], payload["ring"],
+                                    payload["lateral_step_m"], b, steps_log, prior_topology, sigma, rng, crng)
 
-    plan = width_then_build(chain, width_probe, build)
-    if plan is not None:
-        return plan
-    return _stage_fail("patrol_region", "所有队形下目标环带都没有满足条件的环/弧", None, key, {"formations": steps_log})
+        plan = width_then_build(chain, width_probe, build)
+        if plan is not None:
+            return plan
+        diag = _skeleton_diag(S, None, None, steps_log)
+        return _stage_fail("patrol_region", "所有队形下目标环带都没有满足局部证书的环/弧（approx_empty 查询）", None, key,
+                           {"formations": [{k: v for k, v in st.items() if k != "info"} for st in steps_log],
+                            "shape_audit_failed": False, "skeleton_diag": diag})
+    finally:
+        S.timing["attempt_s"] = time.perf_counter() - t_all
+        _LAST_TIMING.update(S.timing)
 
 
 def replace_repairs(plan, extra):

@@ -63,13 +63,23 @@
 
 - **工作树与环境：** `git worktree list --porcelain` 核实开发工作树为 `Simulation-v08`；PowerShell 7.6.9；Python 3.12.3、NumPy 2.5.3、SciPy 1.14.1、shapely 2.0.7、OpenBLAS 0.3.34（scipy-openblas）、AMD64 Family 26（32 逻辑核）；运行前设 `OMP/OPENBLAS/MKL/NUMEXPR_NUM_THREADS=1`（[env.txt](env.txt)）。
 - **基线与合并：** 开工时分支 `review/v08/V8-13-joint-opt`、HEAD `0d2f0a35adcb90df31a15b210f89a13c7d499c9f`、工作树干净；`dev/v0.8` 原在 `cb6b58e`（V8-12）。`git merge-base --is-ancestor` 确认可快进，执行 `git merge --ff-only 0d2f0a35adcb90df31a15b210f89a13c7d499c9f`，推送 `dev/v0.8`；`git ls-remote` 显示远端 `refs/heads/dev/v0.8 = 0d2f0a35adcb90df31a15b210f89a13c7d499c9f`。从它建立 `review/v08/V8-14-skeleton`。没有合并更晚的提交。
-- **R13 合并前提：** R13 要求"合并前由用户运行报告中的抽样复跑命令补足'已复跑'"。本地未找到该复跑的记录或产物，标为**待补**；V8-13 的证据等级仍是"有记录"，未升级为"已复跑"。按指令不把它作为 P0。
+- **R13 合并前提：** R13 要求"合并前由用户运行报告中的抽样复跑命令补足'已复跑'"。本地找到 `_handoff/2026-11-03_V8-13_joint_opt/out_rerun/user_rerun_20261104/reproduction.json`（写入时间 2026-11-04 09:11）：以 `out/full_v13c_r3` 为源、单进程复跑 o01_d0–o01_d4，5/5 `bytes_equal=true`、文件集合一致。目录名表明是负责人复跑，但执行人身份在本地无法核验，因此记为"**有产物、待负责人确认**"，不由执行方升级为"已复跑"。按指令不把它作为 P0。
 - **归档：** `claude/v08/` 新增本指令、附录、U、R13、预演清单、分层协作规程（B13、C13 已在该目录）。
 - **预置测试：** 按 UTF-8/LF 从指令提取 7 个代码块，SHA256 与指令 8.9 表逐一一致（26ad7b06…、0dfc7d99…、b0d83416…、7e1f5bcd…、13cfb95e…（8.5 方法块）、3a568714…、68e5d017…）。6 个文件原样放入 `tests/v08/V8-14/`；8.5 方法块原文存 [preset_8_5_method.txt](preset_8_5_method.txt)。
 - **授权旧测试修订（8.5）：** `tests/v08/V8-13/test_preset_numeric_checkpoint.py` 只替换 `test_quick_exact_boundaries` 方法；修改前 SHA256 `b7aaaccc7e8aa92fc8c83a5156a500e79d2e52ebee46547c190b49740b9c6a68`（git blob 6bfd669），修改后 `c5270d0e676168b64a2f4002b6c82e97c2d82d2d1955396b41e6d087ab64ffab`；diff 见 [old_test_8_5.diff](old_test_8_5.diff)，其余四个方法与 imports、`row` 字节不变。
 - **冻结与输入快照：** [snapshot_part1.json](snapshot_part1.json)：160 个登记输入的 SHA256/大小/mtime_ns 与 V8-13c 快照逐项一致；冻结工作树 `Simulation-fe-prod-r3`=641a9b3、`Simulation-fe-s3`=de4d115，均干净；另存 90 个代码/配置/测试文件哈希。
 - **基线测试**（[tests_part1.txt](tests_part1.txt)）：V8-13 numeric 预置（替换后）20/20 通过；V8-13 extra 8/8 通过；V8-13 checkpoint 原文件（替换前）4/5，失败一项即 `test_quick_exact_boundaries` 第 26 行旧口径断言（"授权指令修订"，与 R13 云端结果一致）；V8-14 numeric 预置 4 个文件在实现前导入失败（errors=4，预期）。
 - **固定提交事实核对：**
-  1. `Prepared._ls_grad_c` 已同时含位置项 \(B_0^	op W(B_0C-S)/L_0^2\) 与 \(\lambda_j D_3^	op\Lambda D_3 C/J_0^2\)，`_least_squares` 用预条件器同一 `cho_solve_banded`（`optimize.py` L552–568）；`Prepared.x_ls` 已是破对称前的属性（L415）。
+  1. `Prepared._ls_grad_c` 已同时含位置项 \(B_0^\top W(B_0C-S)/L_0^2\) 与 \(\lambda_j D_3^\top\Lambda D_3 C/J_0^2\)，`_least_squares` 用预条件器同一 `cho_solve_banded`（`optimize.py` L552–568）；`Prepared.x_ls` 已是破对称前的属性（L415）。
   2. `quick_checkpoint` 已用 `post_optimization_failures`；`full_checkpoint` 仍用成功合同总 `attempts` 中位数 > 1（`joint_report.py` L111 起）；`run_contract` 的 post 计数按 `stage != "skeleton"` 推断（L252），没有进入优化事件标志。
   3. 成员派生 `derive_members` 与 Fréchet 重建 `group_reference_curves` 都假设整条路径常数槽位 `(l, d)`。
+
+## 2. 第 2 部分：沿可行带直接构造（局部证书）
+
+- **新增** `v08/motion/monitoring_band.py`：`grid_error_m`、`band_certificate`（裁定 1 局部证书：A_j=max L⁺、B_j=min U⁺ 于 N(j)={j−2..j+2}，可行 ⇔ 全部 A_j≤B_j；e_g/e_s/e 仅诊断）、`construct_band`（r_j=A_j+u(φ_j)(B_j−A_j)，360 控制值正基平均，弧外为最近弧端幽灵值）、`cubic_blend`、`admissible_arcs`（参数跨度，生产只作诊断）、`radial_intervals`/`radial_margins`（逐点 `clearance_values` + 逐弦 `chord_sdf_range` 精确余量，全部约束多区间处理）、`run_components`（与 V8-13 `_components` 同一重叠合并规则）、`coverage_lower_bound_deg`（裁定 8：真实目标方位覆盖下界）、`certified_arc_pairs`、`BandGeometry`/`loop_query`/`retrace_query`/`build_band_query`。纯数值部分导入不加载 shapely，几何惰性导入。
+- **修改** `v08/motion/intents/monitoring.py`：删除 `ALPHA_SCAN`、`_scale_alpha`、`_find_ring`、`_draw_loop`、`_draw_arc(_once)`、`_draw_radius`、`_spline_from_radii`、旧 `_echelon_payload` 及刚性掉头 `_build_turn`/`_draw_retrace_turns`；新增 `_band_probe`（同一批 6 个圈心，先验拓扑→另一拓扑 forced）、`_draw_shape`（只抽一次：分量/弧端点对 → K → K 个均匀分位数 → logit → 直接构造 → 一次原 `_ring_ok`）、`_ring_audit`（失败时只读分原因：curvature / lane_geometry / dwell）、新 `_echelon_payload`（b → 3 → 二分至区间宽 ≤ 2/(n−1) m，返回已认证下端）。圆心仍用 `_center_candidates`（警戒区内均匀，包围盒拒绝采样）。
+- **折返弧（裁定 8）**：对每个分量的每个连续方位段列出全部端点对；端点只知落在 [L⁺,U⁺] 内，用"射线上设施方位单调、极值在段端点"取 4 种端点组合中最小的展开增量作真实覆盖下界，≥120° 且弧证书（端部邻域夹取）通过者才入集合；在全部已认证端点对中用 shape 流均匀抽一对。全圆分量的弧跨度 1…359 行。
+- **确定性**：分阶段耗时不写入任何 witness/proposal，改由 `last_attempt_timing()` 遥测通道提供（初版把耗时写进 witness，被 V8-12 自加复现测试 `test_plan_is_independently_valid_and_reproducible` 抓到，已修正）。
+- **提交说明**：`monitoring.py` 中第 3 部分的整体掉头、变队形成员派生接入点与本部分改动在同一文件、互相依赖，随本次提交一同落地（`monitoring_turn.py` 一并加入）；第 3 部分提交补测试与实测记录。
+- **测试**（[tests_part2.txt](tests_part2.txt)）：V8-14 `numeric_band` 6/7（唯一失败 `test_pure_import_does_not_load_shapely`：第 4/5 部分的 `v08.diagnostics.monitoring_skeleton` 尚未建立）；`numeric_turn_flow` 1/1；`local_geometry` 1/1；V8-13 numeric 20/20、extra 8/8；V8-12 全目录 37/40（2 失败与基线相同：数据根环境变量前提、已裁定的逐族 Fréchet 断言；1 skip）。
+- **冒烟实测（执行方观察，非检查点）**：o01 d0–d2 首个 attempt 成功（6–16 s/attempt，掉头集合 3–4 s）；o02 d0/d2（9 机横排，D=60.6 m）连续 `patrol_shape_audit`：原因为曲率与驻留。定位：该例管上界 U⁺ 在相邻方位突降约 100 m（第 291–295 行 1182→1084→1026→990 m），B_j 随之突降，360 控制点正基平滑后参考线局部曲率 κ≈0.070 m⁻¹（半径 14 m），小于车道半跨 60 m，车道越过曲率中心。这是指令 2.3 末段明确"未由宽度证明、待实测"的性质，不是实现错误；未改构造。
