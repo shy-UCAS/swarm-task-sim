@@ -2,7 +2,8 @@
 
 所有比率用 Fraction 精确比较；阈值原样来自 U D.3.4 / D.4.4：
 - 快速检查点 2：成功 < 16/20、成功合同尝试数中位数 > 1、单合同优化耗时中位数 > 60 s、任何保留段违反 P0 门禁；
-- 全量诊断：总成功率 < 80%；设施数/初速/人数任一非空档比总率低超过 20 个百分点；成功尝试中位数 > 1；
+- 全量诊断：总成功率 < 80%；设施数/初速/人数任一非空档比总率低超过 20 个百分点；成功合同"进入优化之后失败次数"
+  中位数 > 0（V8-14 指令 5.2，与快速检查点同一口径；旧"成功尝试中位数 > 1"只作诊断）；
   合并 Fréchet（距离/该族横向间距，所有可比较对合在一起）中位数 < 1。
 严格比较：恰好 16/20、中位数 1、60 s、20 个百分点、Fréchet 1 本身都不触发。缺数据（如零成功的尝试中位数、
 无配对的 Fréchet）记 None，不触发、不编造。本模块导入时不读数据、不建目录。
@@ -13,7 +14,7 @@ from statistics import median
 import numpy as np
 
 QUICK_SUCCESS_FLOOR = Fraction(16, 20)      # U D.3.4
-QUICK_ATTEMPT_MEDIAN = 1                    # U D.3.4
+QUICK_ATTEMPT_MEDIAN = 1                    # U D.3.4（V8-13 旧口径；V8-14 起只作历史诊断名，不再用于任何触发）
 QUICK_OPT_MEDIAN_S = 60.0                   # U D.3.4
 QUICK_POST_OPT_MEDIAN = 0                   # V8-13c 裁定 2：进入优化后失败次数中位数 > 0 触发
 FULL_SUCCESS_FLOOR = Fraction(80, 100)      # U D.4.4
@@ -55,6 +56,31 @@ def pooled_frechet(blocks):
     return _median_or_none(vals)
 
 
+def attempt_counters(attempt_records):
+    """V8-14 指令 5.2：按每个 attempt 的明确进入事件 optimization_entered 计数。
+    进入优化后最终失败 → post；未进入且明确为骨架构造失败（stage == "skeleton"）→ skeleton；
+    缺进入标志、或未进入但阶段为异常等无法分类 → unknown（报告前提不完整，不填 0）。成功 attempt 不计。"""
+    post = skel = unknown = 0
+    for r in attempt_records:
+        if r.get("ok"):
+            continue
+        entered = r.get("optimization_entered")
+        if entered is True:
+            post += 1
+        elif entered is False and r.get("stage") == "skeleton":
+            skel += 1
+        else:
+            unknown += 1
+    return {"post_optimization_failures": post, "skeleton_failures": skel, "unknown_attempts": unknown}
+
+
+def _post_median(succ):
+    """成功合同 post 失败次数中位数；任一成功合同缺该字段 → (None, True)（无法判定，不当通过也不当触发）。"""
+    post = [r.get("post_optimization_failures") for r in succ]
+    undetermined = any(p is None for p in post)
+    return (None if undetermined else _median_or_none(post)), undetermined
+
+
 def _rate(rows):
     n = len(rows)
     return Fraction(sum(bool(r["success"]) for r in rows), n) if n else None
@@ -89,7 +115,8 @@ def quick_checkpoint(records):
                         "success_attempts_median_diagnostic": att_all,
                         "skeleton_failures_total_diagnostic": sum(r.get("skeleton_failures") or 0 for r in rows),
                         "optimization_s_median": opt,
-                        "optimization_entered": sum(float(r["optimization_s"]) > 0.0 for r in rows),
+                        "contracts_with_optimization_time_diagnostic": sum(float(r["optimization_s"]) > 0.0
+                                                                           for r in rows),
                         "retained_p0_violations": bad_p0}}
 
 
@@ -124,9 +151,15 @@ def full_checkpoint(records, frechet_blocks):
         metrics[name] = bins
         if worst is not None and worst > FULL_GAP:
             trig.append(name)
-    att = _median_or_none(r["attempts"] for r in rows if r["success"])
-    metrics["success_attempts_median"] = att
-    if att is not None and att > QUICK_ATTEMPT_MEDIAN:
+    # V8-14 指令 5.2（U D.4.2）：全量与快速同一口径——成功合同 post 失败次数中位数 > 0 触发；
+    # 成功合同总尝试次数只作诊断（success_attempts_median_diagnostic）
+    succ = [r for r in rows if r["success"]]
+    att, undetermined = _post_median(succ)
+    metrics["post_optimization_failures_median"] = att
+    metrics["attempts_undetermined"] = undetermined
+    metrics["success_attempts_median_diagnostic"] = _median_or_none(r["attempts"] for r in succ)
+    metrics["skeleton_failures_total_diagnostic"] = sum(r.get("skeleton_failures") or 0 for r in rows)
+    if att is not None and att > QUICK_POST_OPT_MEDIAN:
         trig.append("attempts")
     fr = pooled_frechet(frechet_blocks)
     metrics["frechet_pooled_median"] = fr
@@ -212,7 +245,8 @@ def distributions(records, div_records=(), *, legacy_budget_s=1800.0):
         "tracking": {k: _q(v) for k, v in trk.items()}, "tube_exceeded_members": tube,
         "timing_s": timing, "wall_s": _q([r.get("wall_s") for r in rows]),
         "attempt_stages": stages, "final_failures": fails,
-        "success_attempts": _q([r["attempts"] for r in succ]),
+        "success_attempts_diagnostic": _q([r["attempts"] for r in succ]),
+        "post_optimization_failures": _q([r.get("post_optimization_failures") for r in succ]),
         "optimizer_iterations": _q([n for r in rows for n in (r.get("nit") or []) if n is not None]),
         "retained_p0_violations": [r["contract_id"] for r in succ if not r.get("retained_p0_ok", True)],
         "diversity": {"seeds": len(div_records), "success": sum(bool(r.get("success")) for r in div_records)},

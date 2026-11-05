@@ -108,8 +108,12 @@ def _fail(stage, t, **kw):
     return {"ok": False, "stage": stage, "timing": t, **kw}
 
 
-def attempt_chain(ctx, group, task, states, key, settings):
-    """一次全链路 attempt；返回 dict（ok/stage/timing/各阶段原始对象）。未捕获异常由调用方记录 traceback。"""
+def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
+    """一次全链路 attempt；返回 dict（ok/stage/timing/各阶段原始对象）。未捕获异常由调用方记录 traceback。
+    V8-14 指令 5.2：在实际调用 optimize_segment 之前把 optimization_entered 置 True（entry_flag 同步记录，
+    以便异常路径也携带该标记）。"""
+    entry_flag = {} if entry_flag is None else entry_flag
+    entry_flag["optimization_entered"] = False
     from ..criteria.segment import SegmentTask, verify_segments
     from ..criteria.validity import check_validity, visible_track
     from ..motion.optimize import optimize_segment
@@ -120,17 +124,24 @@ def attempt_chain(ctx, group, task, states, key, settings):
     t0 = time.perf_counter()
     plan = plan_attempt(ctx, group, task, states, (), key)
     t["skeleton_s"] = time.perf_counter() - t0
+    try:
+        from ..motion.intents.monitoring import last_attempt_timing
+        t["skeleton_detail"] = last_attempt_timing()
+    except ImportError:
+        pass
     if plan.failure is not None:
         f = plan.failure
         return _fail("skeleton", t, plan=plan, code=f.code, reason=f.reason, feasible_set=f.feasible_set,
-                     witness=f.witness)
+                     witness=f.witness, optimization_entered=False)
     t0 = time.perf_counter()
+    entry_flag["optimization_entered"] = True
     opt = optimize_segment(ctx, plan, key, settings)
     t["optimize_s"] = time.perf_counter() - t0
     diag = opt["solution"].diagnostics
     t["nit"], t["nfev"] = diag.get("nit"), diag.get("nfev")
     if not opt["ok"]:
-        return _fail(opt["stage"], t, plan=plan, opt=opt, code="candidate_rejected", reason=opt["reason"])
+        return _fail(opt["stage"], t, plan=plan, opt=opt, code="candidate_rejected", reason=opt["reason"],
+                     optimization_entered=True)
     t0 = time.perf_counter()
     results, timeouts = [], []
     for m in sorted(opt["solution"].references):
@@ -141,7 +152,7 @@ def attempt_chain(ctx, group, task, states, key, settings):
     t["simulation_s"] = time.perf_counter() - t0
     if timeouts:
         return _fail("simulation", t, plan=plan, opt=opt, results=results, code="candidate_rejected",
-                     reason="sim_timeout", members=timeouts)
+                     reason="sim_timeout", members=timeouts, optimization_entered=True)
     t0 = time.perf_counter()
     tracks = stitch(results)
     release = {m: int(r.pieces[0].release_us) for m, r in zip(sorted(opt["solution"].references), results)}
@@ -151,7 +162,7 @@ def attempt_chain(ctx, group, task, states, key, settings):
     valid = check_validity(ctx.scene, visible)
     t["verify_s"] = time.perf_counter() - t0
     out = {"plan": plan, "opt": opt, "results": results, "tracks": tracks, "release_us": release,
-           "verdicts": verdicts, "validity": valid, "timing": t}
+           "verdicts": verdicts, "validity": valid, "timing": t, "optimization_entered": True}
     if not seg_ok:
         return {"ok": False, "stage": "verify_segments", "code": "candidate_rejected",
                 "reason": "segment_verification", **out}
@@ -163,7 +174,10 @@ def attempt_chain(ctx, group, task, states, key, settings):
 def _attempt_summary(rec, key):
     t = rec.get("timing", {})
     s = {"attempt": key.attempt, "ok": bool(rec["ok"]), "stage": rec["stage"], "code": rec.get("code"),
-         "reason": rec.get("reason"), "timing": t}
+         "reason": rec.get("reason"), "timing": t, "optimization_entered": rec.get("optimization_entered")}
+    w = rec.get("witness") if isinstance(rec.get("witness"), dict) else {}
+    s["skeleton_stage"] = w.get("stage", rec.get("feasible_set")) if rec["stage"] == "skeleton" else None
+    s["shape_audit_failed"] = bool(w.get("shape_audit_failed", False)) if rec["stage"] == "skeleton" else False
     if "feasible_set" in rec:
         s["feasible_set"] = rec["feasible_set"]
         s["witness"] = jsonable(rec.get("witness"))
@@ -213,11 +227,13 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
     summaries = []
 
     def attempt_fn(k):
+        flag = {}
         try:
-            rec = attempt_chain(ctx, group, task, states, k, settings)
+            rec = attempt_chain(ctx, group, task, states, k, settings, entry_flag=flag)
         except Exception as exc:                    # 实现异常不伪装成正常随机失败：保存 traceback
             rec = {"ok": False, "stage": "exception", "code": "implementation_error", "reason": repr(exc),
-                   "traceback": traceback.format_exc(), "timing": {}}
+                   "traceback": traceback.format_exc(), "timing": {},
+                   "optimization_entered": flag.get("optimization_entered")}
         summaries.append(_attempt_summary(rec, k))
         return rec
 
@@ -248,9 +264,13 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
            "settings_sha256": settings.get("_sha256"),
            "release_us": None, "retained_p0_ok": True}
     rec["incomplete"] = bool(out.get("incomplete", False))
-    # V8-13c 裁定 2：进入优化之后失败的尝试（优化、硬检查、跟踪仿真、段核验与有效性检查）与骨架构造失败分开计数
-    rec["post_optimization_failures"] = sum(1 for s in summaries if not s["ok"] and s["stage"] != "skeleton")
-    rec["skeleton_failures"] = sum(1 for s in summaries if not s["ok"] and s["stage"] == "skeleton")
+    # V8-14 指令 5.2：按每个 attempt 的 optimization_entered 事件计数（不再由 stage != "skeleton" 推断）
+    cnt = JR.attempt_counters(summaries)
+    missing_flag = any(not s["ok"] and not isinstance(s.get("optimization_entered"), bool) for s in summaries)
+    rec["post_optimization_failures"] = None if missing_flag else cnt["post_optimization_failures"]
+    rec["skeleton_failures"] = cnt["skeleton_failures"]
+    rec["unknown_attempts"] = cnt["unknown_attempts"]
+    rec["shape_audit_failed_attempts"] = sum(1 for s in summaries if s.get("shape_audit_failed"))
     rec["draws"] = [s.get("draw") for s in summaries]
     rec["stage_timing"] = {k: float(sum((s["timing"] or {}).get(k, 0.0) for s in summaries))
                            for k in ("skeleton_s", "optimize_s", "simulation_s", "verify_s")}
@@ -314,7 +334,8 @@ def save_contract(out, rec, result, last_failed=None):
                   "attempt_log": det_attempts, "release_us": rec["release_us"], "settings_sha256": rec["settings_sha256"],
                   "retained_p0_ok": rec["retained_p0_ok"], "incomplete": rec.get("incomplete", False),
                   "post_optimization_failures": rec["post_optimization_failures"],
-                  "skeleton_failures": rec["skeleton_failures"],
+                  "skeleton_failures": rec["skeleton_failures"], "unknown_attempts": rec["unknown_attempts"],
+                  "shape_audit_failed_attempts": rec["shape_audit_failed_attempts"],
                   "deviation": rec.get("deviation"), "tracking": rec.get("tracking"),
                   "nominal_duration_s": rec.get("nominal_duration_s"), "formation": rec.get("formation"),
                   "topology": rec.get("topology"), "phase_metrics": rec.get("phase_metrics")}
@@ -372,7 +393,8 @@ def save_contract(out, rec, result, last_failed=None):
 def _record_row(rec):
     keys = ("contract_id", "family_id", "draw_index", "branch", "facility_count", "initial_speed_m_s", "group_size",
             "success", "attempts", "optimization_s", "retained_p0_ok", "member_ids", "target_id", "release_us",
-            "failure", "order", "vehicle_count", "post_optimization_failures", "skeleton_failures", "draws")
+            "failure", "order", "vehicle_count", "post_optimization_failures", "skeleton_failures", "draws",
+            "unknown_attempts", "shape_audit_failed_attempts", "incomplete", "phase_metrics")
     return {k: rec.get(k) for k in keys}
 
 
@@ -402,7 +424,10 @@ def run_batch(entries, *, stage, data_root, cache_dir, out_dir, workers=8, keys=
     rows = [_record_row(r) for r in sorted(records, key=lambda r: r["contract_id"])]
     write_json(out / "records.json", rows, indent=1)
     chk = JR.quick_checkpoint(rows) if stage == "quick" else None
-    summary = {"stage": stage, "expected_count": len(keys), "completed": len(rows),
+    complete = (len(rows) == len(keys) and not any(r.get("incomplete") for r in rows)
+                and not any(r.get("unknown_attempts") for r in rows)
+                and not (chk or {}).get("metrics", {}).get("attempts_undetermined", False))
+    summary = {"stage": stage, "expected_count": len(keys), "completed": len(rows), "complete": complete,
                "wall_s": time.perf_counter() - t0, "checkpoint": chk, "settings_sha256": settings.get("_sha256")}
     write_json(out / "summary.json", summary, indent=1)
     return summary
@@ -446,6 +471,8 @@ def cli(args, out):
                             keys=sel, settings=settings)
         chk = summary["checkpoint"]
         print("检查点 2：", json.dumps(chk, ensure_ascii=False))
+        if not summary["complete"]:                 # V8-14：缺数据/未知进入标志 = 未完成，不走"triggered 为空即 0"
+            return 3
         return 2 if chk["triggered"] else 0
     if args.stage == "full":
         summary = full_stage(entries, data_root=data_root, cache_dir=cache, out_dir=out, workers=args.workers)
@@ -548,43 +575,36 @@ def tracking_stats(res):
 
 
 def group_reference_curves(ctx, group, res):
-    """指令 5.4：c_after(s) = c_before(s) + (1/N)Σ_i[p_i^opt(t_i(s)) − s_i(t_i(s))]。c_before 为骨架编组参考
-    （汇合→终点），t_i(s) 按 build_candidate 同一构造（参考 → 槽位 → 车道 s_ref → 成员弧长 → 名义时间）重建。"""
-    from ..motion.formation import derive_members, formation_slots
-    from ..motion.intents.monitoring import build_reference
+    """V8-14 指令 5.1：巡逻段编组参考（第一个到最后一个巡逻站点，精确插入两端点）。
+    c_after(s) = c_before(s) + (1/N)Σ_i[p_i^opt(t_i(s)) − p_i^ref(t_i(s))]；c_before 为构造时保存的编组参考
+    （plan.reference_xy，参考弧长 = collect_s + 累计弧长），t_i(s) 由构造时保存的 member_map_v14
+    （reference_s → member_s）与该成员名义弧长—时间给出，不再用常数槽位重建。返回 (before, after) 两条
+    分别按自己的几何弧长 5 m 重采样的巡逻段折线。"""
+    from ..diagnostics.monitoring_skeleton import patrol_resample
     from ..motion.nominal import member_nominal
     from ..motion.skeleton import NominalPVA, reference_guidance
     plan = res["plan"]
-    P, form = plan.proposal, plan.formation
-    spacing = ctx.params["curve_spacing_m"]
-    slots = formation_slots(group, ctx.family, None, formation=form["realized"],
-                            lateral_step_m=form["lateral_step_m"] if form["realized"] == "echelon" else None,
-                            order=tuple(form["order"]))
-    ext = slots.max_longitudinal_m
-    ref, _ = build_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
-    s_c, s_t = ref.marks["collect"], ref.marks["terminal"]
-    lanes = derive_members(ref, slots, (s_c, s_t), spacing_m=spacing)
-    sel = (ref.s >= s_c - 1e-9) & (ref.s <= s_t + 1e-9)
-    S = ref.s[sel]
-    before = np.asarray(ref.xy[sel], float)
+    ref_xy = np.asarray(plan.reference_xy, float)
+    a = plan.anchors
+    s_ref = float(a["collect_s"]) + np.r_[0.0, np.cumsum(np.hypot(*np.diff(ref_xy, axis=0).T))]
+    ps, pe = float(a["patrol_start_s"]), float(a["patrol_end_s"])
+    inner = s_ref[(s_ref > ps) & (s_ref < pe)]
+    S = np.r_[ps, inner, pe]
+    before = np.stack([np.interp(S, s_ref, ref_xy[:, 0]), np.interp(S, s_ref, ref_xy[:, 1])], axis=1)
+    mm = plan.witnesses["member_map_v14"]["members"]
     G = reference_guidance()
     disp = np.zeros_like(before)
     opt = res["opt"]["solution"].references
     for m in sorted(plan.members):
-        mp = plan.members[m]
-        xy = np.asarray(mp.curve_xy, float)
-        cum = np.r_[0.0, np.cumsum(np.hypot(*np.diff(xy, axis=0).T))]
-        lane = lanes[m]
-        ci = len(xy) - len(lane.xy)
-        l = slots.offsets[m][0]
-        sig = np.clip(S + l, lane.s_ref[0], lane.s_ref[-1])
-        sm = np.interp(sig, lane.s_ref, cum[ci:ci + len(lane.xy)])
-        nom = member_nominal(mp, guidance=G)
+        mp = mm[m]
+        sm = np.interp(S, np.asarray(mp["reference_s"], float), np.asarray(mp["member_s"], float))
+        nom = member_nominal(plan.members[m], guidance=G)
         f = NominalPVA(nom)
         t = np.interp(sm, nom.curve.s, nom.t_nodes) + nom.release_s
         disp += opt[m].evaluate(t) - np.asarray(f(t)[0])
     after = before + disp / len(plan.members)
-    return before, after
+    return (patrol_resample(S, before, ps, pe, spacing_m=FRECHET_SPACING_M),
+            patrol_resample(S, after, ps, pe, spacing_m=FRECHET_SPACING_M))
 
 
 def _pool_task(task):
@@ -607,6 +627,8 @@ def _pool_task(task):
                            should_stop=lambda: _t.time() > deadline, keep=holder)
         row = _record_row(rec)
         row.update(kind=kind, incomplete=rec.get("incomplete", False), wall_s=_t.perf_counter() - t0,
+                   attempt_log_flags=[{"ok": a["ok"], "stage": a["stage"], "optimization_entered": a.get("optimization_entered"),
+                                       "shape_audit_failed": a.get("shape_audit_failed")} for a in rec["attempt_log"]],
                    deviation=rec.get("deviation"), tracking=rec.get("tracking"),
                    nominal_duration_s=rec.get("nominal_duration_s"), formation=rec.get("formation"),
                    topology=rec.get("topology"), stage_timing=rec.get("stage_timing"),
@@ -616,9 +638,9 @@ def _pool_task(task):
             from ..contract.monitoring import monitoring_mission
             from ..sampler.common import sample_common
             group = monitoring_mission(ctx, sample_common(ctx.family, draw)).groups[0]
-            before, after = group_reference_curves(ctx, group, holder["result"])
-            row["curve_before"] = resample_polyline(before, FRECHET_SPACING_M).tolist()
-            row["curve_after"] = resample_polyline(after, FRECHET_SPACING_M).tolist()
+            before, after = group_reference_curves(ctx, group, holder["result"])   # 已按各自弧长 5 m 重采样
+            row["curve_before"] = before.tolist()
+            row["curve_after"] = after.tolist()
         row["lateral_spacing_m"] = float(ctx.family.lateral_spacing_m)
         return row
     except Exception as exc:
@@ -692,9 +714,13 @@ def frechet_blocks(div_rows, key="curve_after"):
     blocks = []
     for fid, rs in sorted(fam.items()):
         ok = [np.asarray(r[key], float) for r in sorted(rs, key=lambda x: x["branch"]) if r.get("success") and key in r]
-        d = [float(discrete_frechet(ok[i], ok[j])) for i in range(len(ok)) for j in range(i + 1, len(ok))]
+        pairs = [(i, j) for i in range(len(ok)) for j in range(i + 1, len(ok))]
+        d = [float(discrete_frechet(ok[i], ok[j])) for i, j in pairs]
+        from ..diagnostics.monitoring_skeleton import endpoint_distances
+        ends = [endpoint_distances(ok[i], ok[j]) for i, j in pairs]     # 巡逻起/终点距离：单独报告，不从 Fréchet 扣除
         blocks.append({"family_id": fid, "spacing_m": float(rs[0].get("lateral_spacing_m") or 0.0) or 1.0,
-                       "distances_m": d, "attempted": len(rs), "success": len(ok)})
+                       "distances_m": d, "attempted": len(rs), "success": len(ok), "endpoint_m": ends,
+                       "scope": "patrol_segment_v14"})
     return blocks
 
 
@@ -731,7 +757,9 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
     blocks_after = frechet_blocks(div_rows, "curve_after")
     blocks_before = frechet_blocks(div_rows, "curve_before")
     complete = (len(full_rows) == len(keys) and not unsent
-                and not any(r.get("incomplete") or r.get("error") for r in full_rows))
+                and not any(r.get("incomplete") or r.get("error") for r in full_rows)
+                and not any(r.get("unknown_attempts") or (r.get("success") and r.get("post_optimization_failures") is None)
+                            for r in full_rows))
     chk = JR.full_checkpoint([r for r in full_rows if not r.get("error")], blocks_after) if full_rows else None
     summary = {"stage": "full", "expected_count": len(keys), "completed": len(full_rows), "complete": complete,
                "unsent": unsent, "incomplete": [r["contract_id"] for r in full_rows if r.get("incomplete")],

@@ -100,3 +100,27 @@
 - **语义直线合并：** `skeleton.merge_semantic_lines(lines, *, knot_s, tol_m=1e-6)`：逐成员按 (t0,t1,序号) 排序，只合并时间相邻、单位切向叉积 ≤ γ₈、点到支撑线 ≤ 1e-6 m、间隙严格 < 4h 的段；沿用最早段点/切向，meta 记来源、原区间、gap、最大共线残差。`optimize_segment` 只对等式输入合并一次（`lines` = 合并后、`lines_raw` = 原始；`optimized.json` 两者都存）；`crossing_analysis` 与几何判据仍用完整原曲线。
 - **阶段诊断：** `v08/diagnostics/monitoring_skeleton.py::phase_metrics`（裁定 7：只在参考速度 ≥ 0.5 m/s 的样本上取三者最低速度与比值，端点起停不计；无此类样本记 `no_moving_reference_samples`；全部样本的参考最低速度另记 `reference_min_all_samples_m_s`；沿迹偏离为一维投影 \(\max|(p-p_{ref})\cdot\hat t_{ref}|\)，零速时用成员名义曲线切向）。`joint_monitoring.phase_diagnostics` 按 `member_map_v14.patrol_member_s` 的名义时间切三段（[release, 首巡逻站点)、[首, 末)、[末, 移动结束]，最后阶段含终点），网格为实测 10 Hz 帧（tau_us 与 TimeReference 同钟，release 取整差另记），collect 时刻为子标记；成功合同写入 `phase_metrics`。
 - **测试**（[tests_part4.txt](tests_part4.txt)）：`numeric_initial` 3/3；`numeric_band` 7/7（导入隔离项随诊断模块建立而通过）；`numeric_metrics` 导入失败（第 5 部分的 `attempt_counters`、`skeleton_checkpoint` 尚未实现）；V8-13 numeric 20/20、extra 8/8。
+
+**第 3 部分原型核对结果（补记，`out/prototype/verify_turns_r1`，[part3/verify_turns_r1.json](part3/verify_turns_r1.json)）：** 18 个合同中 12 个在预算内得到成功骨架（其中 9 个折返、3 个环绕；折返共用到 teardrop/u/oblique 三类、左右两侧，无 `turn_joint_set_empty`）；12 个成功骨架的独立核对 **0 项失败**（映射严格单调、turn_mask 内横向偏移恰为 0、整条成员曲线的 base 约束与巡逻裁切段的 patrol 约束精确余量全部 ≥0）。153 个 attempt 中失败 141 次：`patrol_shape_audit` 139 次（原因全部含 curvature，73 次同时含 dwell）、`egress` 1 次、`obstacle:obstacle_02` 1 次。这只是原型量级，正式检查点见第 6 节。
+
+## 5. 第 5 部分：口径统一与依赖传递
+
+- **巡逻段 Fréchet：** `group_reference_curves` 改为读取构造时保存的编组参考（`plan.reference_xy`，参考弧长 = `collect_s` + 累计弧长）与 `member_map_v14`，只取 [patrol_start, patrol_end] 并精确插入两端点；\(t_i(s)\) = 成员映射 reference_s→member_s 后按该成员名义弧长—时间插值；before/after 各自按自己的几何弧长用 `monitoring_skeleton.patrol_resample` 5 m 重采样（补尾端点）。`frechet_blocks` 每对另报巡逻起/终点距离与最大值（`endpoint_m`，不从 Fréchet 扣除），块标 `scope: patrol_segment_v14`；合并中位数仍用原 `pooled_frechet`（跨族合并、无配对为 None）。
+- **优化后失败次数：** `attempt_chain` 在调用 `optimize_segment` **之前**置 `optimization_entered=True`（经 `entry_flag` 同步，异常路径也携带），骨架失败返回 False；`_attempt_summary` 保存该标记、`skeleton_stage` 与 `shape_audit_failed`。新增 `joint_report.attempt_counters`（post / skeleton / unknown，缺标记计 unknown 不填 0）；`run_contract` 用它计数，任一失败 attempt 缺 bool 标记时 `post_optimization_failures=None`。`full_checkpoint` 改为与快速同一口径：成功合同 post 中位数 > 0 触发（`attempts`），缺字段记 `attempts_undetermined`；成功合同总尝试中位数改名 `success_attempts_median_diagnostic`。`run_batch`/`full_stage` 的 `complete` 把 unknown attempt、post 未确定计为未完成；quick CLI 未完成返回 3（不再走"triggered 为空即 0"）。
+- **`rg` 依赖清单**（`QUICK_ATTEMPT_MEDIAN|success_attempts|post_optimization_failures|frechet|curve_before|curve_after|alpha_tried|R_lo|d_max`）：
+
+| 位置 | 处理 |
+|---|---|
+| `joint_report.QUICK_ATTEMPT_MEDIAN` | 保留为历史诊断名，不再用于任何触发（注释标明） |
+| `joint_report.quick_checkpoint` 的 post 中位数 | 保留（V8-13c 已是新口径）；`optimization_s>0` 推断的计数改名 `contracts_with_optimization_time_diagnostic` |
+| `joint_report.full_checkpoint` 的 `success_attempts_median` | 已改：触发改用 post 中位数，旧值改名 `success_attempts_median_diagnostic` |
+| `joint_report.distributions` 的 `success_attempts` | 已改名 `success_attempts_diagnostic`，另加 `post_optimization_failures` 分布 |
+| `joint_monitoring.run_contract` post/skeleton 计数 | 已改：按 `optimization_entered` 事件（`attempt_counters`） |
+| `joint_monitoring.group_reference_curves`、`curve_before/curve_after`、`frechet_blocks` | 已改：巡逻段、成员映射、各自弧长重采样、端点距离另报 |
+| `joint_monitoring.full_stage` 的 `post_optimization_failures_median` | 保留（新口径字段） |
+| `alpha_tried` / `ALPHA_SCAN` / `R_lo` / `d_max`（旧 `monitoring.py`） | 生产代码已删除；`runner/monitoring.py::rho_record` 读取 `alpha` 的旧 V8-12 记录函数冻结不用（V8-13/14 运行器不调用） |
+| `v08/diagnostics/diversity.py::discrete_frechet` | 冻结，原样调用 |
+| 历史 V8-13 报告 | 不修改 |
+
+- **测试**（[tests_part5.txt](tests_part5.txt)）：V8-14 numeric 16/17，唯一失败 `test_phase_ratio_and_along_projection` 第 2 组断言（`1.0 is not None`）——即开工时登记的**疑似预期错误**（与裁定 7 冲突，见第 8 节），未改测试；其余 metrics 5 项（入口事件计数、quick/full 同口径、骨架成功率与人数档严格边界、attempt/形状分母、巡逻裁切）全部通过。V8-14 extra 5/5；V8-13 numeric 20/20（含 8.5 授权替换方法）、extra 8/8。
+- **接线冒烟（执行方说明）：** 为确认第 7 部分代码路径在变队形骨架上可运行，在 `out/prototype/chain_smoke_o01_d0` 只跑了 **1 个合同**（o01_d0）的全链路，非批次、不计入任何检查点（[part5/chain_smoke_o01_d0.log](part5/chain_smoke_o01_d0.log)）：1 次 attempt 成功、`optimization_entered=True`、post=0；两成员三阶段诊断与巡逻段编组曲线（各 1530 点）正常生成。
