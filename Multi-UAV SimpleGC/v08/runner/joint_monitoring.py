@@ -260,6 +260,10 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
         rec["retained_p0_ok"] = _retained_p0(res)
         rec["deviation"] = member_deviation(res)
         rec["tracking"] = tracking_stats(res)
+        try:                                        # V8-14 指令 4.3：只诊断；异常如实记录，不影响成功判定
+            rec["phase_metrics"] = phase_diagnostics(res)
+        except Exception:
+            rec["phase_metrics"] = {"error": traceback.format_exc()}
         plan = res["plan"]
         rec["nominal_duration_s"] = float(plan.nominal_duration_s)
         rec["formation"] = {k: plan.formation.get(k) for k in ("prior", "start", "realized", "mapped_from_loose",
@@ -313,7 +317,7 @@ def save_contract(out, rec, result, last_failed=None):
                   "skeleton_failures": rec["skeleton_failures"],
                   "deviation": rec.get("deviation"), "tracking": rec.get("tracking"),
                   "nominal_duration_s": rec.get("nominal_duration_s"), "formation": rec.get("formation"),
-                  "topology": rec.get("topology")}
+                  "topology": rec.get("topology"), "phase_metrics": rec.get("phase_metrics")}
     (d / "result.json").write_bytes(_json_bytes(result_doc))
     if result is not None and result.get("ok"):
         plan = result["plan"]
@@ -326,6 +330,7 @@ def save_contract(out, rec, result, last_failed=None):
                                    "knots": t.knots, "controls": t.controls}
                                for m, t in sorted(sol.references.items())},
                    "lines": jsonable(result["opt"]["lines"]),
+                   "lines_raw": jsonable(result["opt"].get("lines_raw")),
                    "diagnostics": {k: jsonable(sol.diagnostics.get(k)) for k in
                                    ("nit", "nfev", "message", "value", "terms", "max_abs_grad", "reference_deviation",
                                     "symmetry_break", "settings_sha256")}}
@@ -483,6 +488,49 @@ def member_deviation(res):
         t = np.arange(f0, f1 + 1, dtype=np.int64) / 10.0
         d = np.hypot(*(tr.evaluate(t) - np.asarray(r.pva(t)[0])).T)
         out[m] = {"max_m": float(d.max()) if len(d) else 0.0, "mean_m": float(d.mean()) if len(d) else 0.0}
+    return out
+
+
+def phase_diagnostics(res):
+    """V8-14 指令 4.3 / 裁定 7：逐成员 汇合/进入、巡逻、撤离 三阶段的参考/优化/实测速度与沿迹偏离（只诊断）。
+    阶段按该成员实际巡逻站点（member_map_v14.patrol_member_s）的名义时间切分；汇合/进入 = [release, 首巡逻站点)、
+    巡逻 = [首, 末巡逻站点)、撤离 = [末巡逻站点, 名义运动结束]（最后阶段含终点）。网格为实测 10 Hz 帧
+    （tau_us 与 TimeReference 同一时钟；release_us − release_s 的取整差另记），collect 时刻作子标记。"""
+    from ..diagnostics.monitoring_skeleton import phase_metrics
+    plan, opt = res["plan"], res["opt"]
+    mm = (plan.witnesses or {}).get("member_map_v14") or {}
+    refs = {r.member_id: r for r in opt["references"]}
+    sol = opt["solution"].references
+    out = {}
+    for m in sorted(sol):
+        maps = opt["maps"][m]
+        nom = maps["nominal"]
+        cs, ta = np.asarray(maps["curve_s"], float), np.asarray(maps["t_abs"], float)
+        ref = refs[m]
+        mp = (mm.get("members") or {}).get(m)
+        if mp is None:
+            out[m] = {"error": "missing member_map_v14"}
+            continue
+        pa, pb = mp["patrol_member_s"]
+        t_pa, t_pb = float(np.interp(pa, cs, ta)), float(np.interp(pb, cs, ta))
+        t_c = float(np.interp(float(mp["member_s"][0]), cs, ta))
+        tr = res["tracks"][m]
+        t = np.asarray(tr.tau_us, np.int64) / 1e6
+        sel = (t >= ref.release_s - 1e-9) & (t <= ref.end_s + 1e-9)
+        t = t[sel]
+        rp, rv, _ = ref.pva(t)
+        rp, rv = np.asarray(rp, float).reshape(-1, 2), np.asarray(rv, float).reshape(-1, 2)
+        s_now = np.interp(t, ta, cs)
+        tan_c = np.asarray(nom.curve.tangent, float)
+        idx = np.clip(np.searchsorted(cs, s_now, side="right") - 1, 0, len(tan_c) - 1)
+        sp = np.hypot(rv[:, 0], rv[:, 1])
+        tan = np.where((sp > 0.0)[:, None], rv / np.maximum(sp, np.finfo(float).tiny)[:, None], tan_c[idx])
+        op, ov = sol[m].evaluate(t, 0), sol[m].evaluate(t, 1)
+        mpv, mvv = np.asarray(tr.p, float)[sel, :2], np.asarray(tr.v, float)[sel, :2]
+        bounds = {"collect_ingress": (ref.release_s, t_pa), "patrol": (t_pa, t_pb), "egress": (t_pb, ref.end_s, True)}
+        got = phase_metrics(t, rp, rv, op, ov, mpv, mvv, bounds, tan)
+        out[m] = {"phases": got, "t_collect_s": t_c, "t_patrol_s": (t_pa, t_pb),
+                  "release_offset_s": float(res["release_us"][m]) / 1e6 - float(ref.release_s)}
     return out
 
 

@@ -93,3 +93,10 @@
 - **`monitoring.py` 接入**：`build_reference_parts`/`turn_schedule` 从参考采样区间读出每次掉头的 s_A/s_B/s_D/s_E；`build_candidate` 改用变队形车道，速度事件映射改为 `interp(q_i(s_c+s_rel), lane.s_ref, lane_cum)`；`_turn_ranges_v14` 覆盖核心与接回（不含收拢/展开直线）；`witnesses["member_map_v14"]`（schema `member-map-v14`，逐成员 reference_s / shifted_reference_s / member_s（含起点连接长度）/ lateral_m / turn_mask / patrol_member_s）与 `turn_schedule_v14`。旧提案（无 `turn_parts`）退化为常数槽位。
 - **自加测试** `tests/v08/V8-14/test_extra_turn_members.py` 5/5（[tests_part3.txt](tests_part3.txt)）：直线解析夹具上映射严格单调、核心 d̃≡0 且成员落在参考线、到 B 前已收为纵列、`1+l'>0`、反函数；排列首通过者在 4 个可行元素上频率 0.25±0.01（40000 次）；非空组合等概率选组。预置 `numeric_turn_flow` 1/1。
 - **原型核对**（`out/prototype/verify_turns_r1`，只构造骨架，o01/o03/o04/o06/o07/o11 × d0–d2，脚本 [part3/verify_turns.py](part3/verify_turns.py)）：对每个成功骨架按 8.7 同一口径独立重算成员映射单调、turn_mask 内横向为 0、全部 base 约束（整条成员曲线）与 patrol 约束（巡逻裁切段）精确余量 ≥0。结果见第 6 节前的补记。
+
+## 4. 第 4 部分：初值核验、语义直线合并、阶段诊断
+
+- **初值（裁定 6）：** 预置 `test_initial_matches_independent_dense_kkt` 用 SciPy BSpline 独立构造稠密 KKT（含 jerk 项 \(\lambda_j=1\)、J₀=14、L₀=3、端点 p/v/a 等式），与 `prep.coeffs(prep.x_ls)` 在 √ε 量级一致，**通过**。固定提交初值已是 \(H_0z=b\) 的解，`_ls_grad_c`/`_least_squares` 保持不变，不重标权重。
+- **语义直线合并：** `skeleton.merge_semantic_lines(lines, *, knot_s, tol_m=1e-6)`：逐成员按 (t0,t1,序号) 排序，只合并时间相邻、单位切向叉积 ≤ γ₈、点到支撑线 ≤ 1e-6 m、间隙严格 < 4h 的段；沿用最早段点/切向，meta 记来源、原区间、gap、最大共线残差。`optimize_segment` 只对等式输入合并一次（`lines` = 合并后、`lines_raw` = 原始；`optimized.json` 两者都存）；`crossing_analysis` 与几何判据仍用完整原曲线。
+- **阶段诊断：** `v08/diagnostics/monitoring_skeleton.py::phase_metrics`（裁定 7：只在参考速度 ≥ 0.5 m/s 的样本上取三者最低速度与比值，端点起停不计；无此类样本记 `no_moving_reference_samples`；全部样本的参考最低速度另记 `reference_min_all_samples_m_s`；沿迹偏离为一维投影 \(\max|(p-p_{ref})\cdot\hat t_{ref}|\)，零速时用成员名义曲线切向）。`joint_monitoring.phase_diagnostics` 按 `member_map_v14.patrol_member_s` 的名义时间切三段（[release, 首巡逻站点)、[首, 末)、[末, 移动结束]，最后阶段含终点），网格为实测 10 Hz 帧（tau_us 与 TimeReference 同钟，release 取整差另记），collect 时刻为子标记；成功合同写入 `phase_metrics`。
+- **测试**（[tests_part4.txt](tests_part4.txt)）：`numeric_initial` 3/3；`numeric_band` 7/7（导入隔离项随诊断模块建立而通过）；`numeric_metrics` 导入失败（第 5 部分的 `attempt_counters`、`skeleton_checkpoint` 尚未实现）；V8-13 numeric 20/20、extra 8/8。

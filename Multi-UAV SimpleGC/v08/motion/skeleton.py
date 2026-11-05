@@ -116,6 +116,66 @@ def semantic_lines(member_id, nominal, warnings, target_id, *, band_m, align_m):
     return out
 
 
+NODE_TOL_M = 1e-6            # 原 monitoring.NODE_TOL_M：点到支撑线的几何接点容差
+SUPPORT_KNOTS = 4            # 三次样条 4 节点支撑（U D.3）
+
+
+def _gamma(n):
+    eps = float(np.finfo(float).eps)
+    return n * eps / (1.0 - n * eps)
+
+
+def merge_semantic_lines(lines, *, knot_s, tol_m=NODE_TOL_M):
+    """V8-14 指令 4.2：同一成员、时间顺序相邻、同一支撑直线、间隙严格 < 4h 的语义直线合并为一段等式。
+    输入/输出六元组 (member_id, t0, t1, point_xy, unit_tangent_xy, meta)。平行/反平行都视为同一法向等式：
+    单位切向叉积 ≤ γ_8（二维叉积的浮点舍入界）判平行，点到支撑线距离 ≤ tol_m 判共线。合并后沿用最早段的点与切向，
+    时间取最早 t0、最晚 t1；meta 保留全部来源、原区间、gap 与最大共线残差。不跨越不共线的中间段。"""
+    h4 = SUPPORT_KNOTS * float(knot_s)
+    g8 = _gamma(8)
+    by = {}
+    for i, ln in enumerate(lines):
+        by.setdefault(ln[0], []).append((float(ln[1]), float(ln[2]), i, ln))
+    out = []
+    for mid in sorted(by):
+        seq = [x[3] for x in sorted(by[mid], key=lambda x: (x[0], x[1], x[2]))]
+        cur = None
+        for ln in seq:
+            if cur is None:
+                cur = {"base": ln, "t1": float(ln[2]), "src": [ln], "gaps": [], "res": 0.0}
+                continue
+            b = cur["base"]
+            u = np.asarray(b[4], float)
+            u = u / math.hypot(u[0], u[1])
+            v = np.asarray(ln[4], float)
+            v = v / math.hypot(v[0], v[1])
+            cross = abs(float(u[0] * v[1] - u[1] * v[0]))
+            dp = np.asarray(ln[3], float) - np.asarray(b[3], float)
+            dist = abs(float(u[0] * dp[1] - u[1] * dp[0]))
+            gap = float(ln[1]) - cur["t1"]
+            if gap < h4 and cross <= g8 and dist <= tol_m:
+                cur["src"].append(ln)
+                cur["gaps"].append(gap)
+                cur["res"] = max(cur["res"], dist)
+                cur["t1"] = max(cur["t1"], float(ln[2]))
+                continue
+            out.append(_emit_line(cur))
+            cur = {"base": ln, "t1": float(ln[2]), "src": [ln], "gaps": [], "res": 0.0}
+        if cur is not None:
+            out.append(_emit_line(cur))
+    return out
+
+
+def _emit_line(cur):
+    b = cur["base"]
+    if len(cur["src"]) == 1:
+        return b
+    meta = dict(b[5] or {})
+    meta.update(merged_from=[dict(s[5] or {}) for s in cur["src"]],
+                merged_intervals=[(float(s[1]), float(s[2])) for s in cur["src"]],
+                merged_gaps_s=list(cur["gaps"]), max_collinear_residual_m=float(cur["res"]))
+    return (b[0], float(b[1]), float(cur["t1"]), b[3], b[4], meta)
+
+
 def references_from_skeleton(skeleton, *, warnings=None, target_id=None, band_m=None, align_m=None):
     """返回 (TimeReference 元组, 语义直线区间, 成员站点→时间映射)。
     移动参考 = 名义分段匀加速运动，[release, release + travel]（不含末端保持；附录裁定 9.4）。"""

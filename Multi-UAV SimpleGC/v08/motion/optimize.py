@@ -949,10 +949,14 @@ def optimize_segment(ctx, skeleton, key, settings):
             ta = float(np.interp(s_a, nom.curve.s, nom.t_nodes)) + float(nom.release_s)
             tb = float(np.interp(s_b, nom.curve.s, nom.t_nodes)) + float(nom.release_s)
             turns.append((m, ta, tb, float(Mcfg[key_])))
+    # V8-14 指令 4.2：等式输入只合并一次（同成员相邻共线、间隙 < 4h）；几何判据仍用完整原曲线
+    from .skeleton import merge_semantic_lines
+    lines_raw = lines
+    lines = tuple(merge_semantic_lines(lines_raw, knot_s=float(settings["knot_s"])))
     problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines), tuple(turns))
     sol = solve_joint(problem, settings, knot_s=float(settings["knot_s"]))
     out = {"ok": False, "stage": "optimize", "reason": sol.reason, "solution": sol, "monitoring": None,
-           "references": refs, "lines": lines, "problem": problem, "maps": maps}
+           "references": refs, "lines": lines, "lines_raw": lines_raw, "problem": problem, "maps": maps}
     if not sol.ok:
         return out
     mon = check_monitoring(ctx, skeleton, sol.references, settings)
