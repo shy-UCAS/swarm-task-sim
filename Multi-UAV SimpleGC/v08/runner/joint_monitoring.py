@@ -23,6 +23,7 @@ import numpy as np
 
 from . import joint_report as JR
 from .monitoring import canonical_json, guard_path, jsonable, load_entries, write_json
+from .runtime_defaults import DEFAULT_WORKERS
 
 BUDGET = 20                 # U D.3.2；geometry.shape_attempts
 QUICK_FAMILIES = 10         # U D.3.3
@@ -404,7 +405,8 @@ def _record_row(rec):
     return row
 
 
-def run_batch(entries, *, stage, data_root, cache_dir, out_dir, workers=8, keys=None, settings=None, log=print):
+def run_batch(entries, *, stage, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, keys=None, settings=None,
+              log=print):
     """keys: [(order, draw)]（快速集或复跑集）；None 表示全部 entries × draw 0..4。单进程顺序执行
     （workers>1 的进程池由第 5 部分接入）。按业务 key 排序写 records.json 与 summary.json。"""
     from ..motion.optimize import load_settings

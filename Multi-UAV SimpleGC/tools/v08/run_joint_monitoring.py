@@ -5,6 +5,7 @@
     python -B tools/v08/run_joint_monitoring.py --stage numerics  --out <新目录>
     python -B tools/v08/run_joint_monitoring.py --stage quick|full|diversity --devset <devset_v08.json>
         --data-root <SwarmData> --cache <缓存目录> --out <新目录> [--workers N]
+    （--workers 缺省 = v08/runner/runtime_defaults.DEFAULT_WORKERS，V8-15 实测选定；quick 分支与 rerun 仍单进程）
     python -B tools/v08/run_joint_monitoring.py --stage rerun --devset ... --data-root ... --cache ...
         --keys <rerun_keys.json> --compare-to <原 full 目录> --out <新目录> --workers 1
 
@@ -37,7 +38,8 @@ def main(argv=None):
     ap.add_argument("--devset")
     ap.add_argument("--data-root")
     ap.add_argument("--cache")
-    ap.add_argument("--workers", type=int, default=1)
+    from v08.runner.runtime_defaults import DEFAULT_WORKERS
+    ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS)
     ap.add_argument("--keys")
     ap.add_argument("--compare-to")
     args = ap.parse_args(argv)

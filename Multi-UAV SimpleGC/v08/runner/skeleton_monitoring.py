@@ -15,6 +15,8 @@ from fractions import Fraction
 from pathlib import Path
 from statistics import median
 
+from .runtime_defaults import DEFAULT_WORKERS
+
 SUCCESS_FLOOR = Fraction(95, 100)        # U D.5
 GROUP_GAP = Fraction(10, 100)            # U D.5：10 个百分点
 ATTEMPT_MEDIAN = 1                       # U D.5
@@ -247,7 +249,7 @@ def _family_task(task):
     return rows
 
 
-def run_skeleton_batch(entries, *, data_root, cache_dir, out_dir, workers=8, draws=DRAWS, log=print):
+def run_skeleton_batch(entries, *, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, draws=DRAWS, log=print):
     """40 族 × draw 0..4，族为单位派发到 workers 个进程（spawn）；按业务键排序写出。返回 summary。"""
     import multiprocessing as mp
     from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
