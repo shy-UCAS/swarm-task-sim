@@ -556,6 +556,15 @@ class _Setup:
     def warning_bbox(self):
         return _warning_bbox(self)
 
+    def kappa_star(self):
+        """κ* = path.kappa_limit(0.5 m, 0.2 rad) = 0.38 m⁻¹（引导层折线分辨率）。"""
+        from ..path import kappa_limit
+        return kappa_limit(self.ctx.params["curve_spacing_m"], self.G["max_turn_per_chord_rad"])
+
+    def r_turn_m(self):
+        """1.05 × 15 m：U 形掉头不触发驻留的下界（monitoring.turn_u_min_m）× 优化掉头缓冲（joint_opt.buffer_turn_factor）。"""
+        return float(load_config("joint_opt").values["buffer_turn_factor"]) * float(self.M["turn_u_min_m"])
+
     def polar_mask_single(self, center, rs):
         """V8-13 单车道极坐标掩码 _polar_mask(..., shifts=[0])：宽相位筛选（保守），精确复核只收缩。"""
         return _polar_mask(self, np.asarray(center, float), 1, [0.0], rs)
@@ -843,43 +852,56 @@ def _band_record(G, comp, cert, *, rows=None):
 
 
 def _draw_shape(S, ring, rng):
-    """队形与圈心确定后只抽一次：分量/弧端点对 → K ~ U{4..8} → K 个均匀分位数 → logit → 环带内直接构造；
-    之后只运行一次原 _ring_ok 三项复核（不重抽、不缩向正圆）。返回 (spec, ok, audit)。"""
+    """队形与圈心确定后只抽一次：分量/弧端点对 → K ~ U{4..8} → K 个均匀分位数 → logit → u(φ) → 目标 t_j →
+    V8-14b 带曲率约束的线性规划（M=120，与选队形同一约束集，带目标求解）→ 精确曲率复核（1440/圈）→ 原 _ring_ok
+    三项复核。任何复核失败原样返回（不重抽、不缩向正圆）。返回 (spec, ok, audit)。"""
+    from ..monitoring_band import (LP_CONTROLS, arc_lp_inputs, construct_band_lp, exact_curvature_review,
+                                   lp_targets, shape_lp)
     q = ring["query"]
     G = q["geometry"]
     sg = int(ring["sigma"])
-    kmin, kmax = int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"])
+    kmax = float(q["kappa_max"])
+    kmin_, kmax_ = int(S.M["spline_basis_min"]), int(S.M["spline_basis_max"])
     step = 2.0 * math.pi / 360.0
     if ring["topology"] == "loop":
         loops = q["loops"]
         w = np.array([c["n_rows"] for c, _ in loops], float)
         comp, cert = loops[int(rng.choice(len(loops), p=w / w.sum()))]
-        K = int(rng.integers(kmin, kmax + 1))
+        K = int(rng.integers(kmin_, kmax_ + 1))
         v = rng.random(K)
         z = logit_from_quantiles(v)
-        curve = construct_band(cert, z)
+        rows = np.arange(360)
+        t, _u = lp_targets(rows, cert["A_m"], cert["B_m"], z)
+        t0 = time.perf_counter()
+        lp = shape_lp(rows, cert["A_m"], cert["B_m"], cert["A_m"], kmax=kmax, periodic=True, target=t)
+        _tick(S, "lp_construct_s", time.perf_counter() - t0)
         laps = float(rng.uniform(*S.ctx.params["monitoring"]["laps"]))
         phase = float(rng.uniform(0.0, 2 * np.pi))
-        spec = {"topology": "loop", "center_xy": tuple(map(float, ring["center"])), "rho0_m": curve.rho0_m,
-                "coefficients_m": tuple(float(x) for x in curve.coefficients_m), "phase_rad": phase, "direction": sg,
+        spec = {"topology": "loop", "center_xy": tuple(map(float, ring["center"])), "phase_rad": phase, "direction": sg,
                 "laps": laps, "K": K, "logit_quantiles": tuple(map(float, v)),
                 "logit_coefficients": tuple(map(float, z)), "band": _band_record(G, comp, cert),
                 "candidates_certified": len(loops)}
         phi0, phi1 = 0.0, sg * 2 * np.pi
     else:
         arcs = q["arcs"]
-        comp, ids, rows_mod, (s0, e0, cov), (lo, hi, tl, tu, thr) = arcs[int(rng.integers(0, len(arcs)))]
-        K = int(rng.integers(kmin, kmax + 1))
+        item = arcs[int(rng.integers(0, len(arcs)))]
+        comp, ids, rows_mod = item["comp"], item["ids"], item["rows_mod"]
+        s0, e0, cov = item["pair"]
+        lo, hi, tl, tu, thr = item["tubes"]
+        K = int(rng.integers(kmin_, kmax_ + 1))
         v = rng.random(K)
         z = logit_from_quantiles(v)
         cert = arc_certificate(lo[rows_mod], hi[rows_mod], tl[rows_mod], tu[rows_mod], s0, e0, q["offsets"],
                                int(ids[s0]))
         cert["threshold_m"] = thr
-        curve = construct_band(cert, z)
+        rid, Ap, Bp, Ac = arc_lp_inputs(ids, tl[rows_mod], tu[rows_mod], item["A_curv"], s0, e0)
+        t, _u = lp_targets(rid, Ap, Bp, z)
+        t0 = time.perf_counter()
+        lp = shape_lp(rid, Ap, Bp, Ac, kmax=kmax, periodic=False, target=t)
+        _tick(S, "lp_construct_s", time.perf_counter() - t0)
         phi_a, phi_b = float(ids[s0]) * step, float(ids[e0]) * step
         trav = int(rng.choice(np.array(S.ctx.params["monitoring"]["traversals"], dtype=int)))
-        spec = {"topology": "retrace", "center_xy": tuple(map(float, ring["center"])), "rho0_m": curve.rho0_m,
-                "coefficients_m": tuple(float(x) for x in curve.coefficients_m), "phi_a": phi_a, "phi_b": phi_b,
+        spec = {"topology": "retrace", "center_xy": tuple(map(float, ring["center"])), "phi_a": phi_a, "phi_b": phi_b,
                 "direction": sg, "traversals": trav, "arc_span_rad": phi_b - phi_a, "K": K,
                 "logit_quantiles": tuple(map(float, v)), "logit_coefficients": tuple(map(float, z)),
                 "arc_rows": (int(ids[s0]), int(ids[e0])), "param_span_deg": float(e0 - s0),
@@ -887,10 +909,30 @@ def _draw_shape(S, ring, rng):
                 "band": _band_record(G, comp, cert, rows=ids[s0:e0 + 1])}
         phi0, phi1 = phi_a, phi_b
     shifts = ring["shifts"]
+    D = max((abs(d) for d in shifts), default=0.0)
+    spec["lp"] = {"controls": LP_CONTROLS, "kappa_max": kmax, "status": lp["status"], "objective": lp["objective"],
+                  "message": lp["message"]}
+    if not lp["feasible"]:
+        # 与选队形同一约束集，按构造应可行；若数值上失败如实记账
+        spec["rho0_m"], spec["coefficients_m"] = None, None
+        return spec, False, {"reasons": ["lp_infeasible"], "lp_status": lp["status"], "lp_message": lp["message"]}
+    curve = construct_band_lp(lp, z)
+    spec["rho0_m"] = curve.rho0_m
+    spec["coefficients_m"] = tuple(float(x) for x in curve.coefficients_m)
     c = np.asarray(ring["center"], float)
-    ok = _ring_ok(S, c, spec["rho0_m"], spec["coefficients_m"], phi0, phi1, shifts)
-    audit = None if ok else _ring_audit(S, c, spec["rho0_m"], spec["coefficients_m"], phi0, phi1, shifts)
-    return spec, bool(ok), audit
+    review = exact_curvature_review(spec["rho0_m"], spec["coefficients_m"], phi0, phi1, D,
+                                    kappa_star=S.kappa_star(), r_turn_m=S.r_turn_m())
+    spec["exact_curvature"] = review
+    ok_ring = _ring_ok(S, c, spec["rho0_m"], spec["coefficients_m"], phi0, phi1, shifts)
+    ok = bool(review["ok"] and ok_ring)
+    audit = None
+    if not ok:
+        audit = (_ring_audit(S, c, spec["rho0_m"], spec["coefficients_m"], phi0, phi1, shifts) if not ok_ring
+                 else {"reasons": []})
+        if not review["ok"]:
+            audit["reasons"] = ["exact_curvature"] + list(audit["reasons"])
+        audit["exact_curvature"] = review
+    return spec, ok, audit
 
 
 # ---------------------------------------------------------------- 掉头
@@ -1325,6 +1367,7 @@ def _skeleton_diag(S, slots, ring, steps_log, spec=None, audit=None, turn_failur
                                                    "r_star_m", "threshold_m", "half_span_m", "e_geom_m",
                                                    "e_smooth_m", "e_m", "min_slack_m", "worst")} if band else None,
            "candidates_certified": (spec or {}).get("candidates_certified"),
+           "lp": (spec or {}).get("lp"), "exact_curvature": (spec or {}).get("exact_curvature"),
            "topology": (ring or {}).get("topology"), "forced": (ring or {}).get("forced"),
            "turn_failure": turn_failure}
     return out
@@ -1409,6 +1452,9 @@ def propose_and_build(ctx, group, task, states, key):
     S = _Setup(ctx, group, task, states, key)
     S.timing = {}
     _LAST_TIMING.clear()
+    from ..monitoring_band import LP_STATS
+    for k_ in LP_STATS:
+        LP_STATS[k_] = 0 if isinstance(LP_STATS[k_], int) else 0.0
     t_all = time.perf_counter()
     try:
         rng, crng = S.rng("shape"), S.rng("connect")
@@ -1445,6 +1491,7 @@ def propose_and_build(ctx, group, task, states, key):
                             "shape_audit_failed": False, "skeleton_diag": diag})
     finally:
         S.timing["attempt_s"] = time.perf_counter() - t_all
+        S.timing.update({"lp_" + k_: v_ for k_, v_ in LP_STATS.items()})
         _LAST_TIMING.update(S.timing)
 
 

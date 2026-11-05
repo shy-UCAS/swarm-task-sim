@@ -18,6 +18,13 @@ floor(φN/2π)−1…+2），平滑值是这些 r_k 的凸组合；r_k ∈ [A_k,
 余量 ≥ D + q + η，于是参考点余量 ≥ D + Δr/2 + η，偏移不超过 D 的任一车道点余量 ≥ η = 2ε_f，覆盖组合栅格复核的保守损失。
 全局 e_g、e_s、e 只作诊断字段保留（指令 2.2 的定义），不参与判定和取值。
 
+V8-14b 修订（曲率约束形状构造裁定 3.1–3.2）：第 5 条的取值与正基平均被取代——形状改为 M=120 控制点（3°）的周期三次
+B 样条，由 scipy linprog(highs) 在每行与相邻行中点上满足 A ≤ ρ ≤ B 与 |ρ − ρ''| ≤ κ_max·A²，最小化 Σ|ρ(φ_j) − t_j|，
+t_j = A_j + u(φ_j)(B_j − A_j)；κ_max = min(κ*/(1+κ*D), 1/(1.05·15+D))。选队形用同一线性规划的可行性（第 4 条
+A_j ≤ B_j 仍是其必要部分）。构造后在 1440/圈 的方位上精确复核曲率。construct_band 保留给预置测试，不再用于生产。
+折返弧：冻结的 path.py 只有周期 spline_arc 图元，故弧上同样用 120 控制点的周期样条，只在弧所在方位段施加约束，
+支撑之外的控制值不影响飞行段（未使用"夹持样条"，见报告 V8-14b 偏离说明）。
+
 纯数值函数导入时不加载 shapely；场景几何（scene.exact）只在 radial_* / build_band_query 内惰性导入。
 """
 import math
@@ -499,16 +506,171 @@ class BandGeometry:
         return out
 
 
-def loop_query(G, D, offsets):
-    """环绕：每个跨满 360 行的分量各求一次周期证书；返回已通过的 [(分量, 证书)]。"""
+# ---------------------------------------------------------------- V8-14b：带曲率约束的线性规划形状（裁定 V8-14b 3.1、3.2）
+
+LP_CONTROLS = 120                 # V8-14b 3.1.1：M = 120（3° 间隔）
+LP_STATS = {"calls": 0, "seconds": 0.0, "infeasible": 0, "feasibility_calls": 0}
+
+
+def kappa_max(D, kappa_star, r_turn_m):
+    """κ_max = min(κ*/(1 + κ*·D), 1/(1.05·15 + D))（V8-14b 第 2 节）：车道曲率 κ/(1−κD) ≤ κ*；最内车道转弯半径 ≥ r_turn。"""
+    D = float(D)
+    return min(float(kappa_star) / (1.0 + float(kappa_star) * D), 1.0 / (float(r_turn_m) + D))
+
+
+_LP_BASIS = {}
+
+
+def _lp_basis(M=LP_CONTROLS):
+    """全局 720 个采样方位（第 j 行 φ_j = j°，与中点 j+½°）上的 ρ 与 ρ'' 基矩阵（720×M），用冻结
+    path.periodic_radius_derivs 逐列求值，保证与生产采样同一函数。"""
+    if M not in _LP_BASIS:
+        from .path import periodic_radius_derivs
+        phis = np.radians(np.arange(2 * PHI_ROWS) * 0.5)
+        W0 = np.zeros((len(phis), M))
+        W2 = np.zeros((len(phis), M))
+        for k in range(M):
+            e = np.zeros(M)
+            e[k] = 1.0
+            r, _, d2 = periodic_radius_derivs(phis, 0.0, e)
+            W0[:, k], W2[:, k] = r, d2
+        W0[np.abs(W0) < 1e-15] = 0.0
+        W2[np.abs(W2) < 1e-15] = 0.0
+        _LP_BASIS[M] = (W0, W2)
+    return _LP_BASIS[M]
+
+
+def _clamped_windows(tl, tu, periodic):
+    n = len(tl)
+    W = _windows(n, periodic)
+    return np.max(tl[W], axis=1), np.min(tu[W], axis=1)
+
+
+def shape_lp(row_ids, A_pos, B_pos, A_curv, *, kmax, periodic, target=None, M=LP_CONTROLS):
+    """V8-14b 3.1：在连续方位行 row_ids（展开整数；periodic 时为完整 360 行）上求周期三次 B 样条控制值 c（M 个）。
+    约束（每行 j 与相邻两行中点；中点用两行区间交集、曲率 A 取两行较大者）：
+        A ≤ ρ ≤ B，  −κ_max·A_c² ≤ ρ − ρ'' ≤ κ_max·A_c²；
+    target 为 None 时只判可行（零目标，选队形用）；否则最小化 Σ_j |ρ(φ_j) − t_j|。
+    返回 {"feasible", "controls"(M,)|None, "status", "message", "objective"}。线性化不保证保守，以精确复核为准。"""
+    import time as _time
+    from scipy.optimize import linprog
+    from scipy.sparse import csr_matrix, hstack, identity, vstack
+    t0 = _time.perf_counter()
+    ids = np.asarray(row_ids, int)
+    n = len(ids)
+    Ap, Bp, Ac = (np.asarray(x, float) for x in (A_pos, B_pos, A_curv))
+    W0g, W2g = _lp_basis(M)
+    rows = 2 * (ids % PHI_ROWS)
+    m_lo, m_hi = np.maximum(Ap[:-1], Ap[1:]), np.minimum(Bp[:-1], Bp[1:])
+    m_ac = np.maximum(Ac[:-1], Ac[1:])
+    mids = 2 * (ids[:-1] % PHI_ROWS) + 1
+    if periodic:
+        m_lo = np.r_[m_lo, max(Ap[-1], Ap[0])]
+        m_hi = np.r_[m_hi, min(Bp[-1], Bp[0])]
+        m_ac = np.r_[m_ac, max(Ac[-1], Ac[0])]
+        mids = np.r_[mids, 2 * (ids[-1] % PHI_ROWS) + 1]
+    samp = np.r_[rows, mids]
+    lo = np.r_[Ap, m_lo]
+    hi = np.r_[Bp, m_hi]
+    ac = np.r_[Ac, m_ac]
+    LP_STATS["calls"] += 1
+    if target is None:
+        LP_STATS["feasibility_calls"] += 1
+    out = {"feasible": False, "controls": None, "status": None, "message": None, "objective": None}
+    if not (np.all(np.isfinite(lo)) and np.all(np.isfinite(hi)) and np.all(lo <= hi)):
+        out.update(status="empty_interval", message="区间（含中点交集）为空")
+        LP_STATS["infeasible"] += 1
+        LP_STATS["seconds"] += _time.perf_counter() - t0
+        return out
+    W0, W2 = W0g[samp], W2g[samp]
+    used = np.flatnonzero(np.any(W0 != 0.0, axis=0) | np.any(W2 != 0.0, axis=0))
+    W0u, Ku = W0[:, used], (W0 - W2)[:, used]
+    cap = float(kmax) * ac * ac
+    A_ub = vstack([csr_matrix(-W0u), csr_matrix(W0u), csr_matrix(Ku), csr_matrix(-Ku)], format="csr")
+    b_ub = np.r_[-lo, hi, cap, cap]
+    nu = len(used)
+    if target is None:
+        cost = np.zeros(nu)
+        bounds = [(None, None)] * nu
+    else:
+        t = np.asarray(target, float)
+        Wr = csr_matrix(W0[:n][:, used])
+        I = identity(n, format="csr")
+        A_ub = vstack([hstack([A_ub, csr_matrix((A_ub.shape[0], n))]), hstack([Wr, -I]), hstack([-Wr, -I])],
+                      format="csr")
+        b_ub = np.r_[b_ub, t, -t]
+        cost = np.r_[np.zeros(nu), np.ones(n)]
+        bounds = [(None, None)] * nu + [(0.0, None)] * n
+    res = linprog(cost, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method="highs")
+    out.update(status=int(res.status), message=str(res.message))
+    if res.status == 0:
+        c = np.zeros(M)
+        c[used] = res.x[:nu]
+        # 支撑之外的控制值不影响飞行段：取循环下标距离最近的已用控制值（同距取较小下标），只为数组完整
+        if nu < M:
+            free = np.setdiff1d(np.arange(M), used)
+            dist = np.abs(free[:, None] - used[None, :])
+            dist = np.minimum(dist, M - dist)
+            c[free] = c[used[np.argmin(dist, axis=1)]]
+        out.update(feasible=True, controls=c, objective=float(res.fun))
+    else:
+        LP_STATS["infeasible"] += 1
+    LP_STATS["seconds"] += _time.perf_counter() - t0
+    return out
+
+
+def exact_curvature_review(rho0, coef, phi0, phi1, D, *, kappa_star, r_turn_m, per_circle=1440):
+    """V8-14b 3.1.5：在 1440/圈 的方位上用精确极坐标曲率 κ = (ρ² + 2ρ'² − ρρ'')/(ρ² + ρ'²)^{3/2} 复核
+    |κ|·(D + r_turn) ≤ 1 与车道曲率 |κ|/(1 − |κ|D) ≤ κ*。返回 {"ok", "kappa_max_abs", "at_phi", ...}。"""
+    from .path import periodic_radius_derivs
+    span = float(phi1) - float(phi0)
+    n = max(2, int(math.ceil(abs(span) / (2.0 * math.pi) * per_circle))) + 1
+    ph = float(phi0) + span * np.linspace(0.0, 1.0, n)
+    r, d1, d2 = periodic_radius_derivs(ph, rho0, coef)
+    kap = (r * r + 2.0 * d1 * d1 - r * d2) / np.power(r * r + d1 * d1, 1.5)
+    ka = np.abs(kap)
+    D = float(D)
+    turn_ok = ka * (D + float(r_turn_m)) <= 1.0
+    den = 1.0 - ka * D
+    lane_ok = (den > 0.0) & (ka <= float(kappa_star) * np.where(den > 0.0, den, 1.0))
+    ok = bool(np.all(turn_ok & lane_ok) and np.all(r > 0.0))
+    k = int(np.argmax(ka))
+    return {"ok": ok, "kappa_max_abs": float(ka[k]), "at_phi": float(ph[k]), "samples": int(n),
+            "turn_violations": int((~turn_ok).sum()), "lane_violations": int((~lane_ok).sum()),
+            "min_radius_m": float(1.0 / ka[k]) if ka[k] > 0 else None}
+
+
+def construct_band_lp(lp, logit_coefficients):
+    """LP 控制值 → BandCurve（rho0 = 均值，coefficients = 去均值）；u 仅作记录。"""
+    c = np.asarray(lp["controls"], float)
+    rho0 = float(np.mean(c))
+    return BandCurve(rho0, c - rho0, c, np.array([]), logit_coefficients)
+
+
+def lp_targets(row_ids, A, B, logit_coefficients):
+    """t_j = A_j + u(φ_j)(B_j − A_j)，u = expit(K 基周期样条)（裁定 5）。"""
+    from .path import periodic_radius_derivs
+    phis = 2.0 * math.pi * (np.asarray(row_ids, int) % PHI_ROWS) / PHI_ROWS
+    u = _expit(periodic_radius_derivs(phis, 0.0, np.asarray(logit_coefficients, float))[0])
+    return A + u * (B - A), u
+
+
+# ---------------------------------------------------------------- 查询：选队形与构造共用同一线性规划（V8-14b 3.2）
+
+def loop_query(G, D, offsets, *, kmax):
+    """环绕：跨满 360 行且局部证书成立的分量，再要求 V8-14b 线性规划可行；返回 [(分量, 证书)]。"""
     got = []
     for comp in G.components:
         if not comp["wrapping"]:
             continue
         lo, hi, tl, tu, thr = G.tubes(comp, D)
         cert = band_certificate(lo, hi, tl, tu, offsets, periodic=True)
-        cert.update(q_m=G.q, eta_m=G.eta, threshold_m=thr, component=comp["id"])
-        if cert["feasible"]:
+        cert.update(q_m=G.q, eta_m=G.eta, threshold_m=thr, component=comp["id"], kappa_max=kmax)
+        if not cert["feasible"]:
+            continue
+        lp = shape_lp(np.arange(PHI_ROWS), cert["A_m"], cert["B_m"], cert["A_m"], kmax=kmax, periodic=True)
+        cert["lp_status"] = lp["status"]
+        if lp["feasible"]:
             got.append((comp, cert))
     return got
 
@@ -532,9 +694,63 @@ def _unrolled_rows(comp, tl):
     return segs, False
 
 
-def retrace_query(G, D, offsets, min_true_deg):
-    """折返：每个分量的每个连续方位段上，按真实目标方位覆盖下界 ≥ min_true_deg 与弧证书列出全部合法端点对。
-    返回 [(分量, 段展开行, (s, e, cov))]。全圆分量：起点循环，终点在其后 1…359 行（不把整圈当弧）。"""
+def arc_lp_inputs(ids, tlu, tuu, A_curv_seg, s, e):
+    """弧 [s, e]（展开下标）的 LP 输入：位置约束用弧证书（邻域夹取到弧端）；曲率线性化中的 A 用方位段级
+    局部交集 A_curv_seg（使可行性对子弧单调）。"""
+    Ap, Bp = _clamped_windows(tlu[s:e + 1], tuu[s:e + 1], False)
+    return ids[s:e + 1], Ap, Bp, A_curv_seg[s:e + 1]
+
+
+def _arc_feasible(ids, tlu, tuu, A_curv_seg, s, e, kmax):
+    rid, Ap, Bp, Ac = arc_lp_inputs(ids, tlu, tuu, A_curv_seg, s, e)
+    return shape_lp(rid, Ap, Bp, Ac, kmax=kmax, periodic=False)["feasible"]
+
+
+def lp_feasible_pairs(pairs, ids, tlu, tuu, A_curv_seg, kmax, *, whole_feasible=None):
+    """在已认证端点对中保留 LP 可行者。可行性对子弧单调（位置约束随子弧放宽，曲率约束不变），故
+    maxe(s) 随 s 不减：逐个起点从已知可行端点向上先试该起点的最远候选，不行再倍增探测 + 二分（结果与逐对求解一致）。
+    whole_feasible=True 时（整段/整圈可行）全部保留。"""
+    if not pairs:
+        return []
+    if whole_feasible:
+        return list(pairs)
+    by_s = {}
+    for p in pairs:
+        by_s.setdefault(p[0], []).append(p)
+    keep = []
+    e_known = -1
+    for s in sorted(by_s):
+        cand = by_s[s]
+        upper = max(p[1] for p in cand)
+        lo_ok = max(e_known, s)          # [s, lo_ok] 可行（子弧单调；lo_ok = s 时为单行，区间非空即可行）
+        if upper > lo_ok:
+            if _arc_feasible(ids, tlu, tuu, A_curv_seg, s, upper, kmax):
+                lo_ok = upper
+            else:
+                bad = upper
+                step = 1
+                while lo_ok + step < bad:
+                    x = lo_ok + step
+                    if _arc_feasible(ids, tlu, tuu, A_curv_seg, s, x, kmax):
+                        lo_ok = x
+                        step *= 2
+                    else:
+                        bad = x
+                        break
+                while bad - lo_ok > 1:
+                    mid = (lo_ok + bad) // 2
+                    if _arc_feasible(ids, tlu, tuu, A_curv_seg, s, mid, kmax):
+                        lo_ok = mid
+                    else:
+                        bad = mid
+        e_known = lo_ok
+        keep.extend(p for p in cand if p[1] <= lo_ok)
+    return keep
+
+
+def retrace_query(G, D, offsets, min_true_deg, *, kmax):
+    """折返：每个分量的每个连续方位段上，真实目标方位覆盖下界 ≥ min_true_deg、弧证书成立且 V8-14b 线性规划可行的
+    全部端点对。返回 [dict(comp, ids, rows_mod, pair, tubes, A_curv)]。全圆分量起点循环、跨度 1…359 行。"""
     out = []
     for comp in G.components:
         lo, hi, tl, tu, thr = G.tubes(comp, D)
@@ -542,29 +758,52 @@ def retrace_query(G, D, offsets, min_true_deg):
         for seg in segs:
             if wrap:
                 base = np.arange(PHI_ROWS)
-                ids = np.r_[base, base[:-1] + PHI_ROWS]           # 展开两圈减一行：弧长 < 360°
-                rows_mod = ids % PHI_ROWS
+                ids = np.r_[base, base[:-1] + PHI_ROWS]
             else:
                 ids = np.asarray(seg)
-                rows_mod = ids % PHI_ROWS
+            rows_mod = ids % PHI_ROWS
             ok = np.isfinite(tl[rows_mod]) & np.isfinite(tu[rows_mod])
             pairs = certified_arc_pairs(tl[rows_mod], tu[rows_mod], ids, ok, center=G.center,
                                         facility_center=G.facility_center, min_true_deg=min_true_deg,
                                         s_max=PHI_ROWS - 1 if wrap else None,
                                         max_span=PHI_ROWS - 1 if wrap else None)
-            for p in pairs:
-                out.append((comp, ids, rows_mod, p, (lo, hi, tl, tu, thr)))
+            if not pairs:
+                continue
+            tlu, tuu = tl[rows_mod], tu[rows_mod]
+            whole = None
+            # 曲率线性化的 A：方位段级局部交集（缺管区间的行不参与取最大）
+            if wrap:
+                fin_g = np.isfinite(tl) & np.isfinite(tu)
+                tlm = np.where(fin_g, tl, -np.inf)
+                A_curv = _clamped_windows(tlm, tlm, True)[0][rows_mod]
+                if fin_g.all():
+                    Ag, Bg = _clamped_windows(tl, tu, True)
+                    whole = shape_lp(np.arange(PHI_ROWS), Ag, Bg, Ag, kmax=kmax, periodic=True)["feasible"]
+            else:
+                fin = np.isfinite(tlu) & np.isfinite(tuu)
+                tlm = np.where(fin, tlu, -np.inf)
+                A_curv = _clamped_windows(tlm, tlm, False)[0]
+                if fin.all():
+                    Ap, Bp = _clamped_windows(tlu, tuu, False)
+                    whole = shape_lp(ids, Ap, Bp, A_curv, kmax=kmax, periodic=False)["feasible"]
+            kept = lp_feasible_pairs(pairs, ids, tlu, tuu, A_curv, kmax, whole_feasible=whole)
+            for p in kept:
+                out.append({"comp": comp, "ids": ids, "rows_mod": rows_mod, "pair": p,
+                            "tubes": (lo, hi, tl, tu, thr), "A_curv": A_curv})
     return out
 
 
 def build_band_query(setup, center, slots, *, topology):
-    """生产队形探测的唯一入口：给定圈心、槽位与拓扑，返回 {"feasible", ...}。setup 为 monitoring._Setup。"""
+    """生产队形探测与构造共用的唯一入口（V8-14b 3.2：局部证书 + 曲率约束线性规划可行）。"""
     G = setup.band_geometry(center)
     offsets = [d for _, d in slots.offsets.values()]
     D = max((abs(d) for d in offsets), default=0.0)
+    kmax = kappa_max(D, setup.kappa_star(), setup.r_turn_m())
     if topology == "loop":
-        got = loop_query(G, D, offsets)
-        return {"feasible": bool(got), "topology": "loop", "loops": got, "geometry": G, "D": D, "offsets": offsets}
+        got = loop_query(G, D, offsets, kmax=kmax)
+        return {"feasible": bool(got), "topology": "loop", "loops": got, "geometry": G, "D": D, "offsets": offsets,
+                "kappa_max": kmax}
     min_true = float(setup.criteria["min_azimuth_coverage_deg"])
-    got = retrace_query(G, D, offsets, min_true)
-    return {"feasible": bool(got), "topology": "retrace", "arcs": got, "geometry": G, "D": D, "offsets": offsets}
+    got = retrace_query(G, D, offsets, min_true, kmax=kmax)
+    return {"feasible": bool(got), "topology": "retrace", "arcs": got, "geometry": G, "D": D, "offsets": offsets,
+            "kappa_max": kmax}

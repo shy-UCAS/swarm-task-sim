@@ -130,9 +130,10 @@ class MetricsPreset(unittest.TestCase):
         v[-1] = 0.
         zero = phase_metrics(t, p, v, p, v, p, v,
                              {"patrol": (0., 2.)}, tangent)["patrol"]
-        self.assertIsNone(zero["measured_ratio"], "参考最小速度0时不除epsilon")
-        self.assertEqual(zero["ratio_reason"], "reference_min_zero",
-                         "起停端点必须如实标N/A原因")
+        self.assertEqual(zero["measured_ratio"], 1.0,
+                         "V8-14b 3.3/裁定7：只统计参考速度≥0.5m/s的样本，端点停车不计，比值1.0")
+        self.assertIsNone(zero["ratio_reason"],
+                          "V8-14b 3.3/裁定7：有移动样本时原因字段为None")
 
 
 if __name__ == "__main__":

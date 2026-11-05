@@ -117,6 +117,7 @@ def _summarize_attempt(a, plan, timing, exc_text=None):
            "formation_steps": [{k: st.get(k) for k in ("formation", "lateral_step_m", "found")}
                                for st in diag.get("formation_steps") or []],
            "certificate": diag.get("certificate"), "candidates_certified": diag.get("candidates_certified"),
+           "lp": diag.get("lp"), "exact_curvature": diag.get("exact_curvature"),
            "draw": w.get("draw"), "timing": timing}
     if f is None:
         turns = (plan.proposal.get("topology_info") or {}).get("turns") or []
@@ -335,7 +336,10 @@ def write_outputs(out, rows, *, expected, wall_s, workers):
                          "grid_total": _distribution([g[2] for t in turns for g in t["grid"]]),
                          "visited": _distribution([g[3] for t in turns for g in t["grid"]])},
                "timing": {k: _distribution([tm.get(k) for tm in timings]) for k in (
-                   "attempt_wall_s", "band_geometry_s", "band_query_s", "turn_query_s")},
+                   "attempt_wall_s", "band_geometry_s", "band_query_s", "turn_query_s", "lp_seconds", "lp_calls",
+                   "lp_feasibility_calls", "lp_construct_s")},
+               "exact_curvature_min_radius_m": _distribution([(a.get("exact_curvature") or {}).get("min_radius_m")
+                                                              for a in logs]),
                "contract_wall_s": _distribution([r.get("wall_s") for r in rows])}
     write_json(out / "summary.json", summary, indent=1)
     with open(out / "by_bin.csv", "w", encoding="utf-8", newline="") as fh:
