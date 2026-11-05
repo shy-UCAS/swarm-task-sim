@@ -87,3 +87,69 @@
   | `test_preset_local_stress.py` | `68e31d083ef0715efe02d3f9cb90f81cdbcdbb49f8be4a62303c15b735e30290` |
 
 - **附录的审计副本：** 附录第 0 节写"另存一份到 `traj2language_docs\审计\`"。我开工时该目录里没有 V8-15 文件；该目录不在本项写入白名单内，所以我没有写入，只在这里记录。
+
+## 2. 第 2 部分：合成测试与注入重做
+
+完整日志：[part2/tests_part2.txt](part2/tests_part2.txt)（脚本 [run_suites.sh](run_suites.sh)；每套写出命令、cwd、提交、线程变量与 `unittest -v` 全文，含 traceback）。
+
+### 2.1 覆盖映射（已有测试直接运行，不抄写）
+
+| 要求 | 引用的已有测试 | 结果 |
+|---|---|---|
+| 采样 1.9 m 失败；帧间 1.9 m、采样约 2.025 m 通过；释放前排除 | V8-11 `test_preset_v8_11_validity.py`：`test_parallel`、`test_interframe_near_miss`、`test_visibility_and_offsets` | 3/3 ok |
+| 非目标警戒层代码、限制区闭边界 | V8-11 `test_preset_v8_11_segment.py::test_other_facility_alert`；`test_preset_v8_11_validity.py::test_boundary_is_inside` | 2/2 ok |
+| 下游失败不退让；只有宽度查询能选下一个队形；唯一 20 次预算 | V8-13 `test_preset_numeric_flow.py` 四个方法 | 4/4 ok |
+| LP 约束、曲率复核、可行性与目标 LP 一致、折返扫描 | V8-14 `test_extra_curvature_lp.py` 六个方法 | 6/6 ok |
+| 时间跟踪批量等价 | V8-14 `test_extra_tracking_batch.py` | 3/3 ok |
+| 保留/P0 及次数统计 | V8-13 `test_extra_checkpoint_v13c.py` | 6/6 ok |
+| 精确证书 | V8-12 `test_preset_numpy_geometry.py::test_column_band_empty_certificate`、`test_narrow_legal_channel_is_not_proven_empty`；`test_preset_numpy_checkpoint.py::test_false_proof_triggers` | 3/3 ok |
+
+### 2.2 本项预置测试（原样，未改预期）
+
+| 文件 | 结果 | 说明 |
+|---|---|---|
+| `test_preset_numeric_protocol.py` | **5/5 ok** | 第一次运行 1 个 ERROR：我写的 `pair_minima` 在空数组上先 reshape 再判空（`cannot reshape array of size 0`）。这是新工具的实现错误，按指令 7 修正工具后重跑通过；预期未改 |
+| `test_preset_local_formation.py` | **4/4 ok**（第一次运行即通过） | 真实 `propose_and_build → _band_probe → build_band_query → loop_query → band_certificate/shape_lp`；横排、梯形（二分顺序 10, 3, 6.5, 4.75, 5.625，返回 4.75）、纵列、全空四种都与手算一致；全空单次 `candidate_rejected`/`patrol_region`，最终分类 `approx_empty`。附录第 3 节担心的二分顺序不一致**没有出现** |
+| `test_preset_local_injection.py` | **3/3 ok**（第一次运行即通过） | 见 2.3 |
+| `test_preset_local_stress.py` | 本部分运行时 ImportError（`run_separation_v15` 尚未实现）= 前提未完成，不算通过；第 6 部分实现后的结果见第 6 节 | |
+| `test_preset_local_defaults.py` | 本部分 skip（未设 `V8_15_WORKER_SELECTION`）；skip 不计为通过；第 4 部分选定后的结果见第 4 节 | |
+
+### 2.3 注入重做（P0-2）——**未触发**
+
+`test_preset_local_injection.py` 用 V8-11 合成圆场景，只替换公共抽签装配、规划、优化与跟踪结果供给，以及三个非门禁遥测函数。`run_contract`、`run_attempts`、`attempt_chain`、`stitch`、`verify_segments`、`visible_track`、`check_validity`、`_attempt_summary`、`save_contract` 全部是生产原函数。
+
+| 注入（attempt 0） | 底层代码 | 顶层 stage / reason / code | 重做 |
+|---|---|---|---|
+| 末帧采样间距 1 m | `validity.codes` 含 `separation_violation`（段核验通过） | `validity` / `validity` / `candidate_rejected` | attempt 1 保留 |
+| 非目标设施 fac_b 警戒层内一点 | 段 verdict `failures` 含 `("b", "other_facilities_within_limit", "constraint_violation")` | `verify_segments` / `segment_verification` / `candidate_rejected` | attempt 1 保留 |
+| 限制区圆心一点 | `validity.codes` 含 `constraint_violation`（段核验通过） | `validity` / `validity` / `candidate_rejected` | attempt 1 保留 |
+
+三种注入都断言了以下几点：
+- 干净夹具先独立通过冻结核验器（段核验全通过，validity 通过，最小间距 10 m）。
+- 规划只被调用 attempt 0、1 两次。
+- 两次 attempt 中 `verify_segments` 与 `check_validity` 各被调用 2 次：段核验失败时 validity 仍执行，随后优先返回段核验失败。
+- 记录 `attempts=2`、`post_optimization_failures=1`、`skeleton_failures=0`、`unknown_attempts=0`。
+- 落盘的 `result.json.attempt_log` 的 ok 序列为 `[False, True]`：失败历史保留。
+- 两个成员的 `tracks/<m>/p.npy` 与内存保留结果都逐值等于独立干净轨迹。
+
+### 2.4 已有套件回归（U D.6）
+
+| 套件 | 本次 | 基线（REPORT14 C.2） |
+|---|---|---|
+| V8-14 numeric | 17/17 | 17/17 |
+| V8-14 extra | 14/14 | 14/14 |
+| V8-14 local_geometry | 1/1 | 1/1 |
+| V8-13 numeric | 20/20 | 20/20 |
+| V8-13 extra | 8/8 | 8/8 |
+| V8-12 全目录 | 37 通过、2 失败、1 跳过 | 37/2/1 |
+| V8-11 全目录（覆盖映射所在） | 30/30 | — |
+
+V8-12 的两个失败和一个跳过，按**测试名与原因**逐项对照 V8-14 日志 [tests_v14c_impl.txt](../V8-14/v14c/tests_v14c_impl.txt)，完全相同：
+- `test_preset_local_devset::test_registered_files_hash_and_read_only`：`root_text` 为 None，即未设 `V8_12_DATA_ROOT`。
+- `test_preset_numpy_checkpoint::test_each_diagnostic_threshold`：`'frechet' not found in ()`，即"同条件中位数 19 < 场景间距 20"。这是 V8-12 期的既有疑似预期错误。
+- 跳过的是 `test_own_part2::TestFieldOnRealScene`，原因"需要 V8_12_DATA_ROOT"。
+
+**补充：设置数据根后重跑 V8-12**，日志 [part2/tests_part2_v812_data.txt](part2/tests_part2_v812_data.txt)。
+- 环境变量：`V8_12_DATA_ROOT = F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData`（resolve 后同一路径）。`V812_DATA_ROOT` 未设，`test_own_part3` 用其代码默认值，即同一 SwarmData。
+- 两个数据测试都只读输入、用系统临时缓存。
+- 结果 39/40：devset 测试通过，跳过的真实场景测试通过；仍失败的只有上面 `frechet` 那一项，原因相同。
