@@ -227,3 +227,37 @@ C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -
 
 推送后 `git ls-remote origin`：`refs/heads/review/v08/V8-14-skeleton = 6b5ece4ddf9e8cbdf7e6dda436bf0e2916236a8e`、`refs/heads/dev/v0.8 = 0d2f0a35adcb90df31a15b210f89a13c7d499c9f`（本节自身随下一提交推送，最终分支头以该提交为准）。本项未合并进 `dev/v0.8`。
 
+---
+
+# V8-14b：曲率约束形状构造（返工，2026-11-04）
+
+> 依据：`claude/v08/V8-14b_曲率约束形状构造裁定_20261104.md`（SHA256 `30d71c93…cc16d88`）。只改裁定第 3 节各条，其余照 V8-14 指令与附录。上文第 0–11 节为 V8-14 原执行记录，保留不改。
+
+## B.1 实现（提交 `a1396b6`）
+
+- **形状 = 曲率约束线性规划（3.1）**：`monitoring_band.shape_lp`。半径为 M = 120 控制点（3°）的周期三次 B 样条；在每个方位行 j 与相邻两行中点（中点区间取两行交集，曲率 A 取两行较大者）上约束 A ≤ ρ ≤ B 与 −κ_max·A² ≤ ρ − ρ'' ≤ κ_max·A²；目标最小化 Σ_j |ρ(φ_j) − t_j|，t_j = A_j + u(φ_j)(B_j − A_j)，u 为裁定 5 的 K 基 logistic 随机函数（引入松弛变量）；`scipy.optimize.linprog(method="highs")`（SciPy 1.14.1 已在 `llm`，未装包）。基矩阵由冻结 `path.periodic_radius_derivs` 逐列求值，与生产采样同一函数。κ_max = min(κ*/(1+κ*D), 1/(1.05·15 + D))，κ* = `kappa_limit(0.5, 0.2)` = 0.38 m⁻¹，1.05 = `joint_opt.buffer_turn_factor`，15 = `monitoring.turn_u_min_m`。
+- **复核（3.1.5）**：`exact_curvature_review` 在 1440/圈 方位上用 κ = (ρ² + 2ρ'² − ρρ'')/(ρ² + ρ'²)^{3/2} 检查 |κ|(D + 15.75) ≤ 1 与 |κ|/(1 − |κ|D) ≤ κ*；之后照常运行原 `_ring_ok` 三项；任一失败计 `patrol_shape_audit`（原因 `exact_curvature` / 原三项）。
+- **选队形（3.2）**：`loop_query`/`retrace_query` 在局部证书（A_j ≤ B_j，仍为必要部分）之上要求同一线性规划可行（零目标）；构造用同一约束集加目标求解。梯形步长二分不变，判定换成该检验。
+- **折返弧的可行集合**：弧的位置约束用弧证书（邻域在弧端夹取）；曲率线性化中的 A 取方位段级局部交集，使"弧可行"对子弧单调（子弧位置约束只放宽、曲率约束不变）。于是：整圈/整段 LP 可行 ⇒ 全部端点对可行；否则按起点单调扫描（先试最远候选、倍增 + 二分）求每个起点的最远可行终点，结果与逐对求解相同（自加测试穷举核对）。
+- **授权测试修订（3.3）**：`test_phase_ratio_and_along_projection` 末两条断言改为 `measured_ratio == 1.0`、`ratio_reason is None`；文件 SHA256 `b0d83416…2cc5f6` → `05d31c4e…05eb2ee`，diff 见 [v14b_test_3_3.diff](v14b_test_3_3.diff)。其余预置测试未改。
+- **自加测试** `tests/v08/V8-14/test_extra_curvature_lp.py` 6/6：κ_max 公式；台阶夹具上 LP 解满足行/中点区间与线性化曲率约束；LP 解通过精确复核、紧跟 100 m 台阶的曲线被拒绝；圆上 κ = 1/R 与 κ(D+15.75)=1 边界；同一 (A,B,κ_max) 下可行性 LP 与带目标 LP 同判且覆盖可行/不可行；折返单调扫描与逐对穷举一致。
+- **测试**（[tests_v14b_impl.txt](tests_v14b_impl.txt)）：V8-14 numeric 17/17、local_geometry 1/1、extra 11/11；V8-13 numeric 20/20、extra 8/8；V8-12 37/40（2 失败与基线相同）。
+
+**偏离说明：** 裁定 3.1.1 要求折返弧用"同间隔的夹持样条"。冻结的 `path.py` 只有周期 `spline_arc` 图元（采样、曲率、成员派生都经由它），新增夹持图元需要改冻结文件。执行方改为：折返弧同样用 120 控制点（3°）的周期样条，只在弧所在方位段施加约束与目标，支撑之外的控制值不影响飞行段（取最近已用控制值，仅为数组完整）。在弧上它与同间隔均匀样条的函数空间相同，差别只在弧端不夹持；需审查方确认是否接受。
+
+## B.2 第 6 部分重跑 —— **未触发**（提交 `1ae7646`）
+
+命令同第 6 节，输出 `out\skeleton_v14b`；2026-11-04 20:56:57 → 21:09:52（773 s，8 进程），**退出码 0**。200/200 完成、0 异常、`complete = true`。仓库副本 [v14b/part6/](v14b/part6/)。
+
+| 条件（严格） | 实测 | 结果 |
+|---|---|---|
+| 成功率 < 95% | 200/200 | 未触发 |
+| 任一人数档低于总体 > 10 个百分点 | 1–4：110/110；5–8：56/56；9–12：34/34 | 未触发（差 0） |
+| 成功合同骨架尝试中位数 > 1 | 1.0（直方：1×159、2×23、3×8、4×4、5×3、6×1、8×2） | 未触发 |
+| 形状复核失败率 > 5% | 0/282 | 未触发 |
+
+- **attempt 级阶段（282 次）：** `skeleton_ok` 200、`ingress` 44、`start_route` 15、`boundary_crossing` 9、`egress` 9、`turns`（整体掉头集合为空）5；形状复核 0、`patrol_region` 0。设施档 85/85、85/85、30/30；初速档 67/67、61/61、72/72。
+- **精确曲率：** 282 个进入复核的形状最小曲率半径 17.2–394 m（中位数 93 m），全部满足 κ(D+15.75) ≤ 1 与车道曲率 ≤ κ*；线性化未出现一次不保守的反例。
+- **队形：** 200 个合同全部未退让（抽签倾向 → 实际：1–4 人 column→column 31、echelon→echelon 28、loose→abreast 26、abreast→abreast 25；5–8 人 abreast 27、echelon 11、column 10、loose→abreast 8；9–12 人 loose→abreast 11、abreast 10、echelon 8、column 5）。梯形步长 15.2–24.3 m（中位数 20.7 m）。与裁定第 2 节原型"12 机横排 44/69 需退让"不同：生产中每 attempt 有 6 个圆心候选，且环绕不可行时可改折返，宽队形总能在某个圆心上找到可行 LP。
+- **耗时：** 每 attempt 0.55–151 s（中位数 11.2 s）；LP 每 attempt 2–1291 次（中位数 2），LP 墙钟 0.013–28.9 s（中位数 0.047 s）；单次构造 LP 5–50 ms（中位数 26 ms）；掉头查询中位数 9.5 s（最长 142 s）；批次 773 s。
+- **保留骨架复核：** 预置 8.7 在 `out\skeleton_v14b` 上 2/2 通过（[tests_v14b_part6.txt](tests_v14b_part6.txt)）。
