@@ -124,3 +124,91 @@
 
 - **测试**（[tests_part5.txt](tests_part5.txt)）：V8-14 numeric 16/17，唯一失败 `test_phase_ratio_and_along_projection` 第 2 组断言（`1.0 is not None`）——即开工时登记的**疑似预期错误**（与裁定 7 冲突，见第 8 节），未改测试；其余 metrics 5 项（入口事件计数、quick/full 同口径、骨架成功率与人数档严格边界、attempt/形状分母、巡逻裁切）全部通过。V8-14 extra 5/5；V8-13 numeric 20/20（含 8.5 授权替换方法）、extra 8/8。
 - **接线冒烟（执行方说明）：** 为确认第 7 部分代码路径在变队形骨架上可运行，在 `out/prototype/chain_smoke_o01_d0` 只跑了 **1 个合同**（o01_d0）的全链路，非批次、不计入任何检查点（[part5/chain_smoke_o01_d0.log](part5/chain_smoke_o01_d0.log)）：1 次 attempt 成功、`optimization_entered=True`、post=0；两成员三阶段诊断与巡逻段编组曲线（各 1530 点）正常生成。
+
+## 6. 第 6 部分：只构造骨架的止损检查点 —— **触发，停在第 6 部分**
+
+**命令**（代码目录，`OMP/OPENBLAS/MKL/NUMEXPR_NUM_THREADS=1`）：
+`python -B tools/v08/run_skeleton_monitoring.py --devset <仓库根>/docs/v08/V8-03/devset_v08.json --data-root "F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData" --cache "<运行根>\cache" --out "<运行根>\out\skeleton" --workers 8`；运行根 `F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-04_V8-14_skeleton`。2026-11-04 19:05:05 → 19:16:08（墙钟 662 s），**退出码 2（诊断触发）**。缓存由 V8-13 运行根 `cache` 复制（按几何键复用）。产物：`out\skeleton\{records.json, attempts.jsonl, summary.json, by_bin.csv, failures.csv, contracts\, telemetry\}`；仓库内副本 [part6/](part6/)（records/summary/by_bin/failures/运行日志/分析脚本与输出）。
+
+**完整性：** 200/200 合同完成，业务键唯一，0 个实现异常、0 个 error 记录，`complete = true`。
+
+### 6.1 U D.5 四项（严格比较，Fraction）
+
+| 条件 | 分子/分母 | 实测 | 边界 | 结果 |
+|---|---|---|---|---|
+| 骨架合同成功率 < 95% | 140/200 | 70.0% | 190/200 不触发 | **触发** |
+| 任一人数档比总体低 > 10 个百分点 | 1–4：106/110（96.4%）；5–8：29/56（51.8%）；9–12：5/34（14.7%） | 最大差 55.3 个百分点（9–12）；5–8 档差 18.2 | 恰 10 不触发 | **触发** |
+| 成功合同骨架尝试中位数 > 1 | 140 个成功合同 | 1.0（75 个首次成功） | 恰 1 不触发 | 未触发 |
+| 形状复核失败率 > 5%（分母为全部骨架 attempt） | 1456/1630 | 89.3% | 100/2000 不触发 | **触发** |
+
+成功合同尝试次数直方：1×75、2×20、3×11、4×3、5×8、6×6、7×4、8×3、9/10/11/13/15/18 各 1、14×2、19×2。
+
+### 6.2 分档、失败阶段与队形
+
+- **设施数档：** 1 设施 63/85（74.1%）、2 设施 52/85（61.2%）、3 设施 25/30（83.3%）。**初速档：** [4,6) 45/67（67.2%）、[6,8) 39/61（63.9%）、[8,10] 56/72（77.8%）。（[part6/by_bin.csv](part6/by_bin.csv)）
+- **attempt 级阶段（1630 次）：** `skeleton_ok` 140、`patrol_shape_audit` 1456、`start_route` 15、`ingress` 8、`egress` 7、`boundary_crossing` 3、`obstacle:obstacle_02` 1；**`turns`（turn_joint_set_empty）0 次**、`patrol_region`（证书为空）0 次。60 个失败合同最终分类均为 `budget_exhausted`（20 次用完）。
+- **形状复核原因：** 1456 次全部含 `curvature`，其中 639 次同时含 `dwell`；没有一次 `lane_geometry`（栅格车道越界）——局部证书保证的几何部分实测无反例。1456 次中 **1431 次参考线最小曲率半径 ≤ 车道半跨 D**（车道越过曲率中心）；曲率失败的 D 中位数 58.3 m，参考最小曲率半径中位数 14.9 m。按队形：横排 1062/1140、梯形 394/435、**纵列 0/55**。按人数档：1–4 人 234/360、5–8 人 644/685、9–12 人 578/585。
+- **队形与退让：** 140 个成功合同的实际队形为横排 63、纵列 46、梯形 31，**全部等于起点队形，没有一次宽度退让**（局部证书在这些圈心上对宽队形都成立）。梯形步长 15.3–23.8 m（中位数 19.7 m）。60 个失败合同的先验均非纵列（横排 28、梯形 16、loose 16），其 1200 次 attempt 只用过横排/梯形；先验为纵列的 46 个合同 46/46 成功。拓扑：环绕 51、折返 89。
+- **证书诊断量（1630 个 attempt；指令 2.2 全局量，仅诊断）：** q 10.1–22.0 m；η = 7.071 m（= 2ε_f，ε_f = 5√2/2 m）；e_g 中位数 91.7 m（p90 243 m），e_s 中位数 46 m（p90 208 m），全局 e 中位数 141 m（p90 449 m），与附录第 2 节"e 中位数约 148 m"量级一致；局部证书最小余量 min(B−A) 中位数 196 m。
+- **整体掉头集合（裁定 4）：** 193 次掉头全部找到；非空组合数中位数 6（最少 2）；单组合参数格 3.1 万–160 万（中位数 35.8 万），排列访问到第一个通过者的格点数中位数 105（p90 1249，最多 28.8 万）。掉头查询每 attempt 1.4–57 s（中位数 7.9 s）。
+- **耗时：** 每 attempt 0.25–72 s（中位数 1.5 s）；每合同 2.6–90 s（中位数 20 s）；批次 662 s / 8 进程。
+
+### 6.3 保留骨架复核（预置 8.7）
+
+`test_preset_local_artifacts.py` 在 `out\skeleton` 上 **2/2 通过**（[tests_part6.txt](tests_part6.txt)）：200 条记录、业务键唯一、每条 `attempt_log` 长度 = attempts ≤ 20、形状失败逐条重计一致；140 个成功骨架逐个以冻结 `polyline_clearance` 独立重算整条成员曲线的 base 约束与巡逻裁切段的 patrol 约束，余量全部 ≥ 0；成员映射严格单调、turn_mask 内横向偏移恰为 0、成员集合完整。
+
+### 6.4 结论
+
+止损三项触发（成功率、人数档、形状复核率）；按指令 6.2 与用户要求，**停在第 6 部分，不运行第 7 部分**。这是诊断止损，不是物理判据失败，也不是 P0：保留骨架几何复核全部通过，没有输入、判据、冻结范围或确定性问题。
+
+## 7. 第 7 部分：**未运行（第 6 部分止损）**
+
+快速 20 合同、全量 200 + 多样性 100、5 合同单进程复跑均未运行；依赖它们的产物测试（`test_preset_local_artifacts` 的 quick/full 目录、V8-13 `test_preset_local_e2e.py`、`test_preset_local_reproduction.py`）标"未运行：第 6 部分止损"，测试未删除。第 7 部分代码（optimization_entered、阶段诊断、巡逻段 Fréchet、full 口径）已实现并有单元测试；第 5 部分记录的 1 合同接线冒烟不是第 7 部分的任何检查。drawn/retained 的 KS、Cramér's V 属第 7 部分，未计算。
+
+## 8. 疑似预期错误、疑似设计问题与偏离
+
+### 8.1 疑似预期错误（预置测试与附录裁定冲突；测试未改，该项停下）
+
+- **8.3 `test_phase_ratio_and_along_projection` 末两条断言**：夹具参考速度 [2, 2, 0]，断言 `measured_ratio is None`、`ratio_reason == "reference_min_zero"`。裁定 7 规定只在参考速度 ≥ 0.5 m/s 的时段统计、端点起停不计，按裁定该夹具的比值为 1.0（实测 `AssertionError: 1.0 is not None`）。实现按裁定 7；该测试保持失败，等待规划审查方更新预期。同一方法前 4 条断言（0.5、1.0、沿迹 3、沿迹 2）通过。
+
+### 8.2 与裁定不直接冲突、但需审查方知悉的预置测试口径
+
+- **8.4 `certify_joint_candidates` / `choose_joint_turn`**：测试锁定"先全集认证、后抽样"的辅助函数，按测试实现并通过；生产按裁定 4 用"每组合一次随机排列、取第一个通过者"（`sample_joint_turn`），二者同分布（自加测试验证排列首通过者均匀）。`choose_joint_turn` 在生产中用于"非空组合等概率选一组"。
+- **8.1 `admissible_arcs`**：按测试实现参数方位跨度规则并通过；生产按裁定 8 不用它筛选，只作诊断。
+- **指令 8 "补充接口约定"的 parent 中点规则**：按裁定 1.2 取消，`radial_intervals(parent_intervals=…)` 取父区间内最长子段；预置测试未覆盖该分支。
+
+### 8.3 疑似设计问题（实测证据；执行方未自行变通）
+
+1. **局部证书只保证几何，不约束参考线曲率；宽队形因此在形状复核大面积失败，而队形退让从不发生。** 1456 次形状复核失败全部是曲率（1431 次参考最小曲率半径 ≤ D），纵列 0/55 失败。机理（o02_d0 a0 定位）：管上界 U⁺ 在相邻 1° 方位可突降约 100 m（障碍或他设施预警边被射线掠射，或"最长子段"在两段之间切换），A_j/B_j 是 5 行窗口的 max/min，形成台阶；360 控制点的正基平均只把台阶抹平到约 1–4°，在 ρ≈1000 m 处对应几十米尺度，参考线局部曲率半径约 15 m，小于横排半跨（中位数 58 m）。选队形只看局部证书（几何），证书对宽队形成立，退让链不被触发；下游曲率失败按规定又不能回到队形选择——于是 9–12 人档 5/34、5–8 人档 29/56。候选方向（需规划审查方裁定，执行方未实现）：(a) 把"参考曲率半径 > D 且车道曲率 κ/(1−κd) ≤ κ*"纳入队形可行判定，使退让由同一检验触发；(b) 在 [A_j, B_j] 内做受曲率约束的平滑（凸 QP）代替正基平均；(c) 降低几何平滑分辨率（更少控制点）并重证支撑集与凸包性质。三者都会改变指令 2.3 的固定方法或 U D.1.2 的判定，属于设计决定。
+2. **大编组横排的收拢长度。** 按指令 3.1 的公式 L ≈ 2.74D，12 机横排 b=25 m 时 L ≈ 378 m（收拢、展开各一段）。本批次掉头集合没有出现空集（193/193），但成功的 9–12 人骨架只有 5 个，大编组折返的掉头可放置性实际没有被充分检验。
+3. **全局 e 的量级。** e 中位数 141 m、p90 449 m，证实附录第 2 节的判断（原指令 2.2 的全局判定会大量误拒），裁定 1 的局部证书是必要的；本批次 `patrol_region`（证书为空）0 次。
+
+### 8.4 执行中的偏离与说明
+
+- 第 2、3 部分代码同在 `monitoring.py` 且互相依赖，随第 2 部分提交一同落地；第 3 部分提交为测试与原型核对。
+- 接回点额外要求"下一次穿行长度 ≥ 2l*"：指令 3.3 要求两次掉头的形变支撑无重叠放置，执行方把它放进接回点集合，而不是事后拒绝。
+- 掉头 Q 在 NODE_TOL_M 内且切向一致时为空连接，此时该 (R, 接回点) 的 25 个 (h₀, h₁) 格点几何相同，仍按 25 个格点计入均匀排列（保持参数格结构一致）；只影响泪滴在弧端接回的权重。
+- 收拢/展开直线上的成员车道检查要求精确余量 ≥ 拱高界 δ = (6D/L²)·0.5²/8（插入节点时折线偏差的上界），不是经验容差。
+- 骨架诊断不进确定性载荷：耗时只走 `last_attempt_timing()`、`telemetry/` 与 `attempts.jsonl` 的 timing 字段。
+
+## 9. 修改清单、数字来源与复跑
+
+- **`git diff --stat 0d2f0a3 HEAD -- "Multi-UAV SimpleGC"`**：18 个文件，+2844/−345。新增 `v08/motion/monitoring_band.py`、`v08/motion/monitoring_turn.py`、`v08/diagnostics/monitoring_skeleton.py`、`v08/runner/skeleton_monitoring.py`、`tools/v08/run_skeleton_monitoring.py`、`tests/v08/V8-14/`（6 个预置原样 + 1 个自加）；修改 `v08/motion/intents/monitoring.py`、`v08/motion/skeleton.py`、`v08/motion/optimize.py`（只有语义直线合并接入 6 行）、`v08/runner/joint_monitoring.py`、`v08/runner/joint_report.py`、`tests/v08/V8-13/test_preset_numeric_checkpoint.py`（仅 8.5 授权方法）。全部在 0.2 白名单内；`tools/v08/run_joint_monitoring.py` 未改。
+- **冻结核对**（[snapshot_part1.json](snapshot_part1.json) / [snapshot_part6_start.json](snapshot_part6_start.json) / [snapshot_part6_end.json](snapshot_part6_end.json)）：160 个登记输入 SHA256/大小/mtime 三次一致；69 个冻结模块/配置/旧测试文件哈希不变（`v08/sim|criteria|sampler|scene|contract`、`configs/`、`config.py`、`diversity.py`、`optimize_checks.py`、`formation/path/nominal/connect/plan.py`、`runner/monitoring*.py`、V8-03…V8-12 测试）；冻结工作树 641a9b3、de4d115 干净；`SwarmData\v07_*` 目录集合不变，未写入。未在 `llm` 安装包；未推 `main`、未强推。
+- **数字来源：** 360 方位 / 2 m（U C.2/D.1）；q = Δr/2 + 2R*·sin(Δφ/4)，R* 为圈心到目标预警外接框最远角；η = 2·`S.cg_patrol.field.eps` = 7.071 m；K ∈ U{4..8}（monitoring.spline_basis_min/max）；N_CENTERS = 6；预算 20；R_min 15/8/25 m（monitoring.turn_*_min_m）×1.05；MIN_STRAIGHT_M = 6 m；h 格 5×5（旧 `_build_turn` grid=5）；v⊥* = √(11.4² − 10²) = 5.474 m/s；κ* = 0.95·0.2/0.5 = 0.38 m⁻¹；方位覆盖 120°（criteria revisit）；阶段速度门 0.5 m/s（criteria coverage.effective_speed_min_m_s）；Fréchet 5 m。优化器全部设置与 `configs/v08/joint_opt.json` 相同、未改。
+- **预置测试汇总**（以 [tests_part6.txt](tests_part6.txt) 为最终记录）：V8-14 numeric 16/17（失败 1 = 8.1 所列疑似预期错误）；local_geometry 1/1；local_artifacts（skeleton 目录）2/2；extra 5/5；V8-13 numeric 20/20（含 8.5 授权替换）、extra 8/8；V8-12 全目录 37/40（2 失败与基线相同，见 [tests_part2.txt](tests_part2.txt)）。V8-14 artifacts 的 quick/full 目录、V8-13 e2e/reproduction：**未运行（第 6 部分止损）**。
+- **负责人复跑命令**（PowerShell 7，`Multi-UAV SimpleGC` 目录，新输出目录不得已存在）：
+
+```powershell
+$env:OMP_NUM_THREADS='1'; $env:OPENBLAS_NUM_THREADS='1'; $env:MKL_NUM_THREADS='1'; $env:NUMEXPR_NUM_THREADS='1'
+C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B tools/v08/run_skeleton_monitoring.py --devset "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\docs\v08\V8-03\devset_v08.json" --data-root "F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData" --cache "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-04_V8-14_skeleton\cache" --out "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-04_V8-14_skeleton\out\skeleton_owner_rerun" --workers 8
+```
+
+预期：约 11 分钟，退出码 2，检查点 `["success_rate","group_gap","shape_audit"]`、140/200、1456/1630；`records.json` 应与 `out\skeleton\records.json` 逐字节一致（确定性载荷；timing 只在 attempts.jsonl/telemetry）。执行方未做该字节对比，属于待复跑项。
+- **环境：** Windows 11、PowerShell 7.6.9、Python 3.12.3、NumPy 2.5.3、SciPy 1.14.1、shapely 2.0.7、OpenBLAS 0.3.34、AMD64 Family 26（32 逻辑核）；执行模型 Claude Opus 5.5（`claude-opus-5-5`）。
+
+## 10. 执行方观察（与上文事实分开）
+
+- 局部证书本身工作正常：形状复核中没有一次几何（栅格车道）失败，`patrol_region` 0 次，掉头整体集合 193/193 非空，保留骨架独立复核全部通过。剩下的失败几乎全部是同一个机理：证书允许的参考线太"折"，宽队形的内侧车道越过曲率中心。
+- 纵列 0/55 复核失败、先验纵列 46/46 成功，说明问题集中在"队形宽度与参考曲率的耦合"，不在环带、圈心或掉头。若审查方选择 8.3 第 1 条的方向 (a)，预计退让会大量发生（宽队形 → 梯形 → 纵列），人数档偏差可能转为队形分布偏差，届时需要另看队形的 drawn/retained 分布。
+- 掉头参数格规模大（中位数约 36 万/组合），但裁定 4 的排列首通过者使访问格点中位数约百个；最坏单次掉头查询 57 s，没有成为批次瓶颈。
