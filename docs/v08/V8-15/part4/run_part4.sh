@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+cd "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/Multi-UAV SimpleGC"
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/docs/v08/V8-15/dir_snapshot.py" "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/cache" "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/logs/cache_before_part4.json"
+for W in 8 16 24; do
+  echo "== workers $W start $(date '+%F %T')"
+  C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B tools/v08/run_separation_v15.py --mode workers --keys "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/docs/v08/V8-15/part4/selection.json" --workers $W --baseline "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-04_V8-14_skeleton/out/full_v14c" --devset "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/docs/v08/V8-03/devset_v08.json" --data-root "F:/CASIA/Drone Swarm Situational Awareness Algorithm/SwarmData" --cache "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/cache" --out "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/out/workers_$W" > "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/logs/workers_$W.log" 2>&1
+  echo "== workers $W exit=$? $(date '+%F %T')"
+done
+C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B "F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/docs/v08/V8-15/dir_snapshot.py" "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/cache" "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/logs/cache_after_part4.json" --compare "F:/CASIA/Drone Swarm Situational Awareness Algorithm/_handoff/2026-11-05_V8-15_separation/logs/cache_before_part4.json"
