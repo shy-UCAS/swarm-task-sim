@@ -1,0 +1,684 @@
+{
+ "selection": {
+  "rule": "(-vehicle_count, 窄带最小宽度升序, order)；前 4 族 × (abreast, column, echelon) × branch (0,1,2)",
+  "ranking": [
+   17,
+   11,
+   34,
+   28,
+   31,
+   37,
+   7,
+   29,
+   20,
+   35,
+   23,
+   12,
+   19,
+   40,
+   2,
+   5,
+   33,
+   36,
+   27,
+   16,
+   22,
+   6,
+   14,
+   25,
+   4,
+   13,
+   26,
+   10,
+   24,
+   18,
+   39,
+   38,
+   1,
+   15,
+   3,
+   9,
+   8,
+   30,
+   32,
+   21
+  ],
+  "chosen": [
+   17,
+   11,
+   34,
+   28
+  ]
+ },
+ "cases": 36,
+ "skeleton_summary": {
+  "cache_write_during_workers": {
+   "added": [],
+   "changed": [],
+   "removed": []
+  },
+  "cases": 36,
+  "completed": 36,
+  "contract_busy_s": 3353.657086500032,
+  "dispatch_wall_s": 469.60537934303284,
+  "errors": [],
+  "kind": "stress_skeleton",
+  "system_memory": {
+   "end_fraction": 0.4110966703744342,
+   "event_samples": 38,
+   "interval_s": 1.0,
+   "note": "1 s 采样峰值；不声称捕获采样间瞬时尖峰；包含用户其他进程占用（不扣除）",
+   "peak_fraction": 0.553559082259522,
+   "peak_label": "periodic",
+   "peak_used_bytes": 37834809344,
+   "periodic_samples": 465,
+   "samples": 503,
+   "start_fraction": 0.42240149590770215,
+   "total_bytes": 68348276736
+  },
+  "unsent": [],
+  "workers": 24
+ },
+ "checkpoint_plan": {
+  "checkpoints": [
+   {
+    "contract_id": "stress_o11_abreast_s0",
+    "order": 11,
+    "prior": "abreast",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o11_column_s0",
+    "order": 11,
+    "prior": "column",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o11_echelon_s0",
+    "order": 11,
+    "prior": "echelon",
+    "seed": 0
+   }
+  ],
+  "priors_without_skeleton_success": [],
+  "skipped_all_skeleton_failed": []
+ },
+ "rest_plan": {
+  "W_star": 24,
+  "checkpoint_wall_s": {
+   "abreast": 206.31710790000216,
+   "column": 171.6155174000014,
+   "echelon": 200.4797699000046
+  },
+  "checkpoint_workers": 3,
+  "dropped": [],
+  "estimate_initial": {
+   "T_R_s": 294.5618679259301,
+   "estimable": 33,
+   "max_s": 206.31710790000216,
+   "sum_s": 6362.53634720009,
+   "unestimable": [],
+   "workers": 24
+  },
+  "executed_checkpoints_outside_reduced": [],
+  "final_estimate": {
+   "T_R_s": 294.5618679259301,
+   "estimable": 33,
+   "max_s": 206.31710790000216,
+   "sum_s": 6362.53634720009,
+   "unestimable": [],
+   "workers": 24
+  },
+  "initial_rest": 33,
+  "reduction_steps": [],
+  "rest": [
+   {
+    "contract_id": "stress_o17_abreast_s0",
+    "order": 17,
+    "prior": "abreast",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o17_abreast_s1",
+    "order": 17,
+    "prior": "abreast",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o17_abreast_s2",
+    "order": 17,
+    "prior": "abreast",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o17_column_s0",
+    "order": 17,
+    "prior": "column",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o17_column_s1",
+    "order": 17,
+    "prior": "column",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o17_column_s2",
+    "order": 17,
+    "prior": "column",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o17_echelon_s0",
+    "order": 17,
+    "prior": "echelon",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o17_echelon_s1",
+    "order": 17,
+    "prior": "echelon",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o17_echelon_s2",
+    "order": 17,
+    "prior": "echelon",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o11_abreast_s1",
+    "order": 11,
+    "prior": "abreast",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o11_abreast_s2",
+    "order": 11,
+    "prior": "abreast",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o11_column_s1",
+    "order": 11,
+    "prior": "column",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o11_column_s2",
+    "order": 11,
+    "prior": "column",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o11_echelon_s1",
+    "order": 11,
+    "prior": "echelon",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o11_echelon_s2",
+    "order": 11,
+    "prior": "echelon",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o34_abreast_s0",
+    "order": 34,
+    "prior": "abreast",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o34_abreast_s1",
+    "order": 34,
+    "prior": "abreast",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o34_abreast_s2",
+    "order": 34,
+    "prior": "abreast",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o34_column_s0",
+    "order": 34,
+    "prior": "column",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o34_column_s1",
+    "order": 34,
+    "prior": "column",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o34_column_s2",
+    "order": 34,
+    "prior": "column",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o34_echelon_s0",
+    "order": 34,
+    "prior": "echelon",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o34_echelon_s1",
+    "order": 34,
+    "prior": "echelon",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o34_echelon_s2",
+    "order": 34,
+    "prior": "echelon",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o28_abreast_s0",
+    "order": 28,
+    "prior": "abreast",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o28_abreast_s1",
+    "order": 28,
+    "prior": "abreast",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o28_abreast_s2",
+    "order": 28,
+    "prior": "abreast",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o28_column_s0",
+    "order": 28,
+    "prior": "column",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o28_column_s1",
+    "order": 28,
+    "prior": "column",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o28_column_s2",
+    "order": 28,
+    "prior": "column",
+    "seed": 2
+   },
+   {
+    "contract_id": "stress_o28_echelon_s0",
+    "order": 28,
+    "prior": "echelon",
+    "seed": 0
+   },
+   {
+    "contract_id": "stress_o28_echelon_s1",
+    "order": 28,
+    "prior": "echelon",
+    "seed": 1
+   },
+   {
+    "contract_id": "stress_o28_echelon_s2",
+    "order": 28,
+    "prior": "echelon",
+    "seed": 2
+   }
+  ],
+  "still_over_budget": false
+ },
+ "full_executed": 36,
+ "full_success": 33,
+ "skeleton_success": 36,
+ "distances": {
+  "optimized_xy": {
+   "n_pairs": 2079,
+   "quantiles_min_p10_med_p90_max": [
+    3.2276693890452948,
+    5.6985530291725155,
+    30.934651277774524,
+    77.71794557645347,
+    213.19226652436137
+   ],
+   "worst5": [
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_06|uav_09",
+     "min_m": "3.2276693890452948",
+     "t_s": "1728.9",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o17_echelon_s0",
+     "pair": "uav_08|uav_09",
+     "min_m": "3.2358705838719817",
+     "t_s": "1406.3",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o34_abreast_s2",
+     "pair": "uav_02|uav_03",
+     "min_m": "3.240546993946212",
+     "t_s": "2596.8",
+     "formation": "abreast",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_abreast_s1",
+     "pair": "uav_06|uav_08",
+     "min_m": "3.243450494057697",
+     "t_s": "2123.8",
+     "formation": "abreast",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_09|uav_11",
+     "min_m": "3.2440231537394557",
+     "t_s": "1804.7",
+     "formation": "echelon",
+     "topology": "retrace"
+    }
+   ]
+  },
+  "measured_sample": {
+   "n_pairs": 2079,
+   "quantiles_min_p10_med_p90_max": [
+    3.130239437569855,
+    5.6733558297987345,
+    30.902799682474576,
+    77.71794421832925,
+    213.192267260567
+   ],
+   "worst5": [
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_06|uav_11",
+     "min_m": "3.130239437569855",
+     "t_s": "1766.4",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_06|uav_09",
+     "min_m": "3.20467079754231",
+     "t_s": "1728.8",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o17_echelon_s0",
+     "pair": "uav_01|uav_08",
+     "min_m": "3.207192213316506",
+     "t_s": "1417.6",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_09|uav_11",
+     "min_m": "3.208111672677646",
+     "t_s": "1773.9",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o34_abreast_s2",
+     "pair": "uav_02|uav_03",
+     "min_m": "3.2134937235150733",
+     "t_s": "2596.8",
+     "formation": "abreast",
+     "topology": "retrace"
+    }
+   ]
+  },
+  "measured_interp": {
+   "n_pairs": 2079,
+   "quantiles_min_p10_med_p90_max": [
+    3.130239437569855,
+    5.6731219788499825,
+    30.900697115265732,
+    77.71793757455633,
+    213.192267260567
+   ],
+   "worst5": [
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_06|uav_11",
+     "min_m": "3.130239437569855",
+     "t_s": "1766.4",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_echelon_s1",
+     "pair": "uav_01|uav_06",
+     "min_m": "3.17998440930032",
+     "t_s": "1849.7449667307894",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_06|uav_09",
+     "min_m": "3.20467079754231",
+     "t_s": "1728.8",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o17_echelon_s0",
+     "pair": "uav_01|uav_08",
+     "min_m": "3.207192213316506",
+     "t_s": "1417.6",
+     "formation": "echelon",
+     "topology": "retrace"
+    },
+    {
+     "contract_id": "stress_o28_echelon_s2",
+     "pair": "uav_09|uav_11",
+     "min_m": "3.208111672677646",
+     "t_s": "1773.9",
+     "formation": "echelon",
+     "topology": "retrace"
+    }
+   ]
+  }
+ },
+ "analysis": {
+  "checkpoint": {
+   "analyzed": 3,
+   "errors": [],
+   "validity_consistency": {
+    "equal": 3,
+    "mismatch": [],
+    "total": 3
+   },
+   "empty_pairs": [],
+   "failed_attempts": {
+    "attempts": 3,
+    "attempts_with_physical_separation": 0,
+    "by_stage_reason": {},
+    "contracts": 3,
+    "failed_attempts": 0,
+    "low_level_codes": {},
+    "optimize_attempts_missing_physical_failures": 0,
+    "retained_p0_ok_history": {
+     "false": 0,
+     "true": 3
+    },
+    "separation_mixed": 0,
+    "separation_only": 0,
+    "validity_separation_violation": 0,
+    "worst_constraint_is_separation": "N/A：_attempt_summary 未保存 AL 最大约束键与每轮违反量（指令 11.7）"
+   },
+   "speed_case_counts": {
+    "egress:tail_20s": 35
+   }
+  },
+  "rest": {
+   "analyzed": 30,
+   "errors": [],
+   "validity_consistency": {
+    "equal": 30,
+    "mismatch": [],
+    "total": 30
+   },
+   "empty_pairs": [],
+   "failed_attempts": {
+    "attempts": 187,
+    "attempts_with_physical_separation": 0,
+    "by_stage_reason": {
+     "optimize/optimize_residual": 1,
+     "optimize_monitoring/optimize_residual": 29,
+     "skeleton/turn_joint_set_empty：收拢—掉头—接回—展开整体可行集合为空": 26,
+     "skeleton/成员 uav_02 没有可用的起点路由": 3,
+     "skeleton/成员 uav_03 没有可用的起点路由": 1,
+     "skeleton/成员 uav_03 边界穿越不合规：align_100m_not_straight（设施 facility_01）": 1,
+     "skeleton/成员 uav_03 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+     "skeleton/成员 uav_04 没有可用的起点路由": 1,
+     "skeleton/成员 uav_05 没有可用的起点路由": 3,
+     "skeleton/成员 uav_05 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 2,
+     "skeleton/成员 uav_05 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+     "skeleton/成员 uav_06 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+     "skeleton/成员 uav_06 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+     "skeleton/成员 uav_07 没有可用的起点路由": 1,
+     "skeleton/成员 uav_08 没有可用的起点路由": 1,
+     "skeleton/成员 uav_09 没有可用的起点路由": 2,
+     "skeleton/成员 uav_09 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+     "skeleton/成员 uav_10 没有可用的起点路由": 1,
+     "skeleton/成员 uav_10 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+     "skeleton/成员 uav_11 没有可用的起点路由": 1,
+     "skeleton/成员 uav_12 没有可用的起点路由": 2,
+     "skeleton/成员 uav_12 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+     "skeleton/没有可用的入圈直线与连接": 62,
+     "skeleton/没有可用的出圈直线与终点": 10,
+     "skeleton/环带内直接构造的形状未通过原 _ring_ok 三项复核": 3
+    },
+    "contracts": 33,
+    "failed_attempts": 157,
+    "low_level_codes": {
+     "monitoring:boundary_crossing": 5,
+     "monitoring:nominal_dwell": 20,
+     "monitoring:nominal_revisit": 8,
+     "physical:turn_radius": 1
+    },
+    "optimize_attempts_missing_physical_failures": 0,
+    "retained_p0_ok_history": {
+     "false": 0,
+     "true": 30
+    },
+    "separation_mixed": 0,
+    "separation_only": 0,
+    "validity_separation_violation": 0,
+    "worst_constraint_is_separation": "N/A：_attempt_summary 未保存 AL 最大约束键与每轮违反量（指令 11.7）"
+   },
+   "speed_case_counts": {
+    "egress:tail_20s": 349,
+    "patrol:midway": 4
+   }
+  }
+ },
+ "figures": {
+  "crowded_success": "stress_o17_echelon_s0",
+  "retreat_success": "无此类样例（成功 33 个中实际队形≠mapped_start 的 0 个）",
+  "failure": "stress_o17_abreast_s0"
+ },
+ "rest_dir": "rest_r2",
+ "interrupted_first_rest": {
+  "dir": "rest/run (首跑，6/33 时中断；未写 records/summary)",
+  "contracts": [
+   {
+    "contract_id": "stress_o11_abreast_s1",
+    "files": 64,
+    "in_rest_r2": true,
+    "file_sets_equal": true,
+    "bytes_equal": true,
+    "differing": []
+   },
+   {
+    "contract_id": "stress_o11_column_s1",
+    "files": 64,
+    "in_rest_r2": true,
+    "file_sets_equal": true,
+    "bytes_equal": true,
+    "differing": []
+   },
+   {
+    "contract_id": "stress_o17_abreast_s2",
+    "files": 64,
+    "in_rest_r2": true,
+    "file_sets_equal": true,
+    "bytes_equal": true,
+    "differing": []
+   },
+   {
+    "contract_id": "stress_o17_column_s0",
+    "files": 64,
+    "in_rest_r2": true,
+    "file_sets_equal": true,
+    "bytes_equal": true,
+    "differing": []
+   },
+   {
+    "contract_id": "stress_o17_column_s1",
+    "files": 64,
+    "in_rest_r2": true,
+    "file_sets_equal": true,
+    "bytes_equal": true,
+    "differing": []
+   },
+   {
+    "contract_id": "stress_o17_echelon_s2",
+    "files": 64,
+    "in_rest_r2": true,
+    "file_sets_equal": true,
+    "bytes_equal": true,
+    "differing": []
+   }
+  ]
+ },
+ "rest_summary": {
+  "cache_write_during_workers": {
+   "added": [],
+   "changed": [],
+   "removed": []
+  },
+  "cases": 33,
+  "completed": 33,
+  "contract_busy_s": 15380.45967840001,
+  "dispatch_wall_s": 1299.9154269695282,
+  "errors": [],
+  "kind": "stress",
+  "system_memory": {
+   "end_fraction": 0.42701627911896445,
+   "event_samples": 35,
+   "interval_s": 1.0,
+   "note": "1 s 采样峰值；不声称捕获采样间瞬时尖峰；包含用户其他进程占用（不扣除）",
+   "peak_fraction": 0.6610190182044973,
+   "peak_label": "periodic",
+   "peak_used_bytes": 45179510784,
+   "periodic_samples": 1287,
+   "samples": 1322,
+   "start_fraction": 0.3996935024056142,
+   "total_bytes": 68348276736
+  },
+  "unsent": [],
+  "workers": 24
+ },
+ "statuses": {
+  "full_run": 36
+ },
+ "retreat_contracts_success": 0,
+ "retreat_attempts_full": 0,
+ "retreat_attempts_skeleton": 0
+}

@@ -424,3 +424,86 @@ V8-12 的两个失败和一个跳过，按**测试名与原因**逐项对照 V8-
 - 以上占比只来自行级运行（裁定 3.3），不由约束个数推算。
 
 **本节不提出、也不实施任何提速方案**（U D.4.4）。
+
+## 6. 第 6 部分：压力合同集（2026-11-05 05:58 → 07:48）
+
+**结论：** 36 个压力合同全部执行到完整链路。骨架 36/36 成功，完整链路 **33/36 成功**；3 个失败都是 20 次预算用尽（`budget_exhausted`），集中在 o17 的 abreast/echelon。33 个保留合同的冻结核验（V8-13 e2e 方法）全部通过，validity 33/33 一致，**P0-1 未触发**。退让成功样例 0 个。余量批次首跑被我按用户"先暂停"要求中断，重跑写入新目录 `rest_r2`；中断前完成的 6 个合同与重跑逐字节一致。
+
+证据：[part6/summary.json](part6/summary.json)、[contracts.csv](part6/contracts.csv)、[by_bucket.csv](part6/by_bucket.csv)、[stress_selection.json](part6/stress_selection.json)、[checkpoint_plan.json](part6/checkpoint_plan.json)、[rest_plan.json](part6/rest_plan.json)、两份间距分析摘要、[stress_e2e.log](part6/stress_e2e.log)、[stress_rest_r2.log](part6/stress_rest_r2.log)，汇总脚本 [make_part6.py](part6/make_part6.py)。外部运行根 `out/stress_v15/{skeleton,checkpoint,rest(中断),rest_r2,analysis_checkpoint,analysis_rest}`。
+
+### 6.1 名单（指令 6.1）
+
+- 排序 `(-vehicle_count, 窄带最小宽度升序, order)`。窄带用 `BandGeometry` 360 行 × 2 m 径向网格与完整 base+patrol 约束，每行取最长原始区间，取 360 行最小宽度。40 族全部记录在 `stress_selection.json` 的 `families`。
+- 前 6：o17（12 机，264 m）、o11（12 机，390 m）、o34（12 机，412 m）、o28（11 机，162 m）、o31（11 机，230 m）、o37（11 机，238 m）。**选中 [17, 11, 34, 28]**。
+- 36 = 4 族 × {abreast, column, echelon} × branch {0,1,2}，公共 draw 固定 0。组 ID `stress_v15/<g0>/<prior>`，合同 ID `stress_o<order>_<prior>_s<seed>`。名单在首次运行前落盘。
+
+### 6.2 三步执行与预算（指令 6.3）
+
+| 步骤 | 合同 | 进程 | 调度墙钟 | 结果 | 全机内存峰值（起始） |
+|---|---|---|---|---|---|
+| 只骨架 | 36 | 24 | 470 s | 36/36 成功；attempts 1×20、2×5、3×2、4×2、5/7/8/10/11/15/16 各 1；单合同墙钟中位 53 s、最大 436 s | 55.4%（42.2%） |
+| 检查点（每倾向首个骨架成功，按 (order,seed)） | 3：o11 abreast/column/echelon s0 | 3 | 207 s | 3/3 成功，均 1 次 attempt；T_f = 206/172/200 s | 66.6%（43.7%）※ |
+| 余量（首跑，**中断**） | 6/33 完成 | 24 | — | 未写 records/summary，保留不动 | — |
+| 余量重跑 `rest_r2` | 33 | 24 | **1300 s** | 30/33 成功 | 66.1%（40.0%）※ |
+
+- **预算估计：** \(\widehat T_R = 294.6\) s（Σ=6363 s，W*=24，max=206 s），≤ 3600 s，不缩减，全部 33 个继续。
+- **实测：** 调度墙钟 1300 s，是估计的 **4.4 倍**，但仍在 3600 s 内。原因是检查点都取自最快的 o11 族、且都是 1 次 attempt 成功；余量中有多次重做的长尾（o34_abreast_s0 12 次 attempt、1299 s，决定了调度墙钟）。这正是指令 6.3 所说"少量检查点不能保证长尾的预测精度"。
+- ※ **内存（如实记录，交审查）：**
+  - 检查点只有 3 个进程，各自峰值工作集 ≤ 1.06 GiB，合计 ≤ 3.2 GiB，但全机从 43.7% 涨到 66.6%，结束时仍为 62.6%。增量主要来自本项以外的进程。
+  - `rest_r2` 单合同峰值工作集中位 1.10 GiB、最大 2.83 GiB，前 24 个峰值之和 30.0 GiB（假设同时达到峰值时的上界）。全机实测峰值 66.1%，起始 40.0%。
+  - 结论：12 机合同在 24 进程下，**全机已用内存峰值超过第 4 部分 60% 的选定条件**，且这台机器空闲时已用约 27 GB。第 4 部分的 40 个合同是普通规模，这里是压力规模。此项不属于四条停止条件，不改已选默认值，交审查方判断是否需要对大机数合同另设进程上限。
+- **中断首跑：** 中断前完成的 6 个合同（o11_abreast_s1、o11_column_s1、o17_abreast_s2、o17_column_s0、o17_column_s1、o17_echelon_s2）与 `rest_r2` 同名目录逐文件逐字节一致（各 64 个文件，`differing` 为空，见 summary 的 `interrupted_first_rest`）。
+
+### 6.3 结果（按 (族, 倾向, 实际队形, 实际拓扑) 分档见 [by_bucket.csv](part6/by_bucket.csv)）
+
+| 族 | 机数 | abreast | column | echelon | 合计 |
+|---|---|---|---|---|---|
+| o17 | 12 | **1/3** | 3/3 | **2/3** | 6/9 |
+| o11 | 12 | 3/3 | 3/3 | 3/3 | 9/9 |
+| o34 | 12 | 3/3 | 3/3 | 3/3 | 9/9 |
+| o28 | 11 | 3/3 | 3/3 | 3/3 | 9/9 |
+
+- **实际队形：** 全部成功合同都等于倾向，没有退让（实际队形 ≠ mapped_start 的成功合同 0 个，退让 attempt 0 个，骨架与完整链路都是 0）。
+- **拓扑：** loop 与 retrace 都出现，逐档计数见 CSV。
+- **完整链路 attempts：** 排序后为 1×13、2×7、3×3，以及 4、5、6、7、8、9、12、13、15、15、20、20、20 各一。单合同墙钟中位 359 s，最大 1299 s，36 个合计 15,959 s。
+- **失败 attempt：** `rest_r2` 30 个保留合同加 3 个失败合同共 187 次 attempt，其中失败 157 次。
+  - **骨架 127 次：** "没有可用的……"（成员起点路由、入圈/出圈直线等）88、`turn_joint_set_empty` 26、边界穿越 10、其他 3。
+  - **优化 30 次：** `optimize_monitoring/optimize_residual` 29、`optimize/optimize_residual` 1。
+  - **底层代码：** `monitoring:nominal_dwell` 20、`nominal_revisit` 8、`boundary_crossing` 5、`physical:turn_radius` 1。
+  - 含物理间距失败的 attempt **0**，validity `separation_violation` **0**。检查点 3 个合同没有失败 attempt。
+- **三个失败合同：**
+  - **o17_abreast_s0：** 骨架失败 17 次，优化失败 3 次。
+  - **o17_abreast_s1：** 骨架失败 19 次，优化失败 1 次。
+  - **o17_echelon_s1：** 骨架失败 19 次，优化失败 1 次。
+  - 三者的失败阶段都包含 ingress、turns，以及 start_route 或 egress。只骨架模式里这三个合同分别在第 4、11、16 次成功，但完整链路中那一次 attempt 的优化失败了，之后的 attempt 骨架又都失败，最终用尽 20 次。
+- **确定性旁证：** 36/36 合同中，完整链路第一个越过骨架的 attempt 序号与只骨架模式的成功 attempt 序号相同。
+
+### 6.4 间距（第 3 节同口径；33 个保留合同，2079 对）
+
+| 指标 | 最小 | p10 | 中位 | p90 | 最大 |
+|---|---|---|---|---|---|
+| 优化 XY | 3.228 | 5.70 | 30.93 | 77.72 | 213.19 |
+| 实测三维采样 | **3.130** | 5.67 | 30.90 | 77.72 | 213.19 |
+| 实测相邻帧插值 | **3.130** | 5.67 | 30.90 | 77.72 | 213.19 |
+
+- **最坏 5 例**（实测采样）：o28_echelon_s2 uav_06|uav_11 3.130 m（t=1766.4 s）、o28_echelon_s2 uav_06|uav_09 3.205 m、o17_echelon_s0 uav_01|uav_08 3.207 m、o28_echelon_s2 uav_09|uav_11 3.208 m、o34_abreast_s2 uav_02|uav_03 3.213 m，全部为 retrace 拓扑。
+- 实测最小值都在巡逻阶段（`phase:patrol` min 3.130 m）。
+- 与 full_v14c 对照：实测 3.097 m、优化 3.171 m；压力集分别为 3.130 m、3.228 m。全部 ≥ 2 m。分档明细见两份 analysis 摘要的 `overall.by_bin`，共同帧范围见 `pairs.csv`（外部）。
+- **最低速度样例：** 撤离末 20 s 349 个；巡逻中途 4 个，都在 o28_abreast_s1（uav_02/05/06/10，实测最低约 3.95 m/s，为参考 4.06 m/s 的 0.973–0.975），属于沿航迹滞后的轻度降速，不是停住。
+
+### 6.5 图（固定规则选取）
+
+- **最拥挤成功**：[fig_crowded_success.png](part6/fig_crowded_success.png)，`stress_o17_echelon_s0`。12 机，在 12 机族中实测最小间距最小；保留 attempt 14，echelon、retrace，实测采样最小 3.207 m（uav_01|uav_08，t=1417.6 s，图中 ×）。turn 子区间橙色，与普通巡逻（绿）分色。11 机的 o28_echelon_s2（3.130 m）按"全员数降序"排在其后。
+- **退让成功**：无此类样例（成功 33 个中实际队形 ≠ mapped_start 的 0 个）。未注入、未凑图。
+- **失败**：[fig_failure.png](part6/fig_failure.png)，`stress_o17_abreast_s0`，即业务键最小的失败合同。最后一次 attempt 19 在骨架 start_route 阶段失败（uav_02 无可用起点路由），没有 failure_witness 曲线，也没有实测轨迹。图中给出能拿到的几何：目标 warning/alert 层、其他设施 alert、全员初始位置、最后一次 attempt 的抽签圆（ρ0=650 m，abreast/retrace，K=4），标题列出 20 次失败的阶段计数。
+
+### 6.6 冻结核验与分析一致性
+
+- V8-13 `test_every_retained_contract_with_frozen_verifiers` 分别以 `V8_13_RUN_OUT=.../checkpoint/run`（3 个）与 `.../rest_r2/run`（30 个）运行，均 **OK**，日志 [stress_e2e.log](part6/stress_e2e.log)。
+- 环境变量：`V8_13_DATA_ROOT=SwarmData`、`V8_13_TEST_CACHE=<运行根>/cache`、`V8_13_DEVSET=docs/v08/V8-03/devset_v08.json`、`PYTHONPATH` 加入测试目录。
+- 同文件另外两个方法依赖 quick/full 的计数布局，与压力目录不兼容，未运行（附录裁定 1）。
+- 间距分析：validity 一致 3/3 与 30/30；阶段指标复算 30/30；空集合 0。
+
+**本部分发现的工具问题：**
+- `make_part6.py` 初版按 shapely 对象画圈层，但 `Facility.layers` 实际是几何字典（Circle/Polygon/BufferedPolygon），两张图因此漏画目标层；失败图初版只有空坐标轴。
+- 已改为按字典绘制，并加入最后一次 attempt 的抽签几何后重新生成。只影响作图，不影响任何数值。

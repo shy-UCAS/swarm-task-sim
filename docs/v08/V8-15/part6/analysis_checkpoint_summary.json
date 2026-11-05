@@ -1,0 +1,762 @@
+{
+ "analyzed": 3,
+ "baseline": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-05_V8-15_separation\\out\\stress_v15\\checkpoint\\run",
+ "contracts_total": 3,
+ "empty_pairs": [],
+ "errors": [],
+ "failed_attempts": {
+  "attempts": 3,
+  "attempts_with_physical_separation": 0,
+  "by_stage_reason": {},
+  "contracts": 3,
+  "failed_attempts": 0,
+  "low_level_codes": {},
+  "optimize_attempts_missing_physical_failures": 0,
+  "retained_p0_ok_history": {
+   "false": 0,
+   "true": 3
+  },
+  "separation_mixed": 0,
+  "separation_only": 0,
+  "validity_separation_violation": 0,
+  "worst_constraint_is_separation": "N/A：_attempt_summary 未保存 AL 最大约束键与每轮违反量（指令 11.7）"
+ },
+ "named_cases": [],
+ "notes": {
+  "interp": "仅相邻共同帧（差 100000 µs）；按两成员阶段/掉头边界切小区间解析求最小；边界点同属两侧",
+  "measured": "三维，visible_track 后的真实整数 tau_us 共同帧，含保存的末端保持帧",
+  "optimized": "XY 水平距离，frames = optimize_checks._frames（释放至 end+hold_s）",
+  "quantiles": "numpy.quantile(method='linear')",
+  "turn_overlap": "turn 子分档与 phase 分档重叠（掉头属于巡逻的子区间），不能相加"
+ },
+ "overall": {
+  "measured_interp": {
+   "by_bin": {
+    "phase:collect_ingress": {
+     "max": 231.149615780894,
+     "median": 57.73178423365782,
+     "min": 4.007525578101571,
+     "n": 198,
+     "p10": 16.611274384334006,
+     "p90": 128.8781620015226
+    },
+    "phase:egress": {
+     "max": 3043.52940314821,
+     "median": 111.99788837672835,
+     "min": 17.06505708937513,
+     "n": 197,
+     "p10": 34.551549649298046,
+     "p90": 1533.9862131902505
+    },
+    "phase:hold": {
+     "max": 213.17701666517155,
+     "median": 77.51211645820706,
+     "min": 19.36244285529404,
+     "n": 70,
+     "p10": 19.378258147943875,
+     "p90": 155.04093303483833
+    },
+    "phase:mixed:collect_ingress|patrol": {
+     "max": 226.97416791238516,
+     "median": 82.13130498231892,
+     "min": 19.03363904192118,
+     "n": 198,
+     "p10": 20.738437644133448,
+     "p90": 163.9713978364289
+    },
+    "phase:mixed:egress|hold": {
+     "max": 3059.0925515466997,
+     "median": 185.07510488822138,
+     "min": 19.360396098991725,
+     "n": 197,
+     "p10": 38.75397663748295,
+     "p90": 1738.7027179509646
+    },
+    "phase:mixed:egress|patrol": {
+     "max": 1627.1679920540587,
+     "median": 135.68467505721608,
+     "min": 18.98729569426657,
+     "n": 198,
+     "p10": 37.48775912054924,
+     "p90": 1288.2064390866065
+    },
+    "phase:mixed:hold|patrol": {
+     "max": 3319.492981654943,
+     "median": 3319.492981654943,
+     "min": 3319.492981654943,
+     "n": 1,
+     "p10": 3319.492981654943,
+     "p90": 3319.492981654943
+    },
+    "phase:patrol": {
+     "max": 213.192267260567,
+     "median": 38.76222710153159,
+     "min": 3.229749624227876,
+     "n": 198,
+     "p10": 14.617955199019724,
+     "p90": 135.66779620278837
+    },
+    "turn:a": {
+     "max": 206.32404640933493,
+     "median": 42.553710699698485,
+     "min": 3.3207096006462895,
+     "n": 132,
+     "p10": 11.462003554761298,
+     "p90": 131.06756693856593
+    },
+    "turn:b": {
+     "max": 195.00039577574745,
+     "median": 38.502926866351956,
+     "min": 3.2382941046238303,
+     "n": 132,
+     "p10": 11.416876840090193,
+     "p90": 133.85471055902164
+    },
+    "turn:both": {
+     "max": 181.06021114308544,
+     "median": 37.07610392427021,
+     "min": 3.229749624227876,
+     "n": 132,
+     "p10": 10.244272699881403,
+     "p90": 116.01403828236488
+    }
+   },
+   "contract_level": {
+    "max": 11.608334926260017,
+    "median": 9.46405908865076,
+    "min": 3.229749624227876,
+    "n": 3,
+    "p10": 4.4766115171124525,
+    "p90": 11.179479758738166
+   },
+   "pair_level": {
+    "max": 213.192267260567,
+    "median": 36.75434735517128,
+    "min": 3.229749624227876,
+    "n": 198,
+    "p10": 11.28167436320104,
+    "p90": 96.905573610543
+   }
+  },
+  "measured_sample": {
+   "by_bin": {
+    "phase:collect_ingress": {
+     "max": 231.15016711928396,
+     "median": 57.73228846518768,
+     "min": 4.007525578101571,
+     "n": 198,
+     "p10": 16.612462164885805,
+     "p90": 128.87848475955377
+    },
+    "phase:egress": {
+     "max": 3043.6920659413527,
+     "median": 112.00276176327777,
+     "min": 17.06505708937513,
+     "n": 197,
+     "p10": 34.55267980252667,
+     "p90": 1534.027801344867
+    },
+    "phase:hold": {
+     "max": 213.17701666517155,
+     "median": 77.5136340051336,
+     "min": 19.363512321800997,
+     "n": 70,
+     "p10": 19.37826379632695,
+     "p90": 155.04136955385158
+    },
+    "phase:mixed:collect_ingress|patrol": {
+     "max": 226.98191219523824,
+     "median": 82.15161379668314,
+     "min": 19.03364660721389,
+     "n": 198,
+     "p10": 20.742225897602804,
+     "p90": 164.3773341666963
+    },
+    "phase:mixed:egress|hold": {
+     "max": 3059.0925515466997,
+     "median": 322.4381772030391,
+     "min": 19.373994228464245,
+     "n": 158,
+     "p10": 38.76186928752824,
+     "p90": 1915.3124331003694
+    },
+    "phase:mixed:egress|patrol": {
+     "max": 1627.16799316693,
+     "median": 135.605223141823,
+     "min": 18.987299595926146,
+     "n": 197,
+     "p10": 37.2776595689687,
+     "p90": 1289.7875120909464
+    },
+    "phase:mixed:hold|patrol": {
+     "max": 3319.492981654943,
+     "median": 3319.492981654943,
+     "min": 3319.492981654943,
+     "n": 1,
+     "p10": 3319.492981654943,
+     "p90": 3319.492981654943
+    },
+    "phase:patrol": {
+     "max": 213.192267260567,
+     "median": 38.76222710153159,
+     "min": 3.2298449902220363,
+     "n": 198,
+     "p10": 14.620010133019965,
+     "p90": 135.66779620278837
+    },
+    "turn:a": {
+     "max": 206.3543093849809,
+     "median": 42.55554939794813,
+     "min": 3.320857477024821,
+     "n": 132,
+     "p10": 11.512692103580232,
+     "p90": 131.41032041324777
+    },
+    "turn:b": {
+     "max": 195.0004120076413,
+     "median": 38.50314702743678,
+     "min": 3.2383397183500238,
+     "n": 132,
+     "p10": 11.469938429570162,
+     "p90": 134.12531623366078
+    },
+    "turn:both": {
+     "max": 181.06021114308544,
+     "median": 37.11797191131636,
+     "min": 3.2298449902220363,
+     "n": 132,
+     "p10": 10.245695719634671,
+     "p90": 116.01403828236488
+    }
+   },
+   "contract_level": {
+    "max": 11.608336242441716,
+    "median": 9.464076984671754,
+    "min": 3.2298449902220363,
+    "n": 3,
+    "p10": 4.476691389111981,
+    "p90": 11.179484390887724
+   },
+   "pair_level": {
+    "max": 213.192267260567,
+    "median": 36.75526753624973,
+    "min": 3.2298449902220363,
+    "n": 198,
+    "p10": 11.283450729775717,
+    "p90": 96.905573610543
+   }
+  },
+  "optimized_xy": {
+   "by_bin": {
+    "phase:collect_ingress": {
+     "max": 231.14984658821464,
+     "median": 57.72712526259589,
+     "min": 4.0075735820152,
+     "n": 198,
+     "p10": 16.602813739578814,
+     "p90": 128.8782255072682
+    },
+    "phase:egress": {
+     "max": 3043.6921716099214,
+     "median": 112.00197710921707,
+     "min": 17.12058537249013,
+     "n": 197,
+     "p10": 34.545526356702254,
+     "p90": 1534.027906420961
+    },
+    "phase:hold": {
+     "max": 213.19226921364915,
+     "median": 77.52446153221995,
+     "min": 19.381115383052833,
+     "n": 70,
+     "p10": 19.381115383057388,
+     "p90": 155.04892306447937
+    },
+    "phase:mixed:collect_ingress|patrol": {
+     "max": 226.98220786050322,
+     "median": 82.15281177295844,
+     "min": 19.033521959342654,
+     "n": 198,
+     "p10": 20.74115491001877,
+     "p90": 164.37436930004648
+    },
+    "phase:mixed:egress|hold": {
+     "max": 3059.101441384671,
+     "median": 322.44934252360827,
+     "min": 19.380792130929745,
+     "n": 158,
+     "p10": 38.76223097282383,
+     "p90": 1915.3239135014937
+    },
+    "phase:mixed:egress|patrol": {
+     "max": 1627.1676532831386,
+     "median": 135.60525408332848,
+     "min": 18.98717884430167,
+     "n": 197,
+     "p10": 37.277478821713565,
+     "p90": 1289.787307815274
+    },
+    "phase:mixed:hold|patrol": {
+     "max": 3319.5017893564514,
+     "median": 3319.5017893564514,
+     "min": 3319.5017893564514,
+     "n": 1,
+     "p10": 3319.5017893564514,
+     "p90": 3319.5017893564514
+    },
+    "phase:patrol": {
+     "max": 213.19226652436137,
+     "median": 38.76222783616274,
+     "min": 3.2512913198278843,
+     "n": 198,
+     "p10": 14.620808092020289,
+     "p90": 135.66779722726315
+    },
+    "turn:a": {
+     "max": 206.35402423144396,
+     "median": 42.559517997994206,
+     "min": 3.3220330476576097,
+     "n": 132,
+     "p10": 11.518402570721577,
+     "p90": 131.35750241600493
+    },
+    "turn:b": {
+     "max": 195.00264915226606,
+     "median": 38.50805764486336,
+     "min": 3.2572581435869457,
+     "n": 132,
+     "p10": 11.44130122085321,
+     "p90": 134.07760077742023
+    },
+    "turn:both": {
+     "max": 181.06088783620012,
+     "median": 37.09931333953101,
+     "min": 3.2512913198278843,
+     "n": 132,
+     "p10": 10.239489909908883,
+     "p90": 116.03480003848324
+    }
+   },
+   "contract_level": {
+    "max": 11.608284814577667,
+    "median": 9.463980832712203,
+    "min": 3.2512913198278843,
+    "n": 3,
+    "p10": 4.493829222404748,
+    "p90": 11.179424018204575
+   },
+   "pair_level": {
+    "max": 213.19226652436137,
+    "median": 36.76824500036069,
+    "min": 3.2512913198278843,
+    "n": 198,
+    "p10": 11.281734708594671,
+    "p90": 96.90557448853514
+   }
+  }
+ },
+ "phase_metrics_reproduced": {
+  "error": [],
+  "false": [],
+  "true": 3
+ },
+ "retained_selected": 3,
+ "speed_case_counts": {
+  "egress:tail_20s": 35
+ },
+ "speed_cases_total": 35,
+ "validity_consistency": {
+  "equal": 3,
+  "mismatch": [],
+  "total": 3
+ },
+ "wall_s": 85.46530652046204,
+ "worst10": {
+  "measured_interp": [
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 0.8372269833105076,
+    "frames": 29001,
+    "interval_start_us": 1956200000,
+    "min_m": 3.229749624227876,
+    "pair": "uav_11|uav_12",
+    "source": "measured_interp",
+    "t_s": 1956.283722698331,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 0.19259380229535622,
+    "frames": 28910,
+    "interval_start_us": 1955500000,
+    "min_m": 3.2382941046238303,
+    "pair": "uav_02|uav_03",
+    "source": "measured_interp",
+    "t_s": 1955.5192593802294,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 0.9961085880106342,
+    "frames": 28623,
+    "interval_start_us": 2390900000,
+    "min_m": 3.2681838828464733,
+    "pair": "uav_02|uav_05",
+    "source": "measured_interp",
+    "t_s": 2390.9996108588007,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 1.0,
+    "frames": 27917,
+    "interval_start_us": 2006100000,
+    "min_m": 3.3404128073273966,
+    "pair": "uav_04|uav_08",
+    "source": "measured_interp",
+    "t_s": 2006.2,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 0.6410915784407596,
+    "frames": 28910,
+    "interval_start_us": 1959000000,
+    "min_m": 3.4450601206064326,
+    "pair": "uav_03|uav_11",
+    "source": "measured_interp",
+    "t_s": 1959.064109157844,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 0.7569656430275009,
+    "frames": 28194,
+    "interval_start_us": 1955000000,
+    "min_m": 3.517377568471398,
+    "pair": "uav_05|uav_10",
+    "source": "measured_interp",
+    "t_s": 1955.0756965643027,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 1.0,
+    "frames": 27851,
+    "interval_start_us": 1998400000,
+    "min_m": 3.645833009426074,
+    "pair": "uav_08|uav_12",
+    "source": "measured_interp",
+    "t_s": 1998.5,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 1.0,
+    "frames": 30412,
+    "interval_start_us": 242000000,
+    "min_m": 4.007525578101571,
+    "pair": "uav_06|uav_09",
+    "source": "measured_interp",
+    "t_s": 242.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 0.7120031928016841,
+    "frames": 28582,
+    "interval_start_us": 818900000,
+    "min_m": 4.403501674019967,
+    "pair": "uav_04|uav_12",
+    "source": "measured_interp",
+    "t_s": 818.9712003192801,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "fraction": 1.0,
+    "frames": 30762,
+    "interval_start_us": 2318800000,
+    "min_m": 4.919560333148188,
+    "pair": "uav_02|uav_11",
+    "source": "measured_interp",
+    "t_s": 2318.9,
+    "topology": "retrace"
+   }
+  ],
+  "measured_sample": [
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 29001,
+    "min_m": 3.2298449902220363,
+    "pair": "uav_11|uav_12",
+    "source": "measured_sample",
+    "t_s": 1956.3,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28910,
+    "min_m": 3.2383397183500238,
+    "pair": "uav_02|uav_03",
+    "source": "measured_sample",
+    "t_s": 1955.5,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28623,
+    "min_m": 3.2681838852842993,
+    "pair": "uav_02|uav_05",
+    "source": "measured_sample",
+    "t_s": 2391.0,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 27917,
+    "min_m": 3.3404128073273966,
+    "pair": "uav_04|uav_08",
+    "source": "measured_sample",
+    "t_s": 2006.2,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28910,
+    "min_m": 3.445485917255886,
+    "pair": "uav_03|uav_11",
+    "source": "measured_sample",
+    "t_s": 1959.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28194,
+    "min_m": 3.517588222203168,
+    "pair": "uav_05|uav_10",
+    "source": "measured_sample",
+    "t_s": 1955.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 27851,
+    "min_m": 3.645833009426074,
+    "pair": "uav_08|uav_12",
+    "source": "measured_sample",
+    "t_s": 1998.5,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 30412,
+    "min_m": 4.007525578101571,
+    "pair": "uav_06|uav_09",
+    "source": "measured_sample",
+    "t_s": 242.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28582,
+    "min_m": 4.405513740238908,
+    "pair": "uav_04|uav_12",
+    "source": "measured_sample",
+    "t_s": 819.0,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 30762,
+    "min_m": 4.919560333148188,
+    "pair": "uav_02|uav_11",
+    "source": "measured_sample",
+    "t_s": 2318.9,
+    "topology": "retrace"
+   }
+  ],
+  "optimized_xy": [
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28910,
+    "min_m": 3.2512913198278843,
+    "pair": "uav_02|uav_03",
+    "source": "optimized_xy",
+    "t_s": 1958.8,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 29001,
+    "min_m": 3.2560311503213137,
+    "pair": "uav_11|uav_12",
+    "source": "optimized_xy",
+    "t_s": 1961.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28623,
+    "min_m": 3.270058836011044,
+    "pair": "uav_02|uav_05",
+    "source": "optimized_xy",
+    "t_s": 2390.9,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 27917,
+    "min_m": 3.3501956094192886,
+    "pair": "uav_04|uav_08",
+    "source": "optimized_xy",
+    "t_s": 1945.9,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28910,
+    "min_m": 3.44741989376918,
+    "pair": "uav_03|uav_11",
+    "source": "optimized_xy",
+    "t_s": 1959.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28194,
+    "min_m": 3.5068542552594737,
+    "pair": "uav_05|uav_10",
+    "source": "optimized_xy",
+    "t_s": 1955.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 27851,
+    "min_m": 3.6677647801668884,
+    "pair": "uav_08|uav_12",
+    "source": "optimized_xy",
+    "t_s": 1998.5,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 30412,
+    "min_m": 4.0075735820152,
+    "pair": "uav_06|uav_09",
+    "source": "optimized_xy",
+    "t_s": 242.1,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 28582,
+    "min_m": 4.403483383204185,
+    "pair": "uav_04|uav_12",
+    "source": "optimized_xy",
+    "t_s": 819.0,
+    "topology": "retrace"
+   },
+   {
+    "bin": "all",
+    "bin_kind": "all",
+    "contract_id": "stress_o11_abreast_s0",
+    "formation": "abreast",
+    "frames": 30762,
+    "min_m": 4.926786345105493,
+    "pair": "uav_02|uav_11",
+    "source": "optimized_xy",
+    "t_s": 2288.7,
+    "topology": "retrace"
+   }
+  ]
+ }
+}
