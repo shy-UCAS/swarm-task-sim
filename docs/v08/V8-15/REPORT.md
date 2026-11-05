@@ -301,3 +301,126 @@ V8-12 的两个失败和一个跳过，按**测试名与原因**逐项对照 V8-
 - 选定 W = 24 时 T ≈ **1503 s（约 25 分钟）**。对照：W = 16 时 1865 s，W = 8 时 3927 s；V8-14c 实测为 8 进程 4765 s。
 - 这 40 个是中等耗时合同，它们的膨胀比不能证明长尾合同也同比例。V8-14c 全量的尾部损失主要来自少数 500 s 以上的合同，预测可能偏乐观。
 - 第 8 档超过 20 分钟的情形（附录裁定 4.1）没有出现：8 档派发后 487 s。
+
+### 4.5 默认值联动（提交 ae7766d；属于生产模块改动，P0-4 门禁见第 7 节）
+
+- **新增** `v08/runner/runtime_defaults.py`：只有 `DEFAULT_WORKERS = 24`，注释写明测量提交 52f3915、名单、选择结果与性能表路径；不含任何算法参数。
+- **全部引用：** `git grep -n -E "workers|DEFAULT_WORKERS|--workers"` 的结果见 [part4/workers_references.txt](part4/workers_references.txt)，共 118 行，覆盖代码、测试、README、RUNNING。
+
+| 位置 | 处理 | 分类 |
+|---|---|---|
+| `tools/v08/run_joint_monitoring.py` parser `--workers` 原 `default=1` | 改为 `DEFAULT_WORKERS`；用法说明加注 quick/rerun 仍单进程 | 修改 |
+| `tools/v08/run_skeleton_monitoring.py` parser 原 `default=8` | 改为 `DEFAULT_WORKERS`；文件头示例不再写死 8 | 修改 |
+| `joint_monitoring.run_batch(workers=8)` | 默认改为 `DEFAULT_WORKERS`；函数仍串行、不使用该参数（行为不变） | 修改 |
+| `skeleton_monitoring.run_skeleton_batch(workers=8)` | 默认改为 `DEFAULT_WORKERS`；族级派发不变 | 修改 |
+| `joint_monitoring.cli` quick 分支 `run_batch(..., workers=1)` | 不改（指令 4.3、附录裁定 4.2） | 历史保留 |
+| `rerun_stage` 的 `"workers_source": 8, "workers_repeat": 1` | 不改：这是历史复跑事实 | 历史保留 |
+| `full_stage(workers)`、`run_pool`/`run_pool_singles(workers)` | 只接收调用方传入的值，无默认 | 不涉及 |
+| `tools/v08/run_separation_v15.py --workers` | 未给时读 `DEFAULT_WORKERS`；第 4 部分三档显式传 8/16/24 | 显式实验值 / 新入口默认 |
+| `profile_monitoring_v15.py` | 单进程，不受默认值影响 | 显式实验值 |
+| V8-13/V8-14 既有测试 | 没有任何 `workers` 引用，与指令 4.3 的 GitHub 搜索结论一致；V8-13 `test_preset_local_reproduction.py` 与历史 `rerun_reproduction.json` 的 8/1 不改 | 历史保留 |
+| `Multi-UAV SimpleGC/README.md`、[RUNNING.md](RUNNING.md) | README 头部新增 v0.8 默认值说明；RUNNING 写实际默认值、来源、旧 quick 串行例外、名单快速命令、单进程 profile/rerun、日常小批量规则 | 修改（文档） |
+
+- **预置测试** `test_preset_local_defaults.py`（设置 `V8_15_WORKER_SELECTION` 指向 [part4/worker_choice.json](part4/worker_choice.json)）**2/2 ok**。
+  - `DEFAULT_WORKERS`、`run_batch`/`run_skeleton_batch` 的签名默认值、新入口解析默认值都等于 24。
+  - 两个旧 CLI 不带 `--workers` 时传给 `cli` 的是 24，显式 `--workers 1` 能覆盖。
+
+## 5. 第 5 部分：完整链路剖析（附录裁定 3：cProfile 与行级计时分两次运行）
+
+入口 [profile_monitoring_v15.py](../../../Multi-UAV%20SimpleGC/tools/v08/profile_monitoring_v15.py)；汇总 [part5/summary.json](part5/summary.json)，四阶段双 Top25 见 [part5/top25.md](part5/top25.md)。
+- 外部原始文件在 `_handoff\2026-11-05_V8-15_separation\out\{profile,profile_line}\<合同>\`：五个阶段 `.prof`、`merged.prof`、`result.json` 与复跑合同目录。各 `.prof` 的 SHA256 记在 summary 的 `prof_sha256`。
+- **每个合同一个独立子进程**，峰值工作集即该合同的进程峰值。
+- 剖析期间没有其他重计算在运行。
+- **剖析合同的输出与基线逐字节一致**：cProfile 4/4、行级 2/2。说明探针没有改变计算。
+
+### 5.1 选样（[part5/selection.json](part5/selection.json)）
+
+- **四个合同：**
+  - `skeleton_s` 最大：o23_d4（失败合同，20 attempt）。
+  - `optimize_s` 最大且未选：o35_d3。
+  - |wall_s − 中位数 68.552 s| 最小的两个：o05_d3、o16_d3。
+- **附录裁定 3 估算：** Σ wall_s × 2 = 2514 s ≤ 90 分钟，**不替换**。
+- **行级运行：** 两个中位数合同 o05_d3、o16_d3，单合同上限 = 6 × 基线 wall_s（约 410 s），总上限 40 分钟。
+- **最贵合同**（选样前基线 wall_s 最大）：o23_d4。
+
+### 5.2 cProfile 运行（2026-11-05 05:36:32 → 05:53:45）
+
+| 合同 | 基线 wall（8 进程全量中） | 剖析 wall | 骨架 | 优化 | 仿真 | 核验 | 编排 | 峰值工作集 |
+|---|---|---|---|---|---|---|---|---|
+| o23_d4（失败，20 attempt，4 次进入优化） | 572.0 s | 453.7 s | 317.4 | 136.1 | 0 | 0 | 0.07 | 0.64 GiB |
+| o35_d3（成功，8 attempt，7 次优化） | 547.8 s | 447.9 s | 161.6 | 241.6 | 35.5 | 5.9 | 3.2 | 1.43 GiB |
+| o05_d3（成功，2 attempt） | 68.4 s | 60.7 s | 8.8 | 18.6 | 27.7 | 2.6 | 3.1 | 0.53 GiB |
+| o16_d3（成功，1 attempt） | 68.7 s | 67.3 s | 9.5 | 17.1 | 36.6 | 1.8 | 2.1 | 0.46 GiB |
+
+- **互斥口径：** 五个作用域墙钟都是互斥的，加和等于剖析墙钟（例如 o05_d3：60.65 s 对 60.73 s）。
+- **剖析比基线快：** 基线是 8 进程全量中的值，有并行争用；剖析是单进程。剖析数字只用来排序与看占比，不用于第 4 部分的膨胀比或压力预算。
+- **"CPU"口径：** 本项没有测进程 CPU 时间。
+
+**骨架细项**（按固定源码定位；cumtime 有包含关系，不能相加）：
+
+| 项 | o23_d4 | o35_d3 | o05_d3 | o16_d3 |
+|---|---|---|---|---|
+| `monitoring_turn.sample_joint_turn`（整体掉头） | 33 次 / 215.1 s | 8 次 / 55.5 s | 未调用（环绕） | 未调用 |
+| 其中 `_points_ok` | 9234 次 / 89.9 s | — | — | — |
+| `lp_feasible_pairs` / `_arc_feasible`（折返单调扫描） | 20 / 0.75 s；20 / 0.58 s | 3 / 0.00 s；未调用 | — | — |
+| `shape_lp`（构造+求解） | 40 次 / 0.85 s | 16 / 0.76 s | 4 / 0.43 s | 2 / 0.40 s |
+| `linprog`（来自 shape_lp） | 0.40 s | 0.25 s | 0.08 s | 0.04 s |
+| LP 构造独占 = shape_lp − 其调用的 linprog | 0.45 s | 0.51 s | 0.35 s | 0.36 s |
+| `_lp_basis` 调用 / 未命中（新进程首次） | 40 / 1 | 16 / 1 | 4 / 1 | 2 / 1 |
+| `BandGeometry.__init__`（含 `radial_margins`） | 20 次 / 20.5 s | 8 / 10.8 s | 2 / 0.9 s | 1 / 1.0 s |
+| `scene.exact.signed_distance` | 261817 次 / 149.7 s | 45106 / 37.4 s | 2605 / 0.46 s | 195 / 0.36 s |
+| `scene.exact.clearance_values` | 245888 / 141.3 s | 42752 / 35.3 s | 96 / 0.33 s | 36 / 0.26 s |
+| `scene.exact.polyline_clearance` | 190364 / 84.9 s | 33596 / 38.4 s | 80 / 0.23 s | 27 / 0.13 s |
+| `scene.exact.chord_sdf_range` | 17117 / 50.2 s | 5227 / 28.9 s | 36 / 1.0 s | 15 / 1.1 s |
+| 其中 `scene.exact._poly_sdf` 独占（tottime） | 92.3 s | — | — | — |
+
+- **长尾在整体掉头：** 骨架最贵合同的骨架时间中，约 68%（215/317 s）在 `sample_joint_turn` 内，其下又以精确场景距离查询（`_poly_sdf`、`signed_distance`、`clearance_values`）为主。
+- **LP 很便宜：** 曲率 LP 本身（构造 + 求解）全部不到 1 s。
+- **折返单调扫描**（`lp_feasible_pairs`）在这四个合同中都不到 1 s。
+
+**优化细项：**
+
+| 项 | o23_d4 | o35_d3 | o05_d3 | o16_d3 |
+|---|---|---|---|---|
+| `optimize_segment` 调用（= 实际进入优化的 attempt） | 4 | 7 | 1 | 1 |
+| `Prepared.value_grad` 实际调用（全部） | 1001 | 1910 | 261 | 361 |
+| 　其中 L-BFGS 回调（经 `_compute_if_needed`） / `terms=True` 诊断 | 997 / 4 | 1903 / 7 | 260 / 1 | 360 / 1 |
+| 　各轮 nfev 之和 | 997 | 1903 | 260 | 360 |
+| value_grad 平均累计耗时 | 55.2 ms | 69.2 ms | 51.4 ms | 34.9 ms |
+| `_blocks` 调用：来自 value_grad / 来自 constraint_values | 1001 / 8 | 1910 / 14 | 261 / 2 | 361 / 2 |
+| `solve_joint` 累计 | 64.9 s | 151.3 s | 14.9 s | 14.0 s |
+| `check_monitoring`（优化后语义硬检查）累计 | 61.6 s | 67.8 s | 2.9 s | 2.2 s |
+| `check_physical` 累计 | 5.5 s | 10.0 s | 0.43 s | 0.31 s |
+
+- **调用次数：** L-BFGS 回调次数恰好等于各轮 nfev 之和。其余调用全部是每次求解后一次 `terms=True` 诊断，不是用 nfev 推算出来的。
+- **两个贵合同的硬检查占比：** o23_d4、o35_d3 中，`check_monitoring` 占优化阶段约 45% 与 28%。o35_d3 的 optimize 阶段 tottime 第一名是 `nominal_checks.revisit`，56 次共 52.4 s 独占；第二名是 `Prepared.geo.eval`（optimize.py:299），61792 次共 44.9 s 独占。
+
+**AL 外循环：** 全部 13 次 `solve_joint`（4 + 7 + 1 + 1）都只用了 **1 个外轮**，第一轮硬检查即通过；o23_d4 的失败来自其他阶段，不是 AL 未收敛。
+- 13 次中 9 次内层 `nit = 200`，即 `STOP: TOTAL NO. of ITERATIONS REACHED LIMIT`；其余 4 次是 `CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR`。
+- 每轮的 nit/nfev/message/scipy_success/rho/value/max_violation/hard_passed/硬失败类别见 summary 的 `al`。完整 diagnostics（除两组控制点数组外的全部键）在外部 `result.json`。
+
+### 5.3 行级计时运行（附录裁定 3；2026-11-05 05:53:45 → 05:55:30）
+
+- **安装范围：** `sys.settrace` 只在 `optimize_segment` 内安装、`finally` 卸载；只对 `Prepared._blocks` 与 `Prepared.value_grad` 两个 code 对象产生行事件。
+- **行号映射：** 运行时用语句文本锚点生成，与固定提交行号**零漂移**：_blocks 共享 ≤648、动力学 649–715、几何 716–726、间距 727–742；value_grad 的 `_blocks` 调用在 779，AL 累计在 782–792 并按当前 `k[0]` 归类。
+- **扣除与核对：** 嵌套 `_blocks` 的时长从父间隔扣除。各类别都非负，加和等于 value_grad 调用总时长：差值分别为 0 与 −1.8e−15 s。
+- **开销：** 每个事件约 170 ns，结果中**未扣除**。
+
+| 合同 | 运行 wall / 基线 | 优化（跟踪中）墙钟 | 部分采样 | 行事件 | value_grad 调用（lbfgs / terms） | value_grad 总时长 |
+|---|---|---|---|---|---|---|
+| o05_d3 | 50.6 s / 68.4 s | 20.9 s | 否（上限 410 s） | 503,591 | 260 / 1 | 15.38 s |
+| o16_d3 | 52.1 s / 68.7 s | 18.4 s | 否（上限 412 s） | 200,042 | 360 / 1 | 13.71 s |
+
+**value_grad 时间的可归属占比**：直接归属 / 上界 = 直接 + 共享。共享包括 P/V/A/J 求值、`for` 头、联合梯度投影 804–805、预条件等，不拆分。
+
+| 合同 | 间距 sep | 几何 geo | 动力学 v/t/n/j/turn | 共享 shared |
+|---|---|---|---|---|
+| o05_d3 | **14.6%**（上界 38.5%） | 42.3%（上界 66.2%） | 19.2%（上界 43.2%） | 23.9% |
+| o16_d3 | **4.5%**（上界 29.8%） | 49.7%（上界 74.9%） | 20.5%（上界 45.8%） | 25.3% |
+
+- **"间距项占比"的口径：** 在这两个中位数合同中，可直接归属到间距约束的时间占 value_grad 的 4.5–14.6%，上界 30–39%。
+- **几何项是最大的直接归属类别。**
+- 由 `constraint_values` 触发的 `_blocks` 另行统计（0.05–0.08 s），不进 value_grad 的分子分母。
+- 以上占比只来自行级运行（裁定 3.3），不由约束个数推算。
+
+**本节不提出、也不实施任何提速方案**（U D.4.4）。

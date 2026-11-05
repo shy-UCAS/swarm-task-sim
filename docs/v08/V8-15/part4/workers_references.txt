@@ -1,0 +1,118 @@
+Multi-UAV SimpleGC/README.md:3:> **2026-11-05 v0.8 运行默认值（V8-15）：** v0.8 监视单段的默认进程数改为 `v08/runner/runtime_defaults.py` 中的 `DEFAULT_WORKERS = 24`（本机 16 物理核 / 32 逻辑处理器，8/16/24 三档实测选定，证据见仓库根 `docs/v08/V8-15/REPORT.md` 第 4 节）。`run_joint_monitoring.py`（原 1）、`run_skeleton_monitoring.py`（原 8）的 `--workers` 缺省与 `run_batch`/`run_skeleton_batch` 的默认值同步；旧 `--stage quick` 分支与 `run_batch` 本身仍串行，`--stage rerun` 与剖析保持单进程。日常迭代只跑“只骨架检查 + 20 合同快速批次”（新入口 `tools/v08/run_separation_v15.py --mode production-quick` 按默认进程数真实并行并与基线逐字节比较）；全量 200 + 100 只在规划审查方明确要求的验收时运行。命令见仓库根 `docs/v08/V8-15/RUNNING.md`。
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:39:        from v08.runner.runtime_defaults import DEFAULT_WORKERS
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:41:        self.assertEqual(DEFAULT_WORKERS, self.expected, "U D.3/F.4：默认来源是已存实测选定值")
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:43:            self.assertEqual(inspect.signature(fn).parameters["workers"].default, self.expected,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:50:        self.assertEqual(args.workers, self.expected,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:60:                self.assertEqual(called.call_args.args[0].workers, self.expected,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:62:                joint.main(["--stage", "quick", "--out", "unused", "--workers", "1"])
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:63:                self.assertEqual(called.call_args.args[0].workers, 1,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:71:                self.assertEqual(called.call_args.args[0].workers, self.expected,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:73:                skeleton.main(argv + ["--workers", "1"])
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_local_defaults.py:74:                self.assertEqual(called.call_args.args[0].workers, 1,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:14:from v15_metrics import pair_minima, select_timing_keys, choose_workers, compare_contracts
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:58:            return {"workers": w, "inflation_median": ratio,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:60:        self.assertEqual(choose_workers([row(8, 1), row(16, 1), row(24, 1.5)])["selected"], 16,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:62:        self.assertEqual(choose_workers([row(8, 1), row(16, 1), row(24, 1)])["selected"], 24,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:64:        self.assertEqual(choose_workers([row(8, 1), row(16, 1), row(24, 1, .61)])["selected"], 16,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:66:        self.assertEqual(choose_workers([row(8, 1, .6)])["selected"], 8,
+Multi-UAV SimpleGC/tests/v08/V8-15/test_preset_numeric_protocol.py:68:        self.assertIsNone(choose_workers([row(8, 1, .61), row(16, 1, .7)])["selected"],
+Multi-UAV SimpleGC/tools/v08/analyze_separation_v15.py:9:        --data-root <SwarmData> --cache <V8-15 缓存副本> --out <不存在的新目录> [--workers 8] [--limit N]
+Multi-UAV SimpleGC/tools/v08/analyze_separation_v15.py:377:    ap.add_argument("--workers", type=int, default=8)
+Multi-UAV SimpleGC/tools/v08/analyze_separation_v15.py:399:    if args.workers <= 1:
+Multi-UAV SimpleGC/tools/v08/analyze_separation_v15.py:405:        with ProcessPoolExecutor(max_workers=args.workers, mp_context=mp.get_context("spawn")) as ex:
+Multi-UAV SimpleGC/tools/v08/run_joint_monitoring.py:7:        --data-root <SwarmData> --cache <缓存目录> --out <新目录> [--workers N]
+Multi-UAV SimpleGC/tools/v08/run_joint_monitoring.py:8:    （--workers 缺省 = v08/runner/runtime_defaults.DEFAULT_WORKERS，V8-15 实测选定；quick 分支与 rerun 仍单进程）
+Multi-UAV SimpleGC/tools/v08/run_joint_monitoring.py:10:        --keys <rerun_keys.json> --compare-to <原 full 目录> --out <新目录> --workers 1
+Multi-UAV SimpleGC/tools/v08/run_joint_monitoring.py:41:    from v08.runner.runtime_defaults import DEFAULT_WORKERS
+Multi-UAV SimpleGC/tools/v08/run_joint_monitoring.py:42:    ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:1:"""V8-15 实验入口（指令 4、6、7）：workers / production-quick / stress-skeleton / stress-checkpoint / stress-rest。
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:9:    python -B tools/v08/run_separation_v15.py --mode workers --select-to <selection.json> --baseline <full_v14c>
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:11:    python -B tools/v08/run_separation_v15.py --mode workers --keys <selection.json> --workers 8|16|24
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:13:    python -B tools/v08/run_separation_v15.py --mode production-quick [--workers N] --baseline ... --devset ...
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:15:    python -B tools/v08/run_separation_v15.py --mode stress-skeleton|stress-checkpoint|stress-rest [--workers N]
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:17:--workers 未给时读 v08.runner.runtime_defaults.DEFAULT_WORKERS（尚未生成时为 None，须显式给出）。
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:37:MODES = ("workers", "production-quick", "stress-skeleton", "stress-checkpoint", "stress-rest")
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:48:def _default_workers():
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:50:        from v08.runner.runtime_defaults import DEFAULT_WORKERS
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:53:    return int(DEFAULT_WORKERS)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:65:    ap.add_argument("--workers", type=int, default=_default_workers())
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:66:    ap.add_argument("--keys", help="workers 模式：part4 selection.json")
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:67:    ap.add_argument("--select-to", help="workers 模式：只计算 40 合同名单写到该文件后退出")
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:175:def run_selected(entries, keys, *, data_root, cache_dir, out_dir, workers, baseline=None, log=_log):
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:210:        rows, unsent = JM.run_pool_singles([t for *_, t in tasks], workers=workers, deadline=float("inf"), log=logm)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:228:    summary = {"workers": workers, "keys": len(keys), "completed": len(rows), "missing": sorted(want - got),
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:233:               "parallel_efficiency": (sum(r.get("wall_s") or 0.0 for r in rows) / (disp_wall * workers)) if disp_wall else None,
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:236:               "cache_write_during_workers": cache_diff(cache_before, cache_after),
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:470:def _stress_batch(entries, cases, *, kind, data_root, cache_dir, out_dir, workers, log=_log):
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:494:        rows, unsent = JM.run_pool_singles(pool, workers=workers, deadline=float("inf"), log=logm)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:498:    summary = {"kind": kind, "workers": workers, "cases": len(cases), "completed": len(rows), "unsent": unsent,
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:501:               "cache_write_during_workers": cache_diff(cache_before, cache_state(cache_dir))}
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:507:def stress_budget(rest, checkpoint_wall, workers):
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:514:    return {"T_R_s": max(sum(tt) / (workers * EFFICIENCY), max(tt)), "estimable": len(est), "unestimable": unknown,
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:515:            "sum_s": sum(tt), "max_s": max(tt), "workers": workers}
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:534:    if args.mode == "workers":
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:539:        if not args.keys or args.workers is None:
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:540:            print("workers 模式需要 --keys 与显式 --workers", file=sys.stderr)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:546:        s = run_selected(entries, sel["keys"], data_root=data_root, cache_dir=cache, out_dir=out, workers=args.workers,
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:548:        print(json.dumps({k: s[k] for k in ("workers", "completed", "missing", "errors", "dispatch_wall_s",
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:551:    if args.workers is None:
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:552:        print("未选定默认进程数，须显式 --workers", file=sys.stderr)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:571:        s = run_selected(entries, sel, data_root=data_root, cache_dir=cache, out_dir=out / "run", workers=args.workers,
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:583:        doc = {"workers": args.workers, "keys": [JM.contract_id({"order": o}, d) for o, d in sel],
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:587:                                             "cache_write_during_workers")},
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:614:                                   out_dir=out / "run", workers=args.workers)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:635:        w = min(CHECKPOINT_MAX_WORKERS, args.workers, max(1, len(cps)))
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:637:                                   out_dir=out / "run", workers=w)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:643:        plan = {"checkpoint_workers": w, "checkpoint_wall_s": cw, "W_star": args.workers, "initial_rest": len(rest)}
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:644:        b0 = stress_budget(rest, cw, args.workers)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:650:            b1 = stress_budget(reduced, cw, args.workers)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:655:                b2 = stress_budget(reduced, cw, args.workers)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:663:        plan["final_estimate"] = stress_budget(reduced, cw, args.workers)
+Multi-UAV SimpleGC/tools/v08/run_separation_v15.py:674:                                   out_dir=out / "run", workers=args.workers)
+Multi-UAV SimpleGC/tools/v08/run_skeleton_monitoring.py:5:        --cache <缓存目录> --out <不存在的新目录> [--workers N]
+Multi-UAV SimpleGC/tools/v08/run_skeleton_monitoring.py:6:    （--workers 缺省 = v08/runner/runtime_defaults.DEFAULT_WORKERS，V8-15 实测选定）
+Multi-UAV SimpleGC/tools/v08/run_skeleton_monitoring.py:8:与 run_joint_monitoring.py 相同的 --devset --data-root --cache --out --workers 语义与路径守卫（resolve 后拒绝仓库、
+Multi-UAV SimpleGC/tools/v08/run_skeleton_monitoring.py:27:    from v08.runner.runtime_defaults import DEFAULT_WORKERS
+Multi-UAV SimpleGC/tools/v08/run_skeleton_monitoring.py:28:    ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS)
+Multi-UAV SimpleGC/tools/v08/v15_metrics.py:115:def choose_workers(rows):
+Multi-UAV SimpleGC/tools/v08/v15_metrics.py:116:    """接收每档 workers、inflation_median、peak_memory_fraction；返回选定档或None及依据。
+Multi-UAV SimpleGC/tools/v08/v15_metrics.py:122:    for r in sorted(rows, key=lambda x: int(x["workers"])):
+Multi-UAV SimpleGC/tools/v08/v15_metrics.py:123:        w = int(r["workers"])
+Multi-UAV SimpleGC/tools/v08/v15_metrics.py:136:        basis.append({"workers": w, "inflation_median": inf, "peak_memory_fraction": mem, "throughput": s,
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:26:from .runtime_defaults import DEFAULT_WORKERS
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:408:def run_batch(entries, *, stage, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, keys=None, settings=None,
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:411:    （workers>1 的进程池由第 5 部分接入）。按业务 key 排序写 records.json 与 summary.json。"""
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:478:        summary = run_batch(entries, stage="quick", data_root=data_root, cache_dir=cache, out_dir=out, workers=1,
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:486:        summary = full_stage(entries, data_root=data_root, cache_dir=cache, out_dir=out, workers=args.workers)
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:680:def run_pool(tasks, *, workers, deadline, log=print):
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:686:    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:695:        for _ in range(workers):
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:769:def run_pool_singles(tasks, *, workers, deadline, log=print):
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:776:    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:785:        for _ in range(workers):
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:801:def full_stage(entries, *, data_root, cache_dir, out_dir, workers, log=print):
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:840:    rows, unsent = run_pool_singles([x[5] for x in singles], workers=workers, deadline=deadline, log=log)
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:860:               "wall_s": time.time() - t_start, "workers": workers}
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:874:                       "contract_busy_s": busy, "parallel_efficiency": busy / (disp_wall * workers) if disp_wall else None,
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:901:    doc = {"comparisons": comps, "all_equal": all(c["bytes_equal"] for c in comps), "workers_source": 8,
+Multi-UAV SimpleGC/v08/runner/joint_monitoring.py:902:           "workers_repeat": 1}
+Multi-UAV SimpleGC/v08/runner/runtime_defaults.py:3:DEFAULT_WORKERS = 24：本机（AMD Ryzen 9 9950X3D，16 物理核 / 32 逻辑处理器，63.65 GB）上，同一组 40 个中等耗时
+Multi-UAV SimpleGC/v08/runner/runtime_defaults.py:9:DEFAULT_WORKERS = 24
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:18:from .runtime_defaults import DEFAULT_WORKERS
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:252:def run_skeleton_batch(entries, *, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, draws=DRAWS, log=print):
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:253:    """40 族 × draw 0..4，族为单位派发到 workers 个进程（spawn）；按业务键排序写出。返回 summary。"""
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:261:    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:264:        for _ in range(workers):
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:282:    return write_outputs(out, rows, expected=len(ordered) * draws, wall_s=time.time() - t_start, workers=workers)
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:293:def write_outputs(out, rows, *, expected, wall_s, workers):
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:327:               "complete": chk["complete"], "checkpoint": chk, "wall_s": wall_s, "workers": workers,
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:373:    """--devset --data-root --cache --out --workers。退出码：0 完成且未触发、2 诊断触发、3 未完成、1 参数/路径。"""
+Multi-UAV SimpleGC/v08/runner/skeleton_monitoring.py:380:    summary = run_skeleton_batch(entries, data_root=data_root, cache_dir=cache, out_dir=out, workers=args.workers)
+docs/v08/V8-15/RUNNING.md:8:- **当前默认值：`DEFAULT_WORKERS = 24`**，保存在 `v08/runner/runtime_defaults.py`。
+docs/v08/V8-15/RUNNING.md:14:| `tools/v08/run_joint_monitoring.py --workers` | `DEFAULT_WORKERS` | 原为 1。**注意：** `--stage quick` 分支在 `joint_monitoring.cli` 里硬编码 `workers=1`、`run_batch` 本身串行，所以旧 quick 仍是单进程（历史保留）。`--stage full` 用此值作为进程数 |
+docs/v08/V8-15/RUNNING.md:15:| `tools/v08/run_skeleton_monitoring.py --workers` | `DEFAULT_WORKERS` | 原为 8；族级派发不变 |
+docs/v08/V8-15/RUNNING.md:16:| `joint_monitoring.run_batch(workers=…)` | `DEFAULT_WORKERS` | 函数仍串行，不使用该参数（行为不变） |
+docs/v08/V8-15/RUNNING.md:17:| `skeleton_monitoring.run_skeleton_batch(workers=…)` | `DEFAULT_WORKERS` | |
+docs/v08/V8-15/RUNNING.md:18:| `tools/v08/run_separation_v15.py --workers` | `DEFAULT_WORKERS` | 名单快速入口（下节）真实按此进程数派发 |
+docs/v08/V8-15/RUNNING.md:31:**(b) 20 合同快速批次（按选定进程数并行）**：用 `select_quick` 的确定性协议从 40 族 × 5 draw 中选出 20 个合同，用名单派发器按 `DEFAULT_WORKERS` 并行运行，并与指定基线逐合同逐字节比较：
+docs/v08/V8-15/RUNNING.md:49:| `run_separation_v15.py --mode workers --keys <part4/selection.json> --workers 8\|16\|24` | 进程数扩展测试（每档一个新目录） |

@@ -406,6 +406,7 @@ def run_stress_contract(ctx, entry, case, *, settings, out_dir, skeleton_only=Fa
 
 def _stress_row(rec):
     keys = ("contract_id", "family_id", "order", "branch", "group_size", "target_id", "formation_prior", "mapped_start",
+            "member_ids", "release_us", "facility_count", "vehicle_count", "draw_index",
             "success", "attempts", "failure", "formation", "topology", "retreat_attempts", "shape_audit_failed_attempts",
             "post_optimization_failures", "skeleton_failures", "unknown_attempts", "retained_p0_ok", "stage_timing",
             "nominal_duration_s", "incomplete", "optimization_s", "exceptions")

@@ -1,0 +1,108 @@
+{
+ "attempts": 2,
+ "attribution_gap_s": 0.0,
+ "by_scope_category_s": {
+  "blocks_from:constraint_values": {
+   "dynamics": 0.0092732,
+   "geometry": 0.0466341,
+   "separation": 0.0145948,
+   "shared": 0.0059829
+  },
+  "blocks_in_value_grad": {
+   "dynamics": 1.2185302,
+   "geometry": 5.9902685,
+   "separation": 1.8313997,
+   "shared": 0.8127504
+  },
+  "value_grad:lbfgs": {
+   "dynamics": 1.7303889,
+   "geometry": 0.5073381,
+   "separation": 0.4068758,
+   "shared": 2.8579696
+  },
+  "value_grad:terms": {
+   "dynamics": 0.0065477,
+   "geometry": 0.0017427,
+   "separation": 0.0013994,
+   "shared": 0.0100549
+  }
+ },
+ "bytes_equal_to_baseline": true,
+ "calls": {
+  "blocks_from:constraint_values": 2,
+  "blocks_in_value_grad": 261,
+  "value_grad:lbfgs": 260,
+  "value_grad:terms": 1
+ },
+ "contract_id": "o05_d3",
+ "differing": [],
+ "events": 503591,
+ "line_drift_vs_fixed": {},
+ "line_limit_s": 410.3537202000007,
+ "line_map": {
+  "al": [
+   782,
+   792
+  ],
+  "blocks_call": [
+   779
+  ],
+  "blocks_def": [
+   636
+  ],
+  "dynamics": [
+   649,
+   715
+  ],
+  "geometry": [
+   716,
+   726
+  ],
+  "separation": [
+   727,
+   742
+  ],
+  "value_grad_def": [
+   773
+  ]
+ },
+ "memory": {
+  "peak_working_set_bytes": 573132800,
+  "pid": 66656,
+  "source": "psutil.memory_info",
+  "working_set_bytes": 238620672
+ },
+ "negative_categories": {},
+ "note": "占比口径：可直接归属的 sep/geo/dynamics + shared（共享 P/V/A/J 求值、梯度投影、预条件等）；上界 = 直接 + shared；blocks_from:* 为 constraint_values/max_violation/update_multipliers 触发，不进 value_grad 分子分母",
+ "optimize_traced_wall_s": 20.853657399995427,
+ "partial": false,
+ "scope_total_s": {
+  "blocks_from:constraint_values": 0.076485,
+  "blocks_in_value_grad": 9.8529488,
+  "value_grad:lbfgs": 15.3215094,
+  "value_grad:terms": 0.0537565
+ },
+ "stop_reason": null,
+ "success": true,
+ "trace_overhead_ns_per_event": 131.0275,
+ "value_grad_attributed_s": 15.3752659,
+ "value_grad_category_s": {
+  "dynamics": 2.9554668,
+  "geometry": 6.4993493,
+  "separation": 2.2396749,
+  "shared": 3.6807749000000003
+ },
+ "value_grad_share_direct": {
+  "dynamics": 0.1922221585774331,
+  "geometry": 0.4227145951342539,
+  "separation": 0.14566739297822484,
+  "shared": 0.23939585331008814
+ },
+ "value_grad_share_upper_bound": {
+  "dynamics": 0.43161801188752125,
+  "geometry": 0.6621104484443421,
+  "separation": 0.38506324628831295
+ },
+ "value_grad_total_s": 15.3752659,
+ "wall_s": 50.56349380000029
+}

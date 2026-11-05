@@ -1,0 +1,1364 @@
+{
+ "cprofile": [
+  {
+   "contract_id": "o23_d4",
+   "why": "skeleton_s 最大",
+   "success": false,
+   "attempts": 20,
+   "baseline_wall_s": 571.9867398999995,
+   "baseline_stage_timing": {
+    "optimize_s": 166.98706109999694,
+    "simulation_s": 0.0,
+    "skeleton_s": 404.9204432000006,
+    "verify_s": 0.0
+   },
+   "profiled_wall_s": 453.6644174999965,
+   "profile_factor": 0.7931379975334929,
+   "stage_exclusive_wall_s": {
+    "optimize": 136.14436900000874,
+    "orchestration": 0.07135109997761901,
+    "simulation": 0.0,
+    "skeleton": 317.36283150000963,
+    "verify": 0.0
+   },
+   "stage_calls": {
+    "optimize": 4,
+    "skeleton": 20
+   },
+   "peak_working_set_gib": 0.6434783935546875,
+   "bytes_equal_to_baseline": true,
+   "skeleton_detail": {
+    "BandGeometry.__init__": {
+     "cumtime_s": 20.5195045,
+     "function": "__init__",
+     "ncalls": 20,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:468",
+     "tottime_s": 0.013487200000000001
+    },
+    "_arc_feasible": {
+     "cumtime_s": 0.5825871,
+     "function": "_arc_feasible",
+     "ncalls": 20,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:704",
+     "tottime_s": 0.0005365000000000001
+    },
+    "_lp_basis": {
+     "cumtime_s": 0.011896700000000001,
+     "function": "_lp_basis",
+     "ncalls": 40,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:524",
+     "tottime_s": 0.0005566000000000001
+    },
+    "linprog": {
+     "cumtime_s": 0.3972818,
+     "function": "linprog",
+     "ncalls": 40,
+     "path": "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_linprog.py:170",
+     "tottime_s": 0.0015659
+    },
+    "linprog_cumtime_from_shape_lp_s": 0.3972818,
+    "lp_construct_exclusive_s": 0.44914640000000006,
+    "lp_feasible_pairs": {
+     "cumtime_s": 0.7489344,
+     "function": "lp_feasible_pairs",
+     "ncalls": 20,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:709",
+     "tottime_s": 0.053994900000000005
+    },
+    "radial_margins": {
+     "cumtime_s": 19.757274000000002,
+     "function": "radial_margins",
+     "ncalls": 20,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:197",
+     "tottime_s": 0.2414881
+    },
+    "sample_joint_turn": {
+     "cumtime_s": 215.05231450000002,
+     "function": "sample_joint_turn",
+     "ncalls": 33,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_turn.py:331",
+     "tottime_s": 4.2305979
+    },
+    "scene.exact.chord_sdf_range": {
+     "cumtime_s": 50.231689900000006,
+     "function": "chord_sdf_range",
+     "ncalls": 17117,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:158",
+     "tottime_s": 3.8187119000000003
+    },
+    "scene.exact.clearance_values": {
+     "cumtime_s": 141.3393662,
+     "function": "clearance_values",
+     "ncalls": 245888,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:136",
+     "tottime_s": 0.7379651
+    },
+    "scene.exact.polyline_clearance": {
+     "cumtime_s": 84.9486136,
+     "function": "polyline_clearance",
+     "ncalls": 190364,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:221",
+     "tottime_s": 2.8517118000000004
+    },
+    "scene.exact.signed_distance": {
+     "cumtime_s": 149.71453680000002,
+     "function": "signed_distance",
+     "ncalls": 261817,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:105",
+     "tottime_s": 2.7958868000000003
+    },
+    "scene.field.build_distance_field": {
+     "cumtime_s": 0.064779,
+     "function": "build_distance_field",
+     "ncalls": 6,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\field.py:174",
+     "tottime_s": 0.0002276
+    },
+    "scene.field.certified_cell_mask": null,
+    "shape_lp": {
+     "cumtime_s": 0.8464282000000001,
+     "function": "shape_lp",
+     "ncalls": 40,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:549",
+     "tottime_s": 0.0110513
+    }
+   },
+   "lp_basis_cache": {
+    "entries_after_run": 1,
+    "note": "新进程首次 _lp_basis 为未命中；命中数 = _lp_basis 调用数 − entries_after_run"
+   },
+   "value_grad": {
+    "ncalls_all": 1001,
+    "ncalls_lbfgs_callback": 997,
+    "ncalls_other": 4,
+    "mean_cumtime_s": 0.05524391588411589,
+    "cumtime_s": 55.299159800000005,
+    "callers": {
+     "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_optimize.py:70:_compute_if_needed": {
+      "cumtime_s": 55.0376568,
+      "ncalls": 997
+     },
+     "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837:solve_joint": {
+      "cumtime_s": 0.26150300000000004,
+      "ncalls": 4
+     }
+    }
+   },
+   "nfev_sum_over_rounds": 997,
+   "_blocks": {
+    "callers": {
+     "constraint_values": {
+      "cumtime_s": 0.3153974,
+      "ncalls": 8
+     },
+     "value_grad": {
+      "cumtime_s": 36.4268829,
+      "ncalls": 1001
+     }
+    },
+    "cumtime_s": 36.742280300000004,
+    "ncalls": 1009,
+    "tottime_s": 11.6240359
+   },
+   "optimizer_functions": {
+    "minimize": {
+     "cumtime_s": 57.448356100000005,
+     "ncalls": 4
+    },
+    "_minimize_lbfgsb": {
+     "cumtime_s": 57.447677600000006,
+     "ncalls": 4
+    },
+    "check_physical": {
+     "cumtime_s": 5.5092593,
+     "ncalls": 4,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:250"
+    },
+    "check_monitoring": {
+     "cumtime_s": 61.6309375,
+     "ncalls": 4,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:363"
+    },
+    "prepare_problem": {
+     "cumtime_s": 1.2099109000000001,
+     "ncalls": 4,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:832"
+    },
+    "solve_joint": {
+     "cumtime_s": 64.85415230000001,
+     "ncalls": 4,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837"
+    }
+   },
+   "al": [
+    {
+     "optimize_call": 0,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 312,
+     "success": true,
+     "solve_s": 19.44010320000234,
+     "check_s": 1.6756357999984175,
+     "prepare_s": 0.2959809000021778,
+     "nvar": 37004,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 312,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.0010143587298999301,
+       "max_violation": 0.0005837355475586392,
+       "hard_passed": true,
+       "max_abs_grad": 0.06942839348658177,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 1,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 331,
+     "success": true,
+     "solve_s": 17.05825729999924,
+     "check_s": 1.4672869000060018,
+     "prepare_s": 0.24842569999600528,
+     "nvar": 34599,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 331,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.001544170804727905,
+       "max_violation": 0.0009282715256044849,
+       "hard_passed": true,
+       "max_abs_grad": 0.24840726738330057,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 2,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 279,
+     "success": true,
+     "solve_s": 16.948473399999784,
+     "check_s": 1.068164300006174,
+     "prepare_s": 0.30143300000054296,
+     "nvar": 38213,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 279,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.0013547462136391966,
+       "max_violation": 0.0007211309717602976,
+       "hard_passed": true,
+       "max_abs_grad": 0.05523829767581532,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 3,
+     "outer_rounds": 1,
+     "nit_total": 53,
+     "nfev_total": 75,
+     "success": true,
+     "solve_s": 4.001780799997505,
+     "check_s": 1.2982505000036326,
+     "prepare_s": 0.36404779999429593,
+     "nvar": 35709,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 53,
+       "nfev": 75,
+       "message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+       "scipy_success": true,
+       "rho": 1.0,
+       "value": 0.001200139903494307,
+       "max_violation": 0.0001455315240637134,
+       "hard_passed": true,
+       "max_abs_grad": 0.04680666846563119,
+       "hard_failure_kinds": []
+      }
+     ]
+    }
+   ],
+   "prof_sha256": {
+    "orchestration": "55d78e548a6ab4eea536902fd1cfbb470606f05e9141df0d96863305a0d937cf",
+    "skeleton": "29e474319118baaaa407f3586f7f80d5359b2cb37e9074a373efbffcea92d890",
+    "optimize": "3f8c22b4830c52da199d245a60827966531db966bd90324ee4dea992c153efe4",
+    "simulation": "fa433c89e61178902327da13af7dc0b09aede94a362de11626c21700a658c353",
+    "verify": "fa433c89e61178902327da13af7dc0b09aede94a362de11626c21700a658c353",
+    "merged": "7629f757be9d56e43074ff48eff4f8927452a1b5dd6eb8745a3377bfe5481a5d"
+   }
+  },
+  {
+   "contract_id": "o35_d3",
+   "why": "optimize_s 最大（未选键）",
+   "success": true,
+   "attempts": 8,
+   "baseline_wall_s": 547.7548103000008,
+   "baseline_stage_timing": {
+    "optimize_s": 303.93888890000017,
+    "simulation_s": 32.067791900000884,
+    "skeleton_s": 200.8738409999969,
+    "verify_s": 8.447204899999633
+   },
+   "profiled_wall_s": 447.93905200000154,
+   "profile_factor": 0.817772922440734,
+   "stage_exclusive_wall_s": {
+    "optimize": 241.62866860000213,
+    "orchestration": 3.2052596999928937,
+    "simulation": 35.47902579999936,
+    "skeleton": 161.5931635000088,
+    "verify": 5.947740800009342
+   },
+   "stage_calls": {
+    "optimize": 7,
+    "simulation": 1,
+    "skeleton": 8,
+    "verify": 11
+   },
+   "peak_working_set_gib": 1.4290733337402344,
+   "bytes_equal_to_baseline": true,
+   "skeleton_detail": {
+    "BandGeometry.__init__": {
+     "cumtime_s": 10.7695579,
+     "function": "__init__",
+     "ncalls": 8,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:468",
+     "tottime_s": 0.0067464000000000005
+    },
+    "_arc_feasible": null,
+    "_lp_basis": {
+     "cumtime_s": 0.015325000000000002,
+     "function": "_lp_basis",
+     "ncalls": 16,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:524",
+     "tottime_s": 0.0006921000000000001
+    },
+    "linprog": {
+     "cumtime_s": 0.24793030000000002,
+     "function": "linprog",
+     "ncalls": 16,
+     "path": "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_linprog.py:170",
+     "tottime_s": 0.0006281
+    },
+    "linprog_cumtime_from_shape_lp_s": 0.24793030000000002,
+    "lp_construct_exclusive_s": 0.5143629,
+    "lp_feasible_pairs": {
+     "cumtime_s": 0.0005478000000000001,
+     "function": "lp_feasible_pairs",
+     "ncalls": 3,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:709",
+     "tottime_s": 0.0005478000000000001
+    },
+    "radial_margins": {
+     "cumtime_s": 10.4668013,
+     "function": "radial_margins",
+     "ncalls": 8,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:197",
+     "tottime_s": 0.1556423
+    },
+    "sample_joint_turn": {
+     "cumtime_s": 55.5291514,
+     "function": "sample_joint_turn",
+     "ncalls": 8,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_turn.py:331",
+     "tottime_s": 1.9207565000000002
+    },
+    "scene.exact.chord_sdf_range": {
+     "cumtime_s": 28.927209100000002,
+     "function": "chord_sdf_range",
+     "ncalls": 5227,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:158",
+     "tottime_s": 2.3061515000000004
+    },
+    "scene.exact.clearance_values": {
+     "cumtime_s": 35.2476099,
+     "function": "clearance_values",
+     "ncalls": 42752,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:136",
+     "tottime_s": 0.1685663
+    },
+    "scene.exact.polyline_clearance": {
+     "cumtime_s": 38.396541400000004,
+     "function": "polyline_clearance",
+     "ncalls": 33596,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:221",
+     "tottime_s": 1.0105636
+    },
+    "scene.exact.signed_distance": {
+     "cumtime_s": 37.366774,
+     "function": "signed_distance",
+     "ncalls": 45106,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:105",
+     "tottime_s": 0.743056
+    },
+    "scene.field.build_distance_field": {
+     "cumtime_s": 0.1273338,
+     "function": "build_distance_field",
+     "ncalls": 6,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\field.py:174",
+     "tottime_s": 0.00025580000000000004
+    },
+    "scene.field.certified_cell_mask": null,
+    "shape_lp": {
+     "cumtime_s": 0.7622932,
+     "function": "shape_lp",
+     "ncalls": 16,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:549",
+     "tottime_s": 0.0065973
+    }
+   },
+   "lp_basis_cache": {
+    "entries_after_run": 1,
+    "note": "新进程首次 _lp_basis 为未命中；命中数 = _lp_basis 调用数 − entries_after_run"
+   },
+   "value_grad": {
+    "ncalls_all": 1910,
+    "ncalls_lbfgs_callback": 1903,
+    "ncalls_other": 7,
+    "mean_cumtime_s": 0.06922749214659686,
+    "cumtime_s": 132.22451,
+    "callers": {
+     "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_optimize.py:70:_compute_if_needed": {
+      "cumtime_s": 131.7662555,
+      "ncalls": 1903
+     },
+     "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837:solve_joint": {
+      "cumtime_s": 0.4582545,
+      "ncalls": 7
+     }
+    }
+   },
+   "nfev_sum_over_rounds": 1903,
+   "_blocks": {
+    "callers": {
+     "constraint_values": {
+      "cumtime_s": 0.6836834,
+      "ncalls": 14
+     },
+     "value_grad": {
+      "cumtime_s": 86.1683897,
+      "ncalls": 1910
+     }
+    },
+    "cumtime_s": 86.8520731,
+    "ncalls": 1924,
+    "tottime_s": 25.932311000000002
+   },
+   "optimizer_functions": {
+    "minimize": {
+     "cumtime_s": 137.2269987,
+     "ncalls": 7
+    },
+    "_minimize_lbfgsb": {
+     "cumtime_s": 137.2260934,
+     "ncalls": 7
+    },
+    "check_physical": {
+     "cumtime_s": 9.990993000000001,
+     "ncalls": 7,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:250"
+    },
+    "check_monitoring": {
+     "cumtime_s": 67.8223725,
+     "ncalls": 7,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:363"
+    },
+    "prepare_problem": {
+     "cumtime_s": 2.7046425000000003,
+     "ncalls": 7,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:832"
+    },
+    "solve_joint": {
+     "cumtime_s": 151.3002834,
+     "ncalls": 7,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837"
+    }
+   },
+   "al": [
+    {
+     "optimize_call": 0,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 288,
+     "success": true,
+     "solve_s": 16.284921899998153,
+     "check_s": 0.591666799999075,
+     "prepare_s": 0.2649918000024627,
+     "nvar": 39645,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 288,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.0011380295997629123,
+       "max_violation": 0.00034011937059408304,
+       "hard_passed": true,
+       "max_abs_grad": 0.24894137729190724,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 1,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 312,
+     "success": true,
+     "solve_s": 21.06512500000099,
+     "check_s": 2.358612700001686,
+     "prepare_s": 0.3332153000010294,
+     "nvar": 47181,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 312,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.0012863522341556204,
+       "max_violation": 0.0013593739025818952,
+       "hard_passed": true,
+       "max_abs_grad": 0.238333085213852,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 2,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 285,
+     "success": true,
+     "solve_s": 17.31287770000199,
+     "check_s": 0.5411311999996542,
+     "prepare_s": 0.2999281999946106,
+     "nvar": 43665,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 285,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.001308933428743852,
+       "max_violation": 0.0006405885477986928,
+       "hard_passed": true,
+       "max_abs_grad": 0.5649417842214209,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 3,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 327,
+     "success": true,
+     "solve_s": 24.009114500004216,
+     "check_s": 0.6972022999980254,
+     "prepare_s": 0.39840900000126567,
+     "nvar": 51578,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 327,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.000841971977998379,
+       "max_violation": 0.00028510246392188243,
+       "hard_passed": true,
+       "max_abs_grad": 0.1338674158229252,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 4,
+     "outer_rounds": 1,
+     "nit_total": 147,
+     "nfev_total": 270,
+     "success": true,
+     "solve_s": 29.463644299998123,
+     "check_s": 4.294962799998757,
+     "prepare_s": 0.5242387000034796,
+     "nvar": 67320,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 147,
+       "nfev": 270,
+       "message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+       "scipy_success": true,
+       "rho": 1.0,
+       "value": 0.0006586624451585024,
+       "max_violation": 0.00023225861131970227,
+       "hard_passed": true,
+       "max_abs_grad": 0.21256036978228324,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 5,
+     "outer_rounds": 1,
+     "nit_total": 73,
+     "nfev_total": 124,
+     "success": true,
+     "solve_s": 12.363174099999014,
+     "check_s": 0.9472328999981983,
+     "prepare_s": 0.5351334000006318,
+     "nvar": 67758,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 73,
+       "nfev": 124,
+       "message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+       "scipy_success": true,
+       "rho": 1.0,
+       "value": 0.00045109855268055235,
+       "max_violation": 0.00011770428236168584,
+       "hard_passed": true,
+       "max_abs_grad": 0.02834213419337017,
+       "hard_failure_kinds": []
+      }
+     ]
+    },
+    {
+     "optimize_call": 6,
+     "outer_rounds": 1,
+     "nit_total": 148,
+     "nfev_total": 297,
+     "success": true,
+     "solve_s": 16.72830810000596,
+     "check_s": 0.5603180000034627,
+     "prepare_s": 0.34869070000422653,
+     "nvar": 38737,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 148,
+       "nfev": 297,
+       "message": "CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH",
+       "scipy_success": true,
+       "rho": 1.0,
+       "value": 0.0007404634146453718,
+       "max_violation": 0.00039583078550076145,
+       "hard_passed": true,
+       "max_abs_grad": 0.058198135183509414,
+       "hard_failure_kinds": []
+      }
+     ]
+    }
+   ],
+   "prof_sha256": {
+    "orchestration": "d567c1e9b217fa2d52f2951bc035202e8bb9626ace78056469f619772c9c1e52",
+    "skeleton": "5dc93686d01d46978e861431ae082219cd8eceecc6bd929c3804af1117113e83",
+    "optimize": "055c89d54092ec34a621b3fe35f5626af4c26fa815b1a73c86e2e99626d39c78",
+    "simulation": "76fc1c6b8c718ec5313c656cecc79329311bb202467f46a7aab674a0264da78e",
+    "verify": "6fb355e364e9a7246974bad030e232a21678c5afd7e06f9c243641ac8390bd14",
+    "merged": "b56180e0f2bcc07addfb2eee07b6ba95f216a6ef0dcd67a915b50f3b90c8ed36"
+   }
+  },
+  {
+   "contract_id": "o05_d3",
+   "why": "|wall_s − 中位数 68.552| 最小",
+   "success": true,
+   "attempts": 2,
+   "baseline_wall_s": 68.39228670000011,
+   "baseline_stage_timing": {
+    "optimize_s": 23.85934659999839,
+    "simulation_s": 27.777921799999604,
+    "skeleton_s": 10.658521700002893,
+    "verify_s": 3.765118999999686
+   },
+   "profiled_wall_s": 60.72593150000466,
+   "profile_factor": 0.8879061430768708,
+   "stage_exclusive_wall_s": {
+    "optimize": 18.575568100000964,
+    "orchestration": 3.066772199992556,
+    "simulation": 27.687819600003422,
+    "skeleton": 8.750054400006775,
+    "verify": 2.562255400014692
+   },
+   "stage_calls": {
+    "optimize": 1,
+    "simulation": 1,
+    "skeleton": 2,
+    "verify": 12
+   },
+   "peak_working_set_gib": 0.5319709777832031,
+   "bytes_equal_to_baseline": true,
+   "skeleton_detail": {
+    "BandGeometry.__init__": {
+     "cumtime_s": 0.8969988000000001,
+     "function": "__init__",
+     "ncalls": 2,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:468",
+     "tottime_s": 0.0015481000000000002
+    },
+    "_arc_feasible": null,
+    "_lp_basis": {
+     "cumtime_s": 0.0116167,
+     "function": "_lp_basis",
+     "ncalls": 4,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:524",
+     "tottime_s": 0.0005063
+    },
+    "linprog": {
+     "cumtime_s": 0.07515290000000001,
+     "function": "linprog",
+     "ncalls": 4,
+     "path": "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_linprog.py:170",
+     "tottime_s": 0.0003036
+    },
+    "linprog_cumtime_from_shape_lp_s": 0.07515290000000001,
+    "lp_construct_exclusive_s": 0.3547763,
+    "lp_feasible_pairs": null,
+    "radial_margins": {
+     "cumtime_s": 0.8356312,
+     "function": "radial_margins",
+     "ncalls": 2,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:197",
+     "tottime_s": 0.0208691
+    },
+    "sample_joint_turn": null,
+    "scene.exact.chord_sdf_range": {
+     "cumtime_s": 1.0370595,
+     "function": "chord_sdf_range",
+     "ncalls": 36,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:158",
+     "tottime_s": 0.11375
+    },
+    "scene.exact.clearance_values": {
+     "cumtime_s": 0.33308200000000004,
+     "function": "clearance_values",
+     "ncalls": 96,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:136",
+     "tottime_s": 0.001335
+    },
+    "scene.exact.polyline_clearance": {
+     "cumtime_s": 0.23107640000000002,
+     "function": "polyline_clearance",
+     "ncalls": 80,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:221",
+     "tottime_s": 0.0097842
+    },
+    "scene.exact.signed_distance": {
+     "cumtime_s": 0.4630205,
+     "function": "signed_distance",
+     "ncalls": 2605,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:105",
+     "tottime_s": 0.045446400000000005
+    },
+    "scene.field.build_distance_field": {
+     "cumtime_s": 0.1383436,
+     "function": "build_distance_field",
+     "ncalls": 6,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\field.py:174",
+     "tottime_s": 0.0002527
+    },
+    "scene.field.certified_cell_mask": null,
+    "shape_lp": {
+     "cumtime_s": 0.4299292,
+     "function": "shape_lp",
+     "ncalls": 4,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:549",
+     "tottime_s": 0.0029603000000000003
+    }
+   },
+   "lp_basis_cache": {
+    "entries_after_run": 1,
+    "note": "新进程首次 _lp_basis 为未命中；命中数 = _lp_basis 调用数 − entries_after_run"
+   },
+   "value_grad": {
+    "ncalls_all": 261,
+    "ncalls_lbfgs_callback": 260,
+    "ncalls_other": 1,
+    "mean_cumtime_s": 0.05139198620689655,
+    "cumtime_s": 13.4133084,
+    "callers": {
+     "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_optimize.py:70:_compute_if_needed": {
+      "cumtime_s": 13.365301700000002,
+      "ncalls": 260
+     },
+     "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837:solve_joint": {
+      "cumtime_s": 0.048006700000000006,
+      "ncalls": 1
+     }
+    }
+   },
+   "nfev_sum_over_rounds": 260,
+   "_blocks": {
+    "callers": {
+     "constraint_values": {
+      "cumtime_s": 0.0714987,
+      "ncalls": 2
+     },
+     "value_grad": {
+      "cumtime_s": 8.9616734,
+      "ncalls": 261
+     }
+    },
+    "cumtime_s": 9.0331721,
+    "ncalls": 263,
+    "tottime_s": 2.6269576000000003
+   },
+   "optimizer_functions": {
+    "minimize": {
+     "cumtime_s": 14.011841500000001,
+     "ncalls": 1
+    },
+    "_minimize_lbfgsb": {
+     "cumtime_s": 14.0115884,
+     "ncalls": 1
+    },
+    "check_physical": {
+     "cumtime_s": 0.42558110000000005,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:250"
+    },
+    "check_monitoring": {
+     "cumtime_s": 2.8742616,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:363"
+    },
+    "prepare_problem": {
+     "cumtime_s": 0.2802006,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:832"
+    },
+    "solve_joint": {
+     "cumtime_s": 14.8604152,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837"
+    }
+   },
+   "al": [
+    {
+     "optimize_call": 0,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 260,
+     "success": true,
+     "solve_s": 14.01186289999896,
+     "check_s": 0.42559759999858215,
+     "prepare_s": 0.280193300000974,
+     "nvar": 32091,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 260,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.0021595637154829196,
+       "max_violation": 0.0008312877994882673,
+       "hard_passed": true,
+       "max_abs_grad": 0.2376653057739937,
+       "hard_failure_kinds": []
+      }
+     ]
+    }
+   ],
+   "prof_sha256": {
+    "orchestration": "8b026c0e024ed606815e8312cb922ae23975ac6c32344cefb67efc4c30e8c75b",
+    "skeleton": "39cd561db808833ce38fbfbdd3be76db93de708422fd3a86b0c95a12bfe5a57e",
+    "optimize": "795a0c2c3bba559d2cfa25bfafd27dca48fd8c60f247d436b18082171a4a6ee3",
+    "simulation": "820567b5b82b6e96641ff13d011fc845475d5ef750ec15bea79e5c5ec9bdd2c9",
+    "verify": "40423d6f446e83de6b11fe6afa2f74e6e366522eccfb827b3e74a17a42b82406",
+    "merged": "5a21662b8f48f90b882b8eecad6d5cd1183a115616b7297edc4c585b4138a9c4"
+   }
+  },
+  {
+   "contract_id": "o16_d3",
+   "why": "|wall_s − 中位数 68.552| 最小",
+   "success": true,
+   "attempts": 1,
+   "baseline_wall_s": 68.71131640000021,
+   "baseline_stage_timing": {
+    "optimize_s": 22.227343899998232,
+    "simulation_s": 31.90316510000048,
+    "skeleton_s": 10.68760470000052,
+    "verify_s": 2.3962991000007605
+   },
+   "profiled_wall_s": 67.27250950000598,
+   "profile_factor": 0.9790601173812727,
+   "stage_exclusive_wall_s": {
+    "optimize": 17.130278800002998,
+    "orchestration": 2.1346653000000515,
+    "simulation": 36.64733220000198,
+    "skeleton": 9.462284300003375,
+    "verify": 1.813069000010728
+   },
+   "stage_calls": {
+    "optimize": 1,
+    "simulation": 1,
+    "skeleton": 1,
+    "verify": 6
+   },
+   "peak_working_set_gib": 0.4619483947753906,
+   "bytes_equal_to_baseline": true,
+   "skeleton_detail": {
+    "BandGeometry.__init__": {
+     "cumtime_s": 1.039301,
+     "function": "__init__",
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:468",
+     "tottime_s": 0.0009218000000000001
+    },
+    "_arc_feasible": null,
+    "_lp_basis": {
+     "cumtime_s": 0.011604600000000001,
+     "function": "_lp_basis",
+     "ncalls": 2,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:524",
+     "tottime_s": 0.0005049000000000001
+    },
+    "linprog": {
+     "cumtime_s": 0.040284400000000005,
+     "function": "linprog",
+     "ncalls": 2,
+     "path": "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_linprog.py:170",
+     "tottime_s": 9.910000000000001e-05
+    },
+    "linprog_cumtime_from_shape_lp_s": 0.040284400000000005,
+    "lp_construct_exclusive_s": 0.36041890000000004,
+    "lp_feasible_pairs": null,
+    "radial_margins": {
+     "cumtime_s": 0.9967695000000001,
+     "function": "radial_margins",
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:197",
+     "tottime_s": 0.0210316
+    },
+    "sample_joint_turn": null,
+    "scene.exact.chord_sdf_range": {
+     "cumtime_s": 1.1246135000000002,
+     "function": "chord_sdf_range",
+     "ncalls": 15,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:158",
+     "tottime_s": 0.1310557
+    },
+    "scene.exact.clearance_values": {
+     "cumtime_s": 0.2595004,
+     "function": "clearance_values",
+     "ncalls": 36,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:136",
+     "tottime_s": 0.0027779000000000002
+    },
+    "scene.exact.polyline_clearance": {
+     "cumtime_s": 0.1288546,
+     "function": "polyline_clearance",
+     "ncalls": 27,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:221",
+     "tottime_s": 0.0055864
+    },
+    "scene.exact.signed_distance": {
+     "cumtime_s": 0.3619469,
+     "function": "signed_distance",
+     "ncalls": 195,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\exact.py:105",
+     "tottime_s": 0.010535200000000002
+    },
+    "scene.field.build_distance_field": {
+     "cumtime_s": 0.159193,
+     "function": "build_distance_field",
+     "ncalls": 6,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\scene\\field.py:174",
+     "tottime_s": 0.00027590000000000004
+    },
+    "scene.field.certified_cell_mask": null,
+    "shape_lp": {
+     "cumtime_s": 0.40070330000000004,
+     "function": "shape_lp",
+     "ncalls": 2,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:549",
+     "tottime_s": 0.001185
+    }
+   },
+   "lp_basis_cache": {
+    "entries_after_run": 1,
+    "note": "新进程首次 _lp_basis 为未命中；命中数 = _lp_basis 调用数 − entries_after_run"
+   },
+   "value_grad": {
+    "ncalls_all": 361,
+    "ncalls_lbfgs_callback": 360,
+    "ncalls_other": 1,
+    "mean_cumtime_s": 0.034851770914127424,
+    "cumtime_s": 12.581489300000001,
+    "callers": {
+     "C:\\Users\\shy\\anaconda3\\envs\\llm\\Lib\\site-packages\\scipy\\optimize\\_optimize.py:70:_compute_if_needed": {
+      "cumtime_s": 12.547401,
+      "ncalls": 360
+     },
+     "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837:solve_joint": {
+      "cumtime_s": 0.0340883,
+      "ncalls": 1
+     }
+    }
+   },
+   "nfev_sum_over_rounds": 360,
+   "_blocks": {
+    "callers": {
+     "constraint_values": {
+      "cumtime_s": 0.0570466,
+      "ncalls": 2
+     },
+     "value_grad": {
+      "cumtime_s": 8.538084000000001,
+      "ncalls": 361
+     }
+    },
+    "cumtime_s": 8.595130600000001,
+    "ncalls": 363,
+    "tottime_s": 1.7498193000000002
+   },
+   "optimizer_functions": {
+    "minimize": {
+     "cumtime_s": 13.449466800000001,
+     "ncalls": 1
+    },
+    "_minimize_lbfgsb": {
+     "cumtime_s": 13.4494067,
+     "ncalls": 1
+    },
+    "check_physical": {
+     "cumtime_s": 0.3085798,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:250"
+    },
+    "check_monitoring": {
+     "cumtime_s": 2.1973131,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize_checks.py:363"
+    },
+    "prepare_problem": {
+     "cumtime_s": 0.1607731,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:832"
+    },
+    "solve_joint": {
+     "cumtime_s": 14.0409006,
+     "ncalls": 1,
+     "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\optimize.py:837"
+    }
+   },
+   "al": [
+    {
+     "optimize_call": 0,
+     "outer_rounds": 1,
+     "nit_total": 200,
+     "nfev_total": 360,
+     "success": true,
+     "solve_s": 13.4519031000018,
+     "check_s": 0.3085958000010578,
+     "prepare_s": 0.160766799999692,
+     "nvar": 22516,
+     "rounds": [
+      {
+       "round": 1,
+       "nit": 200,
+       "nfev": 360,
+       "message": "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT",
+       "scipy_success": false,
+       "rho": 1.0,
+       "value": 0.0007918348759266169,
+       "max_violation": 0.00020257391300315675,
+       "hard_passed": true,
+       "max_abs_grad": 0.0502389480328924,
+       "hard_failure_kinds": []
+      }
+     ]
+    }
+   ],
+   "prof_sha256": {
+    "orchestration": "517d9e9008f5614f7507be52e940150e5575139244ee6318f4ade4bbb37533cd",
+    "skeleton": "3bad008da525f657b6fa762532a0957ca21dfc3d50553f1be1af06ad4abad366",
+    "optimize": "c3c8b9edc23a059232f2a534623581108c2c2f702638184d5c1ed152edf5a0a8",
+    "simulation": "a6e4f8afe47dd5f86d58bcdb6d166c6aae3f3d20a216f2f965bd920d6cab8a5e",
+    "verify": "852c001edf3787333a4a754b50b70e6adf21de704f541694f80d56e930cb0a0c",
+    "merged": "26bfc2b9ada17b614b77bf96669e51d18ccebc496195f5b09705507add3944a9"
+   }
+  }
+ ],
+ "line": [
+  {
+   "contract_id": "o05_d3",
+   "success": true,
+   "attempts": 2,
+   "wall_s": 50.56349380000029,
+   "optimize_traced_wall_s": 20.853657399995427,
+   "partial": false,
+   "stop_reason": null,
+   "line_limit_s": 410.3537202000007,
+   "line_map": {
+    "al": [
+     782,
+     792
+    ],
+    "blocks_call": [
+     779
+    ],
+    "blocks_def": [
+     636
+    ],
+    "dynamics": [
+     649,
+     715
+    ],
+    "geometry": [
+     716,
+     726
+    ],
+    "separation": [
+     727,
+     742
+    ],
+    "value_grad_def": [
+     773
+    ]
+   },
+   "line_drift_vs_fixed": {},
+   "events": 503591,
+   "calls": {
+    "blocks_from:constraint_values": 2,
+    "blocks_in_value_grad": 261,
+    "value_grad:lbfgs": 260,
+    "value_grad:terms": 1
+   },
+   "scope_total_s": {
+    "blocks_from:constraint_values": 0.076485,
+    "blocks_in_value_grad": 9.8529488,
+    "value_grad:lbfgs": 15.3215094,
+    "value_grad:terms": 0.0537565
+   },
+   "by_scope_category_s": {
+    "blocks_from:constraint_values": {
+     "dynamics": 0.0092732,
+     "geometry": 0.0466341,
+     "separation": 0.0145948,
+     "shared": 0.0059829
+    },
+    "blocks_in_value_grad": {
+     "dynamics": 1.2185302,
+     "geometry": 5.9902685,
+     "separation": 1.8313997,
+     "shared": 0.8127504
+    },
+    "value_grad:lbfgs": {
+     "dynamics": 1.7303889,
+     "geometry": 0.5073381,
+     "separation": 0.4068758,
+     "shared": 2.8579696
+    },
+    "value_grad:terms": {
+     "dynamics": 0.0065477,
+     "geometry": 0.0017427,
+     "separation": 0.0013994,
+     "shared": 0.0100549
+    }
+   },
+   "value_grad_total_s": 15.3752659,
+   "value_grad_attributed_s": 15.3752659,
+   "attribution_gap_s": 0.0,
+   "value_grad_category_s": {
+    "dynamics": 2.9554668,
+    "geometry": 6.4993493,
+    "separation": 2.2396749,
+    "shared": 3.6807749000000003
+   },
+   "value_grad_share_direct": {
+    "dynamics": 0.1922221585774331,
+    "geometry": 0.4227145951342539,
+    "separation": 0.14566739297822484,
+    "shared": 0.23939585331008814
+   },
+   "value_grad_share_upper_bound": {
+    "dynamics": 0.43161801188752125,
+    "geometry": 0.6621104484443421,
+    "separation": 0.38506324628831295
+   },
+   "negative_categories": {},
+   "trace_overhead_ns_per_event": 131.0275,
+   "bytes_equal_to_baseline": true,
+   "baseline_wall_s": 68.39228670000011
+  },
+  {
+   "contract_id": "o16_d3",
+   "success": true,
+   "attempts": 1,
+   "wall_s": 52.11346459999913,
+   "optimize_traced_wall_s": 18.358032500000263,
+   "partial": false,
+   "stop_reason": null,
+   "line_limit_s": 412.2678984000013,
+   "line_map": {
+    "al": [
+     782,
+     792
+    ],
+    "blocks_call": [
+     779
+    ],
+    "blocks_def": [
+     636
+    ],
+    "dynamics": [
+     649,
+     715
+    ],
+    "geometry": [
+     716,
+     726
+    ],
+    "separation": [
+     727,
+     742
+    ],
+    "value_grad_def": [
+     773
+    ]
+   },
+   "line_drift_vs_fixed": {},
+   "events": 200042,
+   "calls": {
+    "blocks_from:constraint_values": 2,
+    "blocks_in_value_grad": 361,
+    "value_grad:lbfgs": 360,
+    "value_grad:terms": 1
+   },
+   "scope_total_s": {
+    "blocks_from:constraint_values": 0.0521034,
+    "blocks_in_value_grad": 9.1655727,
+    "value_grad:lbfgs": 13.6722167,
+    "value_grad:terms": 0.0371291
+   },
+   "by_scope_category_s": {
+    "blocks_from:constraint_values": {
+     "dynamics": 0.0073531,
+     "geometry": 0.0378687,
+     "separation": 0.0028815,
+     "shared": 0.0040001
+    },
+    "blocks_in_value_grad": {
+     "dynamics": 1.3695697,
+     "geometry": 6.4661089,
+     "separation": 0.5668775,
+     "shared": 0.7630166
+    },
+    "value_grad:lbfgs": {
+     "dynamics": 1.442727,
+     "geometry": 0.3403576,
+     "separation": 0.0567518,
+     "shared": 2.6915049
+    },
+    "value_grad:terms": {
+     "dynamics": 0.0040753,
+     "geometry": 0.0009205,
+     "separation": 0.0001437,
+     "shared": 0.0072923
+    }
+   },
+   "value_grad_total_s": 13.7093458,
+   "value_grad_attributed_s": 13.709345800000001,
+   "attribution_gap_s": -1.7763568394002505e-15,
+   "value_grad_category_s": {
+    "dynamics": 2.8163720000000003,
+    "geometry": 6.807387,
+    "separation": 0.623773,
+    "shared": 3.4618138
+   },
+   "value_grad_share_direct": {
+    "dynamics": 0.20543445625246395,
+    "geometry": 0.4965508273925077,
+    "separation": 0.045499837052764405,
+    "shared": 0.252514879302264
+   },
+   "value_grad_share_upper_bound": {
+    "dynamics": 0.45794933555472794,
+    "geometry": 0.7490657066947717,
+    "separation": 0.2980147163550284
+   },
+   "negative_categories": {},
+   "trace_overhead_ns_per_event": 209.97,
+   "bytes_equal_to_baseline": true,
+   "baseline_wall_s": 68.71131640000021
+  }
+ ],
+ "runs": {
+  "cprofile": {
+   "mode": "cprofile",
+   "runs": [
+    {
+     "contract_id": "o23_d4",
+     "exit": 0,
+     "process_wall_s": 454.1498296999998,
+     "stderr_tail": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:556: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)\n  from scipy.optimize import linprog\n"
+    },
+    {
+     "contract_id": "o35_d3",
+     "exit": 0,
+     "process_wall_s": 448.48396610000054,
+     "stderr_tail": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:556: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)\n  from scipy.optimize import linprog\n"
+    },
+    {
+     "contract_id": "o05_d3",
+     "exit": 0,
+     "process_wall_s": 61.26142229999823,
+     "stderr_tail": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:556: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)\n  from scipy.optimize import linprog\n"
+    },
+    {
+     "contract_id": "o16_d3",
+     "exit": 0,
+     "process_wall_s": 67.76605199999904,
+     "stderr_tail": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:556: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)\n  from scipy.optimize import linprog\n"
+    }
+   ],
+   "wall_s": 1031.6634612083435
+  },
+  "line": {
+   "mode": "line",
+   "runs": [
+    {
+     "contract_id": "o05_d3",
+     "exit": 0,
+     "process_wall_s": 50.90805669999827,
+     "stderr_tail": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:556: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)\n  from scipy.optimize import linprog\n"
+    },
+    {
+     "contract_id": "o16_d3",
+     "exit": 0,
+     "process_wall_s": 52.46956230000069,
+     "stderr_tail": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\Multi-UAV SimpleGC\\v08\\motion\\monitoring_band.py:556: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)\n  from scipy.optimize import linprog\n"
+    }
+   ],
+   "wall_s": 103.3787305355072
+  }
+ }
+}
