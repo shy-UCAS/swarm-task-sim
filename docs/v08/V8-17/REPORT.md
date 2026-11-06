@@ -267,3 +267,51 @@
 - **名义预筛（只记录，不拒绝）：** 957 个成员中 934 个通过。未通过的 23 个成员（11 个合同）只有 `no_dwell_window` 一项。
   - 抽查 o19_d4、o22_d3、o04_d2：dwell 都发生在**目标 0 层（进 warning 之前的进场段）**，离移动终点 250–480 s，窗口内速度 2.9–5.4 m/s，与终点保持无关。
   - 这 11 个合同不在快批 20 键内。优化后由 `check_intrusion`（nominal_dwell）与冻结核验（no_dwell_window）硬筛，届时会表现为进入优化后的普通失败。本项不加骨架拒绝，记入第 10 节"执行方观察"。
+
+## 6. 第 6 部分：快批 20 —— 完成，止损检查点未触发
+
+### 6.1 前置：U C.3 四键全链路 smoke
+
+`run_intrusion_v17.py --stage smoke --smoke-level chain`，输出根 `run/out/smoke/chain_r1`，日志 [part6/smoke_chain_r1.log](part6/smoke_chain_r1.log)。
+- o01_d0、o01_d1、o02_d0、o11_d0 **4/4 在第 1 次 attempt 全链路成功**。保留 P0 违规 0，实现异常 0。
+- 新检查确实执行了：attempt_log 中有 `measured_intrusion_entries`，全为 1/1/1；semantic 检查结果为空列表。
+- 合同 JSON 中计时键 0 处，见 [part6/smoke_chain_check.json](part6/smoke_chain_check.json)。
+- **保存后重读：** 用预置 `ArtifactsPreset.test_disk_tracks_frozen_verification_and_events` 对 smoke 输出单独运行（该方法不依赖 stage），1/1 通过，没有 skip，见 [part6/smoke_chain_disk_check.txt](part6/smoke_chain_disk_check.txt)。重读后核对的内容：冻结 `verify_segments`、`check_validity`、实测间距 ≥ 2 m；三层进入次数为 1/1/1，首次进入帧与 result.json 一致；min contour ≤ 50。
+
+### 6.2 运行
+
+`run_intrusion_v17.py --stage quick --workers 24`，输出根 `run/out/quick/quick_r1`（散列见 [part6/quick_hashes.txt](part6/quick_hashes.txt)，日志见 [part6/quick_r1.log](part6/quick_r1.log)）。
+- 键：用 `select_quick` 协议重算的 20 键与 manifest 登记的快批键完全相同，不含 o34_d3（[part6/quick_selection.json](part6/quick_selection.json)）。
+- 时间：06:26:47 开始，墙钟 53.4 s，其中预建 4.0 s（全部读已有文件），派发 49.4 s。
+- 缓存：`cache_hits` 20，`cache_misses_computed` **0**。
+
+### 6.3 止损检查点（[part6/quick_summary.json](part6/quick_summary.json)、[part6/quick_stats.json](part6/quick_stats.json)）
+
+| 止损项 | 阈值 | 实测 | 触发 |
+|---|---|---|---|
+| 成功数 | < 16/20 | **20/20**（全部第 1 次 attempt） | 否 |
+| 成功合同 post_optimization_failures 中位数 | > 0 | 0；`attempts_undetermined` = false | 否 |
+| 每合同 optimization_s 中位数 | > 60 s | **6.45 s**（最小 2.79、p90 17.8、最大 23.6 s）；进入优化的合同 20/20 | 否 |
+| 保留 P0 违规 | > 0 | 0 | 否 |
+
+### 6.4 其他记录
+
+- **ArtifactsPreset 前两个方法**（指令 9 节：快批先运行这两个），用 `V8_17_OUT=quick_r1` 运行，**2/2 通过**（[part6/tests_artifacts_quick.txt](part6/tests_artifacts_quick.txt)）：
+  - `test_keys_common_conditions_and_no_timers`：20 键与登记名单一致；8 个公共字段与 full_v14c、full_transit_r2 同键相同；全部合同 JSON 递归无计时键；attempts 在 [1, 20] 内。
+  - `test_disk_tracks_frozen_verification_and_events`：对 20 个保留合同从磁盘重读，冻结核验、有效性与三层进入事件全部通过。
+  - 该文件的 `test_five_serial_repeats` 和全量口径检查属于第 7 部分，**尚未执行**。
+- **失败 attempt：** 0；semantic 子原因的分布为空。
+- **实现队形与 σ：** 横排 9 例（σ=1）、纵列 7 例（σ ∈ {0.3, …, 1.0}）、梯形 3 例（σ 0.5/0.55/0.8）。全部为弯曲 LP。
+- **阶段时长**（99 个成员，名义映射）：
+  - ingress（释放到 warning 入点）中位数 564.8 s，inside（入点到终点）中位数 197.4 s，travel 中位数 772.7 s；
+  - 两段相加与 travel 的残差最大 2.3e-13 s；
+  - release delay 中位数 83.8 s。共同预保持 20 s 与终点保持 2 s 不计入以上时长。
+- **附录裁定 1 诊断（P2，不设门槛）：** 优化轨迹的制动开始点，指样本末端连续严格递减速度段的起点。
+  - 所在圈层：保护层（3 层）98 个，警戒层（2 层）1 个。
+  - 到保护边界的有符号距离：中位数 −77.0 m，p90 −41.6 m，最大 **+14.1 m**（警戒层那一例，在附录估计的"保护边界外最多约 18 m"范围内）。
+  - 名义末端严格递减段持续时间见 quick_stats.json。实测轨迹末端有保持段，"严格递减至终点"的定义取不到起点，记 None，不作结论。
+- **阶段速度**（复用 phase_metrics，参考速度 ≥ 0.5 m/s 的同一批样本）：数值见 quick_stats.json 的 `phase_speed`，本项没有已证实的数值门槛。
+  - ingress 段：参考最低 0.54 m/s，优化/参考最低速比中位数 0.158，实测/参考 0.092。这类低比值出现在释放后起步加速、参考速度刚超过 0.5 m/s 的样本上；V8-16 的过境也有同口径现象，这里不外推结论。
+  - inside 段：优化比中位数 0.40，含末端减速。
+
+**第 6 部分完成；按负责人指示在此停下，等待通知后再执行第 7 部分（全量 200+100、5 键单进程复跑、三意图配对）。**
