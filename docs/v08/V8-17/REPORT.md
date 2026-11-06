@@ -551,3 +551,7 @@
 5. **共享文件参数化的方式：** 在 `build_candidate` 里按 intent 分支，并把突入的逐成员检查交给 `intrusion.finish_candidate`；共享的 `corridor_rows` 只在 intrusion 分支取新上界。是否符合"机械提取、不复制第二套算法"的要求？两轮字节门禁只能证明过境与监视的行为没变，不能证明代码组织方式合适。
 6. **"已复跑"等级：** 门禁、全量和 5 键复跑都由执行方运行（有记录）。P0 的"已复跑"需要审查方在本机或云端独立执行。
 7. **公共字段 group_id 的来源：** 三意图配对时，因为 full records 不含 group_id，改从骨架 records 取，其余公共字段都取自全量记录。是否接受这种口径？预置的产物测试另外直接比较了 contract.json 中的 group_id，对 200 键全部一致。
+
+---
+
+**推送核对：** 第 8 部分报告提交 `c045545c31adcee0d9a55be247dcf651bf9a584d` 推送后，`git ls-remote origin refs/heads/review/v08/V8-17-intrusion` 返回同一 SHA。本行随后单独提交，该提交的远端核对见执行方的最终回报。
