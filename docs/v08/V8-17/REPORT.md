@@ -214,3 +214,56 @@
 | transit | `run/out/transit_regression_4` 对 `full_transit_r2` | **20/20 逐字节一致** | [part4/gate_transit.json](part4/gate_transit.json) |
 
 日志见 [part4/gates_4.log](part4/gates_4.log)，开始于 05:59，结束于 06:05:47。四道门禁的清单是 [regression_gates.json](regression_gates.json)。停止条件 1 未触发。
+
+## 5. 第 5 部分：200 合同只骨架 —— 完成，止损检查点未触发
+
+### 5.1 昂贵运行前的快速检查（全部达标后才启动 200 合同）
+
+| 检查 | 结果 | 证据 |
+|---|---|---|
+| 第 9 节数值与几何测试、旧 curve_lp 测试（V8-16 numeric 套件内）、两意图两轮字节门禁 | 全部通过（第 4 部分） | part4/ |
+| U C.3 四键骨架 smoke（o01_d0、o01_d1、o02_d0、o11_d0） | 4/4 在第 1 次 attempt 成功，均为弯曲 LP，每个 attempt 抽样 1 次、LP 1 次；合同 JSON 中计时键 0 处 | [part5/smoke_skeleton_check.json](part5/smoke_skeleton_check.json)；输出根 `run/out/smoke/skeleton_r1` |
+| ↳ 终点公式 | 相邻槽位终点实测距离与 \(\sqrt{[\sigma(l_i-l_j)]^2+(d_i-d_j)^2}\) 的最大误差 ≤ 1.9e-12 m。纵列 o01_d1：σb = 0.3×23.843 = 7.153 m；o11_d0：0.35×19.381 = 6.783 m；横排 o02_d0：b = 15.157 m | 同上 |
+| ↳ 事件键 | 每成员都有 warning < alert < protected < terminal 的弧长，以及 `terminal_x`；终点 contour ≤ 45、protected ≤ −10、不越过最深点，全部成立 | 同上 |
+| 边缘例与名单查询 | o34_d3 圆形证书成立；o17_d1、o17_d4 各 1 个可行格，不加入排除名单 | [part3/queries.json](part3/queries.json) |
+| **45 组组合一致性门禁**（指令 5.1 / U D.8） | 前 5 个登记族 × 人数 {1, ⌈N/2⌉, N} × σ ∈ {1, 0.5, min Σ}，**45/45 逐格完全相同**。比较内容：每格的存在性与原因、D 子集、终点区间端点、规范顺序，以及 cells/reasons/n_cells。五族总人数 6/9/6/7/9，与指令一致。另加的横排 σ=1 与梯形最小横向步长 σ=min Σ 共 10 组也全部相同（总计 55/55）。组合路径累计 29.5 s，直算路径 1049.4 s | [part5/chord_gate.json](part5/chord_gate.json)、[part5/chord_gate.log](part5/chord_gate.log) |
+
+### 5.2 运行与名单
+
+`run_intrusion_v17.py --stage skeleton --workers 24`，输出根 `run/out/skeleton/skeleton_r1`。散列见 [part5/skeleton_hashes.txt](part5/skeleton_hashes.txt)，日志见 [part5/skeleton_r1.log](part5/skeleton_r1.log)。
+- 时间：06:22:08 开始，06:23:12 结束，墙钟 62.2 s。其中预建 41.1 s（40 族、194 个查询全部新写，查询构建 CPU 合计 574 s），派发 21.1 s。最慢的预建族为 o11 31.8 s、o13 26.4 s、o03 25.1 s。
+- 指令估算为预建约 8 分钟、派发小于 1 分钟；实际更快，主要因为车道几何改成了批量计算。估算不是门槛。
+- 缓存：派发阶段 `cache_hits` = 216，`cache_misses_computed` = **0**，worker 未计算任何车道（lanes_computed = 0）。
+- 原始 200 行全部保留，200 个合同目录。
+  - o34_d3：`proven_infeasible`，attempts = 0。
+  - 名单外没有出现其他证书。
+
+### 5.3 止损检查点（[part5/skeleton_summary.json](part5/skeleton_summary.json)、[part5/skeleton_by_bin.csv](part5/skeleton_by_bin.csv)）
+
+| 止损项 | 阈值 | 实测 | 触发 |
+|---|---|---|---|
+| 名单外成功率 | < 95% | **199/199**（原始 200 口径 199/200） | 否 |
+| 人数档比总体低 | > 10 个百分点 | 三档 110/110、56/56、33/33，档差均为 0 | 否 |
+| 成功骨架 attempts 中位数 | > 1 | 1 | 否 |
+| 形状审计失败 attempts / 全部骨架 attempts | > 5% | 0/202 | 否 |
+| 成功骨架直线回退比例 | > 50% | 0/199 | 否 |
+
+设施数档（85/85、84/84、30/30）与初速档（67/67、60/60、72/72）的档差也都是 0；分母不含 o34_d3。
+
+### 5.4 正常预期的逐项报告（[part5/skeleton_stats.json](part5/skeleton_stats.json)）
+
+- **attempt 失败：** 202 个骨架 attempt 中 199 个成功，3 个失败：
+  - o27_d0 两次 `boundary_crossing`：成员擦边 graze_or_touch_band，边界为 facility_01 warning；第 3 次 attempt 成功；
+  - o25_d0 一次 `reference/speed`：参考曲线有一条长 3.2e-13 m 的退化弦，不满足引导接口；第 2 次成功。
+
+  都是普通候选失败。异常 0，缺标记 0。
+- **实现队形 × 倾向：** abreast→abreast 62、column→column 46、echelon→echelon 46、loose→abreast 44、loose→echelon 1。U C.2 扫描也只有 1 例 loose→echelon，这里同样是 1 例（不设门槛）。
+- **退让与抽样：** 下游触发的退让为 0。梯形二分缩小横向步长 2 例、宽度退让 1 例，均发生在形状抽样之前。每个 attempt 的 shape 抽取次数都是 1（202/202），LP 调用次数都是 1。
+- **σ：**
+  - 分布：1.0 有 111 例，其余从 0.95 到 0.30 都有出现。
+  - 纵列 σ<1 占 43/46，梯形 45/47；横排只取 1.0。
+- **终点：** 957 个成员终点全部满足 contour ≤ 45、protected ≤ −10、不越过最深点。其中 394 个在设施轮廓内（负 contour 距离合法）。contour SDF 范围为 [−117.17, 44.98] m，终点两两最小距离 6.25 m。
+- **直线回退：** 0/199，全部为弯曲 LP。
+- **名义预筛（只记录，不拒绝）：** 957 个成员中 934 个通过。未通过的 23 个成员（11 个合同）只有 `no_dwell_window` 一项。
+  - 抽查 o19_d4、o22_d3、o04_d2：dwell 都发生在**目标 0 层（进 warning 之前的进场段）**，离移动终点 250–480 s，窗口内速度 2.9–5.4 m/s，与终点保持无关。
+  - 这 11 个合同不在快批 20 键内。优化后由 `check_intrusion`（nominal_dwell）与冻结核验（no_dwell_window）硬筛，届时会表现为进入优化后的普通失败。本项不加骨架拒绝，记入第 10 节"执行方观察"。
