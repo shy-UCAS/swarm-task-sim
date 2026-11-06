@@ -506,6 +506,90 @@ def check_transit(ctx, skeleton, trajectories, settings):
     return {"passed": not failures, "failures": failures, "boundaries": boundaries, "nominal_members": nominal_members}
 
 
+INTRUSION_FAILURE_KIND = {"started_outside_target_warning": "nominal_start_inside",
+                          "target_layers_monotone": "nominal_layer_regression",
+                          "entered_protected": "nominal_not_entered",
+                          "near_facility_contour": "nominal_layers", "other_layers_within_limit": "nominal_layers",
+                          "no_dwell_window": "nominal_dwell"}
+INTRUSION_ENTRY_CONDITIONS = {"single_warning_entry": "warning", "single_alert_entry": "alert",
+                              "single_protected_entry": "protected"}
+
+
 def check_intrusion(ctx, skeleton, trajectories, settings):
-    """V8-17 指令 4.1（第 2 部分接入的明确未完成分支；第 4 部分实现）。"""
-    raise NotImplementedError("check_intrusion 尚未实现（V8-17 第 4 部分）")
+    """dict: passed, failures, boundaries, nominal_members, terminal（结构照 check_transit；V8-17 指令 4.1）。
+    均在优化后的实际样条上重算（时间网格复用 _grid_times）：
+    1) intrusion 约束的 crossing_boundaries 对每成员完整轨迹调用冻结 crossing_analysis（不传 skip_ranges），
+       目标 warning/alert/protected 每层方向必须恰为 ["in"]；边界检查本身的擦边、带内终点、共线与对齐失败照报；
+    2) tr.evaluate(tr.end_s, 0)：contour SDF ≤ 冻结 roles.intrusion.max_contour_distance_m（50，不是骨架 45；
+       负距离合法）、protected SDF ≤ −10；
+    3) 名义判据：释放起至移动结束 + 末端保持的 10 Hz p/v 调 screen_intrusion_member，全部条件成立。
+    不检查所有 warning 外 50 m、不要求出圈、不调用重访检测。物理硬检查仍由 solve_joint 负责，本函数不重新求解。"""
+    from task_v07.criteria import load_criteria
+    from ..scene.exact import signed_distance
+    from .connect import crossing_analysis
+    from .layer_limits import crossing_layer_keys
+    from .nominal_checks import screen_intrusion_member
+    from .optimize import physical_limits
+    from .transit_chords import transit_base
+    lim = physical_limits(settings)
+    cfg = load_criteria()
+    contour_max = float(cfg["roles"]["intrusion"]["max_contour_distance_m"])
+    target = skeleton.witnesses["target_id"]
+    tgt = ctx.facility_by_id[target]
+    cons = transit_base(ctx, target, intent="intrusion")
+    layer_key = {"warning": target, **{layer: k for k, layer in crossing_layer_keys(cons).items()}}
+    failures = []
+    boundaries, nominal_members, terminal = {}, {}, {}
+    for m in sorted(trajectories):
+        tr = trajectories[m]
+        ts = _grid_times(tr)
+        xy = tr.evaluate(ts + tr.release_s, 0)
+        viol, cross = crossing_analysis(xy, cons["crossing_boundaries"], target,
+                                        band_m=ctx.params["pre_entry_warning_clearance_m"],
+                                        align_m=ctx.params["alignment_length_m"])
+        boundaries[m] = {"violations": viol, "crossings": [(c.facility_id, c.direction, float(c.s_m)) for c in cross]}
+        if viol:
+            failures.append({"kind": "boundary_crossing", "member": m, "first": viol[0], "count": len(viol)})
+        for layer, k in layer_key.items():
+            dirs = [c.direction for c in cross if c.facility_id == k]
+            if dirs != ["in"]:
+                failures.append({"kind": "target_layer_crossing", "member": m, "layer": layer, "boundary_key": k,
+                                 "directions": dirs})
+        end = tr.evaluate(tr.end_s, 0)
+        sd_c = float(signed_distance(tgt.geometry, end))
+        sd_p = float(signed_distance(tgt.layers["protected"], end))
+        terminal[m] = {"contour_sdf_m": sd_c, "protected_sdf_m": sd_p, "contour_limit_m": contour_max}
+        if not sd_c <= contour_max:
+            failures.append({"kind": "terminal_contour", "member": m, "signed_m": sd_c, "limit_m": contour_max})
+        if not sd_p <= -10.0:
+            failures.append({"kind": "terminal_protected", "member": m, "signed_m": sd_p, "limit_m": -10.0})
+        r_us = int(round(tr.release_s * 10)) * 100_000
+        e_us = int(math.floor((tr.end_s + lim["hold_s"]) * 10 + 1e-9)) * 100_000
+        t_us = np.arange(r_us, e_us + 1, 100_000, dtype=np.int64)
+        tt = t_us / US
+        p = np.zeros((len(tt), 3))
+        v = np.zeros((len(tt), 3))
+        p[:, :2] = tr.evaluate(tt, 0)
+        v[:, :2] = tr.evaluate(tt, 1)
+        p[:, 2] = tr.altitude_m
+        scr = screen_intrusion_member(ctx.facilities, target, t_us, p, v, criteria=cfg)
+        nominal_members[m] = {"conditions": scr["conditions"], "counts": scr["counts"],
+                              "first_entry_us": scr["first_entry_us"], "end_contour_m": scr["end_contour_m"],
+                              "min_contour_m": scr["min_contour_m"]}
+        kinds = []
+        for k, ok in scr["conditions"].items():
+            if ok:
+                continue
+            if k in INTRUSION_ENTRY_CONDITIONS:
+                cnt = scr["counts"]["entries"][INTRUSION_ENTRY_CONDITIONS[k]]
+                kind = "nominal_not_entered" if cnt == 0 else "nominal_multiple_visits"
+            else:
+                kind = INTRUSION_FAILURE_KIND[k]
+            if kind not in kinds:
+                kinds.append(kind)
+        for kind in kinds:
+            failures.append({"kind": kind, "member": m,
+                             "conditions": [k for k, ok in scr["conditions"].items() if not ok],
+                             "entries": scr["counts"]["entries"]})
+    return {"passed": not failures, "failures": failures, "boundaries": boundaries,
+            "nominal_members": nominal_members, "terminal": terminal}

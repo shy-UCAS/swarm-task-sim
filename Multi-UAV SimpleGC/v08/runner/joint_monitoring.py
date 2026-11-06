@@ -128,6 +128,8 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
     try:
         if task.intent == "transit":                # V8-16 指令 2.1：遥测按意图取（不进入确定性载荷）
             from ..motion.intents.transit import last_attempt_timing
+        elif task.intent == "intrusion":            # V8-17 指令 0.2：intrusion 遥测分派
+            from ..motion.intents.intrusion import last_attempt_timing
         else:
             from ..motion.intents.monitoring import last_attempt_timing
         t["skeleton_detail"] = last_attempt_timing()
@@ -173,6 +175,15 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
                 "reason": "segment_verification", **out}
     if not valid.passed:
         return {"ok": False, "stage": "validity", "code": "candidate_rejected", "reason": "validity", **out}
+    if task.intent == "intrusion":
+        # V8-17 指令 4.2：冻结核验之后、返回 ok=True 之前，按每成员释放后第 0 段实测 10 Hz 帧复算三层进入次数；
+        # 非 1/1/1 为普通失败（消耗本 attempt），保留原始证据
+        from .intrusion_report import measured_members
+        meas = measured_members(ctx, tracks, release, task.target_id)
+        out["measured_intrusion"] = meas
+        if not meas["all_single"]:
+            return {"ok": False, "stage": "measured_intrusion_entries", "code": "candidate_rejected",
+                    "reason": "measured_intrusion_entries", **out}
     return {"ok": True, "stage": "verified", **out}
 
 

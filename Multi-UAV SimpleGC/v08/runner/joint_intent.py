@@ -5,6 +5,8 @@ monitoring 分支委托旧 joint_monitoring.run_contract（字节不变）。tra
 SegmentTask(0, task.intent, target)），optimization_entered 在调用优化之前写入、异常保留 traceback。
 过境输出用独立运行根：contract.json 明确 intent="transit"；result/attempt_log 保存过境语义字段（semantic_failures）；
 其他确定性文件与旧布局一致。监视专用的 draw_summary/topology/phase_metrics/final_failure 全部按意图分派。
+V8-17：intrusion 走同一 run_attempts/attempt_chain（attempt_chain 在返回 ok 前复算实测三层进入次数），运行前先做确定性
+圆形证书（成立则 proven_infeasible、attempts=0）；预建/保存/阶段诊断/多样性按 intent 分派；过境默认与包装不变。
 """
 import math
 import time
@@ -18,14 +20,26 @@ from . import joint_report as JR
 from .monitoring import jsonable, write_json
 from .runtime_defaults import DEFAULT_WORKERS
 
-INTENTS = ("monitoring", "transit")
+INTENTS = ("monitoring", "transit", "intrusion")
 
 
 # ---------------------------------------------------------------- 单合同
 
 def _transit_attempt_summary(rec, key):
+    return _intent_attempt_summary(rec, key, "transit")
+
+
+def _intent_module(intent):
+    if intent == "intrusion":
+        from ..motion.intents import intrusion as mod
+    else:
+        from ..motion.intents import transit as mod
+    return mod
+
+
+def _intent_attempt_summary(rec, key, intent):
     s = JM._attempt_summary(rec, key)
-    from ..motion.intents.transit import draw_summary
+    draw_summary = _intent_module(intent).draw_summary
     plan = rec.get("plan")
     if plan is not None:
         if plan.failure is None:
@@ -36,6 +50,9 @@ def _transit_attempt_summary(rec, key):
     opt = rec.get("opt")
     if opt is not None and opt.get("semantic") is not None:
         s["optimize"]["semantic_failures"] = jsonable(opt["semantic"]["failures"])
+    if intent == "intrusion" and rec.get("measured_intrusion") is not None:
+        s["measured_intrusion_entries"] = {m: v["entry_counts"]
+                                           for m, v in sorted(rec["measured_intrusion"]["members"].items())}
     return s
 
 
@@ -43,16 +60,16 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
     if intent == "monitoring":
         return JM.run_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir,
                                should_stop=should_stop, keep=keep)
-    if intent != "transit":
+    if intent not in ("transit", "intrusion"):
         raise ValueError(f"本项只支持 {INTENTS}：{intent!r}")
     from ..contract.monitoring import initial_states
-    from ..contract.single_intent import transit_mission
-    from ..motion.intents.transit import final_failure
+    from ..contract.single_intent import mission_for_intent
     from ..sampler.common import sample_common
     from ..sampler.keys import RngKey
-    from .transit_report import phase_diagnostics_transit, phase_durations
+    from .transit_report import phase_diagnostics, phase_durations
+    final_failure = _intent_module(intent).final_failure
     common = sample_common(ctx.family, draw)
-    mission = transit_mission(ctx, common)
+    mission = mission_for_intent(ctx, common, intent)
     group, task = mission.groups[0], mission.tasks[0]
     states = initial_states(ctx.family, group.member_ids)
     key0 = RngKey(ctx.family.family_id, int(draw), "shape", mission=0, branch=branch, group=group.group_id, segment=0)
@@ -66,14 +83,23 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
             rec = {"ok": False, "stage": "exception", "code": "implementation_error", "reason": repr(exc),
                    "traceback": traceback.format_exc(), "timing": {},
                    "optimization_entered": flag.get("optimization_entered")}
-        summaries.append(_transit_attempt_summary(rec, k))
+        summaries.append(_intent_attempt_summary(rec, k, intent))
         return rec
 
-    out = JM.run_attempts(key0, attempt_fn, should_stop=should_stop)
+    cert = None
+    if intent == "intrusion":                       # V8-17 指令 3.7：运行前确定性证书；成立则 attempts=0
+        cert = _intent_module(intent).infeasibility_certificate(ctx, group, task)
+    if cert is not None:
+        out = {"success": False, "attempts": 0, "records": [], "result": None}
+    else:
+        out = JM.run_attempts(key0, attempt_fn, should_stop=should_stop)
     opt_s = float(sum((s["timing"] or {}).get("optimize_s", 0.0) for s in summaries))
     cid = JM.contract_id(entry, draw, branch)
     failure = None
-    if out.get("incomplete"):
+    if cert is not None:
+        failure = {"code": cert.code, "reason": cert.reason, "feasible_set": cert.feasible_set,
+                   "witness": jsonable(cert.witness)}
+    elif out.get("incomplete"):
         failure = {"code": "incomplete_deadline", "reason": "全量合作退出预算（joint_monitoring.WALL_BUDGET_S）到期",
                    "feasible_set": None, "witness": {"attempts_done": out["attempts"]}}
     elif not out["success"]:
@@ -86,7 +112,7 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
             log.append({"stage": stage})
         f = final_failure(ctx, group, task, log)
         failure = {"code": f.code, "reason": f.reason, "feasible_set": f.feasible_set, "witness": jsonable(f.witness)}
-    rec = {"contract_id": cid, "intent": "transit", "family_id": ctx.family.family_id, "order": int(entry["order"]),
+    rec = {"contract_id": cid, "intent": intent, "family_id": ctx.family.family_id, "order": int(entry["order"]),
            "draw_index": int(draw), "branch": branch, "facility_count": int(entry["facility_count"]),
            "vehicle_count": int(ctx.family.vehicle_count), "lateral_spacing_m": float(ctx.family.lateral_spacing_m),
            "group_id": group.group_id, "member_ids": sorted(group.member_ids), "group_size": len(group.member_ids),
@@ -108,33 +134,55 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
         res = out["result"]
         rec["release_us"] = {m: int(v) for m, v in sorted(res["release_us"].items())}
         rec["retained_p0_ok"] = JM._retained_p0(res)
+        if intent == "intrusion":
+            # V8-17 指令 4.3：保留 P0 = 原保留门禁 ∧ 全体实测成员三层进入次数均为 1（attempt_chain 已在返回 ok 前查过，
+            # 此处由实测释放后窗口重新生成确定性成员事件，不依赖该次结果对象）
+            from .intrusion_report import measured_members
+            meas = measured_members(ctx, res["tracks"], res["release_us"], task.target_id)
+            P = res["plan"].proposal or {}
+            rec["intrusion"] = {"sigma": float(P["sigma"]), "x_e": float(P["x_e"]),
+                                "members": {m: {k: v[k] for k in ("entry_counts", "first_entry_us", "end_contour_m",
+                                                                  "min_contour_m")}
+                                            for m, v in sorted(meas["members"].items())}}
+            rec["retained_p0_ok"] = bool(rec["retained_p0_ok"] and meas["all_single"])
         rec["deviation"] = JM.member_deviation(res)
         rec["tracking"] = JM.tracking_stats(res)
         try:
-            rec["phase_metrics"] = phase_diagnostics_transit(res)
+            rec["phase_metrics"] = phase_diagnostics(res, intent=intent, ctx=ctx)
         except Exception:
             rec["phase_metrics"] = {"error": traceback.format_exc()}
         try:
-            rec["phase_durations"] = phase_durations(res)
+            rec["phase_durations"] = phase_durations(res, intent=intent)
         except Exception:
             rec["phase_durations"] = {"error": traceback.format_exc()}
         plan = res["plan"]
         rec["nominal_duration_s"] = float(plan.nominal_duration_s)
         rec["formation"] = {k: plan.formation.get(k) for k in ("prior", "start", "realized", "mapped_from_loose",
                                                                 "lateral_step_m")}
-        rec["topology"] = {k: plan.topology.get(k) for k in ("final", "curved", "fallback_reason")}
+        tkeys = ("final", "curved", "fallback_reason") + (("sigma", "x_e") if intent == "intrusion" else ())
+        rec["topology"] = {k: plan.topology.get(k) for k in tkeys}
         if keep is not None:
             keep["result"] = res
+    elif intent == "intrusion":
+        rec["intrusion"] = None
     if out_dir is not None:
         last = out["records"][-1] if (out["records"] and not out["success"]) else None
-        save_transit_contract(Path(out_dir), rec, out["result"], last_failed=last)
+        save_intent_contract(Path(out_dir), rec, out["result"], last_failed=last)
     return rec
 
 
 def save_transit_contract(out, rec, result, last_failed=None):
     """与 joint_monitoring.save_contract 同布局；contract.json 多 intent 字段，result.json 多过境语义字段，
-    失败见证用 semantic_failures。遥测写在合同目录外。"""
+    失败见证用 semantic_failures。遥测写在合同目录外。V8-17：机械提取为 save_intent_contract 的包装。"""
+    return save_intent_contract(out, rec, result, last_failed=last_failed)
+
+
+def save_intent_contract(out, rec, result, last_failed=None):
+    """共享序列化（明确字段白名单）：用 rec["intent"] 选择附加块。过境保持原文件 bytes（不补 intrusion:null、crossing
+    表、版本号或新默认字段）；intrusion 的 result.json 增加 "intrusion" 块（σ、x_e 来自保留提案，成员事件来自实测释放后
+    窗口；失败为 None），失败见证另含实测三层进入次数。墙钟、缓存命中、traceback 只进合同目录外的 telemetry。"""
     _json_bytes = JM._json_bytes
+    intent = rec.get("intent", "transit")
     d = out / "contracts" / rec["contract_id"]
     d.mkdir(parents=True, exist_ok=False)
     contract = {k: rec[k] for k in ("contract_id", "intent", "family_id", "order", "draw_index", "branch",
@@ -142,7 +190,7 @@ def save_transit_contract(out, rec, result, last_failed=None):
                                     "target_id", "initial_speed_m_s", "formation_prior")}
     (d / "contract.json").write_bytes(_json_bytes(contract))
     det_attempts = [{k: v for k, v in s.items() if k not in ("timing", "traceback")} for s in rec["attempt_log"]]
-    result_doc = {"intent": "transit", "success": rec["success"], "attempts": rec["attempts"], "failure": rec["failure"],
+    result_doc = {"intent": intent, "success": rec["success"], "attempts": rec["attempts"], "failure": rec["failure"],
                   "attempt_log": det_attempts, "release_us": rec["release_us"], "settings_sha256": rec["settings_sha256"],
                   "retained_p0_ok": rec["retained_p0_ok"], "incomplete": rec.get("incomplete", False),
                   "post_optimization_failures": rec["post_optimization_failures"],
@@ -152,6 +200,8 @@ def save_transit_contract(out, rec, result, last_failed=None):
                   "nominal_duration_s": rec.get("nominal_duration_s"), "formation": rec.get("formation"),
                   "topology": rec.get("topology"), "phase_metrics": rec.get("phase_metrics"),
                   "phase_durations": rec.get("phase_durations")}
+    if intent == "intrusion":
+        result_doc["intrusion"] = rec.get("intrusion")
     (d / "result.json").write_bytes(_json_bytes(result_doc))
     if result is not None and result.get("ok"):
         plan = result["plan"]
@@ -192,6 +242,8 @@ def save_transit_contract(out, rec, result, last_failed=None):
             doc["validity_codes"] = jsonable(last_failed["validity"].codes)
         if last_failed.get("verdicts") is not None:
             doc["segment_failures"] = jsonable([v.failures for v in last_failed["verdicts"]])
+        if intent == "intrusion" and last_failed.get("measured_intrusion") is not None:
+            doc["measured_intrusion"] = jsonable(last_failed["measured_intrusion"])
         (d / "failure_witness.json").write_bytes(_json_bytes(doc))
     tele = out / "telemetry"
     tele.mkdir(exist_ok=True)
@@ -229,7 +281,10 @@ def _pool_task(task):
     settings = load_settings()
     t0 = _t.perf_counter()
     try:
-        from ..motion import transit_chords as TC
+        if intent == "intrusion":
+            from ..motion import intrusion_chords as TC
+        else:
+            from ..motion import transit_chords as TC
         before = dict(TC.STATS)
         holder = {}
         rec = run_contract(ctx, entry, draw, intent=intent, settings=settings, branch=branch, out_dir=Path(out_dir),
@@ -240,12 +295,12 @@ def _pool_task(task):
                    skeleton_detail=[((a.get("timing") or {}).get("skeleton_detail") or {}) for a in rec["attempt_log"]],
                    nit=[(a.get("timing") or {}).get("nit") for a in rec["attempt_log"]],
                    chord_cache={k: TC.STATS[k] - before.get(k, 0) for k in TC.STATS})
-        if kind == "diversity" and rec["success"] and intent == "transit":
+        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion"):
             from .transit_report import group_reference_curves
-            from ..contract.single_intent import transit_mission
+            from ..contract.single_intent import mission_for_intent
             from ..sampler.common import sample_common
-            group = transit_mission(ctx, sample_common(ctx.family, draw)).groups[0]
-            got = group_reference_curves(ctx, group, holder["result"])
+            group = mission_for_intent(ctx, sample_common(ctx.family, draw), intent).groups[0]
+            got = group_reference_curves(ctx, group, holder["result"], intent=intent)
             row["curve_before"] = None if got["before"] is None else got["before"].tolist()
             row["curve_after"] = None if got["after"] is None else got["after"].tolist()
             row["frechet_info"] = got["info"]
@@ -304,7 +359,9 @@ def _cost_order(entries, keys, sizes):
 
 def _prewarm_family(task):
     """一族在一个进程内：上下文与原始距离场（同 joint_monitoring.prewarm_cache 的几何集合）、该族全部合同的确定性
-    选队形 probe 序列对应的弦集合文件（已存在不覆盖）。各族写不同文件。"""
+    选队形 probe 序列对应的弦集合文件（已存在不覆盖）。各族写不同文件。task 第 5 项为 intent（缺省 transit）。"""
+    if len(task) > 4 and task[4] == "intrusion":
+        return _prewarm_family_intrusion(task)
     import time as _t
     from ..contract.single_intent import transit_mission
     from ..motion import transit_chords as TC
@@ -312,7 +369,7 @@ def _prewarm_family(task):
     from ..sampler.common import sample_common
     from ..sampler.keys import RngKey
     from ..scene.context import load_context
-    entry, draws, data_root, cache_dir = task
+    entry, draws, data_root, cache_dir = task[:4]
     t0 = _t.perf_counter()
     ctx = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
     # 构造 probe 序列时只读已有弦集合文件（load_chord_set 不写）；缺失的在内存计算，之后由 prewarm_transit 统一写出
@@ -339,13 +396,55 @@ def _prewarm_family(task):
             "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"]} for r in rows}}
 
 
-def prewarm_all(entries, *, data_root, cache_dir, workers, draws=range(5), log=print):
-    """派发前预建：各族一个任务、spawn 进程池（每族写自己的文件，无并发写同一文件）；派发阶段 worker 只读。"""
+def _prewarm_family_intrusion(task):
+    """突入：同一族一个进程；先读已有文件（load_chord_set 只读），再由 prewarm_intrusion 统一写出缺失文件。
+    运行前圆形证书成立的合同不发起任何 probe 请求（attempts=0），因此也不预建。"""
+    import time as _t
+    from ..contract.single_intent import intrusion_mission
+    from ..motion import intrusion_chords as IC
+    from ..motion.intents.intrusion import formation_probe_sequence, infeasibility_certificate
+    from ..sampler.common import sample_common
+    from ..sampler.keys import RngKey
+    from ..scene.context import load_context
+    entry, draws, data_root, cache_dir = task[:4]
+    t0 = _t.perf_counter()
+    ctx = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
+    rows, sizes = [], {}
+    for d in draws:
+        m = intrusion_mission(ctx, sample_common(ctx.family, d))
+        g, task_ = m.groups[0], m.tasks[0]
+        sizes[f"{int(entry['order'])}:{d}"] = len(g.member_ids)
+        if infeasibility_certificate(ctx, g, task_) is not None:
+            rows.append({"draw": d, "target": task_.target_id, "probes": [], "requests": [], "certificate": True})
+            continue
+        key = RngKey(ctx.family.family_id, d, "shape", mission=0, branch=None, group=g.group_id, segment=0)
+        seq = formation_probe_sequence(ctx, g, task_, key)
+        rows.append({"draw": d, "target": task_.target_id, "probes": [[n, s, None] for n, s, _, _ in seq],
+                     "requests": [(task_.target_id, offs, sig) for _, _, offs, sig in seq], "certificate": False})
+    reqs, seen = [], set()
+    for r in rows:
+        for t, offs, sig in r["requests"]:
+            qid, _ = IC.query_identity(ctx, t, offs, sig)
+            if qid not in seen:
+                seen.add(qid)
+                reqs.append((t, offs, sig))
+    written = IC.prewarm_intrusion(ctx, reqs, cache_dir)
+    st = ctx.cache_stats()
+    return {"order": int(entry["order"]), "family_id": entry["family_id"], "wall_s": _t.perf_counter() - t0,
+            "queries": written, "raw_cache": st, "sizes": sizes, "lane_stats": dict(IC.STATS),
+            "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"], "certificate": r["certificate"]}
+                       for r in rows}}
+
+
+def prewarm_all(entries, *, data_root, cache_dir, workers, draws=range(5), log=print, intent="transit"):
+    """派发前预建：各族一个任务、spawn 进程池（每族写自己的文件，无并发写同一文件）；派发阶段 worker 只读。
+    V8-17：按 intent 选择 mission、formation_probe_sequence 与 load/prewarm 函数；旧调用（缺省 transit）不变。"""
     import multiprocessing as mp
     from concurrent.futures import ProcessPoolExecutor
     t0 = time.time()
     ordered = sorted(entries, key=lambda e: e["order"])
-    tasks = [(e, list(draws), str(data_root), str(cache_dir)) for e in ordered]
+    tasks = [(e, list(draws), str(data_root), str(cache_dir)) + ((intent,) if intent != "transit" else ())
+             for e in ordered]
     out = []
     with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn")) as ex:
         for r in ex.map(_prewarm_family, tasks):
@@ -368,7 +467,8 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     """keys：[(order, draw)]。先预建（过境），再按成本降序单合同动态派发到 workers 个进程；写 records/summary。"""
     out = Path(out_dir)
     t0 = time.time()
-    pw = prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log) if prewarm else None
+    pw = (prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
+          if prewarm else None)
     if pw is not None:
         write_json(out / "prewarm.json", pw, indent=1)
     sizes = {tuple(map(int, k.split(":"))): v for k, v in (pw or {}).get("group_size", {}).items()}
@@ -412,7 +512,7 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                                          "rule": "全量开始前按 (order, draw) 字典序取前 5 个合同"}, indent=1)
     div_fams = select_diversity_families(entries)
     (out / "diversity").mkdir()
-    pw = prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log)
+    pw = prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
     write_json(out / "prewarm.json", pw, indent=1)
     sizes = {tuple(map(int, k.split(":"))): v for k, v in pw["group_size"].items()}
     klist = [("full", o, d, None) for o, d in keys]
@@ -433,14 +533,18 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                                       for r in full_rows], indent=1)
     write_json(out / "diversity" / "records.json", div_rows, indent=1)
     from .transit_report import frechet_blocks
-    blocks_after = frechet_blocks(div_rows, "curve_after")
-    blocks_before = frechet_blocks(div_rows, "curve_before")
+    blocks_after = frechet_blocks(div_rows, "curve_after", intent=intent)
+    blocks_before = frechet_blocks(div_rows, "curve_before", intent=intent)
     good = [r for r in full_rows if not r.get("error")]
     complete = (len(full_rows) == len(keys) and not unsent
                 and not any(r.get("incomplete") or r.get("error") for r in full_rows)
                 and not any(r.get("unknown_attempts") or (r.get("success") and r.get("post_optimization_failures") is None)
                             for r in full_rows))
-    chk = JR.full_checkpoint(good, blocks_after) if full_rows else None
+    if intent == "intrusion":
+        from .intrusion_report import full_checkpoint as intrusion_full_checkpoint
+        chk = intrusion_full_checkpoint(good, blocks_after) if full_rows else None
+    else:
+        chk = JR.full_checkpoint(good, blocks_after) if full_rows else None
     disp_wall = time.time() - t_dispatch
     allr = [r for r in rows if not r.get("error")]
     busy = float(sum(r.get("wall_s") or 0.0 for r in allr))
@@ -449,6 +553,9 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                "incomplete": [r["contract_id"] for r in full_rows if r.get("incomplete")],
                "errors": [r["contract_id"] for r in rows if r.get("error")],
                "diversity_expected": len(div_fams) * JM.DIVERSITY_SEEDS, "diversity_completed": len(div_rows),
+               "diversity_complete": (len(div_rows) == len(div_fams) * JM.DIVERSITY_SEEDS and
+                                      len({r["contract_id"] for r in div_rows}) == len(div_rows) and
+                                      not any(r.get("incomplete") or r.get("error") for r in div_rows)),
                "checkpoint": chk, "frechet_after_pooled": JR.pooled_frechet(blocks_after),
                "frechet_before_pooled": JR.pooled_frechet(blocks_before),
                "frechet_blocks_after": blocks_after, "frechet_blocks_before": blocks_before,

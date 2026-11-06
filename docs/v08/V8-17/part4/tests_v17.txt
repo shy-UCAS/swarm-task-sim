@@ -1,0 +1,65 @@
+# V8-17 新测试 2026-11-06 06:06:04 -0800
+# cwd=/f/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/Multi-UAV SimpleGC
+# commit=cf3134b2669466cc8a39add750e2ae62182c42c7 dirty=11
+# V8_17_REGRESSION_MANIFEST=F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08/docs/v08/V8-17/regression_gates.json V8_17_OUT=<unset> V8_17_RERUN=<unset>
+
+## C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-17 -p "test_preset_numeric_v17.py" -v
+eca9adfc243aad4c74bced8597af1f1e0d4ce4b2a33e6e30704e312051188478 *tests/v08/V8-17/test_preset_numeric_v17.py
+test_circle_certificate_grid_not_continuous_sigma (test_preset_numeric_v17.NumericPreset.test_circle_certificate_grid_not_continuous_sigma) ... ok
+test_exclusion_only_changes_rate_and_gap (test_preset_numeric_v17.NumericPreset.test_exclusion_only_changes_rate_and_gap) ... ok
+test_member_terminal_domains (test_preset_numeric_v17.NumericPreset.test_member_terminal_domains) ... ok
+test_other_warning_can_end_deep_inside (test_preset_numeric_v17.NumericPreset.test_other_warning_can_end_deep_inside) ... ok
+test_polygon_plateau_and_external_projection (test_preset_numeric_v17.NumericPreset.test_polygon_plateau_and_external_projection) ... ok
+test_sampling_order_and_length_measure (test_preset_numeric_v17.NumericPreset.test_sampling_order_and_length_measure) ... ok
+test_sigma_and_interval_composition (test_preset_numeric_v17.NumericPreset.test_sigma_and_interval_composition) ... ok
+test_three_endpoint_conditions (test_preset_numeric_v17.NumericPreset.test_three_endpoint_conditions) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.133s
+
+OK
+exit=0
+
+## C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-17 -p "test_preset_local_geometry_v17.py" -v
+5066c4a07d69bd6fcc4dc8b1aaf2bcbdc98e16665a31c037b53cfd1548327c19 *tests/v08/V8-17/test_preset_local_geometry_v17.py
+test_crossing_table_all_seven_intents (test_preset_local_geometry_v17.GeometryPreset.test_crossing_table_all_seven_intents) ... ok
+test_mission_and_dispatch (test_preset_local_geometry_v17.GeometryPreset.test_mission_and_dispatch) ... ok
+test_nominal_three_single_entries_and_second_visit (test_preset_local_geometry_v17.GeometryPreset.test_nominal_three_single_entries_and_second_visit) ... ok
+test_optimized_endpoint_50_5_rejected (test_preset_local_geometry_v17.GeometryPreset.test_optimized_endpoint_50_5_rejected) ... ok
+test_preentry_obstacle_and_exact_rejection (test_preset_local_geometry_v17.GeometryPreset.test_preentry_obstacle_and_exact_rejection) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.105s
+
+OK
+exit=0
+
+## C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-17 -p "test_preset_local_artifacts_v17.py" -v
+cbad45ebb2a23f402b3bf7955e867b40cb0d0e8207f1f9a406e632bdbd90d389 *tests/v08/V8-17/test_preset_local_artifacts_v17.py
+setUpClass (test_preset_local_artifacts_v17.ArtifactsPreset) ... skipped 'V8_17_OUT未设置；该验收未执行'
+test_both_intents_both_gates_byte_equal (test_preset_local_artifacts_v17.RegressionPreset.test_both_intents_both_gates_byte_equal) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.847s
+
+OK (skipped=1)
+exit=0
+
+## C:/Users/shy/anaconda3/Scripts/conda.exe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-17 -p "test_extra_local_v17.py" -v
+9c6121237b91bcdaa77df63ce5cd6964b22b4126794fb52515388f730292eb49 *tests/v08/V8-17/test_extra_local_v17.py
+test_downstream_failure_single_draw (test_extra_local_v17.ExtraLocal.test_downstream_failure_single_draw)
+ok
+test_limit1_crossing_table_is_warnings (test_extra_local_v17.ExtraLocal.test_limit1_crossing_table_is_warnings)
+上限 1 的意图：crossing_boundaries 与 warnings 同键、同序、同一几何对象（is）；监视/过境不新增边界。 ... ok
+test_save_reread_and_no_timers (test_extra_local_v17.ExtraLocal.test_save_reread_and_no_timers)
+o01_d0 全链路保存后从磁盘重读：实测三层进入次数与首次进入帧与 result.json 一致；合同 JSON 无计时键。 ... ok
+test_transit_cache_keys_unchanged (test_extra_local_v17.ExtraLocal.test_transit_cache_keys_unchanged)
+过境默认分支仍用原进程内缓存键；突入用独立键（不混用）。 ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 11.037s
+
+OK
+exit=0
+
+# end 2026-11-06 06:06:23 -0800

@@ -158,3 +158,59 @@
 **开发中的单合同试跑（scratch，不作证据）：** 四键骨架各在第 1 次 attempt 成功，均为弯曲 LP。o01_d0 的全链路在第 1 次 attempt 成功，冻结核验通过；实测两成员三层进入次数都是 1/1/1；合同 JSON 中计时键 0 处。正式 smoke 见第 5、6 部分。
 
 **性能修正（行为不变）：** `deepest_station` 的多边形分支由 Python 双循环改为同一浮点运算的向量化枚举，按升序 unique 后取 argmax，并列仍取最小 x。车道的次水平集改为整批计算。o02_d0 的单车道几何耗时从 63 s 降到 0.7 s，抽样结果不变（σ、x_e、格数相同）。
+
+## 4. 第 4 部分：检查、冻结核验接入、保存、测试与第二轮门禁 —— 完成
+
+**代码（提交 4）：**
+- `optimize_checks.check_intrusion`：在优化后的实际样条上用 `_grid_times` 求值。
+  - 边界：对完整轨迹用 crossing_boundaries 调用冻结 `crossing_analysis`。目标 warning/alert/protected 每层方向必须恰为 `["in"]`；边界检查本身的失败照报。
+  - 终点：contour SDF ≤ **50**（取自冻结 `roles.intrusion.max_contour_distance_m`），protected SDF ≤ −10。
+  - 名义判据：对释放到移动结束再加 2 s 保持的 10 Hz 帧调用 `screen_intrusion_member`。
+  - 失败 kind 固定为十类：terminal_contour、terminal_protected、boundary_crossing、target_layer_crossing、nominal_start_inside、nominal_layer_regression、nominal_multiple_visits、nominal_not_entered、nominal_layers、nominal_dwell，并保存原始数值。
+  - 不检查所有 warning 外 50 m，不要求出圈，不调用 revisit。
+- `nominal_checks.screen_intrusion_member`（第 3 部分已写）：
+  - 进入次数按 False→True 计数，首帧为 True 也计一次；首次进入时刻取整数 time_us。
+  - dwell 检查覆盖释放后的整个窗口。
+  - 9 个固定 conditions。
+- `joint_monitoring.attempt_chain`（只改两处）：
+  - intrusion 的遥测分派；
+  - 冻结 `verify_segments` 与 `check_validity` 都通过之后、返回 ok=True 之前，调用 `intrusion_report.measured_members` 复算实测三层进入次数。不是 1/1/1 时按普通失败处理，stage = `measured_intrusion_entries`，消耗本次 attempt。
+- `joint_intent`：
+  - `run_contract` 支持 intrusion：mission、final_failure、draw_summary、阶段诊断都按 intent 分派。运行前做圆形证书（attempts = 0）。
+  - intrusion 的 `retained_p0_ok` = `JM._retained_p0` 与全体成员实测进入次数均为 1。
+  - result.json 增加 `intrusion` 块（σ、x_e、逐成员 entry_counts / first_entry_us / end_contour_m / min_contour_m），失败时为 None。
+  - 机械提取 `save_intent_contract`，旧 `save_transit_contract` 保留为包装，过境不补任何字段。
+  - `prewarm_all(..., intent=)`；`run_selected` 和 `full_stage` 的预建、多样性、Fréchet、检查点都按 intent 分派。`full_stage` 另报 `diversity_complete`。
+- `transit_report`：
+  - `member_phase_times`、`phase_durations`、`group_reference_curves`、`frechet_blocks` 增加仅限关键字的 `intent="transit"`。
+  - 机械提取 `phase_diagnostics(res, *, intent, ctx)`，旧 `phase_diagnostics_transit` 包装它。
+  - intrusion 的终端减速诊断：名义末端严格递减段；优化/实测制动开始点所在圈层，以及到保护边界的有符号距离。
+- `skeleton_transit`：机械提取 `run_intent_skeleton_contract` / `run_intent_skeleton_batch`，旧过境包装保留。intrusion 的检查点用 `intrusion_report.skeleton_checkpoint`。
+- `intrusion_report`：
+  - `skeleton_checkpoint`：名单只影响成功率与档差；
+  - `measured_members`；
+  - `full_checkpoint`：名单只影响成功率与档差；另报原始 200 口径。
+- 新 CLI `tools/v08/run_intrusion_v17.py`：stage 包括 smoke / queries / chord-gate / skeleton / quick / full / rerun，内部显式传 `intent="intrusion"`，不另写进程池。
+- 运行说明 [RUNNING.md](RUNNING.md)：写明默认 24 进程、复跑固定 1。
+
+**测试（执行方运行，有记录；均未修改预置文件，夹具未补字段）：**
+
+| 套件 | 结果 | 日志 |
+|---|---|---|
+| 预置 `test_preset_numeric_v17.py`（SHA `eca9adfc…8478`） | 8/8 通过 | [part4/tests_v17.txt](part4/tests_v17.txt) |
+| 预置 `test_preset_local_geometry_v17.py`（SHA `5066c4a0…7c19`） | 5/5 通过 | 同上 |
+| 预置 `test_preset_local_artifacts_v17.py`（SHA `cbad45eb…d389`）：`RegressionPreset` | 1/1 通过，覆盖四道门禁 | 同上 |
+| 同文件 `ArtifactsPreset`（3 个方法） | **未执行**：`V8_17_OUT` 未设置，skip。快批与全量完成后再运行 | 同上 |
+| 自加 `test_extra_local_v17.py` | 4/4 通过：上限 1 边界表与 warnings 同键同序同对象；过境缓存键不变；控制流注入（下游故意失败时每个 attempt 只抽一次格/σ/终点，LP ≤ 1 次，失败后不再 probe 队形，下一 attempt 只有 attempt 键递增）；o01_d0 保存后重读，实测事件与 result.json 一致，合同 JSON 中计时键 0 处 | 同上 |
+| 旧套件（V8-16 同一清单） | 与第 1 部分基线完全相同：只有 V8-12 两项历史失败（带数据根时 1 项），其余全过；两处 skip 原因同基线 | [part4/tests_old_suites.txt](part4/tests_old_suites.txt) |
+
+**V8-16 测试传播（指令 4.4 第 2 条）：** 核对 S 的 V8-16 预置文件，确实没有"cons 精确键集合"或"intrusion 分派必须抛错"之类的断言，所以不修改旧测试。V8-16 预置文件的 SHA 保持不变（见首尾快照），detour 不支持的旧测试仍通过。新键与新分派由 V8-17 预置测试和自加测试覆盖。
+
+**第二轮字节门禁（phase 4，第 3、4 部分全部代码就位后运行）：**
+
+| 意图 | 运行 | 结果 | 证据 |
+|---|---|---|---|
+| monitoring | `run/out/monitor_regression_4` 对 `full_v14c` | **20/20 逐字节一致** | [part4/gate_monitoring.json](part4/gate_monitoring.json) |
+| transit | `run/out/transit_regression_4` 对 `full_transit_r2` | **20/20 逐字节一致** | [part4/gate_transit.json](part4/gate_transit.json) |
+
+日志见 [part4/gates_4.log](part4/gates_4.log)，开始于 05:59，结束于 06:05:47。四道门禁的清单是 [regression_gates.json](regression_gates.json)。停止条件 1 未触发。
