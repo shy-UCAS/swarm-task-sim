@@ -295,3 +295,10 @@ def _revisit_vectorized(xy, velocity, time_us, levels, frames, center, criteria=
                                 "heading_difference_deg": float(angle), "azimuth_coverage_deg": coverage_deg}
         buckets[(c0, c1)].append(int(end))
     return empty
+
+
+# V8-16 指令 8.3 切换：三方逐位对照（V8-11 full 1440 次调用、监视快批 99 个窗口 × 两种 frames）与原实现 0 差异、
+# 候选在同一输入上耗时约为原实现的 11%；公开名 revisit 指向向量化候选，原样抽取的原函数保留为 _revisit_original
+# 作 oracle（不删除、不修改）。screen_member / screen_transit_member 按模块全局名调用，切换对两者同时生效。
+_revisit_original = revisit
+revisit = _revisit_vectorized
