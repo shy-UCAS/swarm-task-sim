@@ -238,7 +238,7 @@
 
 | 运行 | 代码 | 成功 | attempts 中位 | shape_audit / 全部 attempts | 直线回退 | 档差（1–4 / 5–8 / 9–12 机） | 证据 |
 |---|---|---|---|---|---|---|---|
-| 首跑 `skeleton_transit` | 3ed0731 + 精确键修正（提交 18:43） | 200/200 | 1 | 3/209（1.4%） | 1/200 | 0 / 0 / 0（n = 110/56/34） | [part5/](part5/) |
+| 首跑 `skeleton_transit` | 717733d（精确键修正后） | 200/200 | 1 | 3/209（1.4%） | 1/200 | 0 / 0 / 0（n = 110/56/34） | [part5/](part5/) |
 | **r2 `skeleton_transit_r2`** | 1eba927（对齐容差修正） | **200/200** | **1** | **0/207** | **1/200** | 0 / 0 / 0 | [part5/r2/](part5/r2/) |
 
 - **为什么重跑：** 首跑的 3 次 shape_audit 都是 chord_exact_audit，原因是 `straight_m = 99.99999999999966 < 100`，即第 3.3 节第 3 项的工具缺陷。这是新工具的实现错误，按指令修复后在新目录重跑受影响的测量；首跑目录与结果原样保留。
@@ -270,7 +270,7 @@
 - **中断记录：** 首次快批 `out/quick_transit` 用的是修正前代码；发现对齐容差缺陷后，我在预建阶段停掉了它（目录中只有 `quick_selection.json`）。目录原样保留，重跑写入 `quick_transit_r2`。
 - **耗时备注：** 快批与 r2 骨架的预建在文件都已存在时仍各用约 476 s。原因是 `_prewarm_family` 为构造 probe 序列把 `cache_dir` 置空，导致在内存中重算一遍。只浪费时间，不影响输出；第 7 部分完成后再处理，见第 9 节。
 
-## 7. 第 7 部分：全量、复跑——**P0-3 停止条件触发，已停下**
+## 7. 第 7 部分：全量、复跑——P0-3 首次触发并停下；经用户同意修复后重跑通过（见 7.4）
 
 ### 7.1 全量（`out/full_transit`，代码 1eba927，2026-11-05 19:12 → 19:27）
 
@@ -312,3 +312,193 @@
   1. 不再把 `seconds` 写进 `P["lp"]` 与见证，LP 耗时只记入遥测（`S.timing`，合同目录外）；同时检查提案/见证中有无其他墙钟类字段。
   2. 顺带修正 `_prewarm_family` 不读已有缓存、每次重算约 8 分钟的问题（不影响输出）。
   3. 在新目录依次重跑：骨架、快批、全量、5 键复跑。修复只删除遥测字段，检查点结论预计不变，但必须以重跑结果为准。按本机实测估计约 50 分钟。
+
+## 8. 第 8 部分：四件小项
+
+### 8.1 198 个监视合同的只读三阶段时长（[part8/monitor-durations.json](part8/monitor-durations.json)、[逐成员 CSV](part8/monitor_member_phase_durations.csv)）
+
+用 `v15_artifacts.load_retained/phase_bounds` 恢复 `full_v14c`，不规划、不优化、不仿真。阶段边界按 `member_map_v14.patrol_member_s` 映射到名义时间。分母为 198 个保留合同、949 名真实成员。
+
+| 量（s） | min | p10 | 中位 | p90 | max |
+|---|---|---|---|---|---|
+| 汇合/进入 | 193.6 | 385.5 | 717.6 | 1128.1 | 2288.8 |
+| 巡逻 | 522.7 | 962.1 | 1621.0 | 2477.7 | 3432.3 |
+| 撤离 | 44.9 | 130.4 | 286.9 | 508.2 | 839.5 |
+| 移动合计（= ref.end − ref.release） | 1155.0 | 1828.8 | 2649.8 | 3778.0 | 4932.5 |
+| release delay | 0 | 0 | 59.7 | 411.1 | 975.1 |
+| 合同 nominal_duration_s（含 2 s 末端保持） | 1214.1 | 1888.7 | 2811.6 | 3867.0 | 4978.0 |
+| 组跨度（首人 release → 末人移动结束） | 1212.1 | 1886.7 | 2809.6 | 3865.0 | 4976.0 |
+
+- **校验：** 三段时长全部非负（违例 0 名成员）；分解恒等式最大残差 9.1e−13 s；末端保持 2 s 单独列出。
+- **超过 1800 s 只报分布：** 成员移动时长 867/949，合同含保持跨度 184/198，不拒绝。人数、设施数、初速分档见 JSON 的 `by_bin`。
+
+### 8.2 两个低速例子的优化诊断（[part8/o08_d4_uav_02.json](part8/o08_d4_uav_02.json)、[o34_d2_uav_08.json](part8/o34_d2_uav_08.json)）
+
+**口径：**
+
+- **最坏帧：** 取自 V8-15 `part3/speed_cases.json`：o08_d4/uav_02 在 t = 1488.3 s（egress，距阶段结束 398 s，实测 0.0011 m/s）；o34_d2/uav_08 在 t = 3236.1 s（patrol，实测/参考 = 0.40）。
+- **重算方式：** 只恢复保留骨架并调用一次原 `optimize_segment`。包装 `prepare_problem` 与 `scipy.optimize.minimize`，原参数不变，每轮只复制 x、ρ、乘子；全部约束分解在优化完成后离线重算。
+
+**字节对照（两例都满足）：**
+
+- 重算 `optimized.json` 用原 `save_contract` 字段与 `_json_bytes` 序列化，与基线**逐字节相同**；控制点、knots、nit/nfev 也全同（o08：200/277；o34：200/271）。
+- 两个合同目录前后的树散列不变。这里只重算了优化，**不声称重新生成了整个合同目录**。
+
+| 合同 | 外轮 | 低速 1 s 跨内各类 g_max（≤ 0 为满足） | 初值/最终解沿骨架切向 | 附近语义直线 | 推断（只作推断） |
+|---|---|---|---|---|---|
+| o08_d4/uav_02 | 1 轮，λ 全 0，ρ = 1；内层 nit = 200 跑满 | t −0.024（|a_t| ≈ 1.85，缓冲阈值 1.9 m/s²）；v −0.89；j −0.98；n −1.00；geo ≤ −19.6；sep ≤ −16.5 | ls/init：沿切向速度最低 −17.9 m/s，变号 2 次，位移 −28.4 m；final：最低 −2.43 m/s，变号 2 次，滞后 −37.9 m | f01 入圈带 1489.3–1493.9 s（低速后 1.0 s）、f02 出圈带 1497.0–1502.4 s，间隙 3.12 s，小于 4 个节点但不共线，所以未合并 | 最小二乘初值在此处已大幅回摆；两条不共线的固定时刻等式直线相距 3.1 s，同时切向加速度贴近缓冲上限。两者都可能主导，**不足以唯一归因** |
+| o34_d2/uav_08 | 1 轮，λ 全 0；nit = 200 跑满 | 跨内 v −0.85、n −0.94、t −0.96、j −0.99、geo ≤ −24.4、sep ≤ −5.7，**全部不活跃** | ls/init 贴合参考（4.14 m/s、无变号）；final 最低 1.67 m/s、无变号、超前至 +25.6 m | 无 | 低速帧在 25 m 泪滴掉头窗口（3091.6–3226.6 s）结束后 9.5 s，该窗口内掉头曲率约束几乎活跃（g = −0.001）。推断为急转后的速度恢复/目标权衡，**不足以归因到约束** |
+
+两例都是第 1 外轮即通过（λ 全 0），不能据此说"没有活跃约束"。本项只诊断，不修改 merge 规则、权重或初值。首次诊断输出 `diagnostics/low_speed` 中的语义直线间隙未按时间排序，掉头 g 取的是整段掉头而非低速跨；已修正工具后重跑为 `low_speed_r2`，以 r2 为准。
+
+### 8.3 重访检测向量化（[part8/revisit_equivalence_quick20.json](part8/revisit_equivalence_quick20.json)、[revisit_equivalence_v811.json](part8/revisit_equivalence_v811.json)）
+
+- **候选：** `nominal_checks._revisit_vectorized`，只做指令允许的等价向量化：
+  - eligible 格子一次算出；
+  - 每个 end 收集 9 桶后，用数组做 gap 筛选并按 start 升序；
+  - 距离与点积按原形状逐 end 计算；
+  - 角度和展开角上界做逐候选布尔筛选（幂次用 `frexp` 精确取整），其余按原顺序逐个执行。
+  - 原 `revisit` 函数（原样抽取块）不动，用作 oracle。
+- **直接对照（监视快批 20 合同，实际优化后名义窗口）：** 99 个成员窗口 × {work_mask, 全窗口}，oracle 与候选**逐位差异 0**。
+- **V8-11 full 回归 + 三方对照：**
+  - 运行时包装 `v08.criteria.window.revisit`，finally 恢复；固定 200 条名单 `list_ok = true`。
+  - 200/200 核验，**逐项差异 0**，数据前后不变。
+  - 1440 次实际调用中，冻结 vs 原实现 0 差异，原实现 vs 候选 **0 差异**。
+- **计时（同一输入顺序运行）：** 候选总耗时 / 原实现 = 0.114（V8-11）与 0.112（快批）。
+- **切换（提交 c65b1c2，在 7.4 全部批次之后）：**
+  - 改动方式：在原样抽取块之后加入 `_revisit_original = revisit; revisit = _revisit_vectorized`。原函数不删不改，作 oracle；`screen_member` 与 `screen_transit_member` 按模块全局名调用，切换对两者同时生效。
+  - 切换后复核：
+    - 预置 `test_preset_local_revisit_v16` 对候选 4/4 通过；
+    - 快批 99 窗口直接对照仍为 0 差异（[revisit_equivalence_quick20_after_switch.json](part8/revisit_equivalence_quick20_after_switch.json)，耗时比 0.106）；
+    - **第三道监视字节门禁 `monitor_regression_8` 20/20 一致**，缓存不变（[part2/monitor_regression_8/](part2/monitor_regression_8/)）。
+  - 冻结 `task_v07.detectors` 未改。
+
+### 8.4 RUNNING 与依赖文档
+
+- [V8-15 RUNNING](../V8-15/RUNNING.md) 第 1 节加入："同时运行大内存程序时加 `--workers 16`；机器空闲时沿用默认 24"，依据 R15 第 3 节。
+- 同节更正：全机 60% 规则已由 R15 降为诊断，当前 24 是既有选择、不重选，历史测量与 `worker_choice.json` 原样保留。
+- 本项 [RUNNING.md](RUNNING.md) 写入同一说明。新 CLI 的 `--workers` 读取同一 `DEFAULT_WORKERS`；自加测试确认默认为 24、显式 16 只影响本次解析。`test_preset_local_defaults` 仍按 V8-15 选择文件验证 24（见第 9 节回归）。
+
+### 7.4 修复与重跑（用户 2026-11-05 指示"Fix and rerun"）
+
+- **修复（提交 8ad83d5）：**
+  - `_build_with_cells` 不再把 LP `seconds` 写进提案与见证，LP 耗时只进合同目录外的遥测 `S.timing["lp_s"]`；只骨架记录同步去掉，统计改读遥测。
+  - 检查了提案与见证的其余字段，没有其他墙钟类字段。
+  - 顺带修正 `_prewarm_family` 不读已有弦集合文件的问题：预建从约 455 s 降到约 1 s，不影响输出。
+- **重跑前自检：** o01_d0、o03_d1（2 次 attempt）、o08_d4 分别以"进程内现算弦集合"和"读预建文件"各跑一次，合同目录逐字节一致。
+- **重跑（全部新目录，代码 8ad83d5，运行时工作区只有文档未提交，2026-11-05 22:46 → 22:56）：**
+
+| 运行 | 结果 | 证据 |
+|---|---|---|
+| 只骨架 `skeleton_transit_r3` | 200/200，attempts 中位 1，shape_audit 0/207，直线回退 1/200，未触发；总 31 s | [part5/r3/](part5/r3/) |
+| 快批 `quick_transit_r3` | 20/20，post-opt 中位 0，optimization_s 中位 9.4 s，P0 违规 0，未触发 | [part6/r3/](part6/r3/) |
+| 全量 `full_transit_r2` | 200/200、多样性 100/100、`complete = true`；档差 0；post-opt 中位 0；Fréchet 合并中位数 87.17（≥ 1）；P0 违规 0；派发 409 s | [part7/r2/full_summary.json](part7/r2/full_summary.json) |
+| **5 键复跑 `rerun_transit_r2`（workers = 1）** | **5/5 文件集合与全部字节一致**，排除清单 `[]`；**P0-3 已消除** | [part7/r2/rerun_reproduction.json](part7/r2/rerun_reproduction.json) |
+| 预置 artifacts（full_r2 + rerun_r2 + monitor_regression_8） | **4/4 通过**，含 `test_five_single_process_repeats`、200 个保留合同的磁盘轨迹冻结核验 | [part9/tests_artifacts_final.txt](part9/tests_artifacts_final.txt) |
+
+- **修复前后一致性：**
+  - **全量 r1 → r2：** 300 个合同目录、8345 个文件中，8047 个逐字节相同，298 个 `skeleton.json` 去掉 `lp.seconds` 后完全相同，**其他差异 0**（[part7/full_r1_vs_r2.json](part7/full_r1_vs_r2.json)）。
+  - **骨架 r2 → r3（600 个文件）、快批 r2 → r3（575 个文件）：** 除计时字段外全同。
+  - 所以第 5–7 节的数字都由修复后的运行原样复现；作为验收发布的是 r3/r2 这一批。
+- **逐格配对（修复后，[part7/r2/transit-report.json](part7/r2/transit-report.json)、[paired_contracts.csv](part7/r2/paired_contracts.csv)）：**
+  - 与 7.1 相同：两边都成功 198，仅过境成功 2，其余格 0。
+  - **按人数档：** 1–4 机 110/110 两边都成功；5–8 机 56/56；9–12 机 32 两边成功、2 仅过境。
+  - 设施数与初速各档见 JSON。
+  - **12 机横排：** 过境没有失败（`group12_transit_failures = []`）。
+- **过境三阶段（969 名成员，按成员自己的精确入/出圈弧长切分）：**
+
+| 量（s） | min | p10 | 中位 | p90 | max |
+|---|---|---|---|---|---|
+| 进场（release → 入圈） | 102.2 | 247.5 | 548.6 | 981.6 | 1782.6 |
+| 穿越（入圈 → 出圈） | 42.8 | 125.8 | 250.8 | 469.0 | 811.6 |
+| 撤离（出圈 → 移动结束） | 8.7 | 11.1 | 18.4 | 41.1 | 335.6 |
+| 移动合计 | 278.5 | 475.2 | 867.8 | 1355.1 | 2260.4 |
+| 合同 nominal_duration_s（含保持） | 308.1 | 575.0 | 952.0 | 1488.4 | 2262.5 |
+
+  - 分解残差最大 2.3e−13 s。撤离段短，是因为终点取"出圈后第一个全员离所有 warning ≥ 50 m 的站点"。
+- **阶段速度：**
+  - **穿越段：** 实测/参考最低速度比 min 0.874、中位 0.984，**没有途中减速**。
+  - **进场与撤离段：** 最低比值出现在静止起步与终点刹停的样本上（参考速度刚过 0.5 m/s 的门槛），属于该指标的既有口径。最低的 15 名成员都在撤离段末端，列在 `transit_low_ratio_members`。
+- **队形（全量 200）：** abreast → abreast 62、column → column 46、echelon → echelon 47、loose → abreast 45；**退让 0**。
+
+## 9. 测试、改动清单与偏离
+
+### 9.1 测试（最终，代码 c65b1c2，[part9/tests_final.txt](part9/tests_final.txt)）
+
+| 套件 | 第 1 部分基线 | 最终 |
+|---|---|---|
+| V8-16 `test_preset_numeric_v16`（预置） | 导入失败（前提未完成） | **9/9** |
+| V8-16 `test_preset_local_geometry_v16`（预置） | 导入失败（前提未完成） | **6/6** |
+| V8-16 `test_preset_local_revisit_v16`（预置） | 4/4（对原实现） | **4/4（对切换后的候选）** |
+| V8-16 `test_preset_local_artifacts_v16`（预置，需真实产物） | — | **4/4**（full_r2、rerun_r2、monitor_regression_8） |
+| V8-16 `test_extra_*`（自加） | 0 项 | **13/13** |
+| V8-15 numeric / formation / injection / stress / defaults | 5/5、4/4、3/3、1/1、2/2 | 相同 |
+| V8-11 全目录 | 30/30 | 30/30 |
+| V8-12 全目录 | 37 通过、2 失败、1 跳过 | 相同：`test_registered_files_hash_and_read_only`（未设数据根）、`test_each_diagnostic_threshold`（历史 frechet 预期）、跳过 `test_feasible_points_satisfy_exact_constraints` |
+| V8-12（设数据根） | 39/40 | 39/40，只剩 frechet 历史失败（R15 维持已知失败，不改断言） |
+| V8-13 numeric / extra | 20/20、8/8 | 相同 |
+| V8-14 numeric / extra / local_geometry | 17/17、14/14、1/1 | 相同 |
+
+**新增失败 0 项。** 预置测试文件的 SHA256 与指令一致，且未改动（快照中 tests 散列不变）。
+
+### 9.2 改动文件（`git diff ed44227` 范围，代码目录 `Multi-UAV SimpleGC/`）
+
+- **新增：** `v08/contract/single_intent.py`、`v08/motion/{layer_limits,intent_dispatch,shared_routes,transit_chords,transit_numeric}.py`、`v08/motion/intents/transit.py`、`v08/runner/{joint_intent,skeleton_transit,transit_report}.py`、`tools/v08/{run_transit_v16,analyze_transit_v16,diagnose_low_speed_v16,revisit_equivalence_v16}.py`、`tests/v08/V8-16/*`。
+- **修改：**
+  - `v08/motion/plan.py`：只分派；
+  - `v08/motion/optimize.py`：外层分派与新函数，`solve_joint`/`Prepared`/`prepare_problem` 源码散列不变；
+  - `v08/motion/optimize_checks.py`：新增 `check_transit`，`check_monitoring` 散列不变；
+  - `v08/motion/nominal_checks.py`：新增过境预筛、向量化候选与切换，原样抽取块的 `revisit`/`screen_member` 散列不变；
+  - `v08/motion/intents/monitoring.py`：base 改由 `constraints_for_task` 构造，路由函数机械抽取；
+  - `v08/runner/joint_monitoring.py`：`SegmentTask` 意图与遥测分派；
+  - `docs/v08/V8-15/RUNNING.md`。
+- **全部在指令 0.2 白名单内。** 未改：`configs/`、`runtime_defaults.py`（仍为 24）、`v08/sim/`、`v08/criteria/`、`task_v07/`、旧测试、`full_v14c`，以及两个冻结工作树与 `SwarmData/v07_*`（首尾快照全等，[snapshot_end.json](snapshot_end.json)）。
+- **改动的传递：**
+  - 监视序列化没有新字段；过境 `contract.json`/`result.json` 的新增字段只在过境运行根；
+  - 新 CLI 的进程数读取同一 `DEFAULT_WORKERS`；
+  - 旧测试无需改动（`monitoring_constraints` 保留同名同返回结构，路由函数保留旧名包装）。
+
+### 9.3 偏离指令、疑似预期错误、疑似设计问题
+
+1. **预建并行（第 3.3 节）：** 指令写"主进程预建"，实际是派发前 24 进程按族并行预建、各写各的文件；派发 worker 只读。
+2. **210 m 预留：** 实现为每条车道从 min(槽位, 最早入圈前 210 m) 起合法，比只要求从槽位起更保守。
+3. **本项实现缺陷均已在本地修复并按要求在新目录重跑；首跑目录都原样保留：**
+   - 单车道缓存舍入键（裁定 2 门禁发现）；
+   - 精确弦检查对齐容差（第 5 部分首跑发现）；
+   - LP 墙钟写入合同载荷（P0-3）；
+   - 低速诊断输出排序与掉头 g 口径；
+   - 预建不读已有文件。
+4. **中断/未用作验收的运行：**
+   - `out/quick_transit`：修正前启动，在预建阶段被我停掉；
+   - `skeleton_transit`、`skeleton_transit_r2`、`quick_transit_r2`、`full_transit`、`rerun_transit`：修复前的运行，保留作证据；
+   - `diagnostics/low_speed`：首版诊断。
+5. **疑似设计问题（交审查）：**
+   - **穿越段 Fréchet 合并中位数 87（÷ 横向间距）：** 远大于阈值 1。原因是同一族不同 branch 抽到的航向与偏移不同，穿越段本来就不在同一位置。这个指标对过境主要反映"穿越弦的多样性"，与监视巡逻形态的 Fréchet 含义不同。
+   - **撤离段很短（中位 18 s）：** 终点按"第一个全员离所有 warning ≥ 50 m 的站点"取，所以过境的"撤离"几乎全是刹停段。如需更长撤离直线，属于设计取值，本项没有改。
+   - **o08_d4 低速：** 两条不共线的固定时刻语义直线相距 3.1 s，同时最小二乘初值回摆，可能是共同成因（第 8.2 节）。merge 规则与初值都没有动。
+6. **退让 0：** 指令允许。
+
+## 10. 提交与推送
+
+- **审查分支：** `review/v08/V8-16-transit`，起点 ed44227。逐部分提交：
+
+| 提交 | 内容 |
+|---|---|
+| 3a70c3a | 第 1 部分：分支、manifest、快照、旧测试基线、预置测试落盘 |
+| 49fbed6 | 第 2 部分：意图分派、圈层表、路由机械抽取 |
+| 3ed0731 | 第 3–4 部分：过境构造、预筛/核验、运行器与 CLI |
+| 717733d | 单车道精确键修正与自加测试 |
+| 1eba927 | 对齐容差修正；重访候选与对照工具 |
+| 31ecae5 | 第 2–6 部分报告与证据 |
+| a082193 | 第 7 部分 P0-3 停止报告 |
+| 8ad83d5 | P0-3 修复（LP 墙钟移出载荷）、预建读缓存 |
+| c65b1c2 | 第 8.3 部分 revisit 切换 |
+| （本提交） | 第 7.4、8、9、10 节与最终证据 |
+
+- **推送：** 只推 `review/v08/V8-16-transit`，不合并 dev、不推 main、不强推；推送后用 `git ls-remote` 核对远端 SHA。
+
+## 执行方观察（与实测事实分开）
+
+- 过境的离散弦集合足够大（每个目标约 900–5000 个可行格），骨架几乎都一次成功。真正的失败都来自初始进场路由与圆角贴边，与监视一致。
+- 附录裁定 1 的"最长已认证段"效果明显：已认证段长 / 内缩区间长的中位数 0.98，直线回退只有 1/200。
+- 过境的优化后语义失败（`optimize_transit`）在全量中仍是最常见的首次失败阶段（全量 18 个合同的首次失败在此阶段），全部被下一 attempt 吸收，成功合同 post-opt 中位数为 0。
