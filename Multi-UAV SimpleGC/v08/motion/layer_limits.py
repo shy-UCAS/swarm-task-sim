@@ -14,6 +14,7 @@ patrol/warnings，函数返回结构与运算次序不变。
 from ..scene.field import Clearance
 
 LAYER_FOR_LIMIT = {1: "alert", 2: "protected"}     # 上限 3：不加目标圈层禁止项
+CROSSING_LAYERS = ("alert", "protected")           # V8-17 指令 2.1：上限 2 追加 alert，上限 3 再追加 protected
 
 
 def _segment_values():
@@ -40,9 +41,13 @@ def layer_limits(intent, target_id, facility_ids, *, values=None):
 
 
 def constraints_for_task(ctx, task):
-    """返回 {"base": list[Clearance], "warnings": {facility_id: warning 几何}}。
+    """返回 {"base": list[Clearance], "warnings": {facility_id: warning 几何},
+    "crossing_boundaries": {键: 几何}}。
     base：world（内 world_margin_m）、障碍（外 obstacle_margin_m，原序）、各设施按上限的 alert/protected（外
-    forbidden_margin_m，原序）；上限 0 的设施没有可用几何表示（warning 外）——固定配置不出现，明确报错。"""
+    forbidden_margin_m，原序）；上限 0 的设施没有可用几何表示（warning 外）——固定配置不出现，明确报错。
+    V8-17 指令 2.1：crossing_boundaries 以 dict(warnings) 开头（键、顺序、几何对象与 warnings 完全相同），目标上限 2
+    追加 alert，上限 3 依次追加 alert、protected；深层键为 "__crossing__<target_id>::<layer>"，与已有键冲突时在
+    末尾加 "#" 直到不冲突（确定性转义，不用 RNG）。base/warnings 的构造、顺序与对象不变。"""
     P = ctx.params
     limits = layer_limits(task.intent, task.target_id, [f.id for f in ctx.facilities])
     base = [Clearance("world", ctx.world, -1, P["world_margin_m"])]
@@ -56,7 +61,21 @@ def constraints_for_task(ctx, task):
         layer = LAYER_FOR_LIMIT[lim]
         base.append(Clearance(layer + ":" + f.id, f.layers[layer], 1, P["forbidden_margin_m"]))
     warnings = {f.id: f.layers["warning"] for f in ctx.facilities}
-    return {"base": base, "warnings": warnings}
+    crossing = dict(warnings)
+    tgt = next(f for f in ctx.facilities if f.id == task.target_id)
+    for layer in CROSSING_LAYERS[:max(0, limits[task.target_id] - 1)]:
+        k = f"__crossing__{task.target_id}::{layer}"
+        while k in crossing:
+            k += "#"
+        crossing[k] = tgt.layers[layer]
+    return {"base": base, "warnings": warnings, "crossing_boundaries": crossing}
+
+
+def crossing_layer_keys(cons):
+    """crossing_boundaries 中 warnings 之后追加的深层键 → 圈层名（按追加顺序 alert、protected）。
+    只供突入见证记录实际键名映射；不写入旧意图合同。"""
+    deeper = list(cons["crossing_boundaries"])[len(cons["warnings"]):]
+    return dict(zip(deeper, CROSSING_LAYERS))
 
 
 def constraints_identity(constraints):

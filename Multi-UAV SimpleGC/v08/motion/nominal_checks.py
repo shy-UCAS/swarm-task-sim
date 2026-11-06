@@ -302,3 +302,8 @@ def _revisit_vectorized(xy, velocity, time_us, levels, frames, center, criteria=
 # 作 oracle（不删除、不修改）。screen_member / screen_transit_member 按模块全局名调用，切换对两者同时生效。
 _revisit_original = revisit
 revisit = _revisit_vectorized
+
+
+def screen_intrusion_member(facilities, target_id, time_us, p, v, criteria=None):
+    """V8-17 指令 4.2（第 2 部分接入的明确未完成分支；第 4 部分实现）。"""
+    raise NotImplementedError("screen_intrusion_member 尚未实现（V8-17 第 4 部分）")

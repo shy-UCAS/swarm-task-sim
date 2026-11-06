@@ -78,3 +78,28 @@
 
   **这些测试此时尚未运行。**
 - **外部运行根：** `_handoff/2026-11-06_V8-17_intrusion/run/`，下设 cache、out、diagnostics、logs。
+
+## 2. 第 2 部分：通用层与第一轮字节门禁 —— 完成
+
+**代码（提交 2）：**
+- `layer_limits.constraints_for_task` 新增 `crossing_boundaries`：
+  - 构造：先 `dict(warnings)`，再按目标上限追加深层边界。上限 2 追加 alert，上限 3 依次追加 alert、protected。键名为 `__crossing__<target>::<layer>`，冲突时末尾加 `#`。
+  - 不变的部分：base 与 warnings 的构造、顺序、对象。
+  - 键到层名的映射：另由 `crossing_layer_keys(cons)` 给出，只写入突入见证。
+- `optimize._optimize_segment_intent` 只把 `references_from_skeleton(warnings=cons["warnings"])` 改为 `cons["crossing_boundaries"]`；监视分支仍用旧 warnings。
+- `single_intent`：
+  - 新增 `intrusion_mission`：先调用 `monitoring_mission`，再只替换唯一 TaskSpec 的 intent。
+  - `validate_single_mission` 接受 transit 与 intrusion，并显式确认实际 intent 与 `final=True`。
+  - `GENERATION_INTENTS` 和 `mission_for_intent` 加入 intrusion。
+- `intent_dispatch`：intrusion 的三个分派分别指向 `intents.intrusion.propose_and_build`、`optimize_checks.check_intrusion`、`nominal_checks.screen_intrusion_member`。本部分提交时这三个是**明确抛 NotImplementedError 的未完成分支**，不返回假成功；第 3、4 部分补齐。
+
+**测试（执行方运行，有记录）：** 预置 `test_crossing_table_all_seven_intents`（七种意图的边界表；detour 仍抛 ValueError；`#` 转义碰撞反例）与 `test_mission_and_dispatch` 2/2 通过，夹具未修改。完整测试结果见第 4 部分。
+
+**第一轮字节门禁（phase 2）：** 用 [run_gates.sh](run_gates.sh) 运行，24 进程，同一环境与输入，新缓存根 `run/cache`。比较对象是每个 `contracts/<id>/` 的递归文件集合和原始 bytes，排除清单 `[]`，失败合同也比较。
+
+| 意图 | 运行 | 基线 | 结果 | 证据 |
+|---|---|---|---|---|
+| monitoring | `run_separation_v15.py --mode production-quick` → `run/out/monitor_regression_2` | `full_v14c` | **20/20 逐字节一致**，records 键集合相同 | [part2/gate_monitoring.json](part2/gate_monitoring.json) |
+| transit | `run_transit_v16.py --stage quick` → `run/out/transit_regression_2` | `full_transit_r2` | **20/20 逐字节一致**，records 键集合相同；快批检查点 20/20 成功、无触发 | [part2/gate_transit.json](part2/gate_transit.json) |
+
+运行日志见 [part2/gates_2.log](part2/gates_2.log)：开始于 05:36:52，监视结束于 05:41:26，过境结束于 05:49:44。过境用新缓存，弦集合预建占了大部分时间。门禁开始时代码为提交 1 加第 2 部分未提交改动（日志首行记录 dirty 数与 diff stat）。门禁期间只新建了不被监视/过境导入的突入专用文件，没有修改共享文件。

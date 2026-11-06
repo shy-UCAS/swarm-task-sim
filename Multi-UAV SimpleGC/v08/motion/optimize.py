@@ -985,8 +985,9 @@ def _optimize_segment_intent(ctx, skeleton, key, settings, intent):
     cons = constraints_for_task(ctx, TaskSpec("task0", intent, target))
     base = tuple(cons["base"])
     field = ctx.field(("route", intent, constraints_identity(base)), list(base))
+    # V8-17 指令 2.1 第 4 步：仅把 warnings 参数换成 crossing_boundaries（上限 1 的意图两者键、顺序、几何完全相同）
     refs, lines, maps = references_from_skeleton(
-        skeleton, warnings=cons["warnings"], target_id=target,
+        skeleton, warnings=cons["crossing_boundaries"], target_id=target,
         band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
     lines_raw = lines
     lines = tuple(merge_semantic_lines(lines_raw, knot_s=float(settings["knot_s"])))

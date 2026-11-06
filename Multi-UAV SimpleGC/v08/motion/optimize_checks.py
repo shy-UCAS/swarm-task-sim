@@ -504,3 +504,8 @@ def check_transit(ctx, skeleton, trajectories, settings):
             failures.append({"kind": kind, "member": m,
                              "conditions": [k for k, ok in scr["conditions"].items() if not ok]})
     return {"passed": not failures, "failures": failures, "boundaries": boundaries, "nominal_members": nominal_members}
+
+
+def check_intrusion(ctx, skeleton, trajectories, settings):
+    """V8-17 指令 4.1（第 2 部分接入的明确未完成分支；第 4 部分实现）。"""
+    raise NotImplementedError("check_intrusion 尚未实现（V8-17 第 4 部分）")
