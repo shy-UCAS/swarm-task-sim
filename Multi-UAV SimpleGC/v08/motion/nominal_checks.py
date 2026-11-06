@@ -176,3 +176,45 @@ def screen_member(facilities, target_id, time_us, p, v, criteria=None):
             "dwell_anywhere": anywhere, "max_target_layer": int(tl.max()),
             "max_other_layer": int(levels[:, other].max()) if other else 0,
             "levels": levels, "target_signed_m": signed_t}
+
+
+# ======================= V8-16：过境名义预筛（本项新增；不改上面的原样抽取函数） =======================
+
+def screen_transit_member(facilities, target_id, time_us, p, v, criteria=None):
+    """过境窗口 = 释放后的名义（或优化后）轨迹 10 Hz 帧（V8-16 指令 4.1）。conditions 全为真才 passed：
+    started_outside_target_warning（首帧目标层 0）、entered_warning、single_warning_visit（目标层 ≥ 1 的连续段恰 1 个，
+    空窗口/从不进入不通过）、max_target_layer_one（目标最大层恰为 1）、other_layers_within_limit（其他设施 ≤ 1，
+    单设施为 0）、no_dwell_window（全窗口 dwell 未检出）、no_revisit_window（全窗口 revisit 未检出；冻结规则内部只
+    接纳目标层 == 1 且速度 ≥ 0.5 的 eligible 点，不扩大检测定义）、ended_outside_all_warning（末帧全部层 0）。
+    另记按 work_mask 调用的冻结原条件 revisit_work，以便与段核验逐项核对。"""
+    cfg = criteria if criteria is not None else load_criteria()
+    t = np.asarray(time_us)
+    xy = np.asarray(p, dtype=float)[:, :2]
+    v = np.asarray(v, dtype=float)
+    ids = [f.id for f in facilities]
+    ti = ids.index(target_id)
+    levels = np.zeros((len(t), len(ids)), np.int8)
+    for j, f in enumerate(facilities):
+        levels[:, j], _ = layer_levels(f, xy)
+    tl = levels[:, ti]
+    n = len(t)
+    ones = np.ones(n, bool)
+    center = np.asarray(facilities[ti].center, dtype=float)
+    anywhere = dwell(xy, t, ones, cfg) if n else {"detected": False}
+    rev_full = revisit(xy, v, t, tl, ones, center, cfg) if n else {"detected": False}
+    rev_work = revisit(xy, v, t, tl, work_mask(tl), center, cfg) if n else {"detected": False}
+    visits = runs(tl >= 1) if n else []
+    other = [j for j in range(len(ids)) if j != ti]
+    max_other = int(levels[:, other].max()) if (other and n) else 0
+    cond = {"started_outside_target_warning": bool(n and tl[0] == 0),
+            "entered_warning": bool(n and np.any(tl >= 1)),
+            "single_warning_visit": bool(n and np.any(tl >= 1) and len(visits) == 1),
+            "max_target_layer_one": bool(n and int(tl.max()) == 1),
+            "other_layers_within_limit": bool(max_other <= 1),
+            "no_dwell_window": not bool(anywhere["detected"]),
+            "no_revisit_window": not bool(rev_full["detected"]),
+            "ended_outside_all_warning": bool(n and int(levels[-1].max()) == 0)}
+    return {"passed": all(cond.values()), "conditions": cond, "levels": levels, "revisit": rev_full,
+            "revisit_work": rev_work, "dwell_anywhere": anywhere,
+            "counts": {"frames": int(n), "visits": len(visits), "max_target_layer": int(tl.max()) if n else None,
+                       "max_other_layer": max_other}}
