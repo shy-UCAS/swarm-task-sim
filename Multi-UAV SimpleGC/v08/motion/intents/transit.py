@@ -572,8 +572,8 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
         lp = curve_lp(np.asarray(cor["x"]), np.asarray(cor["lo"]), np.asarray(cor["hi"]), float(h), z, D_m=cor["D"])
         _tick(S, "lp_s", time.perf_counter() - t0)
         P["lp"] = {k: lp.get(k) for k in ("feasible", "fallback_reason", "lp_status", "lp_message", "lp_nit",
-                                          "objective", "max_residual", "kappa_max", "slope_max", "n_controls",
-                                          "seconds")}
+                                          "objective", "max_residual", "kappa_max", "slope_max", "n_controls")}
+        # LP 墙钟只进遥测（S.timing["lp_s"]，合同目录外）；首版写进提案/见证导致 skeleton.json 不可复现（P0-3）
         if not lp["feasible"]:
             P["fallback_reason"] = lp["fallback_reason"] or "lp_infeasible"
         else:

@@ -315,7 +315,7 @@ def _prewarm_family(task):
     entry, draws, data_root, cache_dir = task
     t0 = _t.perf_counter()
     ctx = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
-    ctx.cache_dir = None                   # 构造 probe 序列时不读不写文件，之后统一写出
+    # 构造 probe 序列时只读已有弦集合文件（load_chord_set 不写）；缺失的在内存计算，之后由 prewarm_transit 统一写出
     rows, sizes = [], {}
     for d in draws:
         m = transit_mission(ctx, sample_common(ctx.family, d))

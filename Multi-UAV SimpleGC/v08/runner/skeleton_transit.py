@@ -41,7 +41,7 @@ def _attempt_row(a, plan, timing, exc_text=None):
         rec.update(curved=bool(P.get("curved")), fallback_reason=P.get("fallback_reason"),
                    corridor={k: cor.get(k) for k in ("certified_length_m", "inset_length_m", "rows_total",
                                                      "certified_rows", "D")},
-                   lp={k: lp.get(k) for k in ("lp_status", "objective", "max_residual", "seconds", "n_controls")},
+                   lp={k: lp.get(k) for k in ("lp_status", "objective", "max_residual", "n_controls")},
                    curve_audit={k: (P.get("curve_audit") or {}).get(k) for k in ("ok", "kappa_max_abs", "slope_max",
                                                                                 "min_den")},
                    theta_deg=P.get("theta_deg"), h_m=P.get("h_m"), cells_feasible=P.get("cells_feasible"),
@@ -277,7 +277,7 @@ def write_outputs(out, rows, *, expected, wall_s, dispatch_wall_s, workers, prew
                                                   if (a.get("corridor") or {}).get("inset_length_m")]),
                "corridor_certified_length_m": _dist([(a.get("corridor") or {}).get("certified_length_m")
                                                      for r in succ for a in r["attempt_log"][-1:]]),
-               "lp_seconds": _dist([(a.get("lp") or {}).get("seconds") for a in logs]),
+               "lp_seconds": _dist([tm.get("lp_s") for tm in timings if tm.get("lp_s") is not None]),
                "timing": {k: _dist([tm.get(k) for tm in timings]) for k in (
                    "attempt_wall_s", "chord_set_s", "chord_exact_s", "corridor_s", "lp_s", "route_s", "candidate_s")},
                "route_queries": _sum_dicts([tm.get("route_queries") or {} for tm in timings]),
