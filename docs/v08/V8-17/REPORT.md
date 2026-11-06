@@ -103,3 +103,58 @@
 | transit | `run_transit_v16.py --stage quick` → `run/out/transit_regression_2` | `full_transit_r2` | **20/20 逐字节一致**，records 键集合相同；快批检查点 20/20 成功、无触发 | [part2/gate_transit.json](part2/gate_transit.json) |
 
 运行日志见 [part2/gates_2.log](part2/gates_2.log)：开始于 05:36:52，监视结束于 05:41:26，过境结束于 05:49:44。过境用新缓存，弦集合预建占了大部分时间。门禁开始时代码为提交 1 加第 2 部分未提交改动（日志首行记录 dirty 数与 diff stat）。门禁期间只新建了不被监视/过境导入的突入专用文件，没有修改共享文件。
+
+## 3. 第 3 部分：突入骨架 —— 代码已写，解析测试与单格查询已运行（有记录）；尚不宣称全链路验收
+
+**新增：**
+- `v08/motion/intrusion_numeric.py`（模块导入只依赖 NumPy/标准库；场景几何惰性导入）：
+  - `deepest_station`：圆用投影公式；凸多边形穿过时用分段线性下包络极值枚举，并列取最小 x；不穿过时逐边求直线到线段的最近点；BufferedPolygon 取原多边形的 argmin。
+  - `endpoint_interval`：取 I_p ∩ I_c ∩ (−∞, x_*]。不设 contour 下界；切线时得到单点区间，属合法结果。
+  - `sigma_values`：横排只取 1.0；其余取 k/20，且要求 σ·b ≥ 6。
+  - 区间工具：`normalize_intervals`、`intersect_two`、`intersect_endpoint_sets`。
+  - `prefix_endpoint_set`：其他设施 warning 允许终点停在其深处，不套用过境 `_band_ok`。
+  - `draw_feasible`：依次抽格、σ、终点（按区间总长度均匀抽）、相容的 D_c，每步只抽一次。
+  - `preentry_clearance_ok`：逐弦精确检查，等号算合法。
+  - `circle_infeasibility_certificate`：在规定 σ 网格下判断必要条件。
+  - `clip_lanes`：按单成员 Slots 调用原 `derive_members`，成员域为 [s_c + l_i, s_e + σ l_i]。
+- `v08/motion/intrusion_chords.py`：
+  - 车道结果：用 `IntrusionLane` 包装原 Lane，不往 Lane 上动态挂属性。同一航向的一批车道用 `sublevel_many` 批量求 I_p、I_c 和目标 alert/protected 的 0 次水平集，与单车道计算是同一逐元素运算。最深点逐车道解析求值。
+  - 格组合 `assess_cell` / `assess_formation`：
+    - E_i 截到包含入圈点的同一合法 run。
+    - 预留起点取 min(x_c, x_in − 210) + l_i。
+    - 其他设施 warning 用前缀区间并约束。
+    - 对每个 σ 平移 −σ l_i 后求交，再对 D 求并。
+  - 缓存：`intrusion_v17/` 独立目录，身份版本 `v17-intrusion-chords-1`。身份包含 intent、ctx.cache_key、目标与全部圈层几何、`constraints_identity(base)`、槽位偏移（float.hex）、σ 网格以及全部常数。
+  - `assess_intrusion_bundle`：抽中格的精确弦检查。
+- `v08/motion/intents/intrusion.py`：
+  - `propose_and_build`：宽度先定队形，再一次抽样，然后依次做精确弦检查、corridor 加至多一次 LP、曲线精确审计、`plan_starts`（`transit._transit_route` → `entry_planner`）、进场折线逐弦精确检查（`preentry_exact`），最后调用共享 `build_candidate`。
+  - 同模块提供 `finish_candidate`（build_candidate 的突入分支）、`formation_probe_sequence`、`final_failure`、`infeasibility_certificate`、`last_attempt_timing`、`draw_summary`。
+
+**共享文件按意图参数化，过境默认分支的语句与顺序不变：**
+- `transit_chords`：`transit_base` / `base_field` / `collect_phys_grid` / `get_lanes` / `_sample_lanes` 增加 `intent="transit"`。过境沿用原缓存键，intrusion 用独立键。
+- `corridor_rows`：仅在 `task.intent == "intrusion"` 时取 I = I_w ∩ (−∞, I_a^lo]，其中 I_a 是 alert 的 +(10+D) 正次水平集。
+- `intents/transit.py`：
+  - `TransitSetup` 按 task.intent 选择 base；cg_route 名称为 `<intent>_preentry`，过境仍为原名。
+  - `build_candidate` 按 `proposal["intent"]` 分支：成员域用 `member_lanes`，逐成员检查与见证交给 `finish_candidate`。参考、起点拼接、速度事件、释放延迟和成员装配仍然共享。
+- `nominal_checks.screen_intrusion_member`：骨架只用它作名义预筛记录。它的实现与第 4 部分的检查同源，所以同一提交写入。
+
+**测试（执行方运行，有记录）：** 预置纯数值测试 8/8 通过，见 [part3/tests_numeric.txt](part3/tests_numeric.txt)。
+
+**单格查询与证书**（[part3/queries.json](part3/queries.json)，`run_intrusion_v17.py --stage queries`，单进程）：
+- **o34_d3**（family_s15_3968861533cf6dd7 / facility_02，12 机，b = 15.909074683887699 m）：圆形证书成立。
+  - 参数：R = 21.21490313131122，R_p = 126.98022013174577，Q = 66.21490313131122，σ_min = 0.4。
+  - 纵列/梯形跨度 69.99992860910588 > Q；横排跨度 174.99982152276468 > 2Q = 132.42980626262244。
+  - 三种队形均被否定，合同以 proven_infeasible、attempts = 0 结束，与指令 3.7 的数值一致。
+- **o17_d1 / o17_d4**（12 机，loose 映射为横排，Polygon 目标）：各有 1 个可行格，共 8870 格。不可行原因：no_endpoint 6864、no_target_crossing 1934、target_depth_lt_10 68、no_sigma_endpoint 3。U C.2 的原型参照为"边缘各 5 格"；二者口径不同（近似原型对精确集合），不作为验收值。
+- **四个 smoke 键**的第一个 probe 均非空：
+
+  | 键 | 可行格 / 总格 |
+  |---|---|
+  | o01_d0 | 522 / 9222 |
+  | o01_d1 | 455 / 9222 |
+  | o02_d0 | 314 / 10370 |
+  | o11_d0 | 633 / 11320 |
+
+**开发中的单合同试跑（scratch，不作证据）：** 四键骨架各在第 1 次 attempt 成功，均为弯曲 LP。o01_d0 的全链路在第 1 次 attempt 成功，冻结核验通过；实测两成员三层进入次数都是 1/1/1；合同 JSON 中计时键 0 处。正式 smoke 见第 5、6 部分。
+
+**性能修正（行为不变）：** `deepest_station` 的多边形分支由 Python 双循环改为同一浮点运算的向量化枚举，按升序 unique 后取 argmax，并列仍取最小 x。车道的次水平集改为整批计算。o02_d0 的单车道几何耗时从 63 s 降到 0.7 s，抽样结果不变（σ、x_e、格数相同）。

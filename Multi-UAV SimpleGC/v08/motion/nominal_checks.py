@@ -305,5 +305,49 @@ revisit = _revisit_vectorized
 
 
 def screen_intrusion_member(facilities, target_id, time_us, p, v, criteria=None):
-    """V8-17 指令 4.2（第 2 部分接入的明确未完成分支；第 4 部分实现）。"""
-    raise NotImplementedError("screen_intrusion_member 尚未实现（V8-17 第 4 部分）")
+    """释放后的10Hz窗口；返回 passed/conditions/levels/counts/first_entry_us/
+    end_contour_m/min_contour_m/dwell_anywhere；不调用 revisit。
+
+    V8-17 指令 4.2：目标层序列 ℓ_t 由现有 layer_levels 给出（SDF ≤ 偏移）。conditions 全为真才 passed：
+    started_outside_target_warning（非空且首帧 0）、target_layers_monotone（np.diff ≥ 0 全真）、
+    single_warning/alert/protected_entry（M_j = ℓ_t ≥ j 的 False→True 次数恰 1；首帧 True 也计一次）、
+    entered_protected（最大目标层 3）、near_facility_contour（最小 contour SDF ≤ 冻结 roles.intrusion.
+    max_contour_distance_m = 50）、other_layers_within_limit（其他设施 ≤ 1，单设施为 0）、no_dwell_window（释放后整个
+    窗口 dwell 未检出，含终点保持）。首次进入时刻为该层第一个 True 的整数 time_us，未进入为 None。"""
+    cfg = criteria if criteria is not None else load_criteria()
+    t = np.asarray(time_us)
+    xy = np.asarray(p, dtype=float)[:, :2]
+    ids = [f.id for f in facilities]
+    ti = ids.index(target_id)
+    n = len(t)
+    levels = np.zeros((n, len(ids)), np.int8)
+    contour = np.zeros(0)
+    for j, f in enumerate(facilities):
+        levels[:, j], sd = layer_levels(f, xy)
+        if j == ti:
+            contour = np.asarray(sd, float).reshape(-1)
+    tl = levels[:, ti]
+    entries, first = {}, {}
+    for name, code in _LAYER_CODES:
+        mask = tl >= code
+        starts = np.flatnonzero(mask & ~np.r_[False, mask[:-1]]) if n else np.zeros(0, np.int64)
+        entries[name] = int(len(starts))
+        first[name] = int(t[starts[0]]) if len(starts) else None
+    other = [j for j in range(len(ids)) if j != ti]
+    max_other = int(levels[:, other].max()) if (other and n) else 0
+    limit = float(cfg["roles"]["intrusion"]["max_contour_distance_m"])
+    anywhere = dwell(xy, t, np.ones(n, bool), cfg) if n else {"detected": False}
+    cond = {"started_outside_target_warning": bool(n and tl[0] == 0),
+            "target_layers_monotone": bool(n and np.all(np.diff(tl) >= 0)),
+            "single_warning_entry": bool(entries["warning"] == 1),
+            "single_alert_entry": bool(entries["alert"] == 1),
+            "single_protected_entry": bool(entries["protected"] == 1),
+            "entered_protected": bool(n and int(tl.max()) == 3),
+            "near_facility_contour": bool(n and float(contour.min()) <= limit),
+            "other_layers_within_limit": bool(max_other <= 1),
+            "no_dwell_window": not bool(anywhere["detected"])}
+    return {"passed": all(cond.values()), "conditions": cond, "levels": levels, "dwell_anywhere": anywhere,
+            "first_entry_us": first, "end_contour_m": float(contour[-1]) if n else None,
+            "min_contour_m": float(contour.min()) if n else None,
+            "counts": {"entries": entries, "frames": int(n), "max_target_layer": int(tl.max()) if n else None,
+                       "max_other_layer": max_other}}

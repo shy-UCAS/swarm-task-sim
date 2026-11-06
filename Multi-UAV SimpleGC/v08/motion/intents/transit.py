@@ -56,7 +56,7 @@ class TransitSetup:
         self.ctx, self.group, self.task, self.states, self.key = ctx, group, task, states, key
         self.target = task.target_id
         self.tgt = ctx.facility_by_id[self.target]
-        cons = TC.transit_base(ctx, self.target)
+        cons = TC.transit_base(ctx, self.target, intent=task.intent)       # V8-17：按 task.intent 选 base
         self.base, self.warn = list(cons["base"]), dict(cons["warnings"])
         P = ctx.params
         self.M = load_config("monitoring").values
@@ -67,7 +67,8 @@ class TransitSetup:
         pre = Clearance("preentry_warning:" + self.target, self.tgt.layers["warning"], 1,
                         P["pre_entry_warning_clearance_m"])
         route = self.base + [pre]
-        self.cg_route = ctx.combined(("route", "transit_preentry", constraints_identity(route)), route)
+        rname = "transit_preentry" if task.intent == "transit" else f"{task.intent}_preentry"
+        self.cg_route = ctx.combined(("route", rname, constraints_identity(route)), route)
         self.stats = {}
         self.timing = {}
 
@@ -242,16 +243,19 @@ def _fail_with(P, key, reason, feasible_set, witness, wit, shape_audit=False):
 
 def build_candidate(ctx, group, task, states, key, proposal):
     """给定完整提案确定性地构造骨架：参考 → 槽位/成员车道 → 起点连接 → 速度事件 → 释放延迟 → 逐成员精确几何、
-    边界穿越（目标恰一次入、一次出）与终点撤离。任一检查不过返回 candidate_rejected（保留原始见证）。"""
+    边界穿越（目标恰一次入、一次出）与终点撤离。任一检查不过返回 candidate_rejected（保留原始见证）。
+    V8-17 指令 3.6：proposal["intent"] == "intrusion" 时，参考/起点拼接/速度事件/释放延迟/成员装配仍共享，仅成员域
+    （按成员终点 clip）、逐成员语义检查、成员映射与见证转入 intents.intrusion.finish_candidate；过境分支不变。"""
     from ..nominal_checks import screen_transit_member
     P = proposal
+    intent = P.get("intent", "transit")
     cfg_m = load_config("monitoring").values
     G = load_config("guidance").values
     G_ref_cfg = reference_guidance()
     G_ref = G_ref_cfg.values
     spacing = ctx.params["curve_spacing_m"]
     target = task.target_id
-    cons = TC.transit_base(ctx, target)
+    cons = TC.transit_base(ctx, target, intent=intent)
     base_fail = dict(proposal=P, business_key=_key_dict(key))
     try:
         slots = formation_slots(group, ctx.family, key, formation=P.get("formation"),
@@ -259,7 +263,11 @@ def build_candidate(ctx, group, task, states, key, proposal):
         ext = slots.max_longitudinal_m
         ref, mark_idx = build_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
         s_c, s_t = ref.marks["collect"], ref.marks["terminal"]
-        lanes = derive_members(ref, slots, (s_c, s_t), spacing_m=spacing)
+        if intent == "intrusion":
+            from .intrusion import member_lanes
+            lanes = member_lanes(ref, slots, s_c, s_t, P, spacing)
+        else:
+            lanes = derive_members(ref, slots, (s_c, s_t), spacing_m=spacing)
     except (PathError, ValueError) as exc:
         return _plan(_reject(f"构造失败：{exc}", "reference/lanes", {"error": str(exc), "shape_audit_failed": False}),
                      **base_fail)
@@ -344,7 +352,7 @@ def build_candidate(ctx, group, task, states, key, proposal):
         members[m] = MemberPlan(m, 0, tuple((float(a), float(b)) for a, b in xy), float(states[m].p[2]),
                                 float(nom0[m].curve.length), float(delays[m]), breaks[m], ())
         nominals[m] = replace(nom0[m], release_s=release_us(members[m]) / 1e6)
-    wit = {"intent": "transit", "target_id": target, "turn_ranges": {}, "constraints": {}, "crossings": {},
+    wit = {"intent": intent, "target_id": target, "turn_ranges": {}, "constraints": {}, "crossings": {},
            "screen": {}, "speed": speed_info, "delays_s": dict(delays), "travel_to_collection_s": dict(travel_to_coll),
            "chord": P.get("chord_audit"), "corridor": P.get("corridor"), "lp": P.get("lp"),
            "curve_audit": P.get("curve_audit"), "separation": None, "required_separation_m": None}
@@ -355,6 +363,11 @@ def build_candidate(ctx, group, task, states, key, proposal):
     t1 = max(nominals[m].end_s for m in order)
     duration = float(t1 - t0)
     wit["nominal_duration_s"] = duration
+    if intent == "intrusion":
+        from .intrusion import finish_candidate
+        ref_xy = tuple((float(a), float(b)) for a, b in ref.xy[mark_idx["collect"]:mark_idx["terminal"] + 1])
+        return finish_candidate(ctx, task, key, P, slots, lanes, curves, cum, coll_idx, members, nominals, wit, anchors,
+                                duration, cons, ref_xy)
     retreat = cfg_m["retreat_clearance_m"]
     entry_exit = {}
     for m in order:

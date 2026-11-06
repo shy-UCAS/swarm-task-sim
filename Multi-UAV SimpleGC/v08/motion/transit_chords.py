@@ -142,36 +142,42 @@ def line_sublevel(geometry, p0, u, c):
 
 # ---------------------------------------------------------------- 约束与组合栅格
 
-def transit_base(ctx, target_id):
-    """过境 base 约束（进程内按目标缓存；调用方不得修改返回的列表）。"""
-    key = ("transit_base", target_id)
+def _ikey(name, intent, target_id):
+    """进程内缓存键：transit 沿用原键 ("transit_<name>", target)；其他意图用独立键（V8-17 指令 3.3）。"""
+    return ("transit_" + name, target_id) if intent == "transit" else (f"{intent}_{name}", target_id)
+
+
+def transit_base(ctx, target_id, *, intent="transit"):
+    """过境 base 约束（进程内按目标缓存；调用方不得修改返回的列表）。V8-17：intent 参数化，intrusion 分支调用
+    constraints_for_task 的 intrusion base 并用独立缓存键；transit 分支执行原语句、用原缓存键。"""
+    key = _ikey("base", intent, target_id)
     if key not in ctx.extra:
         from ..contract.monitoring import TaskSpec
         from .layer_limits import constraints_for_task
-        ctx.extra[key] = constraints_for_task(ctx, TaskSpec("task0", "transit", target_id))
+        ctx.extra[key] = constraints_for_task(ctx, TaskSpec("task0", intent, target_id))
     return ctx.extra[key]
 
 
-def base_field(ctx, target_id):
-    key = ("transit_base_field", target_id)
+def base_field(ctx, target_id, *, intent="transit"):
+    key = _ikey("base_field", intent, target_id)
     if key not in ctx.extra:
         from .layer_limits import constraints_identity
-        base = tuple(transit_base(ctx, target_id)["base"])
-        ctx.extra[key] = (ctx.field(("route", "transit", constraints_identity(base)), list(base)), base)
+        base = tuple(transit_base(ctx, target_id, intent=intent)["base"])
+        ctx.extra[key] = (ctx.field(("route", intent, constraints_identity(base)), list(base)), base)
     return ctx.extra[key]
 
 
-def collect_phys_grid(ctx, target_id):
-    key = ("transit_collect_phys", target_id)
+def collect_phys_grid(ctx, target_id, *, intent="transit"):
+    key = _ikey("collect_phys", intent, target_id)
     if key in ctx.extra:
         return ctx.extra[key]
     from ..scene.field import Clearance
     from .layer_limits import constraints_identity
-    base = list(transit_base(ctx, target_id)["base"])
+    base = list(transit_base(ctx, target_id, intent=intent)["base"])
     P = ctx.params
     phys = base + [Clearance("out_warning:" + f.id, f.layers["warning"], 1, P["pre_entry_warning_clearance_m"])
                    for f in ctx.facilities]
-    ctx.extra[key] = ctx.combined(("collect_phys", "transit", constraints_identity(phys)), phys)
+    ctx.extra[key] = ctx.combined(("collect_phys", intent, constraints_identity(phys)), phys)
     return ctx.extra[key]
 
 
@@ -265,13 +271,13 @@ def _analytic_lanes(ctx, target_id, theta_idx, ys):
     return out
 
 
-def _sample_lanes(ctx, target_id, lanes):
+def _sample_lanes(ctx, target_id, lanes, *, intent="transit"):
     """批量沿线采样：x = 5 m 倍数 ∪ 世界区间两端；base 约束距离场下界的最小值 ≥ q 为合格；连续合格段为合法区间。
-    采样逐点计算，批量与逐车道单独采样逐位相同。"""
+    采样逐点计算，批量与逐车道单独采样逐位相同。V8-17：base 按 intent 选取（Lane 对象按意图分开缓存）。"""
     todo = [L for L in lanes if L.runs is None]
     if not todo:
         return
-    field, base = base_field(ctx, target_id)
+    field, base = base_field(ctx, target_id, intent=intent)
     names = [c.name for c in base]
     u, _ = frame(thetas()[todo[0].theta_idx])
     chunks, spans = [], []
@@ -298,11 +304,12 @@ def _sample_lanes(ctx, target_id, lanes):
         L.runs = [(float(xs[a]), float(xs[b - 1])) for a, b in zip(edges[::2], edges[1::2])]
 
 
-def get_lanes(ctx, target_id, theta_idx, ys, *, memo=True):
-    """按 (目标, 航向, 横向偏移) 的进程内缓存取单车道（解析部分）；memo=False 时逐车道直接重算（裁定 2 的门禁对照）。"""
+def get_lanes(ctx, target_id, theta_idx, ys, *, memo=True, intent="transit"):
+    """按 (目标, 航向, 横向偏移) 的进程内缓存取单车道（解析部分）；memo=False 时逐车道直接重算（裁定 2 的门禁对照）。
+    V8-17：不同意图的 base 采样结果不同，Lane 按意图分开缓存（transit 用原键）。"""
     if not memo:
         return _analytic_lanes(ctx, target_id, theta_idx, ys)
-    store = ctx.extra.setdefault(("transit_lanes", target_id), {})
+    store = ctx.extra.setdefault(_ikey("lanes", intent, target_id), {})
     need = sorted({_ykey(y) for y in ys if (theta_idx, _ykey(y)) not in store})
     if need:
         for L in _analytic_lanes(ctx, target_id, theta_idx, need):
@@ -559,9 +566,18 @@ def corridor_rows(ctx, task, chord, slots):
     h = float(chord["h"])
     m = BAND_M + D
     I = line_sublevel(tgt.layers["warning"], o + h * n, u, -m)
+    I_a = None
+    if task.intent == "intrusion":
+        # V8-17 指令 3.5：I = I_w ∩ (−∞, I_a^lo]，I_a = {alert SDF ≤ +(10 + D)}（正次水平集；不用 0 交点再减 10 + D）；
+        # 任一区间缺失或交为空记 corridor_unavailable，不改弦
+        I_a = line_sublevel(tgt.layers["alert"], o + h * n, u, m)
+        if I is not None:
+            I = None if (I_a is None or not min(I[1], I_a[0]) >= I[0]) else (I[0], min(I[1], I_a[0]))
     out = {"available": False, "reason": None, "D": D, "inset_interval": I, "x": [], "lo": [], "hi": [],
            "rows_total": 0, "certified_rows": 0, "run": None, "certified_length_m": 0.0,
            "inset_length_m": 0.0 if I is None else float(I[1] - I[0])}
+    if task.intent == "intrusion":
+        out["alert_interval"] = I_a
     if I is None:
         out["reason"] = "corridor_unavailable"
         return out
