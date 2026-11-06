@@ -269,3 +269,46 @@
   - 5 键复跑测试此时 **skip**（复跑尚未运行），不计为通过；第 7 部分后实际执行。
 - **中断记录：** 首次快批 `out/quick_transit` 用的是修正前代码；发现对齐容差缺陷后，我在预建阶段停掉了它（目录中只有 `quick_selection.json`）。目录原样保留，重跑写入 `quick_transit_r2`。
 - **耗时备注：** 快批与 r2 骨架的预建在文件都已存在时仍各用约 476 s。原因是 `_prewarm_family` 为构造 probe 序列把 `cache_dir` 置空，导致在内存中重算一遍。只浪费时间，不影响输出；第 7 部分完成后再处理，见第 9 节。
+
+## 7. 第 7 部分：全量、复跑——**P0-3 停止条件触发，已停下**
+
+### 7.1 全量（`out/full_transit`，代码 1eba927，2026-11-05 19:12 → 19:27）
+
+全量诊断：
+
+- **完成度：** `complete = true`；200/200 成功；多样性 100/100 完成；没有未派发、incomplete 或异常的合同。
+- **检查点：** 未触发。
+  - 人数、设施数、初速各档成功率均为 100%，档差为 0；
+  - 成功合同 post-opt 失败中位数为 0；
+  - 穿越段 Fréchet 合并中位数 87.2（after，按横向间距归一；before 为 87.2）。10 族都是 10/10 可比，各 45 对，没有 N/A。
+- **保留段 P0：** 运行器记录 `retained_p0_violations = []`。
+- **预置 artifacts 测试：** 按磁盘轨迹用冻结核验器逐合同重核 200 个保留合同，通过（[part7/tests_artifacts_full.txt](part7/tests_artifacts_full.txt) 中的 `test_retained_disk_tracks_with_frozen_verifiers`）。
+- **耗时：** 预建 455 s，派发 442 s，合计 897 s；并行效率 0.82。CPU 合计：优化 3600 s、仿真 3809 s、骨架 884 s、核验 229 s。
+- **缓存：** 读取 294 次全部命中，缓存目录前后不变。
+- **逐格配对（[part7/transit-report.json](part7/transit-report.json)、[paired_contracts.csv](part7/paired_contracts.csv)）：**
+  - 200 键外连接：两边都成功 198，仅过境成功 2（监视基线失败的 2 个），仅监视成功 0，两边都失败 0。
+  - `contract.json` 的 12 个公共字段，200 键逐个比较 **0 差异**（[common_fields_contract_json.json](part7/common_fields_contract_json.json)）。
+  - attempts p90：过境 2、监视 4。
+
+**以上数字只作已发生事实的记录。按 P0-3 规则，本批结果不发布为验收结果。**
+
+### 7.2 5 键单进程复跑：**不逐字节一致**
+
+- **结果：** o01_d0–o01_d4 用 `workers=1` 复跑，与 24 进程全量逐目录比较（排除清单 `[]`）。5/5 文件集合相同，但 **5/5 `bytes_equal = false`**，差异文件都只有 `skeleton.json`（[part7/rerun_reproduction.json](part7/rerun_reproduction.json)）。预置 `test_five_single_process_repeats` 失败。
+- **差异定位（只读逐字段比对）：** 每个 `skeleton.json` 恰好两处不同：`proposal.lp.seconds` 与 `witnesses.lp.seconds`，例如 o01_d0 为 0.018803700000717072 对 0.015489299999899231。其余字段，以及 `optimized.json`、全部轨迹 NPY、`contract.json`、`result.json` 都逐字节相同。
+- **根因：** 我在 `v08/motion/intents/transit.py::_build_with_cells` 中把 `curve_lp` 返回的 LP 墙钟 `seconds` 一并写进了提案 `P["lp"]`。`build_candidate` 又把它复制进见证 `witnesses["lp"]`，于是随 `plan_to_record` 进入 `skeleton.json` 这个确定性载荷。这是本项新代码的实现缺陷，违反"诊断不得混入合同目录"，不是并行或 RNG 问题：几何、随机抽样、优化与仿真结果都逐字节一致。
+- **影响范围：** 所有过境输出（骨架 r2、快批 r2、全量）的 `skeleton.json` 都含这个墙钟字段，所以这些目录都不是字节可复现的确定性载荷。监视输出不受影响（监视 serializer 与路径未改，两道监视字节门禁均 20/20）。
+
+### 7.3 停下的位置
+
+按指令 0.4 与用户要求，在此停下汇报：不修复、不重跑、不推送。本节之后的第 7.3/7.4 节其余统计、第 8 节的切换，以及第 9 节都尚未完成。
+
+- **已完成且与本问题无关的独立项（证据在外部 diagnostics/，尚未写入报告）：**
+  - 8.1：198 个监视合同的三阶段时长；
+  - 8.2：两个低速例子的优化诊断，`optimized.json` 重算逐字节相同；
+  - 8.3：重访候选在快批 99 个窗口上逐位一致。
+- **仍在后台运行：** 8.3 的 V8-11 三方对照（停止前已启动，只读，不发布结果）。
+- **建议的修复与重跑（待用户决定）：**
+  1. 不再把 `seconds` 写进 `P["lp"]` 与见证，LP 耗时只记入遥测（`S.timing`，合同目录外）；同时检查提案/见证中有无其他墙钟类字段。
+  2. 顺带修正 `_prewarm_family` 不读已有缓存、每次重算约 8 分钟的问题（不影响输出）。
+  3. 在新目录依次重跑：骨架、快批、全量、5 键复跑。修复只删除遥测字段，检查点结论预计不变，但必须以重跑结果为准。按本机实测估计约 50 分钟。
