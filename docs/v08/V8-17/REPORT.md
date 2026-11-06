@@ -315,3 +315,98 @@
   - inside 段：优化比中位数 0.40，含末端减速。
 
 **第 6 部分完成；按负责人指示在此停下，等待通知后再执行第 7 部分（全量 200+100、5 键单进程复跑、三意图配对）。**
+
+## 7. 第 7 部分：全量、复跑与诊断 —— 完成，止损与 P0 均未触发
+
+负责人确认机器空闲后才开始运行。
+
+### 7.1 前置检查与运行
+
+- **前置条件：** 骨架与快批检查点已放行（第 5、6 部分）；预置测试与两轮字节门禁可核对；缓存已预建；磁盘保存重读已成功；复跑 5 键在全量开始前已写入 `rerun_keys.json`（[part7/rerun_keys.json](part7/rerun_keys.json)，o01_d0–o01_d4，按 (order, draw) 字典序取前 5 个，不按结果挑选）。
+- **全量：** `run_intrusion_v17.py --stage full --workers 24`，输出根 `run/out/full/full_r1`，散列见 [part7/full_hashes.txt](part7/full_hashes.txt)，日志见 [part7/full_r1.log](part7/full_r1.log)。
+  - 时间：09:08:10 开始，墙钟 312.5 s；预建 4.6 s（194 个查询全部读已有文件，**新写 0**），派发 307.8 s；并行效率 0.91。
+  - 缓存：`cache_hits` 310，`cache_misses_computed` **0**。7200 s 合作退出预算没有用到，unsent 和 incomplete 都为空。
+  - 各阶段 CPU 合计：优化 2727 s、仿真 3299 s、骨架 513 s、核验 31 s。
+- **完整性：** 主合同 200/200 有结果（`complete = true`），多样性 100/100 有结果（`diversity_complete = true`），两者分开检查；合同目录分别有 200 和 100 个。异常 0。
+- **单进程复跑：** `--stage rerun`，固定 1 进程，输出根 `run/out/rerun/rerun_r1`，日志见 [part7/rerun_r1.log](part7/rerun_r1.log)。
+  - **5/5 逐字节一致**（[part7/reproduction.json](part7/reproduction.json)）。逐合同的文件数分别为 14/34/9/34/14，`file_sets_equal` 与 `bytes_equal` 全部为真，排除清单 `[]`。
+  - 停止条件 3 未触发。
+
+### 7.2 全量止损检查点（[part7/full_summary.json](part7/full_summary.json)）
+
+| 止损条件 | 阈值 | 实测 | 触发 |
+|---|---|---|---|
+| 成功率 | < 80% | **199/199**（原始 200 口径 199/200，唯一失败是 o34_d3 proven_infeasible） | 否 |
+| 任一非空档比总体低 | > 20 个百分点 | 人数三档 110/110、56/56、33/33；设施数三档 85/85、84/84、30/30；初速三档 67/67、60/60、72/72；档差均为 0 | 否 |
+| 成功合同 post 失败次数中位数 | > 0 | 0（`attempts_undetermined` = false） | 否 |
+| 作业段 Fréchet 合并中位数 | < 1 | **74.83**（after），可比较对 450；before 为 74.83 | 否 |
+
+**保留 P0（停止条件 2）：**
+- 保留尝试的违规为 0：`retained_p0_violations = []`，主合同与多样性都是。
+- 957 个保留成员（主合同）的实测三层进入次数**全部为 1/1/1**。
+- 预置 `test_disk_tracks_frozen_verification_and_events` 对 199 个保留合同逐一从磁盘重读，用冻结 `verify_segments` / `check_validity` 复核，全部通过。
+
+### 7.3 预置测试最终运行（[part7/tests_v17_final.txt](part7/tests_v17_final.txt)）
+
+| 文件 | 结果 |
+|---|---|
+| `test_preset_numeric_v17.py` | 8/8 通过 |
+| `test_preset_local_geometry_v17.py` | 5/5 通过 |
+| `test_preset_local_artifacts_v17.py` | **4/4 通过，无 skip**：四道门禁 RegressionPreset；`test_keys_common_conditions_and_no_timers`（全量口径：200 键为 40 族 × draw 0–4，多样性 100，o34_d3 为 proven_infeasible，三意图公共字段一致，合同 JSON 中无计时键）；`test_disk_tracks_frozen_verification_and_events`；`test_five_serial_repeats` |
+| 自加 `test_extra_local_v17.py` | 4/4 通过 |
+
+**合计：17 个预置测试 17/17 通过（执行方运行，有记录）。**
+
+### 7.4 Fréchet、时长与速度（[part7/analysis_report.json](part7/analysis_report.json) 的 `intrusion` 段）
+
+- **Fréchet：**
+  - 口径：scope 为 `intrusion_warning_to_terminal_v17`，从唯一的目标 warning 入点裁切到编组曲线末端，按 5 m 弧长重采样。每族用 b 归一一次后合并取中位数。
+  - 覆盖：10 族 × 10 branch 全部成功、全部可比较，每族 45 对，没有 N/A。
+  - 端点距离单列报告（中位数 738 m），不设门槛。
+- **阶段时长**（957 个成员，名义映射）：
+  - ingress 中位数 533.8 s（p10 230.3、p90 985.1）；
+  - inside 中位数 171.4 s（p10 110.8、p90 278.2）；
+  - travel 中位数 698.4 s；两段相加与 travel 的残差最大 2.3e-13 s；
+  - release delay 中位数 66.4 s。共同预保持 20 s 与终点保持 2 s 另列，不计入上述时长。
+  - 合同名义时长中位数：突入 818.9 s，过境 952.0 s，监视 2811.6 s。
+- **阶段速度**（phase_metrics，参考速度 ≥ 0.5 m/s 的同一批样本）：
+  - ingress：参考最低 0.54 m/s，优化/参考最低速比中位数 0.158，实测/参考 0.093；沿迹偏离中位数 2.67 m，最大 6.97 m。
+  - inside：优化比中位数 0.33，实测比 0.26（含末端减速）；沿迹偏离中位数 1.33 m，最大 11.7 m。
+  - 这些比值没有已证实的数值门槛，不作合格判定。
+- **终端减速（附录裁定 1，P2，无门槛）：**
+  - 名义末端严格递减段时长中位数 4.24 s，范围 [2.29, 5.60] s。
+  - 优化制动开始点所在圈层：**保护层 949/957，警戒层 8/957**。
+  - 到保护边界的有符号距离：中位数 −75.5 m，p90 −27.8 m，最大 **+15.3 m**，没有超出附录估计的"保护边界外约 18 m"。
+  - "终点前间距收紧"按附录列入突入与佯动的可观测差异清单，供 ⑥ 防捷径检查使用。
+
+### 7.5 三意图逐格与失败子原因（[part7/three_intent_contracts.csv](part7/three_intent_contracts.csv)、[part7/analysis_report.json](part7/analysis_report.json)）
+
+- **配对口径：** 原始 200 键对 full_v14c、full_transit_r2、突入全量做 outer join；骨架结果分别来自 skeleton_v14b、skeleton_transit_r3、本次 skeleton_r1。
+  - 公共字段（group_id、member_ids、target_id、initial_speed_m_s、formation_prior、group_size、facility_count）不一致的行 **0**，缺字段的行 0。
+  - group_id 在 full records 中不存在，改取同意图骨架记录；分析工具里有注明。
+- **全链成功模式**（顺序为监视/过境/突入）：
+
+  | 模式 | 合同数 | 说明 |
+  |---|---|---|
+  | SSS | 197 | 三者都成功 |
+  | FSS | 2 | 监视在 V8-14 两例失败，都在 9–12 人档 |
+  | SSF | 1 | 突入只有 o34_d3 失败 |
+
+  骨架模式为 SSS 199、SSF 1（o34_d3）。
+- **名单与边缘例：**
+  - o34_d3：监视、过境均第 1 次 attempt 成功；突入为 proven_infeasible，attempts = 0。
+  - o17_d1、o17_d4：三意图全链都成功；突入骨架和全链都是 1 次 attempt、σ = 1.0（横排）；同键监视全链分别用了 5 次和 6 次 attempt。
+- **attempts**（全部合同）：突入中位数 1、p90 1、最大 6；过境中位数 1、p90 2；监视中位数 1、p90 4。
+- **突入失败子原因**（两张表，口径不混用）：
+  - **表 1**（全部失败 attempt，同一 attempt 内同一 kind 只计一次）：语义 kind 只有 `nominal_dwell`，23 次；失败类别为优化语义 23、骨架 4、优化物理 0、仿真后 0（含 `measured_intrusion_entries` 0）。
+  - **表 2**（每个合同的第一次失败 attempt，分母 = 有失败的 13 个合同）：
+
+    | 阶段与 kind | 合同数 |
+    |---|---|
+    | `optimize_intrusion\|nominal_dwell` | 11 |
+    | `skeleton:boundary_crossing` | 1 |
+    | `skeleton:reference/speed` | 1 |
+
+  - 这 11 个 nominal_dwell 合同，正是第 5 部分骨架名义预筛检出进场段 dwell 的那 11 个，后续 attempt 全部成功。
+- **对照：** 过境首次失败为 `optimize_transit|nominal_dwell` 18 例。监视为 `optimize_monitoring|nominal_dwell` 14、`nominal_revisit` 5，骨架类 41。dwell 是三意图共有的主要语义子原因。
+- **分档全链成功：** 9–12 人档监视 32/34、过境 34/34、突入 33/34；其他档三者都满分，详见 `success_by_bin_full`。成功率差和时长差只作诊断，不人为配平。

@@ -1,0 +1,811 @@
+{
+ "keys": 200,
+ "common_field_diff_rows": [],
+ "missing_field_rows": [],
+ "pattern_full": {
+  "all": {
+   "all": {
+    "FSS": 2,
+    "SSF": 1,
+    "SSS": 197
+   }
+  },
+  "group_bin": {
+   "0": {
+    "SSS": 110
+   },
+   "1": {
+    "SSS": 56
+   },
+   "2": {
+    "FSS": 2,
+    "SSF": 1,
+    "SSS": 31
+   }
+  },
+  "facility_count": {
+   "1": {
+    "FSS": 1,
+    "SSS": 84
+   },
+   "2": {
+    "FSS": 1,
+    "SSF": 1,
+    "SSS": 83
+   },
+   "3": {
+    "SSS": 30
+   }
+  },
+  "speed_bin": {
+   "0": {
+    "FSS": 1,
+    "SSS": 66
+   },
+   "1": {
+    "FSS": 1,
+    "SSF": 1,
+    "SSS": 59
+   },
+   "2": {
+    "SSS": 72
+   }
+  }
+ },
+ "pattern_skeleton": {
+  "all": {
+   "SSF": 1,
+   "SSS": 199
+  }
+ },
+ "success_by_bin_full": {
+  "group_bin": {
+   "0": {
+    "monitoring": [
+     110,
+     110
+    ],
+    "transit": [
+     110,
+     110
+    ],
+    "intrusion": [
+     110,
+     110
+    ]
+   },
+   "1": {
+    "monitoring": [
+     56,
+     56
+    ],
+    "transit": [
+     56,
+     56
+    ],
+    "intrusion": [
+     56,
+     56
+    ]
+   },
+   "2": {
+    "monitoring": [
+     32,
+     34
+    ],
+    "transit": [
+     34,
+     34
+    ],
+    "intrusion": [
+     33,
+     34
+    ]
+   }
+  },
+  "facility_count": {
+   "1": {
+    "monitoring": [
+     84,
+     85
+    ],
+    "transit": [
+     85,
+     85
+    ],
+    "intrusion": [
+     85,
+     85
+    ]
+   },
+   "2": {
+    "monitoring": [
+     84,
+     85
+    ],
+    "transit": [
+     85,
+     85
+    ],
+    "intrusion": [
+     84,
+     85
+    ]
+   },
+   "3": {
+    "monitoring": [
+     30,
+     30
+    ],
+    "transit": [
+     30,
+     30
+    ],
+    "intrusion": [
+     30,
+     30
+    ]
+   }
+  },
+  "speed_bin": {
+   "0": {
+    "monitoring": [
+     66,
+     67
+    ],
+    "transit": [
+     67,
+     67
+    ],
+    "intrusion": [
+     67,
+     67
+    ]
+   },
+   "1": {
+    "monitoring": [
+     60,
+     61
+    ],
+    "transit": [
+     61,
+     61
+    ],
+    "intrusion": [
+     60,
+     61
+    ]
+   },
+   "2": {
+    "monitoring": [
+     72,
+     72
+    ],
+    "transit": [
+     72,
+     72
+    ],
+    "intrusion": [
+     72,
+     72
+    ]
+   }
+  }
+ },
+ "attempts": {
+  "monitoring": {
+   "all": {
+    "n": 200,
+    "min": 1.0,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 4.0,
+    "max": 20.0
+   },
+   "all_three_success": {
+    "n": 197,
+    "min": 1.0,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 4.0,
+    "max": 11.0
+   }
+  },
+  "transit": {
+   "all": {
+    "n": 200,
+    "min": 1.0,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 2.0,
+    "max": 8.0
+   },
+   "all_three_success": {
+    "n": 197,
+    "min": 1.0,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 2.0,
+    "max": 8.0
+   }
+  },
+  "intrusion": {
+   "all": {
+    "n": 200,
+    "min": 0.0,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 1.0,
+    "max": 6.0
+   },
+   "all_three_success": {
+    "n": 197,
+    "min": 1.0,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 1.0,
+    "max": 6.0
+   }
+  }
+ },
+ "first_failed_stage": {
+  "monitoring": {
+   "None": 137,
+   "skeleton:ingress": 18,
+   "optimize_monitoring": 19,
+   "skeleton:start_route": 13,
+   "skeleton:turns": 1,
+   "skeleton:boundary_crossing": 7,
+   "optimize": 3,
+   "skeleton:egress": 2
+  },
+  "transit": {
+   "None": 174,
+   "optimize_transit": 18,
+   "skeleton:boundary_crossing": 4,
+   "optimize": 1,
+   "skeleton:start_route": 3
+  },
+  "intrusion": {
+   "None": 187,
+   "optimize_intrusion": 11,
+   "skeleton:boundary_crossing": 1,
+   "skeleton:reference/speed": 1
+  }
+ },
+ "subreasons": {
+  "monitoring": {
+   "table1_failed_attempt_kinds": {
+    "nominal_dwell": 27,
+    "nominal_revisit": 23,
+    "boundary_crossing": 1
+   },
+   "table1_semantic_attempts_unrecorded": 0,
+   "failure_categories": {
+    "skeleton": 145,
+    "optimize_semantic": 49,
+    "optimize_physical": 4
+   },
+   "table2_first_failed_attempt": {
+    "skeleton:ingress|（非语义失败，无 kind）": 18,
+    "optimize_monitoring|nominal_dwell": 14,
+    "skeleton:start_route|（非语义失败，无 kind）": 13,
+    "skeleton:boundary_crossing|（非语义失败，无 kind）": 7,
+    "optimize_monitoring|nominal_revisit": 5,
+    "optimize|（非语义失败，无 kind）": 3,
+    "skeleton:egress|（非语义失败，无 kind）": 2,
+    "skeleton:turns|（非语义失败，无 kind）": 1
+   },
+   "table2_denominator_contracts_with_failure": 63
+  },
+  "transit": {
+   "table1_failed_attempt_kinds": {
+    "nominal_dwell": 31
+   },
+   "table1_semantic_attempts_unrecorded": 0,
+   "failure_categories": {
+    "optimize_semantic": 31,
+    "skeleton": 8,
+    "optimize_physical": 1
+   },
+   "table2_first_failed_attempt": {
+    "optimize_transit|nominal_dwell": 18,
+    "skeleton:boundary_crossing|（非语义失败，无 kind）": 4,
+    "skeleton:start_route|（非语义失败，无 kind）": 3,
+    "optimize|（非语义失败，无 kind）": 1
+   },
+   "table2_denominator_contracts_with_failure": 26
+  },
+  "intrusion": {
+   "table1_failed_attempt_kinds": {
+    "nominal_dwell": 23
+   },
+   "table1_semantic_attempts_unrecorded": 0,
+   "failure_categories": {
+    "optimize_semantic": 23,
+    "skeleton": 4
+   },
+   "table2_first_failed_attempt": {
+    "optimize_intrusion|nominal_dwell": 11,
+    "skeleton:reference/speed|（非语义失败，无 kind）": 1,
+    "skeleton:boundary_crossing|（非语义失败，无 kind）": 1
+   },
+   "table2_denominator_contracts_with_failure": 13
+  }
+ },
+ "special_rows": [
+  {
+   "family_id": "family_s15_3968861533cf6dd7",
+   "draw_index": 3,
+   "contract_id": "o34_d3",
+   "group_size": 12,
+   "facility_count": 2,
+   "initial_speed_m_s": 6.553853527879293,
+   "group_bin": 2,
+   "speed_bin": 1,
+   "common_field_diffs": [],
+   "missing_fields": [],
+   "monitoring_skeleton_success": true,
+   "monitoring_full_success": true,
+   "monitoring_skeleton_attempts": 1,
+   "monitoring_full_attempts": 1,
+   "monitoring_post_opt_failures": 0,
+   "monitoring_first_failed_stage": null,
+   "monitoring_first_failed_kinds": null,
+   "monitoring_failure_code": null,
+   "monitoring_realized": "echelon",
+   "monitoring_nominal_duration_s": 3602.7915984460774,
+   "transit_skeleton_success": true,
+   "transit_full_success": true,
+   "transit_skeleton_attempts": 1,
+   "transit_full_attempts": 1,
+   "transit_post_opt_failures": 0,
+   "transit_first_failed_stage": null,
+   "transit_first_failed_kinds": null,
+   "transit_failure_code": null,
+   "transit_realized": "echelon",
+   "transit_nominal_duration_s": 1438.2245458915277,
+   "intrusion_skeleton_success": false,
+   "intrusion_full_success": false,
+   "intrusion_skeleton_attempts": 0,
+   "intrusion_full_attempts": 0,
+   "intrusion_post_opt_failures": 0,
+   "intrusion_first_failed_stage": null,
+   "intrusion_first_failed_kinds": null,
+   "intrusion_failure_code": "proven_infeasible",
+   "intrusion_realized": null,
+   "intrusion_nominal_duration_s": null,
+   "intrusion_sigma": null,
+   "intrusion_ingress_s_median": null,
+   "intrusion_inside_s_median": null
+  },
+  {
+   "family_id": "family_s15_54357502e6e9ebf2",
+   "draw_index": 1,
+   "contract_id": "o17_d1",
+   "group_size": 12,
+   "facility_count": 2,
+   "initial_speed_m_s": 5.87101183589671,
+   "group_bin": 2,
+   "speed_bin": 0,
+   "common_field_diffs": [],
+   "missing_fields": [],
+   "monitoring_skeleton_success": true,
+   "monitoring_full_success": true,
+   "monitoring_skeleton_attempts": 3,
+   "monitoring_full_attempts": 5,
+   "monitoring_post_opt_failures": 1,
+   "monitoring_first_failed_stage": "skeleton:ingress",
+   "monitoring_first_failed_kinds": null,
+   "monitoring_failure_code": null,
+   "monitoring_realized": "abreast",
+   "monitoring_nominal_duration_s": 3283.183662361898,
+   "transit_skeleton_success": true,
+   "transit_full_success": true,
+   "transit_skeleton_attempts": 1,
+   "transit_full_attempts": 1,
+   "transit_post_opt_failures": 0,
+   "transit_first_failed_stage": null,
+   "transit_first_failed_kinds": null,
+   "transit_failure_code": null,
+   "transit_realized": "abreast",
+   "transit_nominal_duration_s": 946.1003038625694,
+   "intrusion_skeleton_success": true,
+   "intrusion_full_success": true,
+   "intrusion_skeleton_attempts": 1,
+   "intrusion_full_attempts": 1,
+   "intrusion_post_opt_failures": 0,
+   "intrusion_first_failed_stage": null,
+   "intrusion_first_failed_kinds": null,
+   "intrusion_failure_code": null,
+   "intrusion_realized": "abreast",
+   "intrusion_nominal_duration_s": 970.5530079135103,
+   "intrusion_sigma": 1.0,
+   "intrusion_ingress_s_median": 505.72187833541994,
+   "intrusion_inside_s_median": 150.63645676482156
+  },
+  {
+   "family_id": "family_s15_54357502e6e9ebf2",
+   "draw_index": 4,
+   "contract_id": "o17_d4",
+   "group_size": 12,
+   "facility_count": 2,
+   "initial_speed_m_s": 6.443286775258382,
+   "group_bin": 2,
+   "speed_bin": 1,
+   "common_field_diffs": [],
+   "missing_fields": [],
+   "monitoring_skeleton_success": true,
+   "monitoring_full_success": true,
+   "monitoring_skeleton_attempts": 6,
+   "monitoring_full_attempts": 6,
+   "monitoring_post_opt_failures": 0,
+   "monitoring_first_failed_stage": "skeleton:ingress",
+   "monitoring_first_failed_kinds": null,
+   "monitoring_failure_code": null,
+   "monitoring_realized": "abreast",
+   "monitoring_nominal_duration_s": 3049.612482197926,
+   "transit_skeleton_success": true,
+   "transit_full_success": true,
+   "transit_skeleton_attempts": 1,
+   "transit_full_attempts": 1,
+   "transit_post_opt_failures": 0,
+   "transit_first_failed_stage": null,
+   "transit_first_failed_kinds": null,
+   "transit_failure_code": null,
+   "transit_realized": "abreast",
+   "transit_nominal_duration_s": 1159.2085726342266,
+   "intrusion_skeleton_success": true,
+   "intrusion_full_success": true,
+   "intrusion_skeleton_attempts": 1,
+   "intrusion_full_attempts": 1,
+   "intrusion_post_opt_failures": 0,
+   "intrusion_first_failed_stage": null,
+   "intrusion_first_failed_kinds": null,
+   "intrusion_failure_code": null,
+   "intrusion_realized": "abreast",
+   "intrusion_nominal_duration_s": 937.3151096381023,
+   "intrusion_sigma": 1.0,
+   "intrusion_ingress_s_median": 491.6024978566832,
+   "intrusion_inside_s_median": 135.75431974496894
+  }
+ ],
+ "nominal_duration_s": {
+  "monitoring": {
+   "n": 198,
+   "min": 1214.1393289285315,
+   "p10": 1888.6554113306934,
+   "median": 2811.6426394919754,
+   "p90": 3866.977594342623,
+   "max": 4977.996837477254
+  },
+  "transit": {
+   "n": 200,
+   "min": 308.0960342263699,
+   "p10": 575.0303588765314,
+   "median": 952.0301356065744,
+   "p90": 1488.404682186716,
+   "max": 2262.504749373298
+  },
+  "intrusion": {
+   "n": 199,
+   "min": 309.88358375400094,
+   "p10": 453.79745875509747,
+   "median": 818.8649371230756,
+   "p90": 1460.5941110528486,
+   "max": 2170.5571705143457
+  }
+ },
+ "intrusion": {
+  "successes": 199,
+  "members": 957,
+  "phase_durations": {
+   "intrusion_ingress_s": {
+    "n": 957,
+    "min": 61.91265459269772,
+    "p10": 230.27689124310612,
+    "median": 533.7711546579802,
+    "p90": 985.0921489999444,
+    "max": 1753.606114370059
+   },
+   "intrusion_inside_s": {
+    "n": 957,
+    "min": 70.76500959639145,
+    "p10": 110.82369822087014,
+    "median": 171.37881394822773,
+    "p90": 278.2160842248202,
+    "max": 474.5002273059904
+   },
+   "travel_s": {
+    "n": 957,
+    "min": 240.97555434205873,
+    "p10": 397.46171709872175,
+    "median": 698.4371528017085,
+    "p90": 1215.6955972865726,
+    "max": 2168.483723235888
+   },
+   "release_delay_s": {
+    "n": 957,
+    "min": 0.0,
+    "p10": 0.0,
+    "median": 66.4,
+    "p90": 447.09999999999997,
+    "max": 1404.0
+   }
+  },
+  "closure_residual_abs_max_s": 2.2737367544323206e-13,
+  "nominal_duration_s": {
+   "n": 199,
+   "min": 309.88358375400094,
+   "p10": 453.79745875509747,
+   "median": 818.8649371230756,
+   "p90": 1460.5941110528486,
+   "max": 2170.5571705143457
+  },
+  "phase_speed": {
+   "intrusion_ingress": {
+    "reference_min_m_s": {
+     "n": 957,
+     "min": 0.539999999999918,
+     "p10": 0.5399999999999694,
+     "median": 0.5400000000000013,
+     "p90": 0.5400000000000206,
+     "max": 0.5400000000001228
+    },
+    "optimized_ratio": {
+     "n": 957,
+     "min": 0.1229738414723181,
+     "p10": 0.15833924072071504,
+     "median": 0.1584126391857675,
+     "p90": 0.158719609506637,
+     "max": 0.16059625022190752
+    },
+    "measured_ratio": {
+     "n": 957,
+     "min": 0.07180990277852418,
+     "p10": 0.09246133442632709,
+     "median": 0.09250419506074575,
+     "p90": 0.09268344870099986,
+     "max": 0.09377930279337932
+    },
+    "optimized_along_max_m": {
+     "n": 957,
+     "min": 1.6870004485145944,
+     "p10": 1.9728954736737383,
+     "median": 2.6701496992190794,
+     "p90": 3.3020001781870114,
+     "max": 6.97426862435596
+    },
+    "measured_along_max_m": {
+     "n": 957,
+     "min": 1.7040169247141155,
+     "p10": 1.975295089067432,
+     "median": 2.6679266780726025,
+     "p90": 3.3014090919003487,
+     "max": 6.977953527538412
+    }
+   },
+   "intrusion_inside": {
+    "reference_min_m_s": {
+     "n": 957,
+     "min": 0.5001145647650302,
+     "p10": 0.519615510571064,
+     "median": 0.5971474130387353,
+     "p90": 0.6631509568346153,
+     "max": 0.6798575227464916
+    },
+    "optimized_ratio": {
+     "n": 957,
+     "min": 0.013003521700915555,
+     "p10": 0.19099567846033483,
+     "median": 0.32871076133442084,
+     "p90": 0.6777243942623773,
+     "max": 0.8199878550170493
+    },
+    "measured_ratio": {
+     "n": 957,
+     "min": 0.0032582448872106222,
+     "p10": 0.06791451749263426,
+     "median": 0.25738482074193647,
+     "p90": 0.6665036866484886,
+     "max": 0.8156726518717771
+    },
+    "optimized_along_max_m": {
+     "n": 957,
+     "min": 0.20260168592491137,
+     "p10": 0.49100111162176785,
+     "median": 1.327997494728347,
+     "p90": 2.5777142768863572,
+     "max": 11.726841447127848
+    },
+    "measured_along_max_m": {
+     "n": 957,
+     "min": 0.19221843918302017,
+     "p10": 0.526918280884647,
+     "median": 1.3873860288516053,
+     "p90": 2.656393322292014,
+     "max": 11.766026200787904
+    }
+   }
+  },
+  "nominal_terminal_decel_duration_s": {
+   "n": 957,
+   "min": 2.2915521762683966,
+   "p10": 2.6886919070144812,
+   "median": 4.242464194211834,
+   "p90": 5.321091205583912,
+   "max": 5.595852916109493
+  },
+  "optimized_brake_start_layer": {
+   "3": 949,
+   "2": 8
+  },
+  "optimized_brake_start_protected_signed_m": {
+   "n": 957,
+   "min": -237.32330367139076,
+   "p10": -145.52270992048153,
+   "median": -75.46038293073941,
+   "p90": -27.790789441871155,
+   "max": 15.33441252193613
+  },
+  "measured_entry_counts": {
+   "{\"alert\": 1, \"protected\": 1, \"warning\": 1}": 957
+  },
+  "realized_by_prior": {
+   "column->column": 46,
+   "echelon->echelon": 46,
+   "loose->abreast": 44,
+   "abreast->abreast": 62,
+   "loose->echelon": 1
+  },
+  "sigma_hist": {
+   "0.65": 9,
+   "0.3": 10,
+   "0.45": 11,
+   "0.35": 5,
+   "1.0": 111,
+   "0.4": 9,
+   "0.55": 7,
+   "0.8": 5,
+   "0.95": 4,
+   "0.7": 8,
+   "0.5": 6,
+   "0.85": 7,
+   "0.6": 5,
+   "0.75": 2
+  },
+  "curved": {
+   "True": 199
+  },
+  "optimization_s": {
+   "n": 200,
+   "min": 0.0,
+   "p10": 1.5926614800016978,
+   "median": 5.116394800003036,
+   "p90": 26.791466290005328,
+   "max": 103.66691569999239
+  },
+  "frechet": {
+   "pooled_after": 74.82828789477605,
+   "pooled_before": 74.82833354290418,
+   "pairs": 450,
+   "families": [
+    {
+     "family_id": "family_s15_232aa66e0775f46f",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 18.988636995170683,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_2a7eced81da133ad",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 20.65330890527809,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_9b1a9f5a704a5a43",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 23.843355092921175,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_a4e519a7d128f6d1",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 16.161957951446777,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_ad93040ec301fb17",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 18.63723620204798,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_af5d80bd4e407c2e",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 15.157231362131675,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_b0c036776dcaff71",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 17.243517733963756,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_c6b49487cb7c7e1f",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 21.995039373494723,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_eeb311862e8c34e5",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 21.496563989086027,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    },
+    {
+     "family_id": "family_s15_fac1d381571b4d36",
+     "attempted": 10,
+     "success": 10,
+     "comparable": 10,
+     "spacing_m": 15.13320284110464,
+     "na_reasons": [],
+     "scope": "intrusion_warning_to_terminal_v17",
+     "pairs": 45
+    }
+   ],
+   "endpoint_m": {
+    "n": 1350,
+    "min": 2.2737367544323206e-13,
+    "p10": 47.42101092168271,
+    "median": 738.4605197459507,
+    "p90": 2147.110442808888,
+    "max": 2493.756887385445
+   }
+  },
+  "diversity": {
+   "rows": 100,
+   "success": 100,
+   "errors": [],
+   "incomplete": [],
+   "frechet_na": {}
+  }
+ }
+}
