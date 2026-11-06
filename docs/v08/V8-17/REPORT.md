@@ -410,3 +410,144 @@
   - 这 11 个 nominal_dwell 合同，正是第 5 部分骨架名义预筛检出进场段 dwell 的那 11 个，后续 attempt 全部成功。
 - **对照：** 过境首次失败为 `optimize_transit|nominal_dwell` 18 例。监视为 `optimize_monitoring|nominal_dwell` 14、`nominal_revisit` 5，骨架类 41。dwell 是三意图共有的主要语义子原因。
 - **分档全链成功：** 9–12 人档监视 32/34、过境 34/34、突入 33/34；其他档三者都满分，详见 `success_by_bin_full`。成功率差和时长差只作诊断，不人为配平。
+
+## 8. 第 8 部分：快照、改动范围与提交
+
+### 8.1 提交与分支
+
+- **基准：** `d9a317832d7dd166610d8d6e515cf80bec5ce903`（dev/v0.8，通过显式 refspec 获取后核对）。
+- **审查分支：** `review/v08/V8-17-intrusion`。只推送了这一个分支，没有推 main、没有强制推送、没有合并 dev。
+- **各部分提交**（时间为本地提交时刻，2026-11-06）：
+
+| 部分 | 提交 | 时刻 |
+|---|---|---|
+| 1 | 0e808fa | 05:31 |
+| 2 | 950d772 | 05:50 |
+| 3 | cf3134b | 05:59 |
+| 4 | ff7e18a | 06:06 |
+| 5 | 7bd5550 | 06:24 |
+| 6 | f4a6d50 | 06:28（按负责人指示在此暂停） |
+| 7 | e36d353 | 09:17 |
+| 8 | 本报告所在提交，见文末 ls-remote 核对 | — |
+
+### 8.2 改动文件（`git diff --stat d9a3178 HEAD -- "Multi-UAV SimpleGC"`：22 个文件，+3037 / −102）
+
+- **新增：**
+  - `v08/motion/intrusion_numeric.py`、`v08/motion/intrusion_chords.py`、`v08/motion/intents/intrusion.py`、`v08/runner/intrusion_report.py`
+  - `tools/v08/run_intrusion_v17.py`、`tools/v08/analyze_intrusion_v17.py`
+  - `tests/v08/V8-17/`：3 个预置测试加 1 个自加测试
+- **修改（都在指令 0.2 允许的范围内）：**
+
+| 文件 | 改动行数 |
+|---|---|
+| `layer_limits.py` | +25 |
+| `single_intent.py` | 31 |
+| `intent_dispatch.py` | 11 |
+| `optimize.py` | **3 行**：只改 `_optimize_segment_intent` 的边界表参数 |
+| `optimize_checks.py` | +89，只新增 |
+| `nominal_checks.py` | +49，只新增 |
+| `transit_chords.py` | 52 |
+| `intents/transit.py` | 25 |
+| `joint_monitoring.py` | +11：只加 intrusion 遥测分派和实测进入检查 |
+| `joint_intent.py` | 171 |
+| `skeleton_transit.py` | 84 |
+| `transit_report.py` | 114 |
+
+- 下列文件不需要修改，实际也没有修改：监视构造文件、`transit_numeric.py`、`formation.py`、`shared_routes.py`、`skeleton.py`、默认进程数。
+
+### 8.3 首尾快照（[snapshot_part1.json](snapshot_part1.json) → [snapshot_end.json](snapshot_end.json)，比较结果 [snapshot_compare.json](snapshot_compare.json)）
+
+- **以下各项首尾完全相同：**
+  - 160 个登记输入；
+  - 22 个 `SwarmData/v07_*` 目录的统计；
+  - 两个冻结工作树（fe-prod-r3@641a9b3、fe-s3@de4d115，都 clean）；
+  - `full_v14c` 的全部 8551 个文件、`full_transit_r2` 的全部 8651 个文件；
+  - 29 个 V8-11 至 V8-15 预置测试，6 个 V8-16 预置/自加测试；
+  - 15 个细粒度函数体：`check_monitoring`、`solve_joint`、`Prepared`、`prepare_problem`、`monitoring_constraints`、`revisit`、`screen_member`、`check_transit`、`screen_transit_member`、`curve_lp`、`exact_curve_audit`、`derive_members`、`route_to_slot`、`references_from_skeleton`、`crossing_analysis`。
+- `configs/`、`task_v07/`、`v08/criteria/`、`v08/sim/` 下没有任何文件变化，可以确认判据、优化器求解核心、输入和环境都没有改动。
+- conda `llm` 环境没有安装或升级任何包；运行版本与 manifest 登记一致（Python 3.12.3、NumPy 2.5.3、SciPy 1.14.1、shapely 2.0.7）。
+
+### 8.4 一条可复制的负责人复跑命令
+
+在 `Multi-UAV SimpleGC` 目录、PowerShell 7 下先设置四个线程变量（见 [RUNNING.md](RUNNING.md)），然后运行：
+
+```powershell
+& 'C:\Users\shy\anaconda3\Scripts\conda.exe' run -n llm --no-capture-output python -B tools/v08/run_intrusion_v17.py --stage quick --devset 'F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\docs\v08\V8-03\devset_v08.json' --data-root 'F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData' --cache 'F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-06_V8-17_intrusion\run\cache' --out 'F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-06_V8-17_intrusion\run\out\quick\<新目录>' --workers 24
+```
+
+完整的分阶段命令见 RUNNING.md 第 2 节。全量、复跑与门禁按检查点逐条执行。
+
+### 8.5 实际耗时（墙钟）
+
+| 部分 | 实际耗时 | 计算 |
+|---|---|---|
+| 1 | 约 20 分钟 | 含通读两份材料 |
+| 2 | 约 20 分钟 | 门禁 13 分钟（新缓存预建占大头） |
+| 3 | 约 10 分钟 | 实现大部分在第 2 部分门禁运行期间并行完成 |
+| 4 | 约 7 分钟 | 门禁 6 分钟 |
+| 5 | 约 18 分钟 | 组合门禁 17 分钟（直算路径 1049 s），200 骨架 62 s |
+| 6 | 约 4 分钟 | smoke 56 s，快批 53 s |
+| 7 | 约 10 分钟 | 全量 312 s，复跑 37 s |
+
+- 合计开发约 1.5 小时、计算约 45 分钟，不含 06:28–09:08 按负责人指示的暂停。
+- 计算时间低于 U B 的估算，主要原因是车道几何的批量化，以及缓存在派发前全部预建。
+- 估算只是记录，没有为缩短耗时裁减任何检查或名单。
+
+### 8.6 证据等级
+
+- 第 2、4 部分的门禁、第 5–7 部分的批次、17 个预置测试和 4 个自加测试：都由执行方运行，属于"有记录"。
+- 5 合同单进程复跑与 24 进程输出逐字节一致：执行方在同一环境的第二次独立运行，用来证明可复现；但它不等于规划审查方的"已复跑"。按 G 的规程，P0 验收的"已复跑"仍需审查方执行。
+
+## 9. 偏离指令之处与处理
+
+1. **第 2 部分提交里的 intrusion 骨架文件是桩：**
+   - 门禁开始时 `intents/intrusion.py` 是明确抛 NotImplementedError 的桩。之后为了并行开发，在工作区写入了完整实现，但这个文件不被监视/过境导入。
+   - 提交 2 时把桩版本原样提交，提交 3 才放入完整实现，所以提交 2 与门禁运行时的代码状态一致。
+2. **CRLF 事故（已修复，未进入任何提交）：** 第 2 部分首次编辑时，用 Python 文本模式写文件，把 4 个 LF 文件改成了 CRLF。在提交前发现，已逐字节恢复为 LF；之后所有共享文件改动都按字节读写。
+3. **性能修正属于"行为不变"的实现细节：** `deepest_station` 的多边形分支改为向量化枚举，车道次水平集改为整批 `sublevel_many`。两者与逐元素/逐对计算是同一组浮点运算；四键抽样结果改动前后完全相同，45 组组合门禁也用同一实现的 memo=True/False 两条路径逐格核对。
+4. **分析工具的数据来源：** 全量 `records.json` 里的 attempt_log 是精简版，没有 semantic_failures。三意图子原因统计改为读取各合同 `result.json` 中完整的确定性 attempt_log；三个意图的基线都有这些文件，所以不存在"旧证据未记录"的语义失败。
+5. **实测制动开始点：** 指令只定义了名义末端递减段，并要求报告"优化制动开始所在圈层"。实测轨迹末端有保持段，"严格递减至终点"的定义取不到起点，所以实测项记 None，只报优化与名义两项。
+
+**疑似预期错误：** 没有发现。17 个预置测试的预期值全部与实现一致，夹具没有补任何字段（裁定 2 的流程未被触发）。
+
+## 10. 第 12 节各项是否被实测进一步确认，以及执行方观察
+
+**第 12 节各项：**
+- **七种意图上限：** 由预置测试确认；detour 仍抛 ValueError。
+- **最深点不唯一：** 由矩形平台的预置测试确认，并列取最小 x。
+- **"两两距离"：** smoke 实测相邻终点距离与公式的误差 ≤ 1.9e-12 m；非相邻、梯形都按公式计算。全量终点两两最小距离 6.25 m（骨架）。
+- **o34_d3：** 证书数值与第 12 节一致；名单外 199 个合同没有出现证书。
+- **圈层尺度摘要：** 按实际输入计算，未拒绝任何输入。
+- **压缩只在保护层内（附录裁定 1）：** 实测优化制动开始点 949/957 在保护层，8/957 在警戒层，最远在保护边界外 15.3 m，与附录估计的约 18 m 一致。**这仍是诊断项，不是约束，也没有被"证明"。**
+- **突入 base 与进场：** 名义硬筛和保留前的实测检查双重保险。957/957 成员实测三层进入次数都是 1/1/1；进场精确检查 `preentry_exact` 在全量中没有出现失败。
+- **终点 50/45/最小距离 50：** 三者分开实现。骨架终点 contour SDF 最大 44.98（≤ 45）；优化后的 50 由预置测试的等号例和 50.5 拒绝例确认。
+- **其他 warning 深穿越：** 用前缀区间并实现，有预置解析测试覆盖。
+- **210 m 预留：** 按源码公式实现。
+- **穿越时刻口径：** 终点集合用 line_sublevel；名义映射用 crossing_analysis；实测事件用 10 Hz 首帧，三者分开保存。
+- **LP 与精确审计：** 全量没有直线回退（骨架 0/199，快批与全量全部为弯曲）。
+- **旧测试传播：** V8-16 预置文件的 SHA 保持不变。
+- **共享文件冻结边界：** 两轮字节门禁各 20/20。
+- **弦缓存身份：** 使用独立的 `intrusion_v17/` 目录与 float.hex 身份。
+- **全量完成性：** 200 与 100 分别检查。
+- **墙钟污染：** 递归扫描全部合同 JSON 为 0 处，5/5 复跑逐字节一致。
+- **原型覆盖：** 四例 smoke 与 45 组门禁补充了覆盖。
+
+**执行方观察（与事实分开）：**
+1. **进场段名义 dwell 是突入唯一的语义失败来源。** 11 个合同的第 1 次 attempt 在优化后被 `nominal_dwell` 拒绝，后续 attempt 都成功，因此 post 失败中位数仍为 0。
+   - 骨架阶段的名义预筛已经提前标出了这 11 个合同。
+   - dwell 位于目标 0 层的进场路由内：20 s 窗口内位移不超过 30 m，速度 2.9–5.4 m/s，看上去是起点到集合槽位的转弯段。
+   - 过境（18 例）和监视（14 例）同样以 nominal_dwell 为主。
+   - 这是共享路由的现象，不在本项修改范围内。
+2. **o17_d1/d4 的精确可行格只有各 1 格**（U C.2 原型为 5 格）。两者仍能成功，但同一合同在不同 branch 下的终点几何多样性可能很低。本项多样性 10 族不含 o17，未实测。
+3. **ingress 阶段的速度比**（优化 0.158、实测 0.093）都出现在释放后刚起步、参考速度略高于 0.5 m/s 的样本上，口径与 V8-16 相同。在这个口径下，比值更多反映起步加速，而不是途中低速。
+4. **多样性的 Fréchet before 与 after 几乎相等**（74.83 对 74.83）。优化位移对编组曲线的平均影响很小。
+
+## 11. 需要审查方判断的事项
+
+1. **进场段 nominal dwell：** 三意图共有，突入 11/199 个合同的首次 attempt 因此被拒绝。要不要在后续工作项中，在路由或速度事件层面给出构造机制，而不是靠 attempt 重试吸收？本项按指令只记录、不改路由。
+2. **附录裁定 1 的诊断结果：** 8/957 个成员的制动开始点在警戒层，最远 +15.3 m。是否确认维持 P2、不设门槛，并把"终点前间距收紧"列入 ⑥ 的可观测差异清单？
+3. **o17 边缘例的低多样性：** 每合同只有 1 个可行格。是否需要单独做多样性抽查，或调整边缘族的统计口径？
+4. **两处"行为不变"的性能实现**（向量化最深点、批量次水平集）：执行方用解析预置测试和 45 组门禁做了核对。审查方是否需要逐位独立复核？
+5. **共享文件参数化的方式：** 在 `build_candidate` 里按 intent 分支，并把突入的逐成员检查交给 `intrusion.finish_candidate`；共享的 `corridor_rows` 只在 intrusion 分支取新上界。是否符合"机械提取、不复制第二套算法"的要求？两轮字节门禁只能证明过境与监视的行为没变，不能证明代码组织方式合适。
+6. **"已复跑"等级：** 门禁、全量和 5 键复跑都由执行方运行（有记录）。P0 的"已复跑"需要审查方在本机或云端独立执行。
+7. **公共字段 group_id 的来源：** 三意图配对时，因为 full records 不含 group_id，改从骨架 records 取，其余公共字段都取自全量记录。是否接受这种口径？预置的产物测试另外直接比较了 contract.json 中的 group_id，对 200 键全部一致。
