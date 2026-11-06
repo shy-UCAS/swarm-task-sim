@@ -33,9 +33,9 @@ def _attempt_record(a, plan, seconds):
 
 def plan_attempt(ctx, group, task, states, occupied, key):
     """一次随机构造，返回 SegmentPlan（失败时 failure 非空）。"""
-    from .intents.monitoring import propose_and_build
+    from .intent_dispatch import skeleton_builder      # V8-16 指令 2.1：按 task.intent 分派；监视仍是旧函数
 
-    return propose_and_build(ctx, group, task, states, key)
+    return skeleton_builder(task.intent)(ctx, group, task, states, key)
 
 
 def _band_certificate(ctx, group, task):

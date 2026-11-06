@@ -126,7 +126,10 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
     plan = plan_attempt(ctx, group, task, states, (), key)
     t["skeleton_s"] = time.perf_counter() - t0
     try:
-        from ..motion.intents.monitoring import last_attempt_timing
+        if task.intent == "transit":                # V8-16 指令 2.1：遥测按意图取（不进入确定性载荷）
+            from ..motion.intents.transit import last_attempt_timing
+        else:
+            from ..motion.intents.monitoring import last_attempt_timing
         t["skeleton_detail"] = last_attempt_timing()
     except ImportError:
         pass
@@ -157,7 +160,8 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
     t0 = time.perf_counter()
     tracks = stitch(results)
     release = {m: int(r.pieces[0].release_us) for m, r in zip(sorted(opt["solution"].references), results)}
-    verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, "monitoring", task.target_id)])
+    # V8-16 指令 2.1：冻结段核验按实际任务意图（监视仍为 "monitoring"）
+    verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, task.intent, task.target_id)])
     seg_ok = all(v.passed for v in verdicts)
     visible = [visible_track(tracks[m], release[m]) for m in sorted(tracks)]
     valid = check_validity(ctx.scene, visible)

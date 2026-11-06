@@ -927,6 +927,10 @@ def optimize_segment(ctx, skeleton, key, settings):
     """从实际骨架建立问题，solve_joint 后运行全部语义硬检查；不能省略任何设施。
     skeleton 为 plan_attempt 返回的成功 SegmentPlan。返回 dict：ok、stage、reason、solution、monitoring、
     references、lines（含元数据）、problem。"""
+    from .intent_dispatch import skeleton_intent
+    intent = skeleton_intent(skeleton)          # V8-16 指令 2.1：意图只取骨架见证，不按目标/几何猜
+    if intent != "monitoring":
+        return _optimize_segment_intent(ctx, skeleton, key, settings, intent)
     from .intents.monitoring import monitoring_constraints
     from .optimize_checks import check_monitoring
     from .skeleton import references_from_skeleton
@@ -963,6 +967,40 @@ def optimize_segment(ctx, skeleton, key, settings):
     out["monitoring"] = mon
     if not mon["passed"]:
         out.update(stage="optimize_monitoring", reason="optimize_residual")
+        return out
+    out.update(ok=True, stage="optimized", reason=None)
+    return out
+
+
+def _optimize_segment_intent(ctx, skeleton, key, settings, intent):
+    """V8-16 指令 2.1：非监视意图的优化外层。与监视分支建立同一 JointProblem、调用同一 solve_joint；差异只有
+    约束表（layer_limits.constraints_for_task）与语义检查（intent_dispatch.semantic_checker）。过境没有掉头区间，
+    turns 为空（不造伪掉头约束）。语义结果放 "semantic"；"monitoring" 键为 None。阶段距离场的缓存名含意图与
+    有序约束完整身份，避免不同意图混用 route 缓存（原始距离按几何键共享磁盘缓存，不新写既有几何）。"""
+    from ..contract.monitoring import TaskSpec
+    from .intent_dispatch import semantic_checker
+    from .layer_limits import constraints_for_task, constraints_identity
+    from .skeleton import merge_semantic_lines, references_from_skeleton
+    target = skeleton.witnesses["target_id"]
+    cons = constraints_for_task(ctx, TaskSpec("task0", intent, target))
+    base = tuple(cons["base"])
+    field = ctx.field(("route", intent, constraints_identity(base)), list(base))
+    refs, lines, maps = references_from_skeleton(
+        skeleton, warnings=cons["warnings"], target_id=target,
+        band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
+    lines_raw = lines
+    lines = tuple(merge_semantic_lines(lines_raw, knot_s=float(settings["knot_s"])))
+    problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines), ())
+    sol = solve_joint(problem, settings, knot_s=float(settings["knot_s"]))
+    out = {"ok": False, "stage": "optimize", "reason": sol.reason, "solution": sol, "monitoring": None,
+           "semantic": None, "intent": intent, "references": refs, "lines": lines, "lines_raw": lines_raw,
+           "problem": problem, "maps": maps}
+    if not sol.ok:
+        return out
+    sem = semantic_checker(intent)(ctx, skeleton, sol.references, settings)
+    out["semantic"] = sem
+    if not sem["passed"]:
+        out.update(stage="optimize_" + intent, reason="optimize_residual")
         return out
     out.update(ok=True, stage="optimized", reason=None)
     return out

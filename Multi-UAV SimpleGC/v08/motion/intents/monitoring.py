@@ -52,13 +52,14 @@ FAR_M = 5.0   # polyline_clearance 快速路径：真实余量小于它的弦仍
 
 def monitoring_constraints(ctx, target_id):
     """本项各阶段的精确约束（余量来自冻结几何配置；35/10/35 的含义见附录裁定 8）。"""
+    from ...contract.monitoring import TaskSpec
+    from ..layer_limits import constraints_for_task
     P = ctx.params
     mon = P["monitoring"]
     fac = ctx.facility_by_id
     tgt = fac[target_id]
-    base = [Clearance("world", ctx.world, -1, P["world_margin_m"])]
-    base += [Clearance("obstacle:" + i, g, 1, P["obstacle_margin_m"]) for i, g in ctx.obstacles]
-    base += [Clearance("alert:" + f.id, f.layers["alert"], 1, P["forbidden_margin_m"]) for f in ctx.facilities]
+    # V8-16 指令 2.2：base 由唯一圈层配置构造（监视：目标与非目标上限均为 1 → world、障碍、各设施 alert，次序不变）
+    base = constraints_for_task(ctx, TaskSpec("task0", "monitoring", target_id))["base"]
     patrol = [Clearance("target_alert_clearance", tgt.layers["alert"], 1, mon["alert_clearance_m"]),
               Clearance("target_warning_inset", tgt.layers["warning"], -1, mon["warning_inset_m"])]
     patrol += [Clearance("warning_edge:" + f.id, f.layers["warning"], 0, P["pre_entry_warning_clearance_m"])
@@ -623,34 +624,8 @@ def _boundary_points(S):
     return S.ctx.extra[key]
 
 
-def _lane_points(xy, theta, d):
-    n = np.stack([-np.sin(theta), np.cos(theta)], axis=1)
-    return xy + d * n
-
-
-def _proxy_prims(S, prims, shifts, cg, *, arcs_avoid_bands=False, spacing=1.0):
-    """图元在各车道偏移下的保守栅格检查（并要求偏移不翻转曲率）。"""
-    try:
-        smp = sample_primitives(list(prims), spacing)
-    except (PathError, ValueError):
-        return False
-    from ..path import kappa_limit, lane_curvature_ok
-    limit = kappa_limit(S.ctx.params["curve_spacing_m"], S.G["max_turn_per_chord_rad"])
-    kpos, kneg = float(max(smp.kappa.max(), 0.0)), float(min(smp.kappa.min(), 0.0))
-    for d in shifts:
-        if not lane_curvature_ok(kpos, kneg, d, limit):
-            return False
-        if not np.all(cg.ok(_lane_points(smp.xy, smp.theta, d))):
-            return False
-    if arcs_avoid_bands:
-        for (a, b), prim in zip(smp.intervals, prims):
-            if prim[0] == "line":
-                continue
-            seg = smp.xy[a:b + 1]
-            for geom in S.warn.values():
-                if np.any(np.abs(signed_distance(geom, seg)) < S.band):
-                    return False
-    return True
+# V8-16 指令 3.1：_lane_points / _proxy_prims 机械抽取到 shared_routes（函数体逐字不变），此处转导出旧名字
+from ..shared_routes import _lane_points, _proxy_prims  # noqa: E402,F401
 
 
 # ---------------------------------------------------------------- 极坐标可行带
@@ -1152,98 +1127,19 @@ def _plan_egress(S, slots, E0, rng, crng):
     return None
 
 
-def _inward_start(S, planner, p0):
-    """起点距地图边只有几十米时，骨架规划器（world 内缩 35 + Δ）可能认为起点不自由：
-    沿朝向地图中心的方向直线走到第一个自由点，这一段是直线，不改变起点。"""
-    x0, y0, x1, y1 = S.ctx.bounds
-    d = unit(np.array([(x0 + x1) / 2.0, (y0 + y1) / 2.0]) - p0)
-    for s in np.arange(0.0, 400.0, 5.0):
-        q = p0 + s * d
-        if planner.free([float(q[0]), float(q[1])]):
-            return q
-    return None
-
-
-def _count(S, name):
-    S.stats[name] = S.stats.get(name, 0) + 1
+# V8-16 指令 3.1：_inward_start / _count / _route / _plan_starts 的函数体机械抽取到 shared_routes；
+# 旧名字保留为包装：_route 传原 skeleton_planner，_plan_starts 传原 _route，签名与计算不变。
+from ..shared_routes import _count, _inward_start, plan_starts as _shared_plan_starts  # noqa: E402,F401
+from ..shared_routes import route_to_slot as _shared_route_to_slot  # noqa: E402
 
 
 def _route(S, p0, slot, u, rng):
     """起点 → 槽位：折线 + 圆角（直线上才允许穿越边界）。骨架余量 Δ 给圆角向内切入留余地。"""
-    G, ctx = S.G, S.ctx
-    r_floor = ctx.params["curve_spacing_m"] / G["max_turn_per_chord_rad"] * 1.05
-    r_pref = S.v_cap ** 2 / G["a_lat_m_s2"]
-    dist = float(np.hypot(*(slot - p0)))
-    for delta in (None, 10.0, 30.0, 80.0):
-        tag = "direct" if delta is None else f"skel{int(delta)}"
-        # 进场直线（沿 −u 向后）在带 Δ 余量的保守集内能延伸多远
-        back = np.arange(1.0, min(dist, 3000.0), 1.0)
-        okb = S.cg_route.ok(slot[None] - back[:, None] * u[None], delta or 0.0)
-        bad = np.flatnonzero(~okb)
-        g_max = float(back[bad[0] - 1]) if len(bad) and bad[0] > 0 else (float(back[-1]) if not len(bad) else 0.0)
-        if g_max < 2.0 * MIN_STRAIGHT_M:
-            _count(S, tag + ":approach_blocked")
-            continue
-        for _ in range(6):
-            g = float(rng.uniform(2.0 * MIN_STRAIGHT_M, g_max))
-            A = slot - g * u
-            if float(np.hypot(*(A - p0))) < 1.0:
-                _count(S, tag + ":A_too_close")
-                continue
-            lead = []
-            if delta is None:
-                mids = []
-            else:
-                pl = skeleton_planner(ctx, delta)
-                q = _inward_start(S, pl, p0)
-                if q is None:
-                    _count(S, tag + ":start_not_free")
-                    break
-                path = pl.path(q, A)
-                if path is None:
-                    _count(S, tag + ":no_skeleton_path")
-                    continue
-                if float(np.hypot(*(q - p0))) > 1e-9:
-                    lead = [q]
-                mids = [np.asarray(v, float) for v in path[1:-1]]
-            pts = [p0] + lead + mids + [A, slot]
-            try:
-                radii = []
-                for k in range(1, len(pts) - 1):
-                    seg_in = float(np.hypot(*(pts[k] - pts[k - 1])))
-                    seg_out = float(np.hypot(*(pts[k + 1] - pts[k])))
-                    avail = 0.5 * (min(seg_in, seg_out) - MIN_STRAIGHT_M)
-                    b = corner_radius_bounds(pts, k, delta, avail, r_floor=r_floor)
-                    if b is None:
-                        radii.append(None)
-                        continue
-                    r_hi = b[0]
-                    if r_hi < r_floor:
-                        raise ValueError("圆角放不下")
-                    radii.append(float(rng.uniform(min(r_pref, r_hi), r_hi)))
-                prims = fillet_route(pts, radii)
-            except ValueError:
-                _count(S, tag + ":fillet_fit")
-                continue
-            if _proxy_prims(S, prims, [0.0], S.cg_route, arcs_avoid_bands=True):
-                return prims, delta
-            _count(S, tag + ":proxy")
-    return None, None
+    return _shared_route_to_slot(S, p0, slot, u, rng, planner_factory=skeleton_planner)
 
 
 def _plan_starts(S, slots, C, u, rng):
-    n_u = left_normal(u)
-    out, meta = {}, {}
-    for m in slots.order:
-        l, d = slots.offsets[m]
-        slot = C + l * u + d * n_u
-        p0 = np.asarray(S.states[m].p[:2], float)
-        prims, delta = _route(S, p0, slot, u, rng)
-        if prims is None:
-            return None, m
-        out[m] = prims
-        meta[m] = {"skeleton_delta_m": delta, "primitives": len(prims)}
-    return out, meta
+    return _shared_plan_starts(S, slots, C, u, rng, route_fn=_route)
 
 
 # ---------------------------------------------------------------- 组装
