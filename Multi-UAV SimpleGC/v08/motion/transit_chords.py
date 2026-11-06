@@ -45,6 +45,7 @@ COLLECT_DS = tuple(float(d) for d in np.arange(100.0, 401.0, 10.0))   # = monito
 COLLECT_BAND = (50.0, 250.0)
 Y_STEP_M = 2.0
 CACHE_VERSION = "v16-chords-1"
+ALIGN_TOL_M = 1e-6                # = connect.NODE_TOL_M：冻结 crossing_analysis 判 100 m 对齐不足时的节点容差
 
 
 # ---------------------------------------------------------------- 精确直线次水平集区间（批量；标量版调用同一批量函数）
@@ -521,7 +522,9 @@ def assess_straight_bundle(base, warnings, target_id, origin_xy, direction_xy, o
                 intervals.append(I0)
                 if sub[-band_m] is None:
                     errors.append({"lane": (l, d), "check": "target_depth", "required_m": band_m})
-                if I0[0] - a < align_m:
+                # 与冻结 crossing_analysis 同一比较（s_c < align_m − NODE_TOL_M 才算不足）；首版用严格 < align_m，
+                # 在 D = 100 m 的边界候选上把 99.99999999999966 m 判为不足（第 5 部分 3 次 chord_exact_audit）。
+                if I0[0] - a < align_m - ALIGN_TOL_M:
                     errors.append({"lane": (l, d), "check": "align", "straight_m": I0[0] - a})
             elif not _band_ok({BAND_M: sub[band_m], -BAND_M: sub[-band_m]}, a, b):
                 errors.append({"lane": (l, d), "check": "other_band", "facility": fid})

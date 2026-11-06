@@ -218,3 +218,80 @@ def screen_transit_member(facilities, target_id, time_us, p, v, criteria=None):
             "revisit_work": rev_work, "dwell_anywhere": anywhere,
             "counts": {"frames": int(n), "visits": len(visits), "max_target_layer": int(tl.max()) if n else None,
                        "max_other_layer": max_other}}
+
+
+# ======================= V8-16 指令 8.3：重访检测等价向量化候选（本项新增） =======================
+# 只消除 Python 候选过滤开销；不换 KD-tree、不改半径 ≤、gap、time dtype、norm、起止 tie-break。
+# 与上面原样抽取的 revisit 逐位相同才允许切换（tools/v08/revisit_equivalence_v16.py 三方对照）。
+
+def _revisit_vectorized(xy, velocity, time_us, levels, frames, center, criteria=None):
+    rules = (criteria or load_criteria())["detectors"]["revisit"]
+    xy, velocity = np.asarray(xy, float), np.asarray(velocity, float)
+    empty = {"detected": False, "frame_index": None, "confirm_frame_index": None,
+             "t1": None, "t2": None, "t_confirm": None, "distance_m": None,
+             "departure_m": None, "heading_difference_deg": None, "azimuth_coverage_deg": None}
+    speed = np.linalg.norm(velocity, axis=1)
+    horizontal = np.linalg.norm(velocity[:, :2], axis=1)
+    eligible = np.asarray(frames, bool) & (np.asarray(levels) == 1)
+    eligible &= (speed >= rules["min_speed_m_s"]) & (horizontal > 0)
+    indexes = np.flatnonzero(eligible)
+    if not len(indexes):
+        return empty
+    if azimuth_coverage(xy[indexes[0]:indexes[-1] + 1], center) < rules["min_azimuth_coverage_deg"]:
+        return empty
+    radius = rules["radius_m"]
+    gap_us = 2 * (rules["min_departure_m"] - radius) / float(speed.max()) * 1e6
+    buckets = defaultdict(list)
+    neighbours = tuple(product((-1, 0, 1), repeat=2))
+    relative = xy - center
+    unwrapped = np.unwrap(np.arctan2(relative[:, 1], relative[:, 0]))
+    minimums, maximums = [unwrapped], [unwrapped]
+    block = 1
+    while block * 2 <= len(xy):
+        minimums.append(np.minimum(minimums[-1][:-block], minimums[-1][block:]))
+        maximums.append(np.maximum(maximums[-1][:-block], maximums[-1][block:]))
+        block *= 2
+    t_all = np.asarray(time_us)
+    cells = np.floor(xy[indexes] / radius).astype(np.int64)          # 与逐 end 计算同一表达式
+    par, anti = rules["parallel_max_deg"], rules["antiparallel_min_deg"]
+    cov_min = rules["min_azimuth_coverage_deg"]
+    for k, end in enumerate(indexes):
+        c0, c1 = int(cells[k, 0]), int(cells[k, 1])
+        lists = [buckets[(c0 + dx, c1 + dy)] for dx, dy in neighbours]
+        n_all = sum(len(x) for x in lists)
+        if n_all:
+            starts = np.fromiter((s for lst in lists for s in lst), dtype=np.int64, count=n_all)
+            starts = starts[t_all[end] - t_all[starts] >= gap_us]
+            if len(starts):
+                candidates = np.sort(starts).astype(int)
+                distances = np.linalg.norm(xy[candidates] - xy[end], axis=1)
+                candidates = candidates[distances <= radius]
+                if len(candidates):
+                    cosine = (velocity[candidates, :2] @ velocity[end, :2]) / (horizontal[candidates] * horizontal[end])
+                    angles = np.degrees(np.arccos(np.clip(cosine, -1, 1)))
+                    keep = (angles <= par) | (angles >= anti)
+                    width = (end - candidates + 1).astype(np.int64)
+                    power = (np.frexp(width.astype(np.float64))[1] - 1).astype(np.int64)
+                    tail = end - np.left_shift(np.int64(1), power) + 1
+                    bound = np.empty(len(candidates))
+                    for pw in np.unique(power[keep]):
+                        sel = keep & (power == pw)
+                        mx, mn = maximums[int(pw)], minimums[int(pw)]
+                        bound[sel] = (np.maximum(mx[candidates[sel]], mx[tail[sel]])
+                                      - np.minimum(mn[candidates[sel]], mn[tail[sel]]))
+                    keep[keep] &= ~(np.degrees(bound[keep]) < cov_min)
+                    for start, angle in zip(candidates[keep], angles[keep]):
+                        segment = xy[start:end + 1]
+                        departure = float(np.linalg.norm(segment - xy[start], axis=1).max())
+                        if departure < rules["min_departure_m"]:
+                            continue
+                        coverage_deg = azimuth_coverage(segment, center)
+                        if coverage_deg < cov_min:
+                            continue
+                        return {"detected": True, "frame_index": int(start), "confirm_frame_index": int(end),
+                                "t1": float(time_us[start] / 1e6), "t2": float(time_us[end] / 1e6),
+                                "t_confirm": float(time_us[end] / 1e6),
+                                "distance_m": float(np.linalg.norm(xy[start] - xy[end])), "departure_m": departure,
+                                "heading_difference_deg": float(angle), "azimuth_coverage_deg": coverage_deg}
+        buckets[(c0, c1)].append(int(end))
+    return empty
