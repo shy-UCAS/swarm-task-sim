@@ -216,7 +216,9 @@ def h_values(ctx, target_id, theta):
 
 
 def _ykey(y):
-    return round(float(y), 9)
+    """单车道缓存键 = 精确浮点横向偏移（不舍入）：组合检验取到的车道与逐车道直接重算在同一 y 上计算，逐位相同。
+    （首版按 1e-9 舍入作键并在舍入值上计算，裁定 2 门禁 chord_gate 发现 n > 1 时逐格不一致，已改。）"""
+    return float(y)
 
 
 SUB_LEVELS = (BAND_M, 0.0, -BAND_M, RETREAT_M)
