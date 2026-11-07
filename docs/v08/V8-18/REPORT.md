@@ -144,3 +144,48 @@ formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connec
 - 合同 JSON 递归扫描（预置测试 9.3 同一键表）：计时/缓存命中/路径类键 0 处。
 - 以上是开发期诊断，输出在 `run\diagnostics\dev_smoke_2`，不是第 5 部分的正式快速检查。
 
+## 4. 第 4 部分：检查、实测事件、保存、测试与第二轮门禁 —— 完成（预置 SceneGate 仍在运行，见 4.4）
+
+### 4.1 优化后与名义检查
+
+- `optimize_checks.check_feint`：照 `check_transit` 的 `_grid_times`、10 Hz 含末端保持采样与返回结构；在优化后曲线上对实际 feint `crossing_boundaries` 做完整 `crossing_analysis`（目标 warning、alert 各 `["in","out"]`，保留违规明细），终点全员离所有 warning ≥ `retreat_clearance_m`（50 m），再调用 `screen_feint_member`；不重新求解。子类：`boundary_crossing`、`target_layer_crossing`、`terminal_clearance`、`nominal_start_inside`、`nominal_not_entered`、`nominal_multiple_visits`、`nominal_layers`、`nominal_dwell`、`nominal_end_inside`（同一成员同子类只记一次）。
+- `nominal_checks.screen_feint_member`：原 `layer_levels`、`dwell`，不调用 revisit；七个 condition 键与指令 4.1 表一致；空窗口的首帧/次数/最大层/末帧条件为 False；进入/退出索引与首次退出取法按指令；`min_protected_sdf_m` 为整窗 `signed_distance(protected).min()`。
+- 骨架阶段名义预筛只记录（见证 `screen`），不拒绝。
+
+### 4.2 实测保留前门禁
+
+- `feint_report.measured_members`：窗口 `tau_us ≥ release_us[m]` 且 `segment_index == 0`；contour SDF ≤ 偏移判层；独立复算 warning/alert 进入与退出事件、末帧全部设施层、最深 protected SDF；`all_single` 要求全体成员两层进入、退出各恰 1。
+- 接在 `joint_monitoring.attempt_chain` 的冻结 `verify_segments([SegmentTask(0, "feint", target)])`、`check_validity` 之后、`ok=True` 之前；非 1/1 为普通失败 `stage="measured_feint_entries"`、`code="candidate_rejected"`，占已有一次 attempt。`run_contract` 对保留结果再从实测轨迹重算一次事件写入 `result.json["feint"]`，并与原保留门禁合成 `retained_p0_ok`。
+- 落盘后从 NPY 重读的独立复核由预置测试 9.3（`test_disk_events_validity_and_no_timing`）在快批/全量后执行。
+
+### 4.3 运行器、保存与白名单
+
+- 分派：`joint_intent`（`_intent_module`、`run_contract`、`save_intent_contract`、`_pool_task` 的缓存计数与多样性曲线、`_prewarm_family_feint`、`full_stage` 检查点）、`skeleton_transit`（模块分派、骨架记录、检查点）、`transit_report`（`member_phase_times`/`phase_durations`/`phase_diagnostics`/`group_reference_curves`/`frechet_blocks` 的 feint 分支）、`joint_monitoring.attempt_chain`（遥测与实测门禁）。骨架检查点用 `feint_report.skeleton_checkpoint`（包装监视公共检查点，200、无排除）；全量用 `feint_report.full_checkpoint`（包装 `joint_report.full_checkpoint`）。不调用 `intrusion_report` 的排除名单或直线回退阈值；直线回退只作诊断。
+- `result.json["feint"]` 白名单：`turn{kind,side,radius_m}`、`formation{prior,start,realized,lateral_step_m,mapped_from_loose,retreated}`、`members[m]{entry_counts,first_entry_us,first_exit_us,min_protected_sdf_m}`；失败为 `null`；失败见证另含 `measured_feint`。`retreated` 只在队形链退让或梯形步长缩减时为真，loose→abreast 映射不算。
+- proposal/witness 只放确定性业务数据；计时（`chord_set_s`、`turn_sample_s`、`corridor_s`、`lp_s`、`route_s`、`candidate_s`、`attempt_s`）只进 `S.timing` → 目录外 telemetry。开发期 smoke 合同 JSON 递归扫描（预置 9.3 同一键表）计时/缓存/路径键 0 处。
+
+### 4.4 测试
+
+| 文件 | 结果 | 日志 |
+|---|---|---|
+| `test_preset_numeric_v18.py`（依裁定 1 修改后 SHA `15c4985f…`） | 8/8 通过 | [part4/tests_v18.txt](part4/tests_v18.txt) |
+| `test_preset_local_geometry_v18.py`（`7fd9485d…`） | `InterfacePreset` 2/2 通过；`SceneGatePreset` 未设变量时 skip = 未执行 | 同上 |
+| 同上，设 `V8_18_DEVSET/DATA_ROOT/CACHE` 的 `SceneGatePreset` | 运行中（单进程，15 组纵列 exact vs screened） | [part3/tests_scene_gate.txt](part3/tests_scene_gate.txt) |
+| `test_preset_local_artifacts_v18.py` | 未执行（需全量后的 `V8_18_ACCEPTANCE`） | — |
+| `test_extra_local_v18.py`（自加） | 10/10 通过 | [part4/tests_v18.txt](part4/tests_v18.txt) |
+| 旧套件（V8-11 至 V8-17，PowerShell 逐条） | 与第 1 部分基线完全相同：V8-12 两项、带数据根一项历史失败；V8-15 extra 无测试；其余通过 | [part4/tests_old_suites.txt](part4/tests_old_suites.txt) |
+
+- **测试传播（指令 4.4）：** 第 2 部分已登记搜索结果（无断言 `problem.turns == ()` 的旧测试）。预置 9.2 `test_outer_solver_receives_turns` 在真实外层上核对：feint 传入 `(("m", 21.0, 24.0, 15.0),)`，过境/突入为 `()`。开发链 `o01_d0` 的 `skeleton.json` 见证 `turn_ranges` 两成员各一行 `("u", sa, sb, "turn_u_min_m")`，经 `turns_from_skeleton` 进入 `JointProblem.turns`。
+
+### 4.5 第二轮三意图门禁 —— 20/20 × 3
+
+在提交 `a09a833`（全部 feint 代码已接入；工作区仅未跟踪的 `owner_rerun.json` 与新文档）运行 [run_gates.ps1](run_gates.ps1) `4`，日志 [part4/gates_4.log](part4/gates_4.log)：监视、过境、突入各 **20/20** 文件集合与 bytes 全同（[part4/gate_monitoring.json](part4/gate_monitoring.json)、[part4/gate_transit.json](part4/gate_transit.json)、[part4/gate_intrusion.json](part4/gate_intrusion.json)），排除 `[]`。耗时 6.0 / 1.4 / 1.2 分钟。
+
+### 4.6 冻结快照
+
+[part4/snapshot_part4.json](part4/snapshot_part4.json) 与第 1 部分快照比较（[part4/snapshot_compare.json](part4/snapshot_compare.json)，[snapshot_compare.py](snapshot_compare.py)）：160 个输入、`v07_*` 统计、两冻结工作树、24 个细粒度函数体（含 `solve_joint`、`Prepared`、`prepare_problem`、`check_transit`、`check_intrusion` 等）、整个 `monitoring_turn.py`、三基线全部文件身份均不变；`task_v07/`、`v08/criteria/`、`v08/sim/`、`configs/` 无改动；旧预置测试无改动。改动文件即第 0.2 节允许范围内的 20 个。
+
+### 4.7 开发链核对（有记录，非正式批次）
+
+`o01_d0` 单合同全链路（`run\diagnostics\dev_chain_1`）：第 1 次 attempt 成功，冻结段核验与有效性通过，实测两成员 warning/alert 进入、退出各 1，`retained_p0_ok=True`；阶段时长三段闭合残差 0；合同 JSON 计时/缓存/路径键 0 处。
+
