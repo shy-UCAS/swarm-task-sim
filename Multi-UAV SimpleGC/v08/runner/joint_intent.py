@@ -32,6 +32,8 @@ def _transit_attempt_summary(rec, key):
 def _intent_module(intent):
     if intent == "intrusion":
         from ..motion.intents import intrusion as mod
+    elif intent == "feint":
+        from ..motion.intents import feint as mod
     else:
         from ..motion.intents import transit as mod
     return mod
@@ -53,6 +55,8 @@ def _intent_attempt_summary(rec, key, intent):
     if intent == "intrusion" and rec.get("measured_intrusion") is not None:
         s["measured_intrusion_entries"] = {m: v["entry_counts"]
                                            for m, v in sorted(rec["measured_intrusion"]["members"].items())}
+    if intent == "feint" and rec.get("measured_feint") is not None:
+        s["measured_feint_entries"] = {m: v["entry_counts"] for m, v in sorted(rec["measured_feint"]["members"].items())}
     return s
 
 
@@ -60,7 +64,7 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
     if intent == "monitoring":
         return JM.run_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir,
                                should_stop=should_stop, keep=keep)
-    if intent not in ("transit", "intrusion"):
+    if intent not in ("transit", "intrusion", "feint"):
         raise ValueError(f"本项只支持 {INTENTS}：{intent!r}")
     from ..contract.monitoring import initial_states
     from ..contract.single_intent import mission_for_intent
@@ -145,6 +149,16 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
                                                                   "min_contour_m")}
                                             for m, v in sorted(meas["members"].items())}}
             rec["retained_p0_ok"] = bool(rec["retained_p0_ok"] and meas["all_single"])
+        if intent == "feint":
+            # V8-18 指令 4.2–4.3：保留 P0 = 原保留门禁 ∧ 全体实测成员 warning/alert 进入、退出均为 1（attempt_chain 已在
+            # 返回 ok 前查过；此处由实测释放后窗口重新生成确定性成员事件）；result.json["feint"] 走字段白名单
+            from .feint_report import formation_block, measured_members, result_block
+            meas = measured_members(ctx, res["tracks"], res["release_us"], task.target_id)
+            plan_ = res["plan"]
+            blk = {**result_block(plan_.proposal or {}, meas),
+                   "formation": formation_block(plan_.formation or {}, plan_.repairs)}
+            rec["feint"] = {k: blk[k] for k in ("turn", "formation", "members")}
+            rec["retained_p0_ok"] = bool(rec["retained_p0_ok"] and meas["all_single"])
         rec["deviation"] = JM.member_deviation(res)
         rec["tracking"] = JM.tracking_stats(res)
         try:
@@ -159,12 +173,16 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
         rec["nominal_duration_s"] = float(plan.nominal_duration_s)
         rec["formation"] = {k: plan.formation.get(k) for k in ("prior", "start", "realized", "mapped_from_loose",
                                                                 "lateral_step_m")}
-        tkeys = ("final", "curved", "fallback_reason") + (("sigma", "x_e") if intent == "intrusion" else ())
+        tkeys = ("final", "curved", "fallback_reason") + (("sigma", "x_e") if intent == "intrusion" else
+                                                          ("turn_kind", "turn_side", "radius_m") if intent == "feint"
+                                                          else ())
         rec["topology"] = {k: plan.topology.get(k) for k in tkeys}
         if keep is not None:
             keep["result"] = res
     elif intent == "intrusion":
         rec["intrusion"] = None
+    elif intent == "feint":
+        rec["feint"] = None
     if out_dir is not None:
         last = out["records"][-1] if (out["records"] and not out["success"]) else None
         save_intent_contract(Path(out_dir), rec, out["result"], last_failed=last)
@@ -202,6 +220,8 @@ def save_intent_contract(out, rec, result, last_failed=None):
                   "phase_durations": rec.get("phase_durations")}
     if intent == "intrusion":
         result_doc["intrusion"] = rec.get("intrusion")
+    if intent == "feint":
+        result_doc["feint"] = rec.get("feint")
     (d / "result.json").write_bytes(_json_bytes(result_doc))
     if result is not None and result.get("ok"):
         plan = result["plan"]
@@ -244,6 +264,8 @@ def save_intent_contract(out, rec, result, last_failed=None):
             doc["segment_failures"] = jsonable([v.failures for v in last_failed["verdicts"]])
         if intent == "intrusion" and last_failed.get("measured_intrusion") is not None:
             doc["measured_intrusion"] = jsonable(last_failed["measured_intrusion"])
+        if intent == "feint" and last_failed.get("measured_feint") is not None:
+            doc["measured_feint"] = jsonable(last_failed["measured_feint"])
         (d / "failure_witness.json").write_bytes(_json_bytes(doc))
     tele = out / "telemetry"
     tele.mkdir(exist_ok=True)
@@ -283,6 +305,8 @@ def _pool_task(task):
     try:
         if intent == "intrusion":
             from ..motion import intrusion_chords as TC
+        elif intent == "feint":
+            from ..motion import feint_chords as TC
         else:
             from ..motion import transit_chords as TC
         before = dict(TC.STATS)
@@ -295,7 +319,7 @@ def _pool_task(task):
                    skeleton_detail=[((a.get("timing") or {}).get("skeleton_detail") or {}) for a in rec["attempt_log"]],
                    nit=[(a.get("timing") or {}).get("nit") for a in rec["attempt_log"]],
                    chord_cache={k: TC.STATS[k] - before.get(k, 0) for k in TC.STATS})
-        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion"):
+        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion", "feint"):
             from .transit_report import group_reference_curves
             from ..contract.single_intent import mission_for_intent
             from ..sampler.common import sample_common
@@ -362,6 +386,8 @@ def _prewarm_family(task):
     选队形 probe 序列对应的弦集合文件（已存在不覆盖）。各族写不同文件。task 第 5 项为 intent（缺省 transit）。"""
     if len(task) > 4 and task[4] == "intrusion":
         return _prewarm_family_intrusion(task)
+    if len(task) > 4 and task[4] == "feint":
+        return _prewarm_family_feint(task)
     import time as _t
     from ..contract.single_intent import transit_mission
     from ..motion import transit_chords as TC
@@ -433,6 +459,39 @@ def _prewarm_family_intrusion(task):
     return {"order": int(entry["order"]), "family_id": entry["family_id"], "wall_s": _t.perf_counter() - t0,
             "queries": written, "raw_cache": st, "sizes": sizes, "lane_stats": dict(IC.STATS),
             "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"], "certificate": r["certificate"]}
+                       for r in rows}}
+
+
+def _prewarm_family_feint(task):
+    """佯动（V8-18 指令 3.2）：同一族一个进程；先按确定性 probe 序列读已有文件（load_chord_set 只读），再由
+    prewarm_feint 统一写出缺失文件（原子落盘、按完整查询身份去重、已存在不覆盖）。预建不使用 RNG。"""
+    import time as _t
+    from ..contract.single_intent import feint_mission
+    from ..motion import feint_chords as FC
+    from ..motion.intents.feint import formation_probe_sequence
+    from ..sampler.common import sample_common
+    from ..sampler.keys import RngKey
+    from ..scene.context import load_context
+    entry, draws, data_root, cache_dir = task[:4]
+    t0 = _t.perf_counter()
+    ctx = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
+    rows, sizes = [], {}
+    for d in draws:
+        m = feint_mission(ctx, sample_common(ctx.family, d))
+        g, task_ = m.groups[0], m.tasks[0]
+        sizes[f"{int(entry['order'])}:{d}"] = len(g.member_ids)
+        key = RngKey(ctx.family.family_id, d, "shape", mission=0, branch=None, group=g.group_id, segment=0)
+        tq = _t.perf_counter()
+        seq = formation_probe_sequence(ctx, g, task_, key)
+        rows.append({"draw": d, "target": task_.target_id, "probes": [[nm, st, None] for nm, st, _, _ in seq],
+                     "requests": [(task_.target_id, offs, sp) for _, _, offs, sp in seq],
+                     "probe_wall_s": _t.perf_counter() - tq})
+    reqs = [r for row in rows for r in row["requests"]]
+    written = FC.prewarm_feint(ctx, reqs, cache_dir)
+    st = ctx.cache_stats()
+    return {"order": int(entry["order"]), "family_id": entry["family_id"], "wall_s": _t.perf_counter() - t0,
+            "queries": written, "raw_cache": st, "sizes": sizes,
+            "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"], "probe_wall_s": r["probe_wall_s"]}
                        for r in rows}}
 
 
@@ -543,6 +602,9 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
     if intent == "intrusion":
         from .intrusion_report import full_checkpoint as intrusion_full_checkpoint
         chk = intrusion_full_checkpoint(good, blocks_after) if full_rows else None
+    elif intent == "feint":
+        from .feint_report import full_checkpoint as feint_full_checkpoint
+        chk = feint_full_checkpoint(good, blocks_after) if full_rows else None
     else:
         chk = JR.full_checkpoint(good, blocks_after) if full_rows else None
     disp_wall = time.time() - t_dispatch

@@ -351,3 +351,51 @@ def screen_intrusion_member(facilities, target_id, time_us, p, v, criteria=None)
             "min_contour_m": float(contour.min()) if n else None,
             "counts": {"entries": entries, "frames": int(n), "max_target_layer": int(tl.max()) if n else None,
                        "max_other_layer": max_other}}
+
+
+def screen_feint_member(facilities, target_id, time_us, p, v, criteria=None):
+    """V8-18 指令 4.1：释放后的 10 Hz 窗口（含末端保持）；使用原 layer_levels、runs/dwell，不调用 revisit（泪滴反向
+    重合不构成佯动失败）。conditions 全为真才 passed：
+    started_outside_target_warning（非空且首帧目标层 0）、single_warning_entry / single_alert_entry（各层掩码
+    False→True 次数恰 1，首帧 True 也计）、max_target_layer_two（目标最大层恰 2）、ended_outside_all_warning（末帧
+    全部设施层 0）、other_layers_within_limit（其他设施最大层 ≤ 1，单设施为 0）、no_dwell_window（整个窗口 dwell 未检出）。
+    空窗口的首帧/次数/最大层/末帧条件均为 False。进入索引 inside & ~r_[False, inside[:-1]]，退出索引
+    ~inside & r_[False, inside[:-1]]；首次退出 = 首次进入后第一个 False 帧的整数微秒（不取最后一个 True、不在窗口末尾
+    虚构退出）。入/出时刻是帧时刻，不是连续精确穿越时间。min_protected_sdf_m = 整窗 signed_distance(protected).min()。"""
+    from ..scene.exact import signed_distance
+    cfg = criteria if criteria is not None else load_criteria()
+    t = np.asarray(time_us)
+    xy = np.asarray(p, dtype=float)[:, :2]
+    ids = [f.id for f in facilities]
+    ti = ids.index(target_id)
+    n = len(t)
+    levels = np.zeros((n, len(ids)), np.int8)
+    for j, f in enumerate(facilities):
+        levels[:, j], _ = layer_levels(f, xy)
+    tl = levels[:, ti]
+    entries, first_in, first_out = {}, {}, {}
+    for name, code in _LAYER_CODES[:2]:
+        inside = tl >= code
+        prev = np.r_[False, inside[:-1]] if n else np.zeros(0, bool)
+        starts = np.flatnonzero(inside & ~prev)
+        ends = np.flatnonzero(~inside & prev)
+        entries[name] = int(len(starts))
+        first_in[name] = int(t[starts[0]]) if len(starts) else None
+        after = ends[ends > starts[0]] if len(starts) else np.zeros(0, np.int64)
+        first_out[name] = int(t[after[0]]) if len(after) else None
+    other = [j for j in range(len(ids)) if j != ti]
+    max_other = int(levels[:, other].max()) if (other and n) else 0
+    anywhere = dwell(xy, t, np.ones(n, bool), cfg) if n else {"detected": False}
+    sp = np.asarray(signed_distance(facilities[ti].layers["protected"], xy), float).reshape(-1) if n else np.zeros(0)
+    cond = {"started_outside_target_warning": bool(n and tl[0] == 0),
+            "single_warning_entry": bool(n and entries["warning"] == 1),
+            "single_alert_entry": bool(n and entries["alert"] == 1),
+            "max_target_layer_two": bool(n and int(tl.max()) == 2),
+            "ended_outside_all_warning": bool(n and int(levels[-1].max()) == 0),
+            "other_layers_within_limit": bool(max_other <= 1),
+            "no_dwell_window": not bool(anywhere["detected"])}
+    return {"passed": all(cond.values()), "conditions": cond, "levels": levels, "counts": {
+                "entries": entries, "frames": int(n), "max_target_layer": int(tl.max()) if n else None,
+                "max_other_layer": max_other},
+            "dwell_anywhere": anywhere, "first_entry_us": first_in, "first_exit_us": first_out,
+            "min_protected_sdf_m": float(sp.min()) if n else None}

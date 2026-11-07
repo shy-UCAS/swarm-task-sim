@@ -161,8 +161,8 @@ class NumericPreset(unittest.TestCase):
         self.assertAlmostEqual(lower, 1.0 - math.sqrt(50.0) / 2.0, places=14)
         self.assertLess(lower, 0.0)
         self.assertTrue(clearance_passes(cons, xy, mode="exact"))
-        # 本断言验证U字面规则的已知误拒，不宣称该规则与exact等价；见12.1。
-        self.assertFalse(clearance_passes(cons, xy, mode="upper_literal", field=field))
+        # 负下界不是不可行，screened 交给精确判定（依裁定 1）。
+        self.assertTrue(clearance_passes(cons, xy, mode="screened", field=field))
 
     def test_no_intrusion_exclusion_and_no_fallback_gate(self):
         rows = []

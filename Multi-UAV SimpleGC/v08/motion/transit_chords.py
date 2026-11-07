@@ -567,7 +567,7 @@ def corridor_rows(ctx, task, chord, slots):
     m = BAND_M + D
     I = line_sublevel(tgt.layers["warning"], o + h * n, u, -m)
     I_a = None
-    if task.intent == "intrusion":
+    if task.intent in ("intrusion", "feint"):         # V8-18 指令 3.5：feint 入口沿用突入同一范围
         # V8-17 指令 3.5：I = I_w ∩ (−∞, I_a^lo]，I_a = {alert SDF ≤ +(10 + D)}（正次水平集；不用 0 交点再减 10 + D）；
         # 任一区间缺失或交为空记 corridor_unavailable，不改弦
         I_a = line_sublevel(tgt.layers["alert"], o + h * n, u, m)
@@ -576,7 +576,7 @@ def corridor_rows(ctx, task, chord, slots):
     out = {"available": False, "reason": None, "D": D, "inset_interval": I, "x": [], "lo": [], "hi": [],
            "rows_total": 0, "certified_rows": 0, "run": None, "certified_length_m": 0.0,
            "inset_length_m": 0.0 if I is None else float(I[1] - I[0])}
-    if task.intent == "intrusion":
+    if task.intent in ("intrusion", "feint"):
         out["alert_interval"] = I_a
     if I is None:
         out["reason"] = "corridor_unavailable"

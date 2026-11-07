@@ -1,0 +1,33 @@
+# 依裁定 1 授权修改的两处预置断言（修改前 = 指令第 9 节原文 = 作者静态记录 SHA）
+test_preset_numeric_v18.py before 37e0f99b805755a14fbc04ae10a5d19c8ac753401d014e2c6d2929dfca4f914c
+test_preset_numeric_v18.py after  15c4985f4ba50775db19b02c2ebd5c28cb59a0171cb8cdf4ead2f53c4e26d499
+test_preset_local_geometry_v18.py before df210a76922abd28e7ac66f5af5f8a64b8b53e04e11663fcac6b5895c0bf0c39
+test_preset_local_geometry_v18.py after  7fd9485daca121f07f3ac31c4c8edebbf850d472f98373796dcfe08d9008bd60
+diff --git a/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_local_geometry_v18.py b/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_local_geometry_v18.py
+index 5f7ba23..5fc4f46 100644
+--- a/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_local_geometry_v18.py	
++++ b/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_local_geometry_v18.py	
+@@ -90,7 +90,7 @@ class SceneGatePreset(unittest.TestCase):
+                 for cell, candidate in FC.iter_certification_cases(ctx, task, slots):
+                     # 独立oracle为S精确几何组成的exact路径；禁止其调用粗筛。
+                     exact = FT.certify_candidate(ctx, task, slots, cell, candidate, mode="exact")
+-                    fast = FT.certify_candidate(ctx, task, slots, cell, candidate, mode="upper_literal")
++                    fast = FT.certify_candidate(ctx, task, slots, cell, candidate, mode="screened")
+                     if bool(exact["feasible"]) != bool(fast["feasible"]):
+                         mismatch += 1
+                         if first is None:
+diff --git a/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_numeric_v18.py b/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_numeric_v18.py
+index 605e017..03927c5 100644
+--- a/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_numeric_v18.py	
++++ b/Multi-UAV SimpleGC/tests/v08/V8-18/test_preset_numeric_v18.py	
+@@ -161,8 +161,8 @@ class NumericPreset(unittest.TestCase):
+         self.assertAlmostEqual(lower, 1.0 - math.sqrt(50.0) / 2.0, places=14)
+         self.assertLess(lower, 0.0)
+         self.assertTrue(clearance_passes(cons, xy, mode="exact"))
+-        # 本断言验证U字面规则的已知误拒，不宣称该规则与exact等价；见12.1。
+-        self.assertFalse(clearance_passes(cons, xy, mode="upper_literal", field=field))
++        # 负下界不是不可行，screened 交给精确判定（依裁定 1）。
++        self.assertTrue(clearance_passes(cons, xy, mode="screened", field=field))
+ 
+     def test_no_intrusion_exclusion_and_no_fallback_gate(self):
+         rows = []

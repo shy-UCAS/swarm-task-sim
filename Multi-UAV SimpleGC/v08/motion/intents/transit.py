@@ -261,11 +261,20 @@ def build_candidate(ctx, group, task, states, key, proposal):
         slots = formation_slots(group, ctx.family, key, formation=P.get("formation"),
                                 lateral_step_m=P.get("lateral_step_m"), order=P.get("member_slot_order"))
         ext = slots.max_longitudinal_m
-        ref, mark_idx = build_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
+        if intent == "feint":
+            # V8-18 指令 3.5：参考 = 入口（含 LP 段）+ 整体掉头 + 出口；延伸覆盖成员域与 l*（沿用 ext + 1.0）
+            from .feint import build_reference as feint_reference
+            ext = max(ext, float(P["l_star_m"]))
+            ref, mark_idx = feint_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
+        else:
+            ref, mark_idx = build_reference(P, 0.0 if ext == 0.0 else ext + 1.0, spacing)
         s_c, s_t = ref.marks["collect"], ref.marks["terminal"]
         if intent == "intrusion":
             from .intrusion import member_lanes
             lanes = member_lanes(ref, slots, s_c, s_t, P, spacing)
+        elif intent == "feint":
+            from .feint import member_lanes as feint_lanes
+            lanes = feint_lanes(ref, slots, s_c, s_t, P, spacing)
         else:
             lanes = derive_members(ref, slots, (s_c, s_t), spacing_m=spacing)
     except (PathError, ValueError) as exc:
@@ -334,7 +343,10 @@ def build_candidate(ctx, group, task, states, key, proposal):
         base_s = cum[m][coll_idx[m]]
         out = [(0.0, v0)]
         for s_rel, v in breaks_ref[1:]:
-            s_member = base_s + float(np.interp(s_c + s_rel + l_m, lane.s_ref, lane_cum))
+            if intent == "feint":           # V8-18 指令 3.5：变队形用编组站点 s_group → 成员弧长，不用常数 s + l_i
+                s_member = base_s + float(np.interp(s_c + s_rel, lane.s_group, lane_cum))
+            else:
+                s_member = base_s + float(np.interp(s_c + s_rel + l_m, lane.s_ref, lane_cum))
             if s_member > out[-1][0] + 1e-9:
                 out.append((s_member, float(v)))
             else:
@@ -368,6 +380,11 @@ def build_candidate(ctx, group, task, states, key, proposal):
         ref_xy = tuple((float(a), float(b)) for a, b in ref.xy[mark_idx["collect"]:mark_idx["terminal"] + 1])
         return finish_candidate(ctx, task, key, P, slots, lanes, curves, cum, coll_idx, members, nominals, wit, anchors,
                                 duration, cons, ref_xy)
+    if intent == "feint":
+        from .feint import finish_candidate as feint_finish
+        ref_xy = tuple((float(a), float(b)) for a, b in ref.xy[mark_idx["collect"]:mark_idx["terminal"] + 1])
+        return feint_finish(ctx, task, key, P, slots, lanes, curves, cum, coll_idx, members, nominals, wit, anchors,
+                            duration, cons, ref_xy)
     retreat = cfg_m["retreat_clearance_m"]
     entry_exit = {}
     for m in order:

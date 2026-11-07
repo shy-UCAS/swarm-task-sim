@@ -16,6 +16,15 @@ def member_phase_times(res, m, *, intent="transit"):
     （构造时 crossing_analysis 给出、保存在 member_map_transit）映射到名义时间；不是 LP 起止点或中心线入圈时刻。
     V8-17：intent="intrusion" 时返回 (release_s, t_warning_entry, end_s)，入点取 member_map_intrusion。"""
     plan, opt = res["plan"], res["opt"]
+    if intent == "feint":
+        # V8-18 指令 7.2：(release_s, t_alert_in, t_alert_out, end_s)；入/出取 member_map_feint 的成员 alert 穿越弧长
+        mm = plan.witnesses["member_map_feint"]["members"][m]
+        maps = opt["maps"][m]
+        cs, ta = np.asarray(maps["curve_s"], float), np.asarray(maps["t_abs"], float)
+        ref = {r.member_id: r for r in opt["references"]}[m]
+        a_in, a_out = (float(x) for x in mm["layer_member_s"]["alert"])
+        return (float(ref.release_s), float(np.interp(a_in, cs, ta)), float(np.interp(a_out, cs, ta)),
+                float(ref.end_s))
     if intent == "intrusion":
         mm = plan.witnesses["member_map_intrusion"]["members"][m]
         maps = opt["maps"][m]
@@ -38,6 +47,14 @@ def phase_durations(res, *, intent="transit"):
     from ..motion.optimize import physical_limits
     plan = res["plan"]
     out = {}
+    if intent == "feint":
+        # V8-18 指令 7.2：release→alert 入；alert 入→alert 出；alert 出→移动 end（三者和 = travel）
+        for m in sorted(plan.members):
+            r, a, b, e = member_phase_times(res, m, intent=intent)
+            out[m] = {"feint_ingress_s": a - r, "feint_work_s": b - a, "feint_egress_s": e - b, "travel_s": e - r,
+                      "release_s": r, "release_delay_s": float(plan.members[m].release_delay_s),
+                      "closure_residual_s": (a - r) + (b - a) + (e - b) - (e - r)}
+        return out
     if intent == "intrusion":
         for m in sorted(plan.members):
             r, a, e = member_phase_times(res, m, intent=intent)
@@ -103,7 +120,7 @@ def phase_diagnostics(res, *, intent="transit", ctx=None):
         if intent == "intrusion":
             r, t_in, e = member_phase_times(res, m, intent=intent)
         else:
-            r, t_in, t_out, e = member_phase_times(res, m)
+            r, t_in, t_out, e = member_phase_times(res, m, intent=intent)
         tr = res["tracks"][m]
         t = np.asarray(tr.tau_us, np.int64) / 1e6
         sel = (t >= ref.release_s - 1e-9) & (t <= ref.end_s + 1e-9)
@@ -123,6 +140,14 @@ def phase_diagnostics(res, *, intent="transit", ctx=None):
             out[m] = {"phases": got, "t_entry_s": t_in,
                       "release_offset_s": float(res["release_us"][m]) / 1e6 - float(ref.release_s),
                       "terminal_deceleration": _terminal_deceleration(ctx, plan, nom, t, op, ov, mpv, mvv)}
+            continue
+        if intent == "feint":
+            bounds = {"feint_ingress": (r, t_in), "feint_work": (t_in, t_out), "feint_egress": (t_out, e, True)}
+            got = phase_metrics(t, rp, rv, op, ov, mpv, mvv, bounds, tan)
+            from .feint_report import deformation_observables
+            out[m] = {"phases": got, "t_alert_entry_s": t_in, "t_alert_exit_s": t_out,
+                      "release_offset_s": float(res["release_us"][m]) / 1e6 - float(ref.release_s),
+                      "deformation": deformation_observables(ctx, plan, m, maps)}
             continue
         bounds = {"transit_ingress": (r, t_in), "transit_crossing": (t_in, t_out), "transit_egress": (t_out, e, True)}
         got = phase_metrics(t, rp, rv, op, ov, mpv, mvv, bounds, tan)
@@ -197,10 +222,12 @@ def group_reference_curves(ctx, group, res, *, intent="transit"):
     from ..motion.skeleton import NominalPVA, reference_guidance
     plan = res["plan"]
     tgt = plan.witnesses["target_id"]
-    geom = ctx.facility_by_id[tgt].layers["warning"]
+    # V8-18 指令 7.2：佯动作业段 = 目标 alert 进入 → 退出（裁切几何换为 alert，读 member_map_feint）
+    geom = ctx.facility_by_id[tgt].layers["alert" if intent == "feint" else "warning"]
     ref_xy = np.asarray(plan.reference_xy, float)
     S = float(plan.anchors["collect_s"]) + np.r_[0.0, np.cumsum(np.hypot(*np.diff(ref_xy, axis=0).T))]
-    mm = plan.witnesses["member_map_intrusion" if intent == "intrusion" else "member_map_transit"]["members"]
+    mm = plan.witnesses[{"intrusion": "member_map_intrusion", "feint": "member_map_feint"}.get(
+        intent, "member_map_transit")]["members"]
     G = reference_guidance()
     disp = np.zeros_like(ref_xy)
     opt = res["opt"]["solution"].references
@@ -247,8 +274,8 @@ def frechet_blocks(div_rows, key="curve_after", *, intent="transit"):
                        "attempted": len(rs), "success": sum(bool(r.get("success")) for r in rs),
                        "comparable": len(ok), "endpoint_m": [endpoint_distances(ok[i], ok[j]) for i, j in pairs],
                        "na_reasons": [r.get("frechet_na") for r in rs if r.get("success") and r.get(key) is None],
-                       "scope": "intrusion_warning_to_terminal_v17" if intent == "intrusion"
-                       else "transit_crossing_v16"})
+                       "scope": {"intrusion": "intrusion_warning_to_terminal_v17",
+                                 "feint": "feint_alert_entry_to_exit_v18"}.get(intent, "transit_crossing_v16")})
     return blocks
 
 

@@ -90,7 +90,7 @@ class SceneGatePreset(unittest.TestCase):
                 for cell, candidate in FC.iter_certification_cases(ctx, task, slots):
                     # 独立oracle为S精确几何组成的exact路径；禁止其调用粗筛。
                     exact = FT.certify_candidate(ctx, task, slots, cell, candidate, mode="exact")
-                    fast = FT.certify_candidate(ctx, task, slots, cell, candidate, mode="upper_literal")
+                    fast = FT.certify_candidate(ctx, task, slots, cell, candidate, mode="screened")
                     if bool(exact["feasible"]) != bool(fast["feasible"]):
                         mismatch += 1
                         if first is None:

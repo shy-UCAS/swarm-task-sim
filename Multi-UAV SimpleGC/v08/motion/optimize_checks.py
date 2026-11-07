@@ -593,3 +593,87 @@ def check_intrusion(ctx, skeleton, trajectories, settings):
                              "entries": scr["counts"]["entries"]})
     return {"passed": not failures, "failures": failures, "boundaries": boundaries,
             "nominal_members": nominal_members, "terminal": terminal}
+
+
+FEINT_FAILURE_KIND = {"started_outside_target_warning": "nominal_start_inside",
+                      "other_layers_within_limit": "nominal_layers", "no_dwell_window": "nominal_dwell",
+                      "ended_outside_all_warning": "nominal_end_inside"}
+
+
+def _feint_nominal_kinds(scr):
+    kinds = []
+    cond = scr["conditions"]
+    for k, ok in cond.items():
+        if ok:
+            continue
+        if k in ("single_warning_entry", "single_alert_entry"):
+            layer = "warning" if k == "single_warning_entry" else "alert"
+            kind = "nominal_not_entered" if scr["counts"]["entries"][layer] == 0 else "nominal_multiple_visits"
+        elif k == "max_target_layer_two":
+            mx = scr["counts"]["max_target_layer"]
+            kind = "nominal_not_entered" if (mx is None or mx < 2) else "nominal_layers"
+        else:
+            kind = FEINT_FAILURE_KIND[k]
+        if kind not in kinds:
+            kinds.append(kind)
+    return kinds
+
+
+def check_feint(ctx, skeleton, trajectories, settings):
+    """V8-18 指令 4.1：照 check_transit 的 _grid_times、10 Hz 含末端保持采样与返回结构，在优化后的曲线上重算：
+    1) 实际 feint crossing_boundaries 完整曲线上 crossing_analysis（不传 skip_ranges），目标 warning / alert 各
+       ["in", "out"]，保留原违规明细；
+    2) 每成员 tr.evaluate(tr.end_s, 0) 到全部 warning ≥ retreat_clearance_m（50 m）；
+    3) screen_feint_member（释放起至移动结束 + 末端保持的 10 Hz p/v），任一条件失败为语义失败。
+    不重新求解；掉头半径由 JointProblem.turns 进入 AL 与 check_physical，不另设更松的检查。失败子类见
+    boundary_crossing / target_layer_crossing / terminal_clearance / nominal_*。"""
+    from ..config import load_config
+    from ..scene.exact import signed_distance
+    from .connect import crossing_analysis
+    from .layer_limits import crossing_layer_keys
+    from .nominal_checks import screen_feint_member
+    from .optimize import physical_limits
+    from .transit_chords import transit_base
+    lim = physical_limits(settings)
+    M = load_config("monitoring").values
+    target = skeleton.witnesses["target_id"]
+    cons = transit_base(ctx, target, intent="feint")
+    keys = [target] + [k for k, layer in crossing_layer_keys(cons).items() if layer == "alert"]
+    failures = []
+    boundaries, nominal_members = {}, {}
+    for m in sorted(trajectories):
+        tr = trajectories[m]
+        ts = _grid_times(tr)
+        xy = tr.evaluate(ts + tr.release_s, 0)
+        viol, cross = crossing_analysis(xy, cons["crossing_boundaries"], target,
+                                        band_m=ctx.params["pre_entry_warning_clearance_m"],
+                                        align_m=ctx.params["alignment_length_m"])
+        boundaries[m] = {"violations": viol, "crossings": [(c.facility_id, c.direction, float(c.s_m)) for c in cross]}
+        if viol:
+            failures.append({"kind": "boundary_crossing", "member": m, "first": viol[0], "count": len(viol)})
+        for k in keys:
+            dirs = [c.direction for c in cross if c.facility_id == k]
+            if dirs != ["in", "out"]:
+                failures.append({"kind": "target_layer_crossing", "member": m, "boundary": k, "directions": dirs})
+        end = tr.evaluate(tr.end_s, 0)
+        for fid, geom in cons["warnings"].items():
+            sd = float(signed_distance(geom, end))
+            if not sd >= M["retreat_clearance_m"]:
+                failures.append({"kind": "terminal_clearance", "member": m, "facility": fid, "signed_m": sd})
+        r_us = int(round(tr.release_s * 10)) * 100_000
+        e_us = int(math.floor((tr.end_s + lim["hold_s"]) * 10 + 1e-9)) * 100_000
+        t_us = np.arange(r_us, e_us + 1, 100_000, dtype=np.int64)
+        tt = t_us / US
+        p = np.zeros((len(tt), 3))
+        v = np.zeros((len(tt), 3))
+        p[:, :2] = tr.evaluate(tt, 0)
+        v[:, :2] = tr.evaluate(tt, 1)
+        p[:, 2] = tr.altitude_m
+        scr = screen_feint_member(ctx.facilities, target, t_us, p, v)
+        nominal_members[m] = {"conditions": scr["conditions"], "counts": scr["counts"],
+                              "first_entry_us": scr["first_entry_us"], "first_exit_us": scr["first_exit_us"],
+                              "min_protected_sdf_m": scr["min_protected_sdf_m"]}
+        for kind in _feint_nominal_kinds(scr):
+            failures.append({"kind": kind, "member": m,
+                             "conditions": [k for k, ok in scr["conditions"].items() if not ok]})
+    return {"passed": not failures, "failures": failures, "boundaries": boundaries, "nominal_members": nominal_members}

@@ -130,6 +130,8 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
             from ..motion.intents.transit import last_attempt_timing
         elif task.intent == "intrusion":            # V8-17 指令 0.2：intrusion 遥测分派
             from ..motion.intents.intrusion import last_attempt_timing
+        elif task.intent == "feint":                # V8-18 指令 0.2：feint 遥测分派
+            from ..motion.intents.feint import last_attempt_timing
         else:
             from ..motion.intents.monitoring import last_attempt_timing
         t["skeleton_detail"] = last_attempt_timing()
@@ -184,6 +186,15 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
         if not meas["all_single"]:
             return {"ok": False, "stage": "measured_intrusion_entries", "code": "candidate_rejected",
                     "reason": "measured_intrusion_entries", **out}
+    if task.intent == "feint":
+        # V8-18 指令 4.2：冻结核验之后、返回 ok=True 之前，按每成员释放后第 0 段实测 10 Hz 帧独立复算 warning/alert
+        # 进入与退出事件；非 1/1 为普通失败（消耗本 attempt），保留原始证据
+        from .feint_report import measured_members as feint_measured
+        meas = feint_measured(ctx, tracks, release, task.target_id)
+        out["measured_feint"] = meas
+        if not meas["all_single"]:
+            return {"ok": False, "stage": "measured_feint_entries", "code": "candidate_rejected",
+                    "reason": "measured_feint_entries", **out}
     return {"ok": True, "stage": "verified", **out}
 
 

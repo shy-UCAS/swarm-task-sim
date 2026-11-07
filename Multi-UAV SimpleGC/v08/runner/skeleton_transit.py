@@ -42,6 +42,10 @@ def _attempt_row(a, plan, timing, exc_text=None):
         rec["intrusion"] = {"sigma": P.get("sigma"), "x_e": P.get("x_e"), "sigmas_feasible": P.get("sigmas_feasible"),
                             "endpoint_quantile": P.get("endpoint_quantile"), "lp_calls": P.get("lp_calls"),
                             "shape_draws": 1 if P.get("cell_index") is not None else 0}
+    if P.get("intent") == "feint":                  # V8-18：佯动掉头选择（确定性业务数据）
+        rec["feint"] = {"turn": P.get("turn"), "nonempty_combos": P.get("nonempty_combos"),
+                        "combos_found": P.get("combos_found"), "collect_D_m": P.get("collect_D_m"),
+                        "L_m": P.get("L_m"), "l_star_m": P.get("l_star_m"), "lp_calls": P.get("lp_calls")}
     if f is None:
         cor = P.get("corridor") or {}
         lp = P.get("lp") or {}
@@ -77,6 +81,9 @@ def _skeleton_modules(intent):
     if intent == "intrusion":
         from ..motion import intrusion_chords as TC
         from ..motion.intents import intrusion as mod
+    elif intent == "feint":
+        from ..motion import feint_chords as TC
+        from ..motion.intents import feint as mod
     else:
         from ..motion import transit_chords as TC
         from ..motion.intents import transit as mod
@@ -154,6 +161,13 @@ def run_intent_skeleton_contract(ctx, entry, draw, *, intent, out_dir=None):
             rec["terminal"] = jsonable(w.get("terminal"))
             rec["endpoint_distances_m"] = jsonable(w.get("endpoint_distances_m"))
             rec["nominal_screen"] = jsonable({m: v for m, v in sorted((w.get("screen") or {}).items())})
+        if intent == "feint":
+            w = plan.witnesses or {}
+            P = plan.proposal or {}
+            rec["feint_turn"] = jsonable({"turn": P.get("turn"), "L_m": P.get("L_m"), "l_star_m": P.get("l_star_m"),
+                                          "nonempty_combos": P.get("nonempty_combos"),
+                                          "collect_D_m": P.get("collect_D_m"), "schedule": w.get("schedule_feint")})
+            rec["nominal_screen"] = jsonable({m: v for m, v in sorted((w.get("screen") or {}).items())})
     tele = {"timing": [r.get("timing") for r in logs]}
     if out_dir is not None:
         from .monitoring import plan_to_record
@@ -163,7 +177,8 @@ def run_intent_skeleton_contract(ctx, entry, draw, *, intent, out_dir=None):
         (d / "contract.json").write_bytes(_json_bytes({k: rec[k] for k in (
             "contract_id", "intent", "family_id", "order", "draw_index", "facility_count", "vehicle_count", "group_id",
             "member_ids", "group_size", "target_id", "initial_speed_m_s", "formation_prior")}))
-        extra = ("sigma", "x_e", "terminal", "endpoint_distances_m", "nominal_screen") if intent == "intrusion" else ()
+        extra = (("sigma", "x_e", "terminal", "endpoint_distances_m", "nominal_screen") if intent == "intrusion" else
+                 ("feint_turn", "nominal_screen") if intent == "feint" else ())
         (d / "result.json").write_bytes(_json_bytes({k: rec.get(k) for k in (
             "intent", "success", "attempts", "shape_audit_failed_attempts", "exceptions", "failure", "attempt_log",
             "formation", "topology", "curved", "fallback_reason", "lateral_deviation_m", "nominal_duration_s") + extra}))
@@ -285,6 +300,12 @@ def write_outputs(out, rows, *, expected, wall_s, dispatch_wall_s, workers, prew
         from .intrusion_report import skeleton_checkpoint as intrusion_skeleton_checkpoint
         chk = intrusion_skeleton_checkpoint(det, expected_count=expected)
         fb = dict(chk["metrics"]["fallback"], triggered="straight_fallback" in chk["triggered"])
+        triggered = list(chk["triggered"])
+    elif intent == "feint":
+        # V8-18 指令 5.2：监视公共检查点（200、无排除）；直线回退只作诊断，不是佯动止损项
+        from .feint_report import skeleton_checkpoint as feint_skeleton_checkpoint
+        chk = feint_skeleton_checkpoint(det, expected_count=expected)
+        fb = dict(fallback_checkpoint(det), triggered=False, diagnostic_only=True)
         triggered = list(chk["triggered"])
     else:
         chk = skeleton_checkpoint(det, expected_count=expected)
