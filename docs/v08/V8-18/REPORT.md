@@ -87,3 +87,60 @@
   逐合同明细与首个差异（均为 `null`）在 [part2/gate_monitoring.json](part2/gate_monitoring.json)、[part2/gate_transit.json](part2/gate_transit.json)、[part2/gate_intrusion.json](part2/gate_intrusion.json)。三份 records 的键集合都等于登记的快批 20 键。门禁运行期间执行方只新建了旧意图不导入的 `feint_turn.py`、`feint_chords.py`，未改任何已有文件。
 - **耗时：** 监视 5.5 分钟、过境 9.1 分钟（新缓存根的预建占大头）、突入 1.8 分钟。
 
+## 3. 第 3 部分：佯动骨架 —— 代码完成；解析预置测试通过；等价门禁见 3.6
+
+### 3.1 实现位置与复用
+
+| 环节 | 实现 |
+|---|---|
+| 入口格、A 网格、A 级入口检查、存在性预建、缓存、门禁子集 | 新增 `v08/motion/feint_chords.py`（`cell_entry`、`centerline_A`、`entry_at_A`、`first_feasible`、`assess_formation`、`query_identity`、`load_chord_set`、`prewarm_feint`、`gate_cells`、`iter_certification_cases`）；单车道、次水平集、沿线采样、collect_phys 直接调用 `transit_chords`（`intent="feint"`） |
+| 粗筛、支撑认证、抽样、候选网格、完整认证 | 新增 `v08/motion/feint_turn.py`（`clearance_passes`、`support_pieces`、`deformation_passes`、`sample_turn_grid`、`candidate_grid`、`keypoint_mask`、`certify_candidate`、`formation_params`、`window_reference`） |
+| 一次提案、参考、成员、finish、失败分类 | 新增 `v08/motion/intents/feint.py`；`T.build_candidate` 的 feint 回调（`build_reference` / `member_lanes` / `finish_candidate`），速度事件按 `lane.s_group → lane_cum` 映射；旧意图原表达式未动 |
+| 入口 LP 范围 | `transit_chords.corridor_rows` 两处 `task.intent == "intrusion"` 扩到 `("intrusion", "feint")`，其他运算不变 |
+| 掉头构件 | 只调用 `monitoring_turn` 的 `_core`、`collapse_length_m`、`column_offsets`、`derive_deforming_members`、`choose_joint_turn`、`KINDS/SIDES`；未修改 MT |
+
+`L` 由 `collapse_length_m` 按 S `_turns_v14` 同一参数取得（间距 `slots.spacing_m`、物理 vmax 取 `member_config().vehicle_profile.max_speed_xy_m_s`、command vmax 取 monitoring、动态因子取 joint_opt、曲率界 `kappa_limit(curve_spacing_m, max_turn_per_chord_rad)`）；`l* = max(|l_i|, |l_i^col|)`，与 MT 返回值逐一断言相等。半径网格 \(R=1.05R_{\min}+2k\)，上界 U/泪滴 \(D_a/2\)、斜切 \(D_a/[2\sin(5\pi/12)]\)（\(D_a\) = 目标 alert 外接框对角线），没有经验截断（裁定 4.1）。
+
+### 3.2 认证谓词（`certify_candidate`，exact / screened / 剪枝+screened 三路同一谓词）
+
+1. **格级（解析精确，与模式无关）：** 每条成员车道目标 warning 一次正长度穿越且深 10 m、入圈点所在合法 run（transit 同一 5 m 采样/下界规则）；集合候选 \(D_c\) 预检（参考点 SDF ∈ [50, 250]、全部槽位过 feint collect_phys、210 m 预留起点不早于 run）；A 网格为中心线 alert −10 区间内的全局 5 m 倍数（数学 ceil/floor）。
+2. **A 级：** 成员实际支撑起点 \(X_i=A+l_i-l^*\)（车道坐标；纵向支撑起点早于 A，指令 12.4）在本车道 alert −10 区间内且不越过入圈 run；\(A+d_i n\)（q = s_A 的成员节点）在 alert −10 内、protected +10 外；B（每个成员都经过的横向 0 节点）在中心线 alert −10 内；其他 warning 在 [x_c + l_i, X_i] 上整段离带或完整深穿，逐 D 过滤。
+3. **出口：** \(E+d_i n_{out}\) 与支撑终点 \(X=l^*+l_i\)（出口车道坐标）在 alert −10 内、protected +10 外；出口车道合法 run（同一规则）、最后成员出目标 warning 的编组站点 \(s_0\) 起每 5 m 的离散首个终点（全员距所有 warning ≥ 50 m、未离开本条 run、\(x \ge l^*\) 即展开完成），终点精确 SDF ≥ 50 复核（指令 12.5 离散口径）。
+4. **完整：** `derive_deforming_members` 在支撑窗口参考（入口直线 → 收拢 → 核心 → 展开 → 出口直线，0.5 m 采样，schedule 弧长从该参考的图元接点下标计算）上派生实际成员车道；拼接入口/出口直线段（弦 ≤ 5 m，直线几何精确）得到全成员折线。检查：收拢/展开横向与纵向支撑之并（端点插入后裁切）与整个核心在 alert −10 内、protected +10 外，支撑对全部 crossing boundaries `sense=0, minimum=10`；全折线 feint base；完整 `crossing_analysis`（不传 `skip_ranges`）且目标 warning、alert 方向各恰 `["in","out"]`；各更大 \(D_c\) 只多一段同一直线上的入口延长弦，逐成员 base 精确（格级已查其带与槽位条件）。
+5. **剪枝（prune=True，裁定 3(a)）：** 完整认证前加三项必要条件：核心关键点解析区间（alert −10 内、protected +10 外，`sublevel_many` 向量化于全部 (A, R)）、中心线核心 0.5 m 采样点精确 SDF、base 距离场上界 < 0 确定拒绝。核心全员在单车道上，这些点都在每个成员折线上，只省计算。
+
+record 含 `theta_idx/h_m/x_in/collect_D_candidates/A_m/kind/side/radius_m/L_m/l_star_m/primitives/landmarks_xy/collect_D_compatible/terminal_xy/terminal_x/schedule/certificate`，无计时。
+
+### 3.3 粗筛 `screened`（裁定 1）
+
+`clearance_passes(mode="screened")`：对 field 中同名同几何的每项约束，沿折线以 ≤ 5 m 弧长取覆盖点（含两端），读 `lower_clearance` 得 ℓ（已减 \(\varepsilon_f\)）、上界 \(u=\ell+2\varepsilon_f\)；任一有限 \(u<0\) 直接拒绝；全部 \(\ell\ge 2.5\) 直接通过；其余覆盖点 \([s-2.5, s+2.5]\) 所触及的全部弦调用同一精确 `chord_sdf_range`/`margin_from_range`。栅格外（\(\ell=-\infty\)）按不确定处理，不拒绝。单点同理（不确定则精确 SDF）。`upper_literal` 未实现，传入即 `ValueError`。缓存身份记 `mode="screened"`、`prune=True` 与版本 `v18-feint-cells-1` / `v18-feint-turn-1`。
+
+### 3.4 抽样（裁定 2，指令 3.4）
+
+formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connect 流按 KINDS×SIDES 对每组完整 (A, R) 网格 `permutation(n)` 一次、依排列认证取首个通过（无候选组合不调用 RNG）→ `MT.choose_joint_turn` → shape 流在记录相容 \(D_c\) 中均匀选一个、再抽 K 与 logit 分位数 → connect 流路由 → speed 流。生产认证与预建同一谓词（screened + 剪枝）。抽中的格若同谓词下六组合全空，记 `feint_turn_consistency` 普通失败并留证，不换格。分布性质按裁定 2：格均匀、非空组合等概率、组内可行记录均匀，不声称 A 或种类边缘严格均匀。
+
+### 3.5 预置测试与授权修改
+
+- 依裁定 1 修改两处断言，修改前后 SHA 与 diff 见 [part3/preset_ruling1.diff](part3/preset_ruling1.diff)：
+  - `test_preset_numeric_v18.py`：`37e0f99b…914c` → `15c4985f…d499`（`test_negative_lower_bound_is_not_infeasibility` 最后一行改为 `assertTrue(clearance_passes(cons, xy, mode="screened", field=field))`，注释改为"负下界不是不可行，screened 交给精确判定（依裁定 1）"）。
+  - `test_preset_local_geometry_v18.py`：`df210a76…0c39` → `7fd9485d…bd60`（`mode="upper_literal"` → `mode="screened"`）。
+  - 夹具未补任何字段；其余预置断言未改。
+- 执行方运行（有记录）：`test_preset_numeric_v18.py` 8/8 通过；`test_preset_local_geometry_v18.py` 中 `InterfacePreset` 2/2 通过，`SceneGatePreset` 在未设环境变量时 skip（记为未执行，设变量后的运行见 3.6）；自加 `test_extra_local_v18.py` 10/10 通过（screened 与 exact 在 400 条随机折线上 0 差异、裁切端点、空组合不耗 RNG、空窗口与进 protected 反例、实测事件手算、白名单）。
+
+### 3.6 等价门禁（裁定 1、3(b)）—— 通过，差异 0
+
+- **命令：** `run_feint_v18.py --stage turn-gate --workers 24`，提交 `7116815`，输出根 `run\diagnostics\turn_gate_r1`（完整逐格 `turn_gate.json`）；摘要 [part3/turn_gate_summary.json](part3/turn_gate_summary.json)，日志 [part3/turn_gate.log](part3/turn_gate.log)。
+- **对象：** 前 5 个登记族 draw 0 目标；纵列人数 {1, ⌈N/2⌉, N}（主对照 15 组，与预置测试 9.2 同一构造）＋全部人数横排、最小步长 3 m 梯形（自加 10 组），共 25 组。每组按规范顺序在 A 网格非空的格中等间隔取 24 格（可行与空格都包含：436 格有可行候选，164 格全拒绝）；每格 6 组合全取；A 取每第 4 个网格点（20 m）；R 取 \(k\in\{0,1,2,4,8,16,\ldots\}\) 不超过上界。
+- **结果：** 候选总数 **1,021,860**；三条路径可行数均为 **163,045**（拒绝 858,815）；`exact` vs `screened`、`exact` vs 剪枝＋`screened`、`screened` vs 剪枝＋`screened` 三组两两差异均为 **0**，首个差异为 `null`。
+- **粗筛统计（`screened` 路径）：** 覆盖点 2,200,632,137，被覆盖弦 4,326,077,759，进入精确的弦 3,770,337（约 0.087%），上界 < 0 直接拒绝的约束判定 93,825 次。
+- **exact 路径的拒绝首因（候选数）：** `entry_run_ends_before_support` 320,638、`collapse_start_outside_alert` 114,312、`support_corner_outside_band` 108,903、`deformation_support` 98,801、`lane_blocked_in_target` 98,340、`collapse_end_outside_alert` 53,284、`no_terminal` 24,066、`expand_end_outside_band` 18,846、`no_collect_candidate` 18,720、`exit_blocked` 2,843、`base_clearance` 62。
+- **墙钟：** 1,637 s（24 进程；各组 CPU 秒见摘要 `per_group.wall_s`，三条路径合计）。
+- **预置 `SceneGatePreset`（单进程、exact vs screened）：** 已在后台启动，结果写 [part3/tests_scene_gate.txt](part3/tests_scene_gate.txt)；在其结束前不宣称该预置测试通过（见第 4 部分登记）。
+
+### 3.7 单格查询与单骨架（开发核对，有记录）
+
+- `o01_d0`（2 机纵列，L = 0）：航向 0、3 的全部 403 / 954 格逐格存在性查询约 2 s / 4 s；单骨架第 1 次 attempt 成功（U 形 R = 29.75 m、A = −170 m，6 个组合均非空，名义预筛两层 1/1，最深 protected SDF ≈ 45.3 m）。
+- `o02_d0`（9 机横排，L = 168 m，l* = 60.63 m）：航向 0 的 449 格约 20 s、可行 20 格；单骨架第 1 次 attempt 成功（泪滴 R = 28.25 m、A = −5 m，非空组合 4）。L = 168 m 与 U 例相同。
+- 合同 JSON 递归扫描（预置测试 9.3 同一键表）：计时/缓存命中/路径类键 0 处。
+- 以上是开发期诊断，输出在 `run\diagnostics\dev_smoke_2`，不是第 5 部分的正式快速检查。
+
