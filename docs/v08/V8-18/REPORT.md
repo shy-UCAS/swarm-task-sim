@@ -70,3 +70,20 @@
 - **旧测试基线：** [part1/tests_baseline.txt](part1/tests_baseline.txt)，由 [run_suites.ps1](run_suites.ps1) 在 PowerShell 7 中逐条执行 V8-17 `run_suites.sh` 与 `run_v17_tests.sh` 清单里的 Python 命令（指令 1.3 不要求使用 bash）。结果与 V8-17 第 1 部分基线相同：V8-12 两项历史失败（`test_registered_files_hash_and_read_only`、`test_each_diagnostic_threshold`）、带数据根一项（`test_each_diagnostic_threshold`）；V8-15 `test_extra_*` 无测试（exit=5）；其余全部通过；V8-17 三个可离线运行的文件 8+5+4 全过。
 - **预置测试：** 由 [extract_presets.py](extract_presets.py) 从指令第 9 节原样取出，三份 SHA256 与作者静态复核记录（`author_static_review.json`）一致：`test_preset_numeric_v18.py` `37e0f99b…914c`、`test_preset_local_geometry_v18.py` `df210a76…0c39`、`test_preset_local_artifacts_v18.py` `028620ee…ea52`。作者状态为"未经运行"；执行方的运行日志在后续部分另列。裁定 1 授权的两处断言修改在第 3 部分进行并登记。
 
+## 2. 第 2 部分：通用层与第一轮三意图门禁 —— 完成
+
+- **掉头表进入优化（指令 2.1）：** 新增 `v08/motion/optimize.py::turns_from_skeleton(skeleton, maps, monitoring_values)`，与监视分支 `optimize_segment` 中的运算逐句相同：成员排序、成员 rows 原顺序、`key is None` 跳过、`np.interp(s, nom.curve.s, nom.t_nodes) + nom.release_s`、R 取 `monitoring_values[key]`（未知 key 直接 `KeyError`，不默认半径）。`_optimize_segment_intent` 只把 `JointProblem(..., ())` 改为传该结果（取值 `load_config("monitoring").values`）；`references_from_skeleton` 仍传 `cons["crossing_boundaries"]`；监视分支未改。过境/突入骨架见证的 `turn_ranges` 为 `{}`，结果仍为 `()`，不增加任何输出字段。
+  - 执行方手工核对（scratch 脚本，非测试）：预置测试 9.1 的解析例返回 `(("m", 21.0, 24.0, 15.0),)`，`witnesses={}` 与 `turn_ranges={}` 均返回 `()`。正式测试在预置测试文件全部可导入后（第 3 部分）运行。
+- **合同与分派（指令 2.2）：** `contract/single_intent.py` 新增 `feint_mission`（`monitoring_mission` 后仅 `replace` 唯一 TaskSpec 的 intent）；`GENERATION_INTENTS`、`validate_single_mission`、`mission_for_intent` 增加 feint；`motion/intent_dispatch.py` 的 `SUPPORTED` 与三个分派函数显式增加 feint 分支（指向第 3–4 部分实现的 `intents.feint.propose_and_build`、`check_feint`、`screen_feint_member`，按调用时惰性导入，旧意图不导入它们）；`runner/joint_intent.py` 的 `INTENTS` 增加 feint（`run_contract` 的 feint 运行分派在第 4 部分接入）。圈层直接调用 `constraints_for_task`：feint 目标上限 2，base 为 world、障碍、目标 protected 外 10 m、其他设施 alert 外 10 m，`crossing_boundaries` 为 warnings 加目标 alert，未改。
+- **测试影响搜索：** `grep -rn "SUPPORTED|GENERATION_INTENTS|INTENTS|problem.turns|.turns ==|turns, ()|feint" tests/v08`（排除 V8-18）：没有断言意图元组等于三元组、也没有断言 `problem.turns == ()` 的旧测试；含 feint 的旧测试只涉及冻结判据（V8-11）与七意图圈层表（V8-16/17，feint 上限 2 未改）。`skeleton_builder`/`semantic_checker` 的 `assertIs` 旧断言只涉及监视/过境/突入，不受影响。
+- **第一轮门禁（指令 2.3）：** [run_gates.ps1](run_gates.ps1) 在提交 `ecf6b41` 上（工作区只有未跟踪的 `owner_rerun.json` 与 `part2/`）依次运行三个现有 CLI（24 进程），输出在运行根 `out\gates_2\{monitoring,transit,intrusion}`；[gate_compare.py](gate_compare.py) 逐合同递归比较文件集合与原始 bytes，排除 `[]`，两边都须存在 `contract.json`。日志 [part2/gates_2.log](part2/gates_2.log)。
+
+| 意图 | CLI | 基线 | 结果 | 比较文件数 |
+|---|---|---|---|---|
+| 监视 | `run_separation_v15.py --mode production-quick` | `full_v14c` | 20/20 文件集合与 bytes 全同 | 575 |
+| 过境 | `run_transit_v16.py --stage quick` | `full_transit_r2` | 20/20 | 575 |
+| 突入 | `run_intrusion_v17.py --stage quick` | V8-17 `full_r1` | 20/20 | 575 |
+
+  逐合同明细与首个差异（均为 `null`）在 [part2/gate_monitoring.json](part2/gate_monitoring.json)、[part2/gate_transit.json](part2/gate_transit.json)、[part2/gate_intrusion.json](part2/gate_intrusion.json)。三份 records 的键集合都等于登记的快批 20 键。门禁运行期间执行方只新建了旧意图不导入的 `feint_turn.py`、`feint_chords.py`，未改任何已有文件。
+- **耗时：** 监视 5.5 分钟、过境 9.1 分钟（新缓存根的预建占大头）、突入 1.8 分钟。
+
