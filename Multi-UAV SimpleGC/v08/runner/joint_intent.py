@@ -20,7 +20,7 @@ from . import joint_report as JR
 from .monitoring import jsonable, write_json
 from .runtime_defaults import DEFAULT_WORKERS
 
-INTENTS = ("monitoring", "transit", "intrusion")
+INTENTS = ("monitoring", "transit", "intrusion", "feint")
 
 
 # ---------------------------------------------------------------- 单合同

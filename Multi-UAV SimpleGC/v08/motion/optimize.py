@@ -972,6 +972,22 @@ def optimize_segment(ctx, skeleton, key, settings):
     return out
 
 
+def turns_from_skeleton(skeleton, maps, monitoring_values):
+    """V8-18 指令 2.1：骨架掉头表 → JointProblem.turns，只做 S 监视分支（optimize_segment）中的同一运算：成员排序、
+    成员 rows 保持原顺序、key 为 None 跳过；t = np.interp(s, nom.curve.s, nom.t_nodes) + nom.release_s；R 读配置原值
+    （monitoring_values[key]，未知 key 直接 KeyError，不默认半径）。没有表或空表返回 ()（旧意图不产生伪约束）。"""
+    turns = []
+    for m, rows in sorted(((skeleton.witnesses or {}).get("turn_ranges") or {}).items()):
+        nom = maps[m]["nominal"]
+        for kind, s_a, s_b, key_ in rows:
+            if key_ is None:
+                continue
+            ta = float(np.interp(s_a, nom.curve.s, nom.t_nodes)) + float(nom.release_s)
+            tb = float(np.interp(s_b, nom.curve.s, nom.t_nodes)) + float(nom.release_s)
+            turns.append((m, ta, tb, float(monitoring_values[key_])))
+    return tuple(turns)
+
+
 def _optimize_segment_intent(ctx, skeleton, key, settings, intent):
     """V8-16 指令 2.1：非监视意图的优化外层。与监视分支建立同一 JointProblem、调用同一 solve_joint；差异只有
     约束表（layer_limits.constraints_for_task）与语义检查（intent_dispatch.semantic_checker）。过境没有掉头区间，
@@ -991,7 +1007,10 @@ def _optimize_segment_intent(ctx, skeleton, key, settings, intent):
         band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
     lines_raw = lines
     lines = tuple(merge_semantic_lines(lines_raw, knot_s=float(settings["knot_s"])))
-    problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines), ())
+    # V8-18 指令 2.1：掉头表（佯动非空；过境/突入的 turn_ranges 为 {}，结果仍为 ()）
+    from ..config import load_config
+    turns = turns_from_skeleton(skeleton, maps, load_config("monitoring").values)
+    problem = JointProblem(refs, base, field, tuple(tuple(l[:5]) for l in lines), turns)
     sol = solve_joint(problem, settings, knot_s=float(settings["knot_s"]))
     out = {"ok": False, "stage": "optimize", "reason": sol.reason, "solution": sol, "monitoring": None,
            "semantic": None, "intent": intent, "references": refs, "lines": lines, "lines_raw": lines_raw,
