@@ -23,13 +23,14 @@ PROJ = Path(__file__).resolve().parents[2]
 if str(PROJ) not in sys.path:
     sys.path.insert(0, str(PROJ))
 
-STAGES = ("skeleton", "quick", "full", "rerun", "turn-gate", "cost-check", "smoke", "queries")
+STAGES = ("skeleton", "quick", "full", "rerun", "turn-gate", "cost-check", "prewarm", "smoke", "queries")
 INTENT = "feint"
 PROTOTYPE_KEYS = ((1, 0), (2, 0), (11, 1))         # U C 三个原型键
 SMOKE_CHAIN_KEYS = ((1, 0), (1, 1), (2, 0), (11, 0))
 EDGE_KEYS = ((17, 1), (17, 4))
 COST_LIMIT_S = 45 * 60                              # 裁定 3(c)
 COST_FAMILIES = 5
+PREWARM_LIMIT_S = 90 * 60                           # 成本检查点裁定 §1：主批预建墙钟上限
 
 
 def build_parser():
@@ -355,6 +356,18 @@ def main(argv=None):
         return 0 if doc["all_identical"] else 5
     if args.stage == "cost-check":
         doc = cost_check(entries, data_root, cache, out, args.workers)
+        return 2 if doc["triggered"] else 0
+    if args.stage == "prewarm":
+        # 成本检查点裁定（2026-11-07）：40 族一次性主批预建（与生产同一 prewarm_all），墙钟上限 90 分钟由执行方监视
+        from v08.runner.joint_intent import prewarm_all
+        t0 = time.time()
+        pw = prewarm_all(entries, data_root=data_root, cache_dir=cache, workers=args.workers, intent=INTENT)
+        write_json(out / "prewarm.json", pw, indent=1)
+        doc = {"wall_s": time.time() - t0, "limit_s": PREWARM_LIMIT_S, "families": pw["families"],
+               "queries_total": pw["queries_total"], "queries_written": pw["queries_written"],
+               "query_build_s": pw["query_build_s"], "triggered": bool(time.time() - t0 > PREWARM_LIMIT_S)}
+        write_json(out / "prewarm_summary.json", doc, indent=1)
+        print(json.dumps(doc, ensure_ascii=False))
         return 2 if doc["triggered"] else 0
     if args.stage == "queries":
         queries(entries, data_root, cache, out)
