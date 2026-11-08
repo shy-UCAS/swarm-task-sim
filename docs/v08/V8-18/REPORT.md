@@ -344,7 +344,34 @@ formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connec
 ### 13.4 检查点进度
 
 - 按需改造与自加测试：已完成，单独提交。
-- 共享文件改动后的第二轮三意图门禁：待运行（排除 []，各 20 合同）。
-- 单进程快速检查：待运行（三个骨架 smoke、两个边缘集合诊断）；单合同骨架超过 900 s 停。
+- 共享文件改动后的第二轮三意图门禁：监视/过境/突入各 20/20 逐字节一致，排除 []。
+- 单进程快速检查：三个骨架 smoke 均第 1 次 attempt 成功，落盘精确重验通过；两个边缘集合诊断进行中。单合同骨架超过 900 s 停。
 - 第 5 部分：待运行 200 合同骨架、24 进程，原 5.2 止损不变，新增 3600 s 墙钟上限。
 - 第 6/7/8 部分：依前置检查点逐项推进，未执行部分不宣称通过。
+
+
+### 13.5 共享文件改动后的第二轮三意图门禁 —— 通过
+
+代码绑定 `8e22f064899cd8fd832f90558da282fb319eed05`；命令脚本 [run_gates_lazy.ps1](run_gates_lazy.ps1) 使用三个既有 CLI、24 进程、原输入与原三个基线，任何运行或比较非零即停止。输出根 `run/out/gates_lazy_r1/`，日志和比较索引在 `part5_lazy/`。
+
+| 意图 | 原基线 | 字节一致 | 排除 | 证据 |
+|---|---|---|---|---|
+| 监视 | `full_v14c` | 20/20 | [] | [gate_monitoring.json](part5_lazy/gate_monitoring.json) |
+| 过境 | `full_transit_r2` | 20/20 | [] | [gate_transit.json](part5_lazy/gate_transit.json) |
+| 突入 | V8-17 `full_r1` | 20/20 | [] | [gate_intrusion.json](part5_lazy/gate_intrusion.json) |
+
+三组均比较递归文件集合和全部原始 bytes，包含失败合同，不以成功数代替比较。监视自启动至比较约 311 s，过境运行器墙钟 63.95 s、突入 55.18 s；原六组门禁记录不覆盖。无 P0。
+
+### 13.6 单进程快速检查：骨架 smoke —— 通过
+
+命令由 [run_bounded.ps1](run_bounded.ps1) 对每个固定键调用 `run_feint_v18.py --stage smoke --smoke-level skeleton --contract-keys <键> --workers 1`。每键 900 s 墙钟监视；守护进程只终止自身派生进程树，保留输出。
+
+| 键 | 成功 / attempts | 骨架墙钟 s | 廉价候选格 | 排列走格数 / 首个非空位置 | 实现队形 | 掉头 |
+|---|---|---|---|---|---|---|
+| o01_d0 | True / 1 | 4.234 | 1981 | 1 / 1 | column | oblique，+1，R=46.4 m |
+| o02_d0 | True / 1 | 24.951 | 2107 | 3 / 3 | abreast（loose 映射） | teardrop，+1，R=30.25 m |
+| o11_d1 | True / 1 | 37.888 | 2748 | 1 / 1 | abreast（loose 映射） | oblique，+1，R=302.4 m |
+
+三键无队形退让、无异常。排列平均走 5/3 个格，三个 probe 都非空；非空格规范下标分别 799、520、1186。完整命令、启动/结束 UTC、含 conda 启动的守护墙钟 6.30/27.13/40.18 s 见 `part5_lazy/o*_smoke_watchdog.json`。骨架运行输出分别在 `run/out/smoke_lazy_r1_<键>/`。
+
+用 [collect_lazy_evidence.py](collect_lazy_evidence.py) 从已保存骨架重建实际成员支撑，逐个精确检查：形变两类支撑之并及核心、完整 base、完整 crossing_analysis 的 warning/alert 一入一出、掉头表非空、LP 上界、初始连接不提前入 warning、终点全部 warning 外 50 m。**全部通过**，合同递归扫描计时/缓存/路径键及路径值 **0 处**。详见 [smoke_lazy_audit_r1.json](part5_lazy/smoke_lazy_audit_r1.json)。这是首次执行方记录，非审查方独立复跑。
