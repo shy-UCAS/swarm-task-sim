@@ -1,5 +1,7 @@
 # V8-18 佯动单段：执行报告
 
+> **2026-11-08 接续状态：** Codex 从本地/远端一致的 `4da418298fe42d66fcbecd166cb782868d19b575` 接续。最新《预建改为按需判空裁定》取代全格预建、45 分钟外推与 90 分钟预建上限；生产改用 shape 流排列廉价入口候选格、按需取首个非空格。第 1–12 节为前两次执行的历史证据，当前实现、测试与检查点见第 13 节。
+
 > 执行方：Claude Code（模型 Opus 5.5，`claude-opus-5-5`）。基线 `6dba0bc0a3813b6241fafb4c2b4f2d54a8e669b3`（dev/v0.8），审查分支 `review/v08/V8-18-feint`。
 > 依据：`_handoff\2026-11-06_V8-18_feint\V8-18_佯动单段_执行指令_20261106.md`（以下称"指令"，SHA256 `59744c24…7c30`）和 `V8-18_GPT指令评价与裁定_20261107.md`（以下称"附录"）。两者冲突时以附录为准。
 > 本报告逐部分如实填写"完成 / 失败 / 未执行"。证据等级分三档："代码已写"、"有记录"（执行方第一次运行）、"已复跑"（审查方独立复跑）。
@@ -306,3 +308,43 @@ formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connec
 
 1. 主批预建 90 分钟内完成 29/40 族。是否：(a) 再放宽上限、在已有 29 族缓存基础上只补 11 族（预计还需约 1 小时，按已完成大族的单族耗时推断，未实测）；或 (b) 先实施成本裁定第 3 节的 A 级整行剪枝提速（须重跑三路门禁），再预建剩余族。执行方未自行选择。
 2. 已完成 29 族的缓存身份不依赖本次是否中断；若采用 (b) 改动剪枝，缓存身份中的认证版本/剪枝字段会变化，已有文件将不再被命中（需重新预建）。
+
+## 13. 按需判空裁定（2026-11-08）与本次接续
+
+### 13.1 当前依据、身份与范围
+
+- 依次读取执行指令、GPT 附录、2026-11-07 成本裁定、2026-11-08 按需判空裁定，后读优先。2026-11-07 成本裁定第 2 节的实现分解、门禁取格及替代证据裁定继续有效；全格预建、45 分钟外推和 90 分钟主预建上限已被最新裁定取代。
+- 本次执行方：Codex（GPT-6，未从环境获取更细模型标识）；PowerShell 7.6.9、项目 `.conda-env=llm`。按用户指定 refspec fetch 后，本地和远端均为 `4da418298fe42d66fcbecd166cb782868d19b575`。`owner_rerun.json` 是唯一原有未跟踪文件，保留且不暂存。
+- 生产流程：廉价入口候选格按 theta/h 规范排序 → 每个 probe 一次 shape permutation → 沿排列用原 `first_feasible(screened, prune=True)` 取首个非空格 → 原组合抽样与下游链。全空才进入下一 probe；梯形二分每一步独立排列。下游失败直接结束本次 attempt。
+- 单合同存在性 memo 的身份包含完整查询身份与格；合同键改变即重建该 memo，命中不消耗 RNG。廉价入口表、解析车道和距离场仍可复用。`feint_turn.py`、`first_feasible` 的认证逻辑、screened、MT 和冻结求解参数均未改。
+- 本次源码只改 `v08/motion/feint_chords.py`、`v08/motion/intents/feint.py`、`v08/runner/joint_intent.py::_prewarm_family_feint`、`tools/v08/run_feint_v18.py`，新增 `tests/v08/V8-18/test_extra_lazy_v18.py`；同步本 REPORT 与 RUNNING。共享运行器只把 feint 预建改为既有几何场预热及人数登记，因此第二轮三意图门禁必须重跑。三路等价门禁依最新裁定不重跑，原 1,021,860 候选、差异 0 的证据继续有效。
+- 历史 `assess_formation/load_chord_set/prewarm_feint` API 保留供历史诊断；当前生产、smoke、queries 不调用。CLI 撤掉 `cost-check/prewarm` 阶段，避免继续使用已取消的预建流程。
+
+### 13.2 测试影响清单与测试结果
+
+| 测试 | 对预建/命中/load_chord_set 的依赖 | 处理与本次结果 |
+|---|---|---|
+| V8-18 `test_preset_numeric_v18.py` 8 项 | 无；只测数值、组合抽样与检查点 | 原文件与断言不动；8/8 通过 |
+| V8-18 `InterfacePreset` 2 项 | 无；真实优化外层入参与圈层 | 原文件与断言不动；2/2 通过 |
+| V8-18 `SceneGatePreset` 1 项 | 直接调用 `iter_certification_cases/certify_candidate`，不加载预建 | 不改调用或断言；未运行，以原三路门禁替代（依 2026-11-07 成本裁定第 2 节第 4 项）；本次测试发现时 skip 不计通过 |
+| V8-18 `ArtifactPreset` 3 项 | `cache` 仅供加载几何；禁止 cache_hits 等键进入合同；不要求命中或预建 | 不动文件与断言；正式快批/全量/复跑后运行 |
+| 原自加 `test_extra_local_v18.py` 10 项 | 无预建、命中或 load_chord_set 依赖 | 文件与断言不动；10/10 通过 |
+| 新自加 `test_extra_lazy_v18.py` | 按需判空与真实进程对照 | 4/4 通过；含裁定 (a)(b)(c) 与冷热 RNG 检查 |
+| 旧 V8-17 `test_extra_local_v17.py` 的动态输入用例 | patch 的是 `intrusion_chords.load_chord_set` 和突入 probe | 与 feint 改动无关；不改路径或断言 |
+| 其余旧测试 | 无 feint 全格预建、磁盘命中或 load_chord_set 预期 | 不改 |
+
+- 本次合计 **24 项通过、1 项 SceneGate skip（不算通过）**。预置三文件及原自加文件均没有修改，不需要修改预置断言或调用路径。日志见 [part5_lazy/tests_lazy_r2.log](part5_lazy/tests_lazy_r2.log)、[numeric](part5_lazy/test_preset_numeric_v18.py_lazy_r1.log)、[geometry](part5_lazy/test_preset_local_geometry_v18.py_lazy_r1.log)、[extra](part5_lazy/test_extra_local_v18.py_lazy_r1.log)。首个沙箱内 conda 启动被 Windows DLL 限制拦截，测试未运行；其后用沙箱外相同 llm 环境完成，无依赖安装或版本调整。
+- 裁定 (c) 用共享骨架运行器的真实 spawn 进程池，workers=1 与 2；对 `o01_d0` 及伴随键 `o01_d2` 的完整合同文件集合及 bytes 比较，**2/2 一致，排除 []**，两键两种进程数均第 1 次 attempt 成功。证据 [lazy_process_comparison.json](part5_lazy/lazy_process_comparison.json)，原轨迹/合同保留在 `run/diagnostics/lazy_process_test_r1/`。这项不替代正式 5 键 24/1 复跑。
+- 裁定 (a) 原文“第 2、5 个非空”若按序数解释会与其明确写出的 `4（空）→1（非空）` 冲突；自加测试以明确要求的排列、选中下标 1 与两次判空为预期，非空下标设为 1、5。预置测试未涉及此歧义，也没有修改预期。留给审查方核对文字口径。
+
+### 13.3 缓存保留证据
+
+旧 29 族的 155 个格存在性文件（含文件大小、SHA256、UTC 修改时刻）见 [preservation_before.json](part5_lazy/preservation_before.json)。全部原样保留，生产不再读写 `cache/feint_v18`。同一证据登记了 MT、完整 feint_turn、预置三文件与 owner_rerun 的原散列；各检查点后核对。
+
+### 13.4 检查点进度
+
+- 按需改造与自加测试：已完成，单独提交。
+- 共享文件改动后的第二轮三意图门禁：待运行（排除 []，各 20 合同）。
+- 单进程快速检查：待运行（三个骨架 smoke、两个边缘集合诊断）；单合同骨架超过 900 s 停。
+- 第 5 部分：待运行 200 合同骨架、24 进程，原 5.2 止损不变，新增 3600 s 墙钟上限。
+- 第 6/7/8 部分：依前置检查点逐项推进，未执行部分不宣称通过。

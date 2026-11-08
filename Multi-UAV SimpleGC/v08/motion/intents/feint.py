@@ -2,17 +2,17 @@
 
 一个 attempt 的 RNG 顺序（指令 3.4，全部用现有键）：
   1. formation 流确定槽位序，全部 probe 共用；
-  2. shape 流在非空格列表上 integers(0, len(cells)) 一次；
+  2. 每个队形 probe 用 shape 流排列廉价入口候选格，按需判空，取首个非空格（2026-11-08 裁定）；
   3. connect 流按 MT 种类/侧向顺序，对每组完整 (A, R) 网格 permutation(n) 一次，依排列认证、取首个通过记录
      （feint_turn.sample_turn_grid；无候选的组合不调用 RNG）；
   4. 直接调用 MT.choose_joint_turn 在非空组合中等概率选一个（组内仍保留其自身 RNG 调用）；
   5. shape 流在选中记录兼容的 D_c 中均匀选一个，再抽 K 与原 logit 分位数；connect 流随后用于路由；speed 流沿用
      原 Poisson 事件（transit.build_candidate）。
-预建只存存在性；生产抽到的格若在同谓词下六组合全空，属于实现/缓存一致性问题，留证结束该 attempt，不换格。
+按需判空只确定存在性；抽中格若在同谓词下六组合全空，留证结束该 attempt，不换格。
 任何下游失败原样结束 attempt；唯一 20 次预算由 run_attempts 管理。
 
 队形：retreat_chain(mapped_start(prior))，loose 按 abreast；梯形照 transit._echelon_payload 二分。宽度可行 = 该队形
-存在至少一格完整佯动掉头（feint_chords.load_chord_set 非空）；只有它触发退让。
+存在至少一格完整佯动掉头；只有完整候选格表全空触发退让。
 共享步骤直接调用：TransitSetup（feint base 与 cg_route）、corridor_rows（intrusion/feint 同一入口范围）、curve_lp /
 exact_curve_audit、plan_starts + transit._transit_route、preentry_clearance_ok、transit.build_candidate（feint 回调：
 build_reference / member_lanes / finish_candidate；速度事件按 s_group 映射）。
@@ -67,7 +67,8 @@ def draw_summary(P, formation):
     P = P or {}
     turn = P.get("turn") or {}
     return {"intent": "feint", "formation": formation, "theta_deg": P.get("theta_deg"), "h_m": P.get("h_m"),
-            "cell_index": P.get("cell_index"), "cells_feasible": P.get("cells_feasible"),
+            "cell_index": P.get("cell_index"), "cells_candidate": P.get("cells_candidate"),
+            "cells_examined": P.get("cells_examined"),
             "turn_kind": turn.get("kind"), "turn_side": turn.get("side"), "radius_m": turn.get("radius_m"),
             "A_m": turn.get("A_m"), "nonempty_combos": P.get("nonempty_combos"), "collect_D_m": P.get("collect_D_m"),
             "collect_candidates": P.get("collect_candidates"), "K": P.get("K"),
@@ -77,31 +78,45 @@ def draw_summary(P, formation):
 
 # ---------------------------------------------------------------- 队形 probe
 
-def formation_probe_sequence(ctx, group, task, key):
-    """确定性选队形 probe 序列（主进程预建与 worker 共用）：[(formation, lateral_step, offsets, spacing)]，
-    按 width_then_build 的实际调用次序，直到第一个非空集合为止。"""
+def select_formation(ctx, group, task, key, rng, steps_log, telemetry):
+    """生产与集合诊断共用的 probe 路径；每步排列独立，下游失败不回到这里。"""
+    FC.begin_contract(ctx, key)
     fam = ctx.family
     chain = retreat_chain(mapped_start(group.formation_prior))
     b = float(fam.lateral_spacing_m)
     fkey = RngKey(key.family_id, key.draw, "formation", mission=key.mission, branch=key.branch, group=key.group,
                   segment=key.segment, attempt=key.attempt)
     order = formation_slots(group, fam, fkey, formation=chain[0]).order
-    seq = []
-
     def probe(name, step):
+        t0 = time.perf_counter()
         slots = formation_slots(group, fam, fkey, formation=name, lateral_step_m=step, order=order)
-        offs, spacing = FC.request_for(slots)
-        seq.append((name, step, offs, spacing))
-        doc = FC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir)
-        return {"slots": slots, "doc": doc} if doc["cells"] else None
+        got = FC.sample_cell(ctx, task, slots, rng)
+        steps_log.append({"formation": name, "lateral_step_m": step, **got["summary"]})
+        telemetry.append({"formation": name, "lateral_step_m": step, **got["telemetry"],
+                          "probe_s": time.perf_counter() - t0})
+        return {"slots": slots, "selection": got, "lateral_step_m": step} if got["cell"] is not None else None
 
     def width_probe(name):
         if name == "echelon":
-            return T._echelon_payload(probe, group, b, [])
+            return T._echelon_payload(probe, group, b, steps_log)
         return probe(name, None)
 
-    width_then_build(chain, width_probe, lambda name, payload: payload)
-    return seq
+    return width_then_build(chain, width_probe, lambda name, payload: payload)
+
+
+def formation_probe_sequence(ctx, group, task, key):
+    """历史调用兼容：只走按需 probe，不读取旧格存在性文件。诊断详单用 select_formation。"""
+    from ...sampler.keys import rng_for
+    steps, telemetry = [], []
+    rng = rng_for(RngKey(key.family_id, key.draw, "shape", mission=key.mission, branch=key.branch, group=key.group,
+                        segment=key.segment, attempt=key.attempt))
+    select_formation(ctx, group, task, key, rng, steps, telemetry)
+    fkey = RngKey(key.family_id, key.draw, "formation", mission=key.mission, branch=key.branch, group=key.group,
+                  segment=key.segment, attempt=key.attempt)
+    order = formation_slots(group, ctx.family, fkey, formation=retreat_chain(mapped_start(group.formation_prior))[0]).order
+    return [(p["formation"], p["lateral_step_m"], *FC.request_for(formation_slots(
+        group, ctx.family, fkey, formation=p["formation"], lateral_step_m=p["lateral_step_m"], order=order)))
+            for p in steps]
 
 
 # ---------------------------------------------------------------- 一次 attempt
@@ -115,34 +130,14 @@ def propose_and_build(ctx, group, task, states, key):
     try:
         rng, crng = S.rng("shape"), S.rng("connect")
         fam = ctx.family
-        chain = retreat_chain(mapped_start(group.formation_prior))
         b = float(fam.lateral_spacing_m)
-        fkey = RngKey(key.family_id, key.draw, "formation", mission=key.mission, branch=key.branch, group=key.group,
-                      segment=key.segment, attempt=key.attempt)
-        order = formation_slots(group, fam, fkey, formation=chain[0]).order
-        steps_log = []
-
-        def probe(name, step):
-            t0 = time.perf_counter()
-            slots = formation_slots(group, fam, fkey, formation=name, lateral_step_m=step, order=order)
-            doc = FC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir)
-            T._tick(S, "chord_set_s", time.perf_counter() - t0)
-            steps_log.append({"formation": name, "lateral_step_m": step, "feasible_cells": len(doc["cells"]),
-                              "n_cells": doc["n_cells"], "query_id": doc.get("query_id"),
-                              "reasons": doc.get("reasons")})
-            return {"slots": slots, "doc": doc, "lateral_step_m": step} if doc["cells"] else None
-
-        def width_probe(name):
-            if name == "echelon":
-                return T._echelon_payload(probe, group, b, steps_log)
-            return probe(name, None)
-
-        def build(name, payload):
+        steps_log, telemetry = [], []
+        t0 = time.perf_counter()
+        payload = select_formation(ctx, group, task, key, rng, steps_log, telemetry)
+        T._tick(S, "chord_set_s", time.perf_counter() - t0)
+        S.timing["cell_probes"] = telemetry
+        if payload is not None:
             return _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, rng, crng)
-
-        plan = width_then_build(chain, width_probe, build)
-        if plan is not None:
-            return plan
         return T._stage_fail("feint_chord_set", "所有队形下佯动离散格均无完整可行掉头（approx_empty 查询）", None, key,
                              {"formations": steps_log, "shape_audit_failed": False})
     finally:
@@ -152,8 +147,8 @@ def propose_and_build(ctx, group, task, states, key):
 
 
 def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, rng, crng):
-    slots, doc = payload["slots"], payload["doc"]
-    cells = doc["cells"]
+    slots, selection = payload["slots"], payload["selection"]
+    selected = selection["summary"]
     tgt = S.tgt
     repairs = []
     if slots.realized != slots.start:
@@ -161,19 +156,21 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
     used = payload.get("lateral_step_m")
     if used is not None and used < b - 1e-9:
         repairs.append({"kind": "echelon_lateral_step", "from_m": b, "to_m": used})
-    ci = int(rng.integers(0, len(cells)))                                      # 2. 格
-    cell = {k: cells[ci][k] for k in ("theta_idx", "h_m", "x_in", "collect_D_candidates")}
+    ci = selected["cell_index"]                                             # 2. 已由 shape 排列选定
+    cell = selection["cell"]
     ti, h, x_in = int(cell["theta_idx"]), float(cell["h_m"]), float(cell["x_in"])
     th = TC.thetas()[ti]
     u, n = TC.frame(th)
     o = np.asarray(tgt.center, float)
     P = {"intent": "feint", "theta_idx": ti, "theta_deg": float(TC.THETA_STEP_DEG * ti), "h_m": h,
          "origin_xy": tuple(map(float, o)), "u": tuple(map(float, u)), "n": tuple(map(float, n)),
-         "cell_index": ci, "cells_feasible": len(cells), "chord_query_id": doc.get("query_id"), "x_in": x_in,
+         "cell_index": ci, "cells_candidate": selected["candidate_cells"],
+         "cells_examined": selected["cells_examined"], "nonempty_position": selected["nonempty_position"],
+         "chord_query_id": selected["query_id"], "x_in": x_in,
          "member_slot_order": slots.order, "formation": slots.realized,
          "lateral_step_m": slots.lateral_step_m if slots.realized == "echelon" else None,
          "repairs": tuple(repairs), "formation_steps": steps_log}
-    # 3–4. 各组合排列认证 → 非空组合等概率（同一谓词：screened + 剪枝，与预建相同）
+    # 3–4. 各组合排列认证 → 非空组合等概率（与按需存在性相同的 screened + 剪枝谓词）
     t0 = time.perf_counter()
     grids = FT.candidate_grid(ctx, task, slots, cell)
     found = []
@@ -190,7 +187,7 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
     P["nonempty_combos"] = len(found)
     P["combos_found"] = [[k, int(s)] for k, s in found]
     if rec is None:
-        return T._stage_fail("feint_turn_consistency", "预建为可行格，但同谓词下六组合全空（实现/缓存一致性问题，不换格）",
+        return T._stage_fail("feint_turn_consistency", "已认证非空格，但同谓词下六组合全空（实现/缓存一致性问题，不换格）",
                              P, key, {"cell": cell, "shape_audit_failed": False, "draw": draw_summary(P, slots.realized)})
     Ds = list(rec["collect_D_compatible"])
     D_c = float(Ds[int(rng.integers(0, len(Ds)))])                              # 5. D_c、K、logit

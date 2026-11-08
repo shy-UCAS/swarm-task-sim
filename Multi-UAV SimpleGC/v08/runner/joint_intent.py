@@ -463,35 +463,31 @@ def _prewarm_family_intrusion(task):
 
 
 def _prewarm_family_feint(task):
-    """佯动（V8-18 指令 3.2）：同一族一个进程；先按确定性 probe 序列读已有文件（load_chord_set 只读），再由
-    prewarm_feint 统一写出缺失文件（原子落盘、按完整查询身份去重、已存在不覆盖）。预建不使用 RNG。"""
+    """2026-11-08 裁定：佯动只预热既有几何缓存并登记人数；不求格存在性、不调用 probe。"""
     import time as _t
     from ..contract.single_intent import feint_mission
-    from ..motion import feint_chords as FC
-    from ..motion.intents.feint import formation_probe_sequence
+    from ..motion import feint_turn as FT
+    from ..motion import transit_chords as TC
     from ..sampler.common import sample_common
-    from ..sampler.keys import RngKey
     from ..scene.context import load_context
     entry, draws, data_root, cache_dir = task[:4]
     t0 = _t.perf_counter()
     ctx = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
-    rows, sizes = [], {}
+    rows, sizes, targets = [], {}, set()
     for d in draws:
         m = feint_mission(ctx, sample_common(ctx.family, d))
         g, task_ = m.groups[0], m.tasks[0]
         sizes[f"{int(entry['order'])}:{d}"] = len(g.member_ids)
-        key = RngKey(ctx.family.family_id, d, "shape", mission=0, branch=None, group=g.group_id, segment=0)
-        tq = _t.perf_counter()
-        seq = formation_probe_sequence(ctx, g, task_, key)
-        rows.append({"draw": d, "target": task_.target_id, "probes": [[nm, st, None] for nm, st, _, _ in seq],
-                     "requests": [(task_.target_id, offs, sp) for _, _, offs, sp in seq],
-                     "probe_wall_s": _t.perf_counter() - tq})
-    reqs = [r for row in rows for r in row["requests"]]
-    written = FC.prewarm_feint(ctx, reqs, cache_dir)
+        targets.add(task_.target_id)
+        rows.append({"draw": d, "target": task_.target_id, "probes": []})
+    for target in sorted(targets):
+        FT.screen_field(ctx, FT.turn_context(ctx, target))
+        TC.base_field(ctx, target, intent="feint")
+        TC.collect_phys_grid(ctx, target, intent="feint")
     st = ctx.cache_stats()
     return {"order": int(entry["order"]), "family_id": entry["family_id"], "wall_s": _t.perf_counter() - t0,
-            "queries": written, "raw_cache": st, "sizes": sizes,
-            "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"], "probe_wall_s": r["probe_wall_s"]}
+            "queries": [], "raw_cache": st, "sizes": sizes, "mode": "geometry_only",
+            "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"]}
                        for r in rows}}
 
 

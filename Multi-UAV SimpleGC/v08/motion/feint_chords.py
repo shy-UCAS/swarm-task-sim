@@ -1,4 +1,4 @@
-"""佯动入口格、存在性预建、单车道组合与缓存身份（V8-18 指令 3.1–3.2、3.6；附录裁定 3；本项新增）。
+"""佯动入口格与按需判空（2026-11-08 裁定优先于原预建协议）。
 
 坐标、航向/偏移网格、单车道解析与沿线采样直接调用 transit_chords（intent="feint" 时 base/缓存身份按意图参数化）；
 不复制解析几何。实际成员入口车道 o + (x + l_i) u + (h + d_i) n，单车道按真实浮点 h + d_i 查询（不舍入）。
@@ -10,12 +10,9 @@
   - A 网格：中心线 line_sublevel(alert, o + h n, u, −10) 内的全局 5 m 倍数（数学 ceil/floor 端点）。
 A 级（entry_at_A）：成员实际支撑起点 X_i = A + l_i − l* 在该车道 alert −10 区间内且不越过入圈 run；B = A + L 在中心线
   alert −10 区间内；其他设施 warning 在 [x_c + l_i, X_i] 上整段离带或完整深穿（transit_chords._band_ok），逐 D 过滤。
-存在性预建（assess_formation）：θ、h 升序；每格按 MT KINDS × SIDES × A 升序 × R 升序找到一个完整可行候选即停
-（certify_candidate，mode="screened"、prune=True，与生产同一谓词）；完整有限格遍历无解才标空。不使用 RNG。
-
-缓存：<cache>/feint_v18/<场景缓存键>/<目标>_<查询身份>.json；身份含固定 schema、ctx 缓存身份、目标与全部设施几何、
-base 与 crossing 完整有序身份、按槽位序的偏移 float.hex、间距、L、l*、全部网格/界值、认证模式与版本。
-不复用 intrusion/transit 的可行格。worker 只读，缺失时在内存计算并记录目录外遥测。
+生产先求廉价入口候选表，以 shape 流排列，按固定 first_feasible 谓词取首个非空格。
+存在性结果只在单合同内存中复用；冷热不改变排列、谓词或业务载荷。旧全格 API 仅供历史诊断，生产不调用，
+不读写已有 cache/feint_v18 文件。单车道、距离场等几何缓存沿用。
 """
 import hashlib
 import json
@@ -37,6 +34,80 @@ CERT_PRUNE = True                 # 裁定 3(a)
 GATE_MAX_CELLS = 24               # 裁定 3(b)
 GATE_A_EVERY = 4
 STATS = {"cache_hits": 0, "cache_misses_computed": 0}
+LAZY_VERSION = "v18-feint-lazy-1"
+
+
+def begin_contract(ctx, key):
+    """限定逐格存在性 memo 的生命周期；attempt 不在合同身份中。"""
+    identity = (key.family_id, key.draw, key.mission, key.branch, key.group, key.segment)
+    mem = ctx.extra.get("feint_lazy_contract")
+    if mem is None or mem["identity"] != identity:
+        ctx.extra["feint_lazy_contract"] = {"identity": identity, "cells": {}}
+
+
+def candidate_cells(ctx, target_id, slots):
+    """只做既有廉价入口检查；规范 θ/h 顺序，不调用任何掉头认证。"""
+    offsets, spacing = request_for(slots)
+    qid, _ = query_identity(ctx, target_id, offsets, spacing)
+    mem = ctx.extra.setdefault("feint_entry_candidates", {})
+    if qid not in mem:
+        cells, reasons, total = [], {}, 0
+        for ti, th in enumerate(TC.thetas()):
+            hs = TC.h_values(ctx, target_id, th)
+            TC.get_lanes(ctx, target_id, ti, [h + d for h in hs for _, d in offsets], intent=INTENT)
+            for h in hs:
+                total += 1
+                ce, why = cell_entry(ctx, target_id, offsets, ti, h)
+                if ce is None:
+                    reasons[why] = reasons.get(why, 0) + 1
+                else:
+                    cells.append(_cell_doc(ti, h, ce))
+        mem[qid] = {"schema": LAZY_VERSION, "query_id": qid, "cells": cells, "n_cells": total,
+                    "reasons": dict(sorted(reasons.items()))}
+    return mem[qid]
+
+
+def first_nonempty(cells, certify, rng):
+    """一次均匀排列，逐格确定性判空。返回 (规范下标, 见证, 已走格下标)，全空时前两项 None。"""
+    walked = []
+    for index in rng.permutation(len(cells)):
+        index = int(index)
+        walked.append(index)
+        witness = certify(cells[index])
+        if witness is not None:
+            return index, witness, walked
+    return None, None, walked
+
+
+def sample_cell(ctx, task, slots, rng):
+    """每个 probe 各走一次 shape 排列；逐格存在性谓词/规范顺序保持原样。"""
+    doc = candidate_cells(ctx, task.target_id, slots)
+    cells, qid = doc["cells"], doc["query_id"]
+    memo = ctx.extra["feint_lazy_contract"]["cells"]
+    stats = {}
+    t0 = time.perf_counter()
+
+    def certify(cell):
+        identity = (qid, cell["theta_idx"], cell["h_m"])
+        if identity in memo:
+            STATS["cache_hits"] += 1
+            return memo[identity]
+        rec = first_feasible(ctx, task, slots, cell, mode=CERT_MODE, prune=CERT_PRUNE, stats=stats)
+        witness = None if rec is None else {k: rec[k] for k in (
+            "A_m", "kind", "side", "radius_m", "collect_D_compatible", "terminal_x")}
+        memo[identity] = witness
+        STATS["cache_misses_computed"] += 1
+        return witness
+
+    index, witness, walked = first_nonempty(cells, certify, rng)
+    # 业务摘要只含确定性字段；计时、完整走格记录与认证计数另交给目录外遥测。
+    summary = {"query_id": qid, "n_cells": doc["n_cells"], "candidate_cells": len(cells),
+               "cells_examined": len(walked), "nonempty_position": None if index is None else len(walked),
+               "cell_index": index, "reasons": doc["reasons"]}
+    telemetry = {**summary, "visited_cell_indices": walked, "stats": stats,
+                 "seconds": time.perf_counter() - t0}
+    return {"cell": None if index is None else cells[index], "witness": witness,
+            "summary": summary, "telemetry": telemetry}
 
 
 # ---------------------------------------------------------------- 格级

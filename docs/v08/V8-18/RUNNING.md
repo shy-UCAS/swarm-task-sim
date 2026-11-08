@@ -3,6 +3,7 @@
 > 适用分支：`review/v08/V8-18-feint`。命令都在 `Multi-UAV SimpleGC` 目录、PowerShell 7、conda `llm` 环境下运行。
 > 先设线程变量：`$env:OMP_NUM_THREADS='1'; $env:OPENBLAS_NUM_THREADS='1'; $env:MKL_NUM_THREADS='1'; $env:NUMEXPR_NUM_THREADS='1'`。
 > 真实路径见同目录 [manifest.json](manifest.json)（`run_root`、`data_root`、`baselines`、`test_env`）。
+> 当前按 2026-11-08 按需判空裁定执行：取消全格预建和成本外推；单合同骨架超过 15 分钟、200 骨架墙钟超过 60 分钟均停下留证。
 
 ## 1. 进程数
 
@@ -28,11 +29,13 @@ $env:V8_18_DEVSET = $devset; $env:V8_18_DATA_ROOT = $dataRoot; $env:V8_18_CACHE 
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-18 -p test_preset_local_geometry_v18.py -v
 # 三路对照门禁（裁定 1、3(b)；退出码 5 = exact / screened / 剪枝+screened 不一致）
 & $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage turn-gate --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'diagnostics\<新目录>') --workers 24
-# 成本检查点（裁定 3(c)；前 5 族预建、按机数外推 40 族；> 45 分钟退出码 2）
-& $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage cost-check --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'diagnostics\<新目录>') --workers 24
-# 集合诊断与单骨架 smoke（o17_d1/d4 与三个原型键）
-& $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage queries --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'diagnostics\<新目录>')
-& $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage smoke --smoke-level skeleton --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'out\smoke\<新目录>')
+# 按需判空自加测试（真实 1/2 进程对照需全新证据目录）
+$env:V8_18_LAZY_TEST_OUT = Join-Path $runRoot 'diagnostics\<新的测试目录>'
+& $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-18 -p test_extra_lazy_v18.py -v
+# 单进程：骨架 smoke 默认 o01_d0/o02_d0/o11_d1；诊断默认 o17_d1/d4。
+# 可用 --contract-keys o01_d0 单键运行，以分别监视 15 分钟上限。
+& $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage smoke --smoke-level skeleton --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'out\smoke\<新目录>') --workers 1
+& $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage queries --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'diagnostics\<新目录>') --workers 1
 & $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage smoke --smoke-level chain --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'out\smoke\<新目录>')
 # 200 合同只骨架
 & $condaExe run -n llm --no-capture-output python -B tools/v08/run_feint_v18.py --stage skeleton --devset $devset --data-root $dataRoot --cache $cache --out (Join-Path $runRoot 'out\skeleton\<新目录>') --workers 24
@@ -54,5 +57,7 @@ $env:V8_18_DEVSET = $devset; $env:V8_18_DATA_ROOT = $dataRoot; $env:V8_18_CACHE 
 
 ## 4. 缓存
 
-- 佯动可行格文件：`<cache>\feint_v18\<场景缓存键>\<目标>_<查询身份>.json`。身份版本 `v18-feint-cells-1`（掉头认证 `v18-feint-turn-1`），包含 intent、ctx 缓存身份、目标与全部设施几何、base 与 crossing 完整有序身份、按槽位序的偏移 `float.hex`、间距、L、l*、全部网格/界值、认证模式 `screened` 与剪枝开关。不复用 intrusion/transit 的结果。
-- 预建（`prewarm_all(intent="feint")`）按族一个进程、按完整查询身份去重、原子落盘；已有文件先核对身份再使用，不覆盖。派发阶段 worker 只读，缺文件时在进程内计算、不写回，records 的 `chord_cache` 记 `cache_hits` / `cache_misses_computed`（合同目录外）。
+- 旧 `<cache>\feint_v18` 的 29 族完成证据原样保留（实际共 155 个查询文件），生产不再读写。
+- `prewarm_all(intent="feint")` 只预热既有距离场并登记人数，不调用格存在性检查。廉价入口表缓存与单车道缓存继续使用。
+- 每个 probe 的 shape 排列取首个非空格；确定性存在性结果只在当前合同内存中复用。缓存冷热不改变 RNG 消耗、谓词或合同字节。`cache_hits/cache_misses_computed` 现在表示该内存 memo 的命中/首次判定，只进合同目录外。
+- 逐 probe 的完整走格下标、计时与认证计数写入目录外 `telemetry`；合同内仅保存确定性候选数、走格数和非空位置。
