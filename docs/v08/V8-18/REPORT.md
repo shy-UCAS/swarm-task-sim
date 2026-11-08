@@ -443,6 +443,25 @@ o17_d1、o17_d4 均为第 0 组 12 机、初始横排，原横向间距 24.33104
 
 o07_d1用了3次attempt，前两次为optimize_feint普通拒绝，成功合同post计数为2；其余19合同一次成功。中位数为0不等于所有合同都无post失败，原拒绝证据未删除或重跑。阶段累计CPU秒：骨架357.315、优化185.900、仿真230.510、核验17.090。
 
-**保存后独立复核：** 用 [validate_feint_disk.py](validate_feint_disk.py) `--root <quick_lazy_r1> --stage quick --out <新的诊断JSON>`，从NPY重新构建轨迹，调用原冻结verify_segments/check_validity，并直接按contour SDF与偏移重算warning/alert进入、退出、帧时刻、protected最深SDF及末帧外圈。20/20合同、99成员全部通过，两层进入/退出均1/1，序列化事件和NPY逐项相同。实测最小间距3.122306408678227 m，最小protected SDF14.438450055844356 m；不把规划10 m当实测门槛。所有合同JSON禁用计时/缓存/路径字段或绝对路径值0处，P0为空，无缺失。证据 [part6/disk_validation.json](part6/disk_validation.json)。
+**保存后独立复核：** 用 [validate_feint_disk.py](validate_feint_disk.py) `--root <quick_lazy_r1> --stage quick --out <新的诊断JSON>`，从NPY重新构建轨迹，调用原冻结verify_segments/check_validity，并直接按contour SDF与偏移重算warning/alert进入、退出、帧时刻、protected最深SDF及末帧外圈。20/20合同、99成员全部通过，两层进入/退出均1/1，序列化事件和NPY逐项相同。实测最小间距3.1086434480894947 m，最小protected SDF14.438450055844356 m；不把规划10 m当实测门槛。所有合同JSON禁用计时/缓存/路径字段或绝对路径值0处，P0为空，无缺失。证据 [part6/disk_validation.json](part6/disk_validation.json)。
 
 第6部分检查点和保存后核验均完整通过，随后才启动第7部分主200＋多样性100。`make_acceptance.py`新增可选`--phase4-root`，只使最终预置测试的第二轮门禁索引指向本次`gates_lazy_r1`，预置文件、断言和原六组比较口径均不改。
+
+
+### 13.10 第7部分：全量、多样性、五键复跑与四意图诊断——运行检查点完整通过
+
+生产源码仍为8e22f06，运行起点文档提交59606dc。主200/200、多样性100/100成功，主批和多样性均完整，errors/incomplete/unsent/P0为空。24进程运行器墙钟1971.110729秒，守护墙钟1973.094668秒，原7200秒合作预算未改。主成功率100%，人数110/110、56/56、34/34；设施数85/85、85/85、30/30；初速67/67、61/61、72/72，全部档差0。成功合同post中位0；多样性10族各10次尝试、10成功、45有效对，共450对。alert进入→退出完整有序作业段归一化Fréchet合并中位数after34.378771、before34.368890，门槛1未触发。原始摘要、记录元数据、逐族明细和散列索引见[part7](part7/)。多样性记录的curve_before/curve_after仅从Git副本剔除，原始JSON保留在run，散列见source_index。
+
+保存后从NPY独立复核全部300合同/1429成员：冻结validity/segment均通过、warning/alert实际进入退出均1/1、事件与帧及protected值相同，合同禁用字段/路径扫描0处，无P0或缺失。最小实测间距3.0490071221700923米，最小protected SDF14.438450055844356米，见[disk_validation](part7/disk_validation.json)。固定o01_d0..d4在1进程复跑全部成功，105个合同文件集合与bytes全同、排除[]、源24/重复1，见[reproduction](part7/rerun_reproduction.json)。
+
+原ArtifactPreset三个方法未经修改执行3/3通过（142.143秒），日志和acceptance索引见part7。加上Numeric8、Interface2、原extra10、新lazy4，共27通过；SceneGate未执行，按成本裁定用原24进程三路1021860候选差异0替代，不将其写成通过。
+
+四意图主200键outer join无共用字段差异或缺记录。按监视/过境/突入/佯动顺序，全链路SSSS197、FSSS2、SSFS1；骨架SSSS199、SSFS1。o34_d3旧突入失败证书原样计入。逐键attempt、队形、分档与倾向/实现表见[four_intent_contracts](part7/four_intent_contracts.csv)和[feint_report](part7/feint_report.json)。
+
+失败子类表1分母48个失败attempt，其中optimize_feint34次；nominal_dwell32、boundary_crossing3（同attempt同子类去重，子类非互斥）。表2分母36个有失败合同，按时间第一个失败：optimize_feint|nominal_dwell22、optimize4、skeleton:boundary_crossing3、skeleton:reference/speed3、optimize_feint|boundary_crossing3、skeleton:start_route2。两张CSV在part7，不改成第一次优化失败。
+
+969成员名义移动时长中位数为进场658.374814、作业129.224774、撤离103.884952、travel890.368484秒，逐成员闭合残差最大4.55e-13秒；各段中位数无需相加等于travel中位数。共同前保持20秒和末端2秒不计travel；release_delay中位62.7、最大1685.9秒，均为业务时间。与V8-17同cid/member配对957个成功成员，保留旧sigma和terminal_deceleration原定义，不新增突入减速起点门槛。
+
+**可观测字段待审查：** 原合同L=0的53合同/198成员仍存形式形变时刻，其中106成员no_deformation=False。轨迹、实际1/1与冻结判据均已通过；该项是诊断字段口径问题，不属于三项P0。本轮不改写已通过字节复跑的生产合同。独立[member_observables_paired.csv](part7/member_observables_paired.csv)将L=0的真实形变观测记为None（CSV空单元），同时保留raw时刻与原flag；771个有真实形变成员的开始点alert SDF最大-10.057764米、形变至核心名义时长最小3.532747秒/中位28.950134秒，横向相对纵向开始时差中位7.155069秒。原analyzer未归一化的deformation统计明确属于raw口径，不直接作为真实形变结论。是否统一生产phase_metrics字段交审查方裁定。
+
+**摘要数字勘误：** 第13.9节最小间距已据原JSON全部非None数字以Python min纠正为3.1086434480894947米；早先PowerShell聚合曾报3.1223064米，原逐合同复核和轨迹一直正确。全量同法得3.0490071米。两组纠正见[validation_metrics](part7/validation_metrics.json)，未改结果或重跑生产。

@@ -1,9 +1,11 @@
 param(
-    [Parameter(Mandatory=$true)][ValidateSet('smoke','queries','skeleton','quick','full')][string]$Stage,
+    [Parameter(Mandatory=$true)][ValidateSet('smoke','queries','skeleton','quick','full','rerun')][string]$Stage,
     [Parameter(Mandatory=$true)][string]$Name,
     [string]$ContractKey='',
     [int]$Workers=24,
-    [int]$LimitSeconds=0
+    [int]$LimitSeconds=0,
+    [string]$KeysPath='',
+    [string]$CompareTo=''
 )
 $ErrorActionPreference='Stop'
 $repo='F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08'
@@ -19,6 +21,10 @@ $argv=@('run','-n','llm','--no-capture-output','python','-B','tools/v08/run_fein
     '--cache',(Join-Path $root 'cache'),'--out',$out,'--workers',"$Workers")
 if ($Stage -eq 'smoke') { $argv+=@('--smoke-level','skeleton') }
 if ($ContractKey) { $argv+=@('--contract-keys',$ContractKey) }
+if ($Stage -eq 'rerun') {
+    if (-not $KeysPath -or -not $CompareTo -or $Workers -ne 1) { throw 'rerun requires keys, compare-to, and workers=1' }
+    $argv+=@('--keys',$KeysPath,'--compare-to',$CompareTo)
+}
 $argvText=($argv | ForEach-Object { '"' + $_.Replace('"','\"') + '"' }) -join ' '
 $start=[DateTime]::UtcNow
 $proc=Start-Process -FilePath 'C:\Users\shy\anaconda3\Scripts\conda.exe' -ArgumentList $argvText -WorkingDirectory (Join-Path $repo 'Multi-UAV SimpleGC') -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $diag 'stdout.log') -RedirectStandardError (Join-Path $diag 'stderr.log')
@@ -41,6 +47,13 @@ while (-not $proc.WaitForExit(5000)) {
             } catch { }
         }
     }
+    if ($Stage -eq 'rerun') {
+        $mismatch=@(Select-String -LiteralPath (Join-Path $diag 'stdout.log') -Pattern 'bytes_equal=False|file_sets_equal=False' -ErrorAction SilentlyContinue)
+        if ($mismatch.Count -gt 0) {
+            $p0+='serial_byte_mismatch'
+            $status.p0_details=@($mismatch | ForEach-Object {$_.Line})
+        }
+    }
     if (($LimitSeconds -gt 0 -and $elapsed -gt $LimitSeconds) -or $p0.Count -gt 0) {
         $status.timeout=($LimitSeconds -gt 0 -and $elapsed -gt $LimitSeconds)
         $status.p0=($p0.Count -gt 0)
@@ -61,6 +74,7 @@ while (-not $proc.WaitForExit(5000)) {
 }
 if (-not $stopped) { $proc.WaitForExit(); $status.exit_code=$proc.ExitCode }
 else { $status.exit_code=if($status.p0){4}else{2} }
+if ($status.exit_code -eq 4) { $status.p0=$true }
 $status.wall_s=([DateTime]::UtcNow-$start).TotalSeconds
 $status.end_utc=[DateTime]::UtcNow.ToString('o')
 $status | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $diag 'watchdog.json') -Encoding utf8
