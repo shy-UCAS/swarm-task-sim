@@ -346,7 +346,7 @@ formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connec
 - 按需改造与自加测试：已完成，单独提交。
 - 共享文件改动后的第二轮三意图门禁：监视/过境/突入各 20/20 逐字节一致，排除 []。
 - 单进程快速检查：三个骨架 smoke 均第 1 次 attempt 成功，落盘精确重验通过；两个边缘集合诊断已完成，均经梯形缩减找到非空格。单合同骨架超过 900 s 停。
-- 第 5 部分：待运行 200 合同骨架、24 进程，原 5.2 止损不变，新增 3600 s 墙钟上限。
+- 第 5 部分：200/200 骨架成功、208 attempts、检查点无触发，24 进程墙钟2031.349 s；完整证据见13.8。
 - 第 6/7/8 部分：依前置检查点逐项推进，未执行部分不宣称通过。
 
 
@@ -399,3 +399,32 @@ o17_d1、o17_d4 均为第 0 组 12 机、初始横排，原横向间距 24.33104
 - 快速检查实际约 23 分钟，其中边缘集合诊断约 21.5 分钟；指令“约15分钟”为估计。三个单合同骨架均小于 38 s，没有触发单骨架 900 s 硬上限。查询没有新增次数或时间拒绝。
 - 快速检查后 155 个缓存文件的 SHA256、大小、UTC 修改时刻全部不变；feint_turn、MT、预置三文件、owner_rerun 散列不变，见 [preservation_after_quickcheck.json](part5_lazy/preservation_after_quickcheck.json)。首轮核对脚本因 PowerShell 将 ISO 时间字符串自动解析为 DateTime，造成字符串比较的假差异；分项核对 SHA/大小/UTC ticks 均相同后，用 `ConvertFrom-Json -DateKind String` 修正比较器。未改缓存或生产数据，原错误比较证据保留 [preservation_comparison_attempt_r1.json](part5_lazy/preservation_comparison_attempt_r1.json)。
 - 数值/接口/自加测试、三意图门禁、三键骨架及两键集合诊断前提完整。接下来执行 200 合同骨架（24 进程），原第 5.2 节四止损及 3600 s 墙钟上限均保持。
+
+
+### 13.8 第 5 部分：200 合同骨架（24 进程）—— 完整通过
+
+命令：[run_bounded.ps1](run_bounded.ps1) `-Stage skeleton -Name skeleton_lazy_r1 -Workers 24 -LimitSeconds 3600`；代码仍为 `8e22f06` 的生产实现，执行时文档提交 `493f648`。输出 `run/out/skeleton_lazy_r1/`，原始 200 键完整、唯一、无排除。守护开始/结束 UTC 为 11:38:17 / 12:12:10，含 conda 启动墙钟 2033.632 s；运行器墙钟 2031.349 s。没有超时或 P0。
+
+| 止损项 | 实测 | 严格阈值 | 结论 |
+|---|---|---|---|
+| 成功率 | 200/200 = 100% | <95% | 未触发 |
+| 第 0 组人数档差 | 1–4机 110/110，5–8机 56/56，9–12机 34/34；档差均0个百分点 | 任一低于总体 >10个百分点 | 未触发 |
+| 成功合同 attempts 中位数 | 1；192 合同一次、8 合同两次 | >1 | 未触发 |
+| 形状复核失败率 | 0/208 | >5% | 未触发 |
+| 整批墙钟 | 2033.632 s（守护口径） | >3600 s | 未触发 |
+
+原检查点 `complete=True, triggered=[]`，异常 0；208 个 attempts 为 200 成功、3 次 boundary_crossing、3 次 reference/speed、2 次 start_route 普通拒绝。全部 200 成功骨架使用弯曲 LP，直线回退仅作诊断，无额外回退门槛。证据：[skeleton_summary.json](part5_lazy/skeleton_summary.json)、[skeleton_records.json](part5_lazy/skeleton_records.json)、[skeleton_by_bin.csv](part5_lazy/skeleton_by_bin.csv)。
+
+**每合同骨架墙钟分布（秒）：** mean 52.324、min 4.884、p25 13.245、median 18.957、p75 27.257、p90 43.094、p95 61.225、max 1971.257。附加分位数用 NumPy 线性分位数；运行器原摘要按其原秩算法保留（例如 p50 19.012）。最慢六键：o07_d2 1971.257、o07_d4 1829.662、o17_d4 937.999、o17_d1 901.371、o36_d4 375.255、o36_d2 261.147，均第 1 次 attempt 成功。
+
+900 s 限制按最新裁定第 4 节步骤 2 施加于三个单进程快速骨架 smoke（均小于38 s）；本节步骤3整批施加3600 s墙钟上限。200批次中的上述长尾耗时全部保留，不删键、不换参数或进程数。
+
+**排列与队形：** 全部实际 attempts 共 261 个 probe、走 67,277 格，平均257.766格/probe、中位1、p90 1446、最大2670；29个probe完整判空，232个非空probe的首个非空位置平均31.315、中位1、最大1690（包含梯形二分各次通过probe，并非232个合同）。退让6合同：o07_d2/d4、o17_d1/d4、o36_d2/d4；其中5个由横排转梯形，另1个原梯形缩步长。loose→abreast的映射不计退让。实现队形 column46、abreast102、echelon52。完整倾向/实现表与逐probe下标、步长、计时见 [skeleton_evidence_r1.json](part5_lazy/skeleton_evidence_r1.json)。
+
+**形状与几何：** teardrop80、u68、oblique52；正侧114、负侧86。非空组合数量条件分层、A及半径分布、按队形/人数的L分布均在附加证据中，不声称A或种类边缘严格均匀。以完整成员折线对目标protected调用 `polyline_clearance(..., sense=1, minimum_m=0, fast_far_m=None)`，969成员的最小SDF为10.02751291261876 m，中位52.7745 m，全部达到规划10 m余量；这是骨架精确折线值，实测另验。全部合同JSON递归计时/缓存/路径键与绝对路径值扫描 **0处**。
+
+**粗筛遥测范围：** 首次逐格存在性查询进入完整认证434,112候选，记录直接拒绝38,837次、覆盖点80,998,995、约束弦核验计数731,084,955、进入精确弦3,508,434；A/关键点必要条件剔除原计数13,433,503,223。以上仅计第一次存在性计算，不含内存命中和组合随机抽样中的调用；弦计数沿screened原计数定义，不冒充所有网格或所有生产调用的全覆盖统计。等价性仍由原1,021,860候选三路门禁差异0支持。
+
+**成本与缓存：** 几何预热40族，格存在性查询0、新写格文件0；155个旧文件散列/大小/mtime及FT/MT/预置/owner散列仍全同，见 [preservation_after_skeleton.json](part5_lazy/preservation_after_skeleton.json)。资源样本见 [skeleton_resource_samples.jsonl](part5_lazy/skeleton_resource_samples.jsonl)：采样中私有提交内存最高76.69 GB（含可换出页，不等于常驻物理内存），可用物理内存曾为0.49 GB；长尾由少数大编组/梯形二分主导。默认24保持，没有清缓存、改谓词或重新抽运行名单。
+
+本节为执行方首次运行记录。第5部分检查点完整通过后进入第6部分快批20；正式全链路与单进程五键复跑仍待执行。

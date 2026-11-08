@@ -108,7 +108,10 @@ def main():
     entries = {e["family_id"]: e for e in (entries_doc["families"] if isinstance(entries_doc, dict) else entries_doc)}
     data = Path(r"F:\CASIA\Drone Swarm Situational Awareness Algorithm\SwarmData")
     cache = Path(r"F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-06_V8-18_feint\run\cache")
-    rows, probes, contracts, bad, audits = [], [], [], [], []
+    from v08.scene.context import load_context
+    from v08.scene.exact import polyline_clearance
+    rows, probes, contracts, bad, audits, turn_rows, protected_rows = [], [], [], [], [], [], []
+    contexts, screen_stats = {}, Counter()
     for text in args.root:
         root = Path(text)
         for row in read(root / "records.json"):
@@ -116,11 +119,27 @@ def main():
             tele = read(root / "telemetry" / (row["contract_id"] + ".json"))
             contract_probes = [p for tm in tele["timing"] for p in tm.get("cell_probes", [])]
             probes.extend(contract_probes)
+            for probe in contract_probes:
+                screen_stats.update(probe.get("stats", {}))
             contract = {"contract_id": row["contract_id"], "success": row["success"], "attempts": row["attempts"],
                         "wall_s": row.get("wall_s"), "formation": row.get("formation"), "probes": contract_probes}
             if row["success"]:
                 skeleton = read(root / "contracts" / row["contract_id"] / "skeleton.json")
                 contract["repairs"] = skeleton["repairs"]
+                proposal = skeleton["proposal"]
+                turn_rows.append({"contract_id": row["contract_id"], "group_size": row["group_size"],
+                    "formation": row["formation"]["realized"], "L_m": proposal["L_m"],
+                    "turn": proposal["turn"], "nonempty_combos": proposal["nonempty_combos"]})
+                fid = row["family_id"]
+                if fid not in contexts:
+                    contexts[fid] = load_context(entries[fid], data_root=data, cache_dir=cache)
+                protected = contexts[fid].facility_by_id[row["target_id"]].layers["protected"]
+                for mid, member in skeleton["members"].items():
+                    xy = np.asarray(skeleton["arrays"][member["curve_xy"]["npz"]], float)
+                    minimum = float(np.min(polyline_clearance(protected, xy, sense=1, minimum_m=0,
+                                                             fast_far_m=None)))
+                    protected_rows.append({"contract_id": row["contract_id"], "member": mid,
+                                           "min_protected_sdf_m": minimum})
                 if args.scene_audit:
                     audit = {"contract_id": row["contract_id"], **scene_audit(root, row, entries, data, cache)}
                     audits.append(audit)
@@ -137,9 +156,22 @@ def main():
         "formation_pairs": [{"prior": p, "realized": r, "n": n} for (p, r), n in sorted(pairs.items())],
         "retreated_contracts": sum(any(r.get("kind") in ("formation_retreat", "echelon_lateral_step")
                                       for r in c.get("repairs", [])) for c in contracts),
+        "kind_side": dict(Counter(f"{r['turn']['kind']}:{r['turn']['side']}" for r in turn_rows)),
+        "kind_side_by_nonempty_combos": {str(n): dict(Counter(f"{r['turn']['kind']}:{r['turn']['side']}"
+            for r in turn_rows if r["nonempty_combos"] == n)) for n in sorted({r["nonempty_combos"] for r in turn_rows})},
+        "A_m": distribution(r["turn"]["A_m"] for r in turn_rows),
+        "radius_m": distribution(r["turn"]["radius_m"] for r in turn_rows),
+        "L_by_formation_size": {f"{f}|n{n}": distribution(r["L_m"] for r in turn_rows
+            if r["formation"] == f and r["group_size"] == n) for f, n in
+            sorted({(r["formation"], r["group_size"]) for r in turn_rows})},
+        "min_protected_sdf_m": distribution(r["min_protected_sdf_m"] for r in protected_rows),
+        "screen_stats_existence_only": dict(screen_stats),
+        "screen_stats_scope": "首次逐格存在性查询；内存命中不重复计数；不含组合随机抽样中的调用",
+        "protected_members": protected_rows, "turn_rows": turn_rows,
         "payload_violations": bad, "scene_audits": audits, "rows": contracts}
     Path(args.out).write_text(json.dumps(output, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(json.dumps({k: v for k, v in output.items() if k not in ("rows", "scene_audits", "payload_violations")},
+    print(json.dumps({k: v for k, v in output.items() if k not in ("rows", "scene_audits", "payload_violations",
+                      "protected_members", "turn_rows", "L_by_formation_size", "screen_stats_existence_only")},
                      ensure_ascii=False))
     if bad or output["exceptions"] or any(r.get("error") for r in rows) or any(not a["passed"] for a in audits):
         return 3
