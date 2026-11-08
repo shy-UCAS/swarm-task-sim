@@ -1,0 +1,19 @@
+test_buffered_polygon_rounded_corners_exact (test_extra_local_v16.ExtraLocal.test_buffered_polygon_rounded_corners_exact)
+BufferedPolygon = 凸多边形 ⊕ 圆盘：边带与顶点圆盘的并给出精确交区间（不用 shapely 默认分辨率近似）。 ... ok
+test_column_reference_covers_longitudinal_offsets (test_extra_local_v16.ExtraLocal.test_column_reference_covers_longitudinal_offsets)
+纵列端部不 clamp：参考两端延展 max|l| + 1，成员站点范围 [s_c + l, s_t + l] 完整在参考内。 ... ok
+test_entry_route_failure_keeps_cell_and_formation (test_extra_local_v16.ExtraLocal.test_entry_route_failure_keeps_cell_and_formation)
+进场路由失败原样结束 attempt：不换格、不换队形（width_then_build 只 build 一次）。 ... ok
+test_frechet_cut_before_resample (test_extra_local_v16.ExtraLocal.test_frechet_cut_before_resample)
+先精确截出单次穿越段，再按自身弧长 5 m 重采样（末端不足 5 m 保留）。 ... ok
+test_semantic_failure_next_attempt_and_clean_save (test_extra_local_v16.ExtraLocal.test_semantic_failure_next_attempt_and_clean_save)
+真实 o01_d0：第一次优化后语义检查强制失败 → 下一 attempt；保存的是干净 attempt，磁盘轨迹过冻结核验。 ... skipped "('V8_16_DATA_ROOT', 'V8_16_TEST_CACHE', 'V8_16_DEVSET') 未全部设置；该项未执行，不是通过"
+test_transit_screen_multiple_visits_and_start_inside (test_extra_local_v16.ExtraLocal.test_transit_screen_multiple_visits_and_start_inside)
+单次进入：离开后再进入不通过；首帧已在目标 warning 内不通过；从不进入不通过。 ... ok
+test_uniform_cell_index_single_draw_and_no_regrid (test_extra_local_v16.ExtraLocal.test_uniform_cell_index_single_draw_and_no_regrid)
+可行格均匀索引只抽一次：精确弦检查失败即结束 attempt，不换格（assess 只调用一次），索引来自 shape 键第一次 integers。 ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.238s
+
+OK (skipped=1)
