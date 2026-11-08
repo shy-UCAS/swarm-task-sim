@@ -61,3 +61,21 @@ $env:V8_18_LAZY_TEST_OUT = Join-Path $runRoot 'diagnostics\<新的测试目录>'
 - `prewarm_all(intent="feint")` 只预热既有距离场并登记人数，不调用格存在性检查。廉价入口表缓存与单车道缓存继续使用。
 - 每个 probe 的 shape 排列取首个非空格；确定性存在性结果只在当前合同内存中复用。缓存冷热不改变 RNG 消耗、谓词或合同字节。`cache_hits/cache_misses_computed` 现在表示该内存 memo 的命中/首次判定，只进合同目录外。
 - 逐 probe 的完整走格下标、计时与认证计数写入目录外 `telemetry`；合同内仅保存确定性候选数、走格数和非空位置。
+
+
+## 5. 本次按需判空运行索引与保存后核验
+
+当前已通过：`out/gates_lazy_r1`、`out/smoke_lazy_r1_o01_d0`、`out/smoke_lazy_r1_o02_d0`、`out/smoke_lazy_r1_o11_d1`、`out/queries_lazy_r1_o17_d1`、`out/queries_lazy_r1_o17_d4`、`out/skeleton_lazy_r1`、`out/quick_lazy_r1`。诊断与计时在`run/diagnostics/`和仓库`docs/v08/V8-18/part5_lazy/part6`索引中，合同目录没有机器计时或路径。
+
+```powershell
+# 每次 --out 必须改为全新文件名。检查点不过/P0非零就停止后续命令。
+& $condaExe run -n llm --no-capture-output python -B ../docs/v08/V8-18/validate_feint_disk.py --root (Join-Path $runRoot 'out/quick_lazy_r1') --stage quick --out (Join-Path $runRoot 'diagnostics/<新快批复核文件>.json')
+# 全量结束后，主200和多样性100都做独立冻结/事件/字段复核。
+& $condaExe run -n llm --no-capture-output python -B ../docs/v08/V8-18/validate_feint_disk.py --root $fullOut --stage full --include-diversity --out (Join-Path $runRoot 'diagnostics/<新全量复核文件>.json')
+# 最终预置验收索引：第二轮门禁使用本次重跑路径；不改预置断言。
+& $condaExe run -n llm --no-capture-output python -B ../docs/v08/V8-18/make_acceptance.py $acceptance --quick (Join-Path $runRoot 'out/quick_lazy_r1') --full $fullOut --rerun $rerunOut --phase4-root (Join-Path $runRoot 'out/gates_lazy_r1')
+$env:V8_18_ACCEPTANCE = $acceptance
+& $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-18 -p test_preset_local_artifacts_v18.py -v
+```
+
+`validate_feint_disk.py`返回4表示保留P0，3表示资料不完整或合同字段扫描不过，0表示该次磁盘复核通过。最终仍运行原预置ArtifactPreset的三项断言，独立工具不替代它。

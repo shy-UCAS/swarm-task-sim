@@ -19,6 +19,7 @@ def main():
     ap.add_argument("--quick", required=True)
     ap.add_argument("--full", required=True)
     ap.add_argument("--rerun", required=True)
+    ap.add_argument("--phase4-root", help="本轮重跑第二轮门禁根（不改预置断言，只更新索引调用路径）")
     a = ap.parse_args()
     man = json.loads((HERE / "manifest.json").read_text(encoding="utf-8"))
     snap = json.loads((HERE / "snapshot_part1.json").read_text(encoding="utf-8"))
@@ -31,7 +32,8 @@ def main():
     gates = []
     for phase in (2, 4):
         for intent in ("monitoring", "transit", "intrusion"):
-            rep = RUN / "out" / f"gates_{phase}" / intent
+            gate_root = Path(a.phase4_root) if phase == 4 and a.phase4_root else RUN / "out" / f"gates_{phase}"
+            rep = gate_root / intent
             gates.append({"intent": intent, "phase": phase, "baseline": base[intent],
                           "repeat": str(rep / "run" if intent == "monitoring" else rep)})
     doc = {"devset": man["devset"]["path"], "data_root": man["data_root"], "cache": str(RUN / "cache"),

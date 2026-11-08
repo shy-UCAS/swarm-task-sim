@@ -428,3 +428,21 @@ o17_d1、o17_d4 均为第 0 组 12 机、初始横排，原横向间距 24.33104
 **成本与缓存：** 几何预热40族，格存在性查询0、新写格文件0；155个旧文件散列/大小/mtime及FT/MT/预置/owner散列仍全同，见 [preservation_after_skeleton.json](part5_lazy/preservation_after_skeleton.json)。资源样本见 [skeleton_resource_samples.jsonl](part5_lazy/skeleton_resource_samples.jsonl)：采样中私有提交内存最高76.69 GB（含可换出页，不等于常驻物理内存），可用物理内存曾为0.49 GB；长尾由少数大编组/梯形二分主导。默认24保持，没有清缓存、改谓词或重新抽运行名单。
 
 本节为执行方首次运行记录。第5部分检查点完整通过后进入第6部分快批20；正式全链路与单进程五键复跑仍待执行。
+
+
+### 13.9 第 6 部分：20 合同快批（24 进程）—— 完整通过
+
+`run_bounded.ps1 -Stage quick -Name quick_lazy_r1 -Workers 24 -LimitSeconds 0`，生产代码仍为8e22f06，文档/证据绑定784b62f。固定20键均完成，20/20保留成功，异常/未完成/unknown均空；运行器墙钟105.569 s，含conda守护墙钟107.557 s。输出根 `run/out/quick_lazy_r1/`，完整选择、记录、摘要与日志在 [part6/](part6/)。
+
+| 止损项 | 实测 | 阈值与结果 |
+|---|---|---|
+| 成功合同 | 20/20 | 少于16触发；未触发 |
+| 成功合同post失败中位数 | 0 | 大于0触发；未触发 |
+| 全20合同优化累计耗时中位数 | 6.729397 s | 大于60 s触发；未触发 |
+| 保留P0 | 0 | 任何违规即停；未触发 |
+
+o07_d1用了3次attempt，前两次为optimize_feint普通拒绝，成功合同post计数为2；其余19合同一次成功。中位数为0不等于所有合同都无post失败，原拒绝证据未删除或重跑。阶段累计CPU秒：骨架357.315、优化185.900、仿真230.510、核验17.090。
+
+**保存后独立复核：** 用 [validate_feint_disk.py](validate_feint_disk.py) `--root <quick_lazy_r1> --stage quick --out <新的诊断JSON>`，从NPY重新构建轨迹，调用原冻结verify_segments/check_validity，并直接按contour SDF与偏移重算warning/alert进入、退出、帧时刻、protected最深SDF及末帧外圈。20/20合同、99成员全部通过，两层进入/退出均1/1，序列化事件和NPY逐项相同。实测最小间距3.122306408678227 m，最小protected SDF14.438450055844356 m；不把规划10 m当实测门槛。所有合同JSON禁用计时/缓存/路径字段或绝对路径值0处，P0为空，无缺失。证据 [part6/disk_validation.json](part6/disk_validation.json)。
+
+第6部分检查点和保存后核验均完整通过，随后才启动第7部分主200＋多样性100。`make_acceptance.py`新增可选`--phase4-root`，只使最终预置测试的第二轮门禁索引指向本次`gates_lazy_r1`，预置文件、断言和原六组比较口径均不改。
