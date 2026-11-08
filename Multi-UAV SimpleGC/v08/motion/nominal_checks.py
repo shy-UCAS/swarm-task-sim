@@ -399,3 +399,37 @@ def screen_feint_member(facilities, target_id, time_us, p, v, criteria=None):
                 "max_other_layer": max_other},
             "dwell_anywhere": anywhere, "first_entry_us": first_in, "first_exit_us": first_out,
             "min_protected_sdf_m": float(sp.min()) if n else None}
+
+
+def screen_close_observation_member(facilities, target_id, time_us, p, v, criteria=None):
+    """V8-19: dwell is detected only on target level-one frames; other outside pauses are permitted."""
+    cfg = criteria if criteria is not None else load_criteria()
+    time = np.asarray(time_us)
+    xy, velocity = np.asarray(p, float)[:, :2], np.asarray(v, float)
+    ids = [facility.id for facility in facilities]
+    target = ids.index(target_id)
+    n = len(time)
+    levels = np.zeros((n, len(ids)), np.int8)
+    for index, facility in enumerate(facilities):
+        levels[:, index], _ = layer_levels(facility, xy)
+    target_levels = levels[:, target]
+    visits = runs(target_levels >= 1) if n else []
+    others = [index for index in range(len(ids)) if index != target]
+    max_other = int(levels[:, others].max()) if n and others else 0
+    frames = np.ones(n, bool)
+    center = np.asarray(facilities[target].center, float)
+    observation = dwell(xy, time, target_levels == 1, cfg) if n else {"detected": False}
+    full_revisit = revisit(xy, velocity, time, target_levels, frames, center, cfg) if n else {"detected": False}
+    work_revisit = revisit(xy, velocity, time, target_levels, work_mask(target_levels), center, cfg) if n else {"detected": False}
+    conditions = {"started_outside_target_warning": bool(n and target_levels[0] == 0),
+                  "single_warning_visit": bool(n and len(visits) == 1),
+                  "max_target_layer_one": bool(n and int(target_levels.max()) == 1),
+                  "other_layers_within_limit": bool(max_other <= 1),
+                  "observation_dwell": bool(observation["detected"]),
+                  "no_revisit_window": not bool(full_revisit["detected"]),
+                  "ended_outside_all_warning": bool(n and int(levels[-1].max()) == 0)}
+    return {"passed": all(conditions.values()), "conditions": conditions, "levels": levels,
+            "counts": {"frames": int(n), "visits": len(visits),
+                       "max_target_layer": int(target_levels.max()) if n else None,
+                       "max_other_layer": max_other},
+            "observation_dwell": observation, "revisit": full_revisit, "revisit_work": work_revisit}

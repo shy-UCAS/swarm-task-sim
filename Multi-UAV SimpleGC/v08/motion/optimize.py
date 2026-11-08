@@ -1007,6 +1007,8 @@ def _optimize_segment_intent(ctx, skeleton, key, settings, intent):
         band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
     lines_raw = lines
     lines = tuple(merge_semantic_lines(lines_raw, knot_s=float(settings["knot_s"])))
+    from .dwell_nominal import dwell_lines_from_skeleton
+    lines = lines + dwell_lines_from_skeleton(skeleton, maps)
     # V8-18 指令 2.1：掉头表（佯动非空；过境/突入的 turn_ranges 为 {}，结果仍为 ()）
     from ..config import load_config
     turns = turns_from_skeleton(skeleton, maps, load_config("monitoring").values)

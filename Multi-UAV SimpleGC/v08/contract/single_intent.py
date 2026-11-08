@@ -8,7 +8,7 @@ from dataclasses import replace
 
 from .monitoring import ContractInvalid, monitoring_mission, validate_mission
 
-GENERATION_INTENTS = ("monitoring", "transit", "intrusion", "feint")
+GENERATION_INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation")
 
 
 def validate_single_mission(mission, ctx):
@@ -19,12 +19,12 @@ def validate_single_mission(mission, ctx):
     task = mission.tasks[0]
     if task.intent == "monitoring":
         return validate_mission(mission, ctx)
-    if task.intent not in ("transit", "intrusion", "feint"):
+    if task.intent not in ("transit", "intrusion", "feint", "close_observation"):
         raise ContractInvalid(f"本项只支持 {GENERATION_INTENTS}：{task.intent!r}")
     intent = task.intent
     validate_mission(replace(mission, tasks=(replace(task, intent="monitoring"),)), ctx)
     if mission.tasks[0].intent != intent or not mission.tasks[0].final:
-        what = {"transit": "过境", "intrusion": "突入", "feint": "佯动"}[intent]
+        what = {"transit": "过境", "intrusion": "突入", "feint": "佯动", "close_observation": "抵近观察"}[intent]
         raise ContractInvalid(f"{what}任务非法：{mission.tasks[0]!r}")
     return True
 
@@ -54,6 +54,14 @@ def feint_mission(ctx, common):
     return mission
 
 
+def close_observation_mission(ctx, common):
+    """V8-19: only replace the task intent, preserving the public draw and RNG identity."""
+    mon = monitoring_mission(ctx, common)
+    mission = replace(mon, tasks=(replace(mon.tasks[0], intent="close_observation"),))
+    validate_single_mission(mission, ctx)
+    return mission
+
+
 def mission_for_intent(ctx, common, intent):
     if intent == "monitoring":
         return monitoring_mission(ctx, common)
@@ -63,4 +71,6 @@ def mission_for_intent(ctx, common, intent):
         return intrusion_mission(ctx, common)
     if intent == "feint":
         return feint_mission(ctx, common)
+    if intent == "close_observation":
+        return close_observation_mission(ctx, common)
     raise ContractInvalid(f"本项只支持 {GENERATION_INTENTS}：{intent!r}")
