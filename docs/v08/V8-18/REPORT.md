@@ -345,7 +345,7 @@ formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connec
 
 - 按需改造与自加测试：已完成，单独提交。
 - 共享文件改动后的第二轮三意图门禁：监视/过境/突入各 20/20 逐字节一致，排除 []。
-- 单进程快速检查：三个骨架 smoke 均第 1 次 attempt 成功，落盘精确重验通过；两个边缘集合诊断进行中。单合同骨架超过 900 s 停。
+- 单进程快速检查：三个骨架 smoke 均第 1 次 attempt 成功，落盘精确重验通过；两个边缘集合诊断已完成，均经梯形缩减找到非空格。单合同骨架超过 900 s 停。
 - 第 5 部分：待运行 200 合同骨架、24 进程，原 5.2 止损不变，新增 3600 s 墙钟上限。
 - 第 6/7/8 部分：依前置检查点逐项推进，未执行部分不宣称通过。
 
@@ -375,3 +375,27 @@ formation 流定槽位 → shape 流 `integers(0, len(cells))` 选格 → connec
 三键无队形退让、无异常。排列平均走 5/3 个格，三个 probe 都非空；非空格规范下标分别 799、520、1186。完整命令、启动/结束 UTC、含 conda 启动的守护墙钟 6.30/27.13/40.18 s 见 `part5_lazy/o*_smoke_watchdog.json`。骨架运行输出分别在 `run/out/smoke_lazy_r1_<键>/`。
 
 用 [collect_lazy_evidence.py](collect_lazy_evidence.py) 从已保存骨架重建实际成员支撑，逐个精确检查：形变两类支撑之并及核心、完整 base、完整 crossing_analysis 的 warning/alert 一入一出、掉头表非空、LP 上界、初始连接不提前入 warning、终点全部 warning 外 50 m。**全部通过**，合同递归扫描计时/缓存/路径键及路径值 **0 处**。详见 [smoke_lazy_audit_r1.json](part5_lazy/smoke_lazy_audit_r1.json)。这是首次执行方记录，非审查方独立复跑。
+
+### 13.7 两键集合诊断与快速检查闭合 —— 完成
+
+o17_d1、o17_d4 均为第 0 组 12 机、初始横排，原横向间距 24.331049769681087 m。单进程按真实 shape 键分别运行；两者均经横排判空、梯形二分后找到非空格，选定梯形步长 12.16568544790984 m。这里只确认集合非空，不把它记为骨架或全链路成功。
+
+| probe | 队形 / 横向步长 m | 候选格数 | d1 走格 / 非空位置 | d4 走格 / 非空位置 |
+|---|---|---|---|---|
+| 1 | abreast / — | 2189 | 2189 / 全空 | 2189 / 全空 |
+| 2 | echelon / 24.331050 | 1447 | 1447 / 全空 | 1447 / 全空 |
+| 3 | echelon / 3.000000 | 1867 | 15 / 15 | 10 / 10 |
+| 4 | echelon / 13.665525 | 1854 | 1854 / 全空 | 1854 / 全空 |
+| 5 | echelon / 8.332762 | 1862 | 2 / 2 | 1 / 1 |
+| 6 | echelon / 10.999144 | 1862 | 51 / 51 | 85 / 85 |
+| 7 | echelon / 12.332334 | 1855 | 1855 / 全空 | 1855 / 全空 |
+| 8 | echelon / 11.665739 | 1859 | 171 / 171 | 820 / 820 |
+| 9 | echelon / 11.999037 | 1859 | 1690 / 1690 | 1146 / 1146 |
+| 10 | echelon / 12.165685 | 1858 | 715 / 715 | 760 / 760 |
+
+- o17_d1：查询 641.632 s（含组合诊断），守护墙钟 646.375 s；10 个 probe、4 个全空、总走 9,989 格。o17_d4：648.201 s，守护墙钟 653.109 s；10 个 probe、4 个全空、总走 10,167 格。无异常。完整逐格下标、各 probe 首因统计、选中格与六组合结果见 [o17_d1_queries.json](part5_lazy/o17_d1_queries.json)、[o17_d4_queries.json](part5_lazy/o17_d4_queries.json)；摘要 [queries_summary.json](part5_lazy/queries_summary.json)。
+- 两键选中格均只有 teardrop 正负两组合非空，U/oblique 四组合为空；不要求种类边缘均匀。两个边缘诊断不排除出主批分母。
+- 两键合计 20 个 probe、走 20,156 格，平均 1007.8 格/probe（包括 8 个完整判空 probe）；这与宽度边界附近非空格稀少相符，不能用全局约 4 格的估计代替实测。
+- 快速检查实际约 23 分钟，其中边缘集合诊断约 21.5 分钟；指令“约15分钟”为估计。三个单合同骨架均小于 38 s，没有触发单骨架 900 s 硬上限。查询没有新增次数或时间拒绝。
+- 快速检查后 155 个缓存文件的 SHA256、大小、UTC 修改时刻全部不变；feint_turn、MT、预置三文件、owner_rerun 散列不变，见 [preservation_after_quickcheck.json](part5_lazy/preservation_after_quickcheck.json)。首轮核对脚本因 PowerShell 将 ISO 时间字符串自动解析为 DateTime，造成字符串比较的假差异；分项核对 SHA/大小/UTC ticks 均相同后，用 `ConvertFrom-Json -DateKind String` 修正比较器。未改缓存或生产数据，原错误比较证据保留 [preservation_comparison_attempt_r1.json](part5_lazy/preservation_comparison_attempt_r1.json)。
+- 数值/接口/自加测试、三意图门禁、三键骨架及两键集合诊断前提完整。接下来执行 200 合同骨架（24 进程），原第 5.2 节四止损及 3600 s 墙钟上限均保持。
