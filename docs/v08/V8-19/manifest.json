@@ -745,19 +745,22 @@
    "sha256": "6157bd5ce6af55e6e79029f2c060bfd022d07faa38321a6e616724168c1b4791",
    "author_sha256": "6157bd5ce6af55e6e79029f2c060bfd022d07faa38321a6e616724168c1b4791",
    "verbatim": true,
-   "status": "未运行；仅提取原文，语法解析不算测试"
+   "part1_status": "未运行；仅提取原文，语法解析不算测试",
+   "status": "通过8/8（本检查点）"
   },
   "test_preset_local_geometry_v19.py": {
    "sha256": "73a9d91cbcf244cb64e8b278482edc41c40aa690c5ed24bab138bfce7b245985",
    "author_sha256": "73a9d91cbcf244cb64e8b278482edc41c40aa690c5ed24bab138bfce7b245985",
    "verbatim": true,
-   "status": "未运行；仅提取原文，语法解析不算测试"
+   "part1_status": "未运行；仅提取原文，语法解析不算测试",
+   "status": "通过3/3（本检查点）"
   },
   "test_preset_local_artifacts_v19.py": {
    "sha256": "13a26a396e24bdc7c2ffd39e6792c69dd71bf12c91721c3711b700d8c3c49776",
    "author_sha256": "13a26a396e24bdc7c2ffd39e6792c69dd71bf12c91721c3711b700d8c3c49776",
    "verbatim": true,
-   "status": "未运行；仅提取原文，语法解析不算测试"
+   "part1_status": "未运行；仅提取原文，语法解析不算测试",
+   "status": "后置：依赖产物未齐，历史setUpClass跳过不记通过"
   }
  },
  "run_root": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\run",
@@ -1040,7 +1043,14 @@
   "retained_close_observation_contracts": 0,
   "reason": "Selected original dwell station is absent from the composed arrival table because re-summing inserted spatial chords changes its floating value."
  },
- "execution_status": {
+ "testing_dependency_clarification": "User explicitly deferred artifact tests and cache identity interface until their results exist; required numeric8/reference-interface2/extra5 pass before first-round gates.",
+ "station_anchor_ruling_corrected": {
+  "source": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\V8-19_站点锚点裁定_20261108.md",
+  "sha256": "d0f32820c648e1fb3c0de1047938423f8cacf696effe0aa0eb9d0902250a3197",
+  "copy": "instructions/V8-19_站点锚点裁定_20261108_依赖顺序更正.md",
+  "change": "section4 dependency order corrected; confirms user's explicit clarification"
+ },
+ "execution_status_at_part2_completion": {
   "part": 2,
   "status": "complete",
   "gates": [
@@ -1088,5 +1098,11 @@
   "p0_triggered": [],
   "next": "part3 selected-curve dwell construction and full cache parameterization"
  },
- "testing_dependency_clarification": "User explicitly deferred artifact tests and cache identity interface until their results exist; required numeric8/reference-interface2/extra5 pass before first-round gates."
+ "execution_status": {
+  "part": 3,
+  "status": "stopped_at_part3_quick_checkpoint",
+  "checkpoint": "part3_checkpoint/summary.json",
+  "p0_triggered": [],
+  "retained_close_observation_contracts": 0
+ }
 }

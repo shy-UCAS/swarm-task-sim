@@ -388,6 +388,8 @@ def _prewarm_family(task):
         return _prewarm_family_intrusion(task)
     if len(task) > 4 and task[4] == "feint":
         return _prewarm_family_feint(task)
+    if len(task) > 4 and task[4] == "close_observation":
+        return _prewarm_family_close_observation(task)
     import time as _t
     from ..contract.single_intent import transit_mission
     from ..motion import transit_chords as TC
@@ -416,6 +418,42 @@ def _prewarm_family(task):
                 seen.add(qid)
                 reqs.append((t, offs))
     written = TC.prewarm_transit(ctx, reqs, cache_dir)
+    st = ctx.cache_stats()
+    return {"order": int(entry["order"]), "family_id": entry["family_id"], "wall_s": _t.perf_counter() - t0,
+            "queries": written, "raw_cache": st, "sizes": sizes,
+            "probes": {r["draw"]: {"target": r["target"], "probes": r["probes"]} for r in rows}}
+
+
+def _prewarm_family_close_observation(task):
+    """V8-19: only transit-style chord sets and existing geometric fields; no LP or dwell enumeration."""
+    import time as _t
+    from ..contract.single_intent import close_observation_mission
+    from ..motion import transit_chords as TC
+    from ..motion.intents.transit import formation_probe_sequence
+    from ..sampler.common import sample_common
+    from ..sampler.keys import RngKey
+    from ..scene.context import load_context
+    entry, draws, data_root, cache_dir = task[:4]
+    t0 = _t.perf_counter()
+    ctx = load_context(entry, data_root=Path(data_root), cache_dir=Path(cache_dir))
+    # 构造 probe 序列时只读已有弦集合文件（load_chord_set 不写）；缺失的在内存计算，之后由 prewarm_transit 统一写出
+    rows, sizes = [], {}
+    for d in draws:
+        m = close_observation_mission(ctx, sample_common(ctx.family, d))
+        g, task_ = m.groups[0], m.tasks[0]
+        sizes[f"{int(entry['order'])}:{d}"] = len(g.member_ids)
+        key = RngKey(ctx.family.family_id, d, "shape", mission=0, branch=None, group=g.group_id, segment=0)
+        seq = formation_probe_sequence(ctx, g, task_, key)
+        rows.append({"draw": d, "target": task_.target_id, "probes": [[n, s, None] for n, s, _ in seq],
+                     "requests": [(task_.target_id, offs) for _, _, offs in seq]})
+    reqs, seen = [], set()
+    for r in rows:
+        for t, offs in r["requests"]:
+            qid, _ = TC.query_identity(ctx, t, offs, intent="close_observation")
+            if qid not in seen:
+                seen.add(qid)
+                reqs.append((t, offs))
+    written = TC.prewarm_transit(ctx, reqs, cache_dir, intent="close_observation")
     st = ctx.cache_stats()
     return {"order": int(entry["order"]), "family_id": entry["family_id"], "wall_s": _t.perf_counter() - t0,
             "queries": written, "raw_cache": st, "sizes": sizes,

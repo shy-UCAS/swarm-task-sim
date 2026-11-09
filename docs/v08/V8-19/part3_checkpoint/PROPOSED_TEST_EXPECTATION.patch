@@ -1,0 +1,15 @@
+--- a/Multi-UAV SimpleGC/tests/v08/V8-19/test_extra_selected_curve_v19.py
++++ b/Multi-UAV SimpleGC/tests/v08/V8-19/test_extra_selected_curve_v19.py
+@@ -53,7 +53,11 @@
+         self.assertEqual(member["warning_sdf_m"], -15.)
+         self.assertEqual(member["alert_sdf_m"], 125.)
+         self.assertEqual(member["endpoint_distance_m"], 735.)
+-        self.assertTrue(result.witnesses["screen"]["m"]["passed"])
++        # This analytic fixture crosses the alert/protected disks; screening must reject its whole path.
++        self.assertFalse(result.witnesses["screen"]["m"]["passed"])
++        self.assertFalse(result.witnesses["screen"]["m"]["conditions"]["max_target_layer_one"])
++        self.assertEqual(result.witnesses["screen"]["m"]["counts"]["max_target_layer"], 3)
++        self.assertTrue(result.witnesses["screen"]["m"]["conditions"]["observation_dwell"])
+         self.assertEqual(result.members, plan.members)
+         self.assertEqual(result.witnesses["member_map_transit"], plan.witnesses["member_map_transit"])
+ 

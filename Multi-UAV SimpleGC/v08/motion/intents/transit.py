@@ -485,7 +485,8 @@ def formation_probe_sequence(ctx, group, task, key):
         slots = formation_slots(group, fam, fkey, formation=name, lateral_step_m=step, order=order)
         offs = [slots.offsets[m] for m in slots.order]
         seq.append((name, step, offs))
-        doc = TC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir)
+        doc = TC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir,
+                                 **({"intent": task.intent} if task.intent == "close_observation" else {}))
         return {"slots": slots, "doc": doc} if doc["cells"] else None
 
     def width_probe(name):
@@ -517,7 +518,8 @@ def propose_and_build(ctx, group, task, states, key):
         def probe(name, step):
             t0 = time.perf_counter()
             slots = formation_slots(group, fam, fkey, formation=name, lateral_step_m=step, order=order)
-            doc = TC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir)
+            doc = TC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir,
+                                 **({"intent": task.intent} if task.intent == "close_observation" else {}))
             _tick(S, "chord_set_s", time.perf_counter() - t0)
             steps_log.append({"formation": name, "lateral_step_m": step, "feasible_cells": len(doc["cells"]),
                               "n_cells": doc["n_cells"], "query_id": doc.get("query_id"),
@@ -565,7 +567,7 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
     u, n = TC.frame(th)
     o = np.asarray(tgt.center, float)
     offsets = [slots.offsets[m] for m in slots.order]
-    P = {"intent": "transit", "theta_idx": int(ti), "theta_deg": float(TC.THETA_STEP_DEG * int(ti)), "h_m": float(h),
+    P = {"intent": task.intent, "theta_idx": int(ti), "theta_deg": float(TC.THETA_STEP_DEG * int(ti)), "h_m": float(h),
          "origin_xy": tuple(map(float, o)), "u": tuple(map(float, u)), "n": tuple(map(float, n)),
          "cell_index": ci, "cells_feasible": len(cells), "chord_query_id": doc.get("query_id"),
          "x_c": xc, "x_t": float(xt), "x_in": float(x_in), "collect_D_m": D_c, "collect_candidates": len(Ds),
@@ -634,6 +636,9 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
     t0 = time.perf_counter()
     plan = build_candidate(ctx, group, task, states, key, P)
     _tick(S, "candidate_s", time.perf_counter() - t0)
+    if task.intent == "close_observation" and plan.failure is None:
+        from .close_observation import add_dwell
+        plan = add_dwell(ctx, plan, rng)
     if plan.failure is not None:
         w = dict(plan.failure.witness or {})
         w["draw"] = draw_summary(plan.proposal or P, slots.realized)

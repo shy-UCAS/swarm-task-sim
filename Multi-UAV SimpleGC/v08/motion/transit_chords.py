@@ -331,16 +331,16 @@ def _band_ok(sub_f, s0, s1):
     return away | ((s0 <= B[0]) & (s1 >= B[1]))
 
 
-def assess_cell(ctx, target_id, theta_idx, h, offsets, *, memo=True, field_grids=None, lanes=None):
+def assess_cell(ctx, target_id, theta_idx, h, offsets, *, memo=True, field_grids=None, lanes=None, intent="transit"):
     """offsets：((l_i, d_i), …)。可行返回 dict（x_t、x_in、候选 D 列表、各车道入/出圈），否则 (None, 原因)。"""
     if lanes is None:
-        lanes = get_lanes(ctx, target_id, theta_idx, [h + d for _, d in offsets], memo=memo)
+        lanes = get_lanes(ctx, target_id, theta_idx, [h + d for _, d in offsets], memo=memo, intent=intent)
     tgt = target_id
     for L in lanes:
         why = L.target_status(tgt)
         if why is not None:
             return None, why
-    _sample_lanes(ctx, tgt, lanes)
+    _sample_lanes(ctx, tgt, lanes, intent=intent)
     E, X, runs = [], [], []
     for (l, d), L in zip(offsets, lanes):
         e, f = L.sub[tgt][0.0]
@@ -376,7 +376,7 @@ def assess_cell(ctx, target_id, theta_idx, h, offsets, *, memo=True, field_grids
     o = np.asarray(ctx.facility_by_id[tgt].center, float)
     u, n = frame(thetas()[theta_idx])
     x_in = min(E)
-    phys = field_grids if field_grids is not None else collect_phys_grid(ctx, tgt)
+    phys = field_grids if field_grids is not None else collect_phys_grid(ctx, tgt, intent=intent)
     warn_t = ctx.facility_by_id[tgt].layers["warning"]
     others = [f.id for f in ctx.facilities if f.id != tgt]
     Ds = np.asarray(COLLECT_DS, float)
@@ -398,17 +398,17 @@ def assess_cell(ctx, target_id, theta_idx, h, offsets, *, memo=True, field_grids
             "X": [float(v) for v in X]}, None
 
 
-def assess_formation(ctx, target_id, offsets, *, memo=True):
+def assess_formation(ctx, target_id, offsets, *, memo=True, intent="transit"):
     """全部 (θ, h) 格按 θ、h 升序；返回 {"cells": [[θ_idx, h, x_t, x_in, [D…]], …], "reasons": {原因: 格数}, "n_cells",
     "seconds"}。每个航向先批量取解析车道，再对通过目标穿越检查的格批量采样。"""
     t0 = time.perf_counter()
-    phys = collect_phys_grid(ctx, target_id)
+    phys = collect_phys_grid(ctx, target_id, intent=intent)
     cells, reasons, total = [], {}, 0
     for ti, th in enumerate(thetas()):
         hs = h_values(ctx, target_id, th)
         if memo:
-            get_lanes(ctx, target_id, ti, [h + d for h in hs for _, d in offsets])
-        lane_sets = [get_lanes(ctx, target_id, ti, [h + d for _, d in offsets], memo=memo) for h in hs]
+            get_lanes(ctx, target_id, ti, [h + d for h in hs for _, d in offsets], intent=intent)
+        lane_sets = [get_lanes(ctx, target_id, ti, [h + d for _, d in offsets], memo=memo, intent=intent) for h in hs]
         need = {}
         for lanes in lane_sets:
             if all(L.target_status(target_id) is None for L in lanes):
@@ -416,10 +416,10 @@ def assess_formation(ctx, target_id, offsets, *, memo=True):
                     if L.runs is None:
                         need[id(L)] = L
         if need:
-            _sample_lanes(ctx, target_id, list(need.values()))
+            _sample_lanes(ctx, target_id, list(need.values()), intent=intent)
         for h, lanes in zip(hs, lane_sets):
             total += 1
-            got, why = assess_cell(ctx, target_id, ti, h, offsets, memo=memo, field_grids=phys, lanes=lanes)
+            got, why = assess_cell(ctx, target_id, ti, h, offsets, memo=memo, field_grids=phys, lanes=lanes, intent=intent)
             if got is None:
                 reasons[why] = reasons.get(why, 0) + 1
                 continue
@@ -445,39 +445,40 @@ def query_identity(ctx, target_id, offsets, *, intent="transit"):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:32], doc
 
 
-def _cache_path(cache_dir, ctx, target_id, qid):
-    return Path(cache_dir) / "transit_v16" / ctx.cache_key / f"{target_id}_{qid}.json"
+def _cache_path(cache_dir, ctx, target_id, qid, *, intent="transit"):
+    folder = "transit_v16" if intent == "transit" else "close_observation_v19"
+    return Path(cache_dir) / folder / ctx.cache_key / f"{target_id}_{qid}.json"
 
 
 STATS = {"cache_hits": 0, "cache_misses_computed": 0}
 
 
-def load_chord_set(ctx, target_id, slots, cache_dir):
+def load_chord_set(ctx, target_id, slots, cache_dir, *, intent="transit"):
     """worker 只读：命中预建文件直接读；缺失时进程内计算（不写回、计数 cache_misses_computed），结果与预建相同。"""
     offsets = [slots.offsets[m] for m in slots.order]
-    qid, _ = query_identity(ctx, target_id, offsets)
-    mem = ctx.extra.setdefault(("transit_chord_sets", target_id), {})
+    qid, _ = query_identity(ctx, target_id, offsets, intent=intent)
+    mem = ctx.extra.setdefault(_ikey("chord_sets", intent, target_id), {})
     if qid in mem:
         return mem[qid]
-    p = None if cache_dir is None else _cache_path(cache_dir, ctx, target_id, qid)
+    p = None if cache_dir is None else _cache_path(cache_dir, ctx, target_id, qid, intent=intent)
     if p is not None and p.exists():
         doc = json.loads(p.read_text(encoding="utf-8"))
         STATS["cache_hits"] += 1
     else:
-        doc = assess_formation(ctx, target_id, offsets)
+        doc = assess_formation(ctx, target_id, offsets, intent=intent)
         doc["query_id"] = qid
         STATS["cache_misses_computed"] += 1
     mem[qid] = doc
     return doc
 
 
-def prewarm_transit(ctx, requests, cache_dir):
+def prewarm_transit(ctx, requests, cache_dir, *, intent="transit"):
     """主进程预建：requests = [(target_id, offsets), …]（由确定性的选队形 probe 序列给出）。已存在的文件不覆盖。
     返回每个查询的身份、格数、可行格数、构建耗时与文件散列。"""
     rows = []
     for target_id, offsets in requests:
-        qid, ident = query_identity(ctx, target_id, offsets)
-        p = _cache_path(cache_dir, ctx, target_id, qid)
+        qid, ident = query_identity(ctx, target_id, offsets, intent=intent)
+        p = _cache_path(cache_dir, ctx, target_id, qid, intent=intent)
         if p.exists():
             raw = p.read_bytes()
             doc = json.loads(raw.decode("utf-8"))
@@ -485,8 +486,8 @@ def prewarm_transit(ctx, requests, cache_dir):
                          "feasible": len(doc["cells"]), "seconds": 0.0,
                          "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)})
             continue
-        mem = ctx.extra.get(("transit_chord_sets", target_id), {})
-        doc = dict(mem[qid]) if qid in mem else assess_formation(ctx, target_id, offsets)
+        mem = ctx.extra.get(_ikey("chord_sets", intent, target_id), {})
+        doc = dict(mem[qid]) if qid in mem else assess_formation(ctx, target_id, offsets, intent=intent)
         doc["query_id"] = qid
         doc["identity"] = ident
         p.parent.mkdir(parents=True, exist_ok=True)

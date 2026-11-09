@@ -1,0 +1,209 @@
+{
+ "utc": "2026-11-09T01:28:07.443372+00:00",
+ "stage": "part3 quick checkpoint failed",
+ "test_sha256": "25218ceb417447ad436e7da4abd72f2ff5466a9d084d43aa71818f46b8699080",
+ "failed_test": "SelectedCurve.test_analytic_selected_point_and_two_tail_draws",
+ "failed_assertion": "self.assertTrue(result.witnesses['screen']['m']['passed'])",
+ "test_counts": {
+  "run": 5,
+  "passed": 4,
+  "failed": 1
+ },
+ "production_error": false,
+ "suspected_test_expectation_error": true,
+ "fixture_curve": {
+  "x_range_m": [
+   -450.0,
+   450.0
+  ],
+  "y_m": 0.0,
+  "warning_radius_m": 300.0,
+  "alert_radius_m": 160.0,
+  "protected_radius_m": 100.0,
+  "minimum_alert_clearance_m": -170.0
+ },
+ "analysis": "The executor-added fixture crosses the origin and violates the pre-existing whole-curve alert constraint. add_dwell correctly records its nominal target max layer 3, not 1. The assertion that all nominal conditions pass was an erroneous fixture expectation. This is not a floating-point representation issue and the test/source have not been changed after failure.",
+ "whole_curve_base_min_margins_m": {
+  "world": 1515.0,
+  "alert:t": -170.0
+ },
+ "selected_dwell": {
+  "reference_station_m": 165.0,
+  "set_size": 46,
+  "index": 0,
+  "duration_ticks": 200
+ },
+ "dwell_windows": {
+  "m": [
+   165.0,
+   20.0,
+   [
+    -285.0,
+    0.0
+   ]
+  ]
+ },
+ "rng_calls": [
+  [
+   0,
+   46
+  ],
+  [
+   200,
+   1201
+  ]
+ ],
+ "screen_conditions": {
+  "started_outside_target_warning": true,
+  "single_warning_visit": true,
+  "max_target_layer_one": false,
+  "other_layers_within_limit": true,
+  "observation_dwell": true,
+  "no_revisit_window": true,
+  "ended_outside_all_warning": true
+ },
+ "screen_counts": {
+  "frames": 1434,
+  "visits": 1,
+  "max_target_layer": 3,
+  "max_other_layer": 0
+ },
+ "screen_observation_dwell": {
+  "detected": true,
+  "frame_index": 210,
+  "confirm_frame_index": 410,
+  "t_s": 41.0,
+  "t_confirm": 61.0,
+  "total_duration_s": 30.0,
+  "union_frame_intervals": [
+   [
+    210,
+    510
+   ]
+  ]
+ },
+ "screen_revisit": {
+  "detected": false,
+  "frame_index": null,
+  "confirm_frame_index": null,
+  "t1": null,
+  "t2": null,
+  "t_confirm": null,
+  "distance_m": null,
+  "departure_m": null,
+  "heading_difference_deg": null,
+  "azimuth_coverage_deg": null
+ },
+ "screen_revisit_work": {
+  "detected": false,
+  "frame_index": null,
+  "confirm_frame_index": null,
+  "t1": null,
+  "t2": null,
+  "t_confirm": null,
+  "distance_m": null,
+  "departure_m": null,
+  "heading_difference_deg": null,
+  "azimuth_coverage_deg": null
+ },
+ "selected_diagnostics": {
+  "candidate_count": 181,
+  "set_size": 46,
+  "rejected_by_condition": {
+   "finite": 0,
+   "semantic": 28,
+   "warning": 66,
+   "alert": 69,
+   "base": 67,
+   "mapping_domain": 0
+  },
+  "rejection_counts_overlap": true,
+  "members": {
+   "m": {
+    "member_station_m": 165.0,
+    "point_xy": [
+     -285.0,
+     0.0
+    ],
+    "warning_sdf_m": -15.0,
+    "alert_sdf_m": 125.0,
+    "base_min_margin_m": 115.0,
+    "base_margins_m": {
+     "world": 1680.0,
+     "alert:t": 115.0
+    },
+    "semantic_ranges_m": [
+     [
+      50.0,
+      160.0
+     ],
+     [
+      740.0,
+      760.0
+     ]
+    ],
+    "mapping_domain_m": [
+     0.0,
+     900.0
+    ],
+    "nominal_arrival_s": 45.069663170494415,
+    "nominal_departure_s": 65.06966317049441,
+    "duration_s": 20.0,
+    "nominal_end_s": 161.38932634098884,
+    "duration_sum_s": 141.38932634098884,
+    "duration_roundoff_s": 0.0,
+    "endpoint_distance_m": 735.0
+   }
+  },
+  "member_arrival_span_s": 0.0,
+  "pd_min_pair_distance_m": null
+ },
+ "new_intent_production_contracts_retained": 0,
+ "p0_triggered": [],
+ "frozen_files": {
+  "checked": 100,
+  "all_equal": true,
+  "differences": []
+ },
+ "frozen_symbols": [
+  {
+   "qualname": "member_nominal",
+   "equal": true
+  },
+  {
+   "qualname": "NominalPVA",
+   "equal": true
+  },
+  {
+   "qualname": "Prepared",
+   "equal": true
+  },
+  {
+   "qualname": "_eliminate",
+   "equal": true
+  },
+  {
+   "qualname": "solve_joint",
+   "equal": true
+  }
+ ],
+ "owner_sha256": {
+  "V8-17/owner_rerun.json": "d9c0022bf84636eb61d0b27a2f65bf3f6c490c738046087036f22b14cdf65bd0",
+  "V8-18/owner_rerun.json": "0482b9c83fcb274d9fc14177fc8027d73d191afc1e1e8345187cfe74276b8e4b"
+ },
+ "preset_sha256": {
+  "test_preset_local_artifacts_v19.py": "13a26a396e24bdc7c2ffd39e6792c69dd71bf12c91721c3711b700d8c3c49776",
+  "test_preset_local_geometry_v19.py": "73a9d91cbcf244cb64e8b278482edc41c40aa690c5ed24bab138bfce7b245985",
+  "test_preset_numeric_v19.py": "6157bd5ce6af55e6e79029f2c060bfd022d07faa38321a6e616724168c1b4791"
+ },
+ "not_run_after_checkpoint": [
+  "same-attempt production geometry/RNG audit",
+  "cold/hot serial/parallel cache audit",
+  "maximum actual query measurement",
+  "part3 two-key complete geometry smoke",
+  "part4",
+  "part5",
+  "part6",
+  "part7"
+ ]
+}
