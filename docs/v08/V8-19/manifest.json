@@ -926,43 +926,6 @@
   "failures": 0
  },
  "part1_elapsed_from_registration_s": 562.621952,
- "execution_status": {
-  "status": "stopped_at_part2_reference_quickcheck",
-  "checked_utc": "2026-11-08T19:23:48.597645+00:00",
-  "development_wall_from_first_new_source_s": 550.932908,
-  "part1_commit": "e0ece967e60f1a120810fa493598c6cd6c5adcf4",
-  "preset_numeric": {
-   "passed": 8,
-   "failed": 0
-  },
-  "preset_interface": {
-   "passed": 2,
-   "failed": 0,
-   "not_run_cache_test": 1
-  },
-  "preset_artifacts": {
-   "not_run": 3
-  },
-  "extra_reference": {
-   "passed": 3,
-   "failed": 1,
-   "failed_method": "ExtraDwellReference.test_internal_split_keeps_original_arrival_station"
-  },
-  "frozen_files_checked": 100,
-  "frozen_file_differences": [],
-  "frozen_symbols_equal": true,
-  "preset_hashes_equal": true,
-  "owner_files_equal": true,
-  "p0_triggered": [],
-  "first_round_byte_gates": "not started",
-  "prewarm_wall_s": null,
-  "prewarm_limit_s": 2700,
-  "skeleton200_wall_s": null,
-  "skeleton200_limit_s": 1800,
-  "later_batches": "not started",
-  "retained_close_observation_contracts": 0,
-  "reason": "Selected original dwell station is absent from the composed arrival table because re-summing inserted spatial chords changes its floating value."
- },
  "station_anchor_ruling": {
   "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\V8-19_站点锚点裁定_20261108.md",
   "sha256": "82f172d931c751836c2e951cbb9c7f869747dbe665b3449c0ca2990d40eb72c8",
@@ -1039,5 +1002,91 @@
   },
   "p0_triggered": [],
   "new_retained_contracts": 0
- }
+ },
+ "execution_status_at_7b16f96": {
+  "status": "stopped_at_part2_reference_quickcheck",
+  "checked_utc": "2026-11-08T19:23:48.597645+00:00",
+  "development_wall_from_first_new_source_s": 550.932908,
+  "part1_commit": "e0ece967e60f1a120810fa493598c6cd6c5adcf4",
+  "preset_numeric": {
+   "passed": 8,
+   "failed": 0
+  },
+  "preset_interface": {
+   "passed": 2,
+   "failed": 0,
+   "not_run_cache_test": 1
+  },
+  "preset_artifacts": {
+   "not_run": 3
+  },
+  "extra_reference": {
+   "passed": 3,
+   "failed": 1,
+   "failed_method": "ExtraDwellReference.test_internal_split_keeps_original_arrival_station"
+  },
+  "frozen_files_checked": 100,
+  "frozen_file_differences": [],
+  "frozen_symbols_equal": true,
+  "preset_hashes_equal": true,
+  "owner_files_equal": true,
+  "p0_triggered": [],
+  "first_round_byte_gates": "not started",
+  "prewarm_wall_s": null,
+  "prewarm_limit_s": 2700,
+  "skeleton200_wall_s": null,
+  "skeleton200_limit_s": 1800,
+  "later_batches": "not started",
+  "retained_close_observation_contracts": 0,
+  "reason": "Selected original dwell station is absent from the composed arrival table because re-summing inserted spatial chords changes its floating value."
+ },
+ "execution_status": {
+  "part": 2,
+  "status": "complete",
+  "gates": [
+   {
+    "intent": "monitoring",
+    "contracts": 20,
+    "identical": 20,
+    "files": 575,
+    "wall_s": 375.8340502,
+    "baseline": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-04_V8-14_skeleton\\out\\full_v14c",
+    "repeat": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\run\\out\\gates_2_r1\\monitoring\\run",
+    "exclusions": []
+   },
+   {
+    "intent": "transit",
+    "contracts": 20,
+    "identical": 20,
+    "files": 575,
+    "wall_s": 566.2255657,
+    "baseline": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-05_V8-16_transit\\run\\out\\full_transit_r2",
+    "repeat": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\run\\out\\gates_2_r1\\transit",
+    "exclusions": []
+   },
+   {
+    "intent": "intrusion",
+    "contracts": 20,
+    "identical": 20,
+    "files": 575,
+    "wall_s": 100.3379411,
+    "baseline": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-06_V8-17_intrusion\\run\\out\\full\\full_r1",
+    "repeat": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\run\\out\\gates_2_r1\\intrusion",
+    "exclusions": []
+   },
+   {
+    "intent": "feint",
+    "contracts": 20,
+    "identical": 20,
+    "files": 575,
+    "wall_s": 135.3821466,
+    "baseline": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-06_V8-18_feint\\run\\out\\full_lazy_r1",
+    "repeat": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\run\\out\\gates_2_r1\\feint",
+    "exclusions": []
+   }
+  ],
+  "p0_triggered": [],
+  "next": "part3 selected-curve dwell construction and full cache parameterization"
+ },
+ "testing_dependency_clarification": "User explicitly deferred artifact tests and cache identity interface until their results exist; required numeric8/reference-interface2/extra5 pass before first-round gates."
 }

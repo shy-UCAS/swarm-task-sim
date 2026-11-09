@@ -430,12 +430,17 @@ def assess_formation(ctx, target_id, offsets, *, memo=True):
 
 # ---------------------------------------------------------------- 只读缓存
 
-def query_identity(ctx, target_id, offsets):
+def query_identity(ctx, target_id, offsets, *, intent="transit"):
     offs = sorted((round(float(l), 9), round(float(d), 9)) for l, d in offsets)
     doc = {"version": CACHE_VERSION, "context": ctx.cache_key, "target": target_id, "offsets": offs,
            "theta_step_deg": THETA_STEP_DEG, "h_step_m": H_STEP_M, "x_step_m": X_STEP_M, "q_m": Q_M,
            "collect_ds": list(COLLECT_DS), "collect_band": list(COLLECT_BAND), "pre_entry_m": PRE_ENTRY_SCAN_M,
            "retreat_m": RETREAT_M, "band_m": BAND_M}
+    if intent == "close_observation":
+        doc["version"] = "close_observation-v19"
+        doc["intent"] = intent
+    elif intent != "transit":
+        raise ValueError(f"unsupported chord query intent: {intent!r}")
     text = json.dumps(doc, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:32], doc
 
