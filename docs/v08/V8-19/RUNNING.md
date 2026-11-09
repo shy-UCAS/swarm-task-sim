@@ -58,9 +58,30 @@ $prewarm = Join-Path $runRoot 'out/prewarm_owner_r1/prewarm.json'
 
 结果齐全后独立产物预置：
 
+随分支保存的acceptance.json固定指向本次正式r1产物。审查新的owner轮次时，先复制该描述到run/diagnostics中的新文件，并将outputs中的quick/full路径、rerun路径和新跑门禁的repeat路径更新到相应新目录，再把V8_19_ACCEPTANCE设为新描述文件。不能用原r1描述验收owner轮次。
+
 ```powershell
 $env:V8_19_ACCEPTANCE = (Resolve-Path '..\docs\v08\V8-19\acceptance.json').Path
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-19 -p test_preset_local_artifacts_v19.py -v
 ```
 
 仅推送审查分支，并核对远端SHA；不合并dev、不推main、不强制推送。两份 owner_rerun.json 保留未跟踪，不提交或删除。原始轨迹/缓存留本地run，Git保存报告、脚本、汇总和散列索引。
+
+
+本轮已完成全部阶段，固定20/200/100/5与两轮8组门禁均通过，最终原样9.3为3/3无跳过。第7部分专用分析CLI仅修正合同级到达跨度重复计数；生产源码/轨迹与第二轮门禁没有变化。结果字段和修正前后证明见part7/analysis/arrival_span_fix.json。
+
+五意图分析可按以下参数用新输出目录重现；数据根应指向要审查的那一次全量，例如上文owner_r1：
+
+```powershell
+$taskBase = 'F:\CASIA\Drone Swarm Situational Awareness Algorithm'
+$analysisArgs = @('run','-n','llm','--no-capture-output','python','-B','tools/v08/analyze_close_observation_v19.py',
+    '--monitoring',(Join-Path $taskBase '_handoff/2026-11-04_V8-14_skeleton/out/full_v14c'),
+    '--transit',(Join-Path $taskBase '_handoff/2026-11-05_V8-16_transit/run/out/full_transit_r2'),
+    '--intrusion',(Join-Path $taskBase '_handoff/2026-11-06_V8-17_intrusion/run/out/full/full_r1'),
+    '--feint',(Join-Path $taskBase '_handoff/2026-11-06_V8-18_feint/run/out/full_lazy_r1'),
+    '--close-observation',(Join-Path $runRoot 'out/full_owner_r1'),
+    '--out',(Join-Path $runRoot 'diagnostics/analysis_owner_r1'))
+& $condaExe @analysisArgs
+```
+
+最终只读快照/审计和产物测试的实际命令、日志与脚本位于part8。大轨迹留本地run；任何复现请用全新目录，不覆盖原结果或历史失败。
