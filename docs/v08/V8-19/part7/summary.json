@@ -1,0 +1,135 @@
+{
+ "part": 7,
+ "complete": true,
+ "native_checkpoint": {
+  "metrics": {
+   "attempts_undetermined": false,
+   "contracts": 200,
+   "excluded_from_rate": [],
+   "facility_gap": {
+    "1": {
+     "gap": 0.0,
+     "n": 85,
+     "rate": 1.0,
+     "successes": 85
+    },
+    "2": {
+     "gap": 0.0,
+     "n": 85,
+     "rate": 1.0,
+     "successes": 85
+    },
+    "3": {
+     "gap": 0.0,
+     "n": 30,
+     "rate": 1.0,
+     "successes": 30
+    }
+   },
+   "frechet_pairs": 450,
+   "frechet_pooled_median": 88.25608697045072,
+   "group_gap": {
+    "0": {
+     "gap": 0.0,
+     "n": 110,
+     "rate": 1.0,
+     "successes": 110
+    },
+    "1": {
+     "gap": 0.0,
+     "n": 56,
+     "rate": 1.0,
+     "successes": 56
+    },
+    "2": {
+     "gap": 0.0,
+     "n": 34,
+     "rate": 1.0,
+     "successes": 34
+    }
+   },
+   "post_optimization_failures_median": 0.0,
+   "skeleton_failures_total_diagnostic": 8,
+   "speed_gap": {
+    "0": {
+     "gap": 0.0,
+     "n": 67,
+     "rate": 1.0,
+     "successes": 67
+    },
+    "1": {
+     "gap": 0.0,
+     "n": 61,
+     "rate": 1.0,
+     "successes": 61
+    },
+    "2": {
+     "gap": 0.0,
+     "n": 72,
+     "rate": 1.0,
+     "successes": 72
+    }
+   },
+   "success_attempts_median_diagnostic": 1.0,
+   "success_rate": 1.0,
+   "success_rate_fraction": "1/1"
+  },
+  "triggered": []
+ },
+ "main_successes": 200,
+ "diversity_successes": 100,
+ "full_watchdog_wall_s": 722.4518625,
+ "rerun_watchdog_wall_s": 61.7161621,
+ "rerun_equal": 5,
+ "rerun_exclusions": [],
+ "paired_keys": 200,
+ "common_differences": [],
+ "same_attempt_geometry_differences": [],
+ "geometry_classifications": {
+  "same_attempt": 181,
+  "different_retained_attempt": 19
+ },
+ "runtime_source_matches_second_gate": true,
+ "analysis_only_fix": {
+  "complete": true,
+  "authority": "第3部分检查点裁定第4节：新增代码实现错误的无歧义修正",
+  "phenomenon": "contract-level arrival span was added once per contract and again once per member",
+  "correction": "exclude member_arrival_span_s from per-member metrics aggregation; keep the contract observation",
+  "before": {
+   "max": 28.600800817334175,
+   "min": 0.0,
+   "n": 1729,
+   "p10": 0.07151592747709401,
+   "p50": 4.714135917589601,
+   "p90": 14.973256549447001
+  },
+  "after": {
+   "max": 28.600800817334175,
+   "min": 0.0,
+   "n": 300,
+   "p10": 0.020410828777585266,
+   "p50": 2.6479686215757283,
+   "p90": 13.381367724100983
+  },
+  "contract_samples": 300,
+  "member_samples": 1429,
+  "independent_expected_from_saved_member_arrival_times": {
+   "n": 300,
+   "min": 0.0,
+   "p10": 0.020410828777585266,
+   "p50": 2.6479686215757283,
+   "p90": 13.381367724100983,
+   "max": 28.600800817334175
+  },
+  "all_other_diagnostics_identical": true,
+  "five_intent_pairs_identical": true,
+  "changed_dedicated_analysis_file": "tools\\v08\\analyze_close_observation_v19.py",
+  "source_sha_before": "4d3017c4265e9e36f6355dbff8209250f3d20f7b8ec05228a7347f37eb103c88",
+  "source_sha_after": "126123230a138fd75ef823f1efe24e3d6cc680c556ffc3507f72dce40aa487a4",
+  "all_runtime_source_unchanged": true,
+  "production_artifacts_not_modified": true,
+  "checked_utc": "2026-11-09T04:02:36.348044+00:00"
+ },
+ "p0_triggered": [],
+ "checked_utc": "2026-11-09T04:04:09.131217+00:00"
+}

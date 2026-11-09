@@ -82,7 +82,7 @@ def analyze(roots):
                 for k, v in values.items():
                     add(k, v)
                 for k, v in doc["phase_metrics"][m].items():
-                    if k != "phases" and isinstance(v, (int, float)):
+                    if k not in ("phases", "member_arrival_span_s") and isinstance(v, (int, float)):
                         add(k, v)
                 for k, v in doc["close_observation"]["members"][m].items():
                     if k.endswith("_sdf_m") or k == "base_min_margin_m":
