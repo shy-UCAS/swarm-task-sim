@@ -183,6 +183,7 @@ CORRIDOR = dict.fromkeys(("available", "reason", "D", "inset_interval", "rows_to
                           "certified_length_m", "inset_length_m"), DATA)
 LP = dict.fromkeys(("feasible", "fallback_reason", "lp_status", "lp_message", "lp_nit", "objective", "max_residual",
                     "kappa_max", "slope_max", "n_controls"), DATA)
+LP["max_residual"] = dict.fromkeys(("slope", "curvature_per_m", "corridor_m"), DATA)
 CURVE_AUDIT = {**dict.fromkeys(("ok", "kappa_max_abs", "at_x", "min_den", "slope_max", "turn_ok", "lane_ok", "slope_ok",
                                "candidates"), DATA), "lane": MAP(DATA)}
 CHORD_ERROR = dict.fromkeys(("lane", "constraint", "margin_m", "check", "interval", "required_m", "straight_m", "facility",

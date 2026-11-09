@@ -113,6 +113,18 @@ class SelectedCurve(unittest.TestCase):
         self.assertEqual(nom.time_at_s(165.), nom.arrival_s)
         self.assertEqual(refs[0].end_s, nom.release_s + (nom.end_s - nom.release_s))
 
+    def test_existing_lp_residual_object_has_explicit_child_whitelist(self):
+        from v08.motion.transit_numeric import curve_lp
+        x = np.arange(0., 105., 5.)
+        original = curve_lp(x, np.full(len(x), -20.), np.full(len(x), 20.), 0., np.zeros(4), D_m=0.)
+        self.assertTrue(original["feasible"])
+        residual = original["max_residual"]
+        projected = C.project({"max_residual": residual}, C.LP, "plan.proposal.lp")["max_residual"]
+        self.assertEqual(set(projected), set(residual))
+        self.assertEqual(projected, residual)
+        with self.assertRaisesRegex(ValueError, r"plan\.proposal\.lp\.max_residual\.cache_hit"):
+            C.project({"max_residual": {**residual, "cache_hit": 1}}, C.LP, "plan.proposal.lp")
+
     def test_unknown_nested_fields_are_reported_with_location(self):
         _, plan = fixture()
         bad = replace(plan, proposal={"intent": C.INTENT, "lp": {"cache_hit": 1}})
