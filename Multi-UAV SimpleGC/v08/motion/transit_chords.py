@@ -439,6 +439,9 @@ def query_identity(ctx, target_id, offsets, *, intent="transit"):
     if intent == "close_observation":
         doc["version"] = "close_observation-v19"
         doc["intent"] = intent
+    elif intent == "area_search":
+        doc["version"] = "area_search-v20"
+        doc["intent"] = intent
     elif intent != "transit":
         raise ValueError(f"unsupported chord query intent: {intent!r}")
     text = json.dumps(doc, sort_keys=True, separators=(",", ":"))
@@ -446,7 +449,10 @@ def query_identity(ctx, target_id, offsets, *, intent="transit"):
 
 
 def _cache_path(cache_dir, ctx, target_id, qid, *, intent="transit"):
-    folder = "transit_v16" if intent == "transit" else "close_observation_v19"
+    if intent == "area_search":
+        folder = "area_search_v20"
+    else:
+        folder = "transit_v16" if intent == "transit" else "close_observation_v19"
     return Path(cache_dir) / folder / ctx.cache_key / f"{target_id}_{qid}.json"
 
 

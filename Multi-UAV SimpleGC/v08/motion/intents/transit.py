@@ -470,7 +470,7 @@ def _echelon_payload(probe, group, b, steps_log):
     return best
 
 
-def formation_probe_sequence(ctx, group, task, key):
+def formation_probe_sequence(ctx, group, task, key, *, chord_intent=None):
     """确定性的选队形 probe 序列（主进程预建与 worker 共用）：返回 [(formation, lateral_step, offsets)]，
     按 width_then_build 的实际调用次序，直到第一个非空集合为止。用于 prewarm_transit 的请求清单。"""
     fam = ctx.family
@@ -486,7 +486,8 @@ def formation_probe_sequence(ctx, group, task, key):
         offs = [slots.offsets[m] for m in slots.order]
         seq.append((name, step, offs))
         doc = TC.load_chord_set(ctx, task.target_id, slots, ctx.cache_dir,
-                                 **({"intent": task.intent} if task.intent == "close_observation" else {}))
+                                 **({"intent": chord_intent} if chord_intent is not None else
+                                    ({"intent": task.intent} if task.intent == "close_observation" else {})))
         return {"slots": slots, "doc": doc} if doc["cells"] else None
 
     def width_probe(name):

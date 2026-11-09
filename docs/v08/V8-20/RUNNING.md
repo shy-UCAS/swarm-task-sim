@@ -1,6 +1,6 @@
 # V8-20 运行登记
 
-当前完成第 1 部分。后续只允许按主指令与附录顺序，在前置检查通过后使用全新目录。当前 acceptance.json 尚无门禁/生产索引，不是完整验收证明。禁止重跑已有 r1 输出或覆盖接受基线。
+当前第 1、2 部分完成，第 3 部分成本检查点未过，已停止全部后续计算。acceptance.json 记录第一轮五意图门禁及停止证据；本分支未获完整验收。第 4–7 部分未执行，不得自动续跑或覆盖原输出。
 
 工作树：F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08
 代码工作目录：该工作树 Multi-UAV SimpleGC
@@ -21,3 +21,5 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 重启后资源监控与恢复状态见 REPORT 末尾、本目录 monitor_resources.ps1/analyze_resources.py，以及本任务外部 run/system_monitor/session.json。监控不进入 contracts；原中断监视 r1 保留，接续使用 r2。
 
 第 2 部分现已通过：13 项新测试、168 项相关旧测试、100 合同第一轮字节门禁。复现旧意图门禁使用本目录 run_old_intent_gate.py <intent> 2 --round <全新字母数字轮次>，仍须先开启资源监控。阶段入口未实现前不得运行新意图生产。
+
+当前停止于第 3 部分成本检查点。不要直接续跑第 4–7 部分；完整检查、实测、缺项与停止理由见 REPORT 和 part3/checkpoint.json。所有进程已停，监控已刷盘正常退出。PowerShell 读取 UTC ISO 时间做间隔计算时用 ConvertFrom-Json -DateKind String，避免自动转为 DateTime 后再次 Parse 丢失时区；主实测耗时始终来自 Python perf_counter。
