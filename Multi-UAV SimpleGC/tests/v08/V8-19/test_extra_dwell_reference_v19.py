@@ -27,6 +27,21 @@ class ExtraDwellReference(unittest.TestCase):
         self.assertEqual(float(np.interp(.53, nom.curve.s, nom.t_nodes)) + nom.release_s, nom.arrival_s)
         self.assertEqual(nom.end_s, nom.release_s + (nom.end_s - nom.release_s))
 
+    def test_incoming_length_mismatch_is_rejected(self):
+        from dataclasses import replace
+        incoming = leg(0)
+        stations = incoming.curve.s.copy()
+        stations[-1] = 4.0 + 1e-6
+        bad_curve = NS(**vars(incoming.curve))
+        bad_curve.s = stations
+        incoming = replace(incoming, curve=bad_curve)
+        plan = MemberPlan("m", 0, ((0., 0.), (2., 0.), (4., 0.), (6., 0.), (8., 0.)),
+                          100., 8., 0., ((0., 2.),), ())
+        with patch("v08.motion.dwell_nominal.member_nominal", side_effect=[incoming, leg(4)]):
+            with self.assertRaises(ValueError):
+                member_nominal_with_dwell(plan, (4.0, 20.0))
+        self.assertEqual(incoming.curve.s[-1], 4.0 + 1e-6)
+
     def test_reference_checks_complete_member_table(self):
         sk = NS(members={"a": NS(), "b": NS()}, witnesses={"dwell_windows": {"a": (4., 20., (4., 0.))}})
         with self.assertRaises(ValueError):

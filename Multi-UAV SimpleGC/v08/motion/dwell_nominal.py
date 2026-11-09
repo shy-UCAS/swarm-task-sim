@@ -117,14 +117,15 @@ class DwellReference:
 
     def time_at_s(self, station):
         values = np.asarray(station, float)
-        incoming = np.interp(values, self.incoming.curve.s, self.incoming.t_nodes) + self.release_s
+        incoming_stations = self.curve.s[:len(self.incoming.t_nodes)]
+        incoming = np.interp(values, incoming_stations, self.incoming.t_nodes) + self.release_s
         outgoing = np.interp(values - self.dwell_station_m, self.outgoing.curve.s,
                              self.outgoing.t_nodes) + self.departure_s
         out = np.where(values <= self.dwell_station_m, incoming, outgoing)
         return float(out) if out.ndim == 0 else out
 
 
-def compose_dwell(incoming, outgoing, dwell_s):
+def compose_dwell(incoming, outgoing, dwell_s, *, station_m=None):
     from .skeleton import NominalPVA
     ticks = _duration_ticks(dwell_s)
     duration = ticks / 10.0
@@ -136,8 +137,16 @@ def compose_dwell(incoming, outgoing, dwell_s):
         raise ValueError("both dwell legs need positive geometric length")
     if not np.array_equal(incoming.curve.xy[-1], outgoing.curve.xy[0]):
         raise ValueError("dwell legs have different join points")
+    # V8-19 station-anchor ruling: retain the selected station, never alter either frozen leg.
+    anchor = first_length if station_m is None else float(station_m)
+    if not np.isfinite(anchor) or anchor <= 0.0:
+        raise ValueError("dwell station anchor must be positive and finite")
+    if abs(first_length - anchor) > 1e-9 * max(1.0, anchor):
+        raise ValueError("incoming geometry length differs from the selected dwell station")
+    incoming_stations = np.asarray(incoming.curve.s, float).copy()
+    incoming_stations[-1] = anchor
     xy = np.vstack((incoming.curve.xy, outgoing.curve.xy[1:]))
-    stations = np.r_[incoming.curve.s, first_length + outgoing.curve.s[1:]]
+    stations = np.r_[incoming_stations, anchor + outgoing.curve.s[1:]]
     if not np.isfinite(stations).all() or np.any(np.diff(stations) <= 0.0):
         raise ValueError("composite station table must be strictly increasing")
     prefix = first + duration
@@ -148,7 +157,7 @@ def compose_dwell(incoming, outgoing, dwell_s):
     departure = arrival + duration
     total = prefix + last
     return DwellReference(incoming, outgoing, duration, r, arrival, departure, end, travel,
-                          float(incoming.hold_s), float(incoming.altitude_m), first_length, point, curve, times,
+                          float(incoming.hold_s), float(incoming.altitude_m), anchor, point, curve, times,
                           total, travel - total, NominalPVA(incoming), NominalPVA(replace(outgoing, release_s=0.0)))
 
 
@@ -158,7 +167,7 @@ def member_nominal_with_dwell(member_plan, dwell, *, guidance=None, sim=None):
     left, right = split_member_plan(member_plan, station)
     incoming = member_nominal(left, guidance=guidance, sim=sim)
     outgoing = member_nominal(right, guidance=guidance, sim=sim)
-    return compose_dwell(incoming, outgoing, duration)
+    return compose_dwell(incoming, outgoing, duration, station_m=station)
 
 
 def references_with_dwell(skeleton, *, warnings=None, target_id=None, band_m=None, align_m=None):
