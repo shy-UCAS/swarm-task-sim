@@ -44,6 +44,9 @@ def phase_durations(res, *, intent="transit"):
     """逐成员三段移动时长（相加 = travel_s），另列共同预保持 20 s、成员 release delay、末端保持；合同含保持跨度。
     V8-17：intrusion 为 intrusion_ingress_s（释放→warning 入点）、intrusion_inside_s（入点→移动终点）、travel_s、
     release_s、release_delay_s、closure_residual_s（两段相加减 travel_s，仅浮点舍入量级）。"""
+    if intent == "close_observation":
+        from .close_observation_report import phase_durations as close_phases
+        return close_phases(res)
     from ..motion.optimize import physical_limits
     plan = res["plan"]
     out = {}
@@ -107,6 +110,9 @@ def phase_diagnostics(res, *, intent="transit", ctx=None):
     """逐成员阶段速度与沿迹偏离（复用 phase_metrics 原口径）。transit：进场 / 穿越 / 撤离；V8-17 intrusion：
     ingress（释放→warning 入点）/ inside（入点→移动终点，闭）及终端减速诊断（名义末端严格递减段；优化与实测制动开始
     所在圈层与到保护边界的有符号距离，供核查附录裁定 1 的推论，不设门槛）。"""
+    if intent == "close_observation":
+        from .close_observation_report import phase_diagnostics as close_diagnostics
+        return close_diagnostics(res, ctx)
     from ..diagnostics.monitoring_skeleton import phase_metrics
     plan, opt = res["plan"], res["opt"]
     refs = {r.member_id: r for r in opt["references"]}
@@ -218,6 +224,9 @@ def group_reference_curves(ctx, group, res, *, intent="transit"):
     再分别按自身几何弧长 5 m 重采样。返回 {"before", "after", "info"}；不能唯一截出时 before/after 为 None 并给原因。
     V8-17 指令 7.3：intrusion 用 member_map_intrusion（成员域外取端点值，与 np.interp 边界行为一致），唯一目标 warning
     入点（方向只 ["in"]）至编组曲线末端截出作业段。"""
+    if intent == "close_observation":
+        from .close_observation_report import group_reference_curves as close_curves
+        return close_curves(ctx, group, res)
     from ..motion.nominal import member_nominal
     from ..motion.skeleton import NominalPVA, reference_guidance
     plan = res["plan"]
@@ -275,7 +284,8 @@ def frechet_blocks(div_rows, key="curve_after", *, intent="transit"):
                        "comparable": len(ok), "endpoint_m": [endpoint_distances(ok[i], ok[j]) for i, j in pairs],
                        "na_reasons": [r.get("frechet_na") for r in rs if r.get("success") and r.get(key) is None],
                        "scope": {"intrusion": "intrusion_warning_to_terminal_v17",
-                                 "feint": "feint_alert_entry_to_exit_v18"}.get(intent, "transit_crossing_v16")})
+                                 "feint": "feint_alert_entry_to_exit_v18",
+                                 "close_observation": "close_observation_warning_entry_to_exit_v19"}.get(intent, "transit_crossing_v16")})
     return blocks
 
 

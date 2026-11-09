@@ -46,6 +46,12 @@ def _attempt_row(a, plan, timing, exc_text=None):
         rec["feint"] = {"turn": P.get("turn"), "nonempty_combos": P.get("nonempty_combos"),
                         "combos_found": P.get("combos_found"), "collect_D_m": P.get("collect_D_m"),
                         "L_m": P.get("L_m"), "l_star_m": P.get("l_star_m"), "lp_calls": P.get("lp_calls")}
+    if P.get("intent") == "close_observation":
+        from ..motion.intents import close_observation as close
+        w = plan.witnesses or {}
+        rec["dwell"] = close.project(P.get("dwell"), close.DWELL, "skeleton_attempt.dwell")
+        rec["dwell_diagnostics"] = close.project(w.get("dwell_diagnostics"), close.DWELL_DIAGNOSTICS, "skeleton_attempt.dwell_diagnostics")
+        rec["nominal_screen"] = close.project(w.get("screen"), close.MAP(close.SCREEN), "skeleton_attempt.nominal_screen")
     if f is None:
         cor = P.get("corridor") or {}
         lp = P.get("lp") or {}
@@ -84,6 +90,9 @@ def _skeleton_modules(intent):
     elif intent == "feint":
         from ..motion import feint_chords as TC
         from ..motion.intents import feint as mod
+    elif intent == "close_observation":
+        from ..motion import transit_chords as TC
+        from ..motion.intents import close_observation as mod
     else:
         from ..motion import transit_chords as TC
         from ..motion.intents import transit as mod
@@ -99,6 +108,11 @@ def run_intent_skeleton_contract(ctx, entry, draw, *, intent, out_dir=None):
     from ..sampler.keys import RngKey
     from .joint_monitoring import _json_bytes, contract_id, run_attempts
     TC, mod = _skeleton_modules(intent)
+    def contract_bytes(value):
+        if intent == "close_observation":
+            from .close_observation_report import assert_contract_payload
+            assert_contract_payload(jsonable(value))
+        return _json_bytes(value)
     final_failure, last_attempt_timing = mod.final_failure, mod.last_attempt_timing
     common = sample_common(ctx.family, draw)
     mission = mission_for_intent(ctx, common, intent)
@@ -168,24 +182,29 @@ def run_intent_skeleton_contract(ctx, entry, draw, *, intent, out_dir=None):
                                           "nonempty_combos": P.get("nonempty_combos"),
                                           "collect_D_m": P.get("collect_D_m"), "schedule": w.get("schedule_feint")})
             rec["nominal_screen"] = jsonable({m: v for m, v in sorted((w.get("screen") or {}).items())})
+    if intent == "close_observation" and out["success"]:
+        rec["dwell"] = jsonable(plans["ok"].proposal["dwell"])
+        rec["dwell_diagnostics"] = jsonable(plans["ok"].witnesses["dwell_diagnostics"])
+        rec["nominal_screen"] = jsonable(plans["ok"].witnesses["screen"])
     tele = {"timing": [r.get("timing") for r in logs]}
     if out_dir is not None:
         from .monitoring import plan_to_record
         import numpy as np
         d = Path(out_dir) / "contracts" / rec["contract_id"]
         d.mkdir(parents=True, exist_ok=False)
-        (d / "contract.json").write_bytes(_json_bytes({k: rec[k] for k in (
+        (d / "contract.json").write_bytes(contract_bytes({k: rec[k] for k in (
             "contract_id", "intent", "family_id", "order", "draw_index", "facility_count", "vehicle_count", "group_id",
             "member_ids", "group_size", "target_id", "initial_speed_m_s", "formation_prior")}))
-        extra = (("sigma", "x_e", "terminal", "endpoint_distances_m", "nominal_screen") if intent == "intrusion" else
+        extra = (("dwell", "dwell_diagnostics", "nominal_screen") if intent == "close_observation" else
+                 ("sigma", "x_e", "terminal", "endpoint_distances_m", "nominal_screen") if intent == "intrusion" else
                  ("feint_turn", "nominal_screen") if intent == "feint" else ())
-        (d / "result.json").write_bytes(_json_bytes({k: rec.get(k) for k in (
+        (d / "result.json").write_bytes(contract_bytes({k: rec.get(k) for k in (
             "intent", "success", "attempts", "shape_audit_failed_attempts", "exceptions", "failure", "attempt_log",
             "formation", "topology", "curved", "fallback_reason", "lateral_deviation_m", "nominal_duration_s") + extra}))
         if plans.get("ok") is not None:
             prec, arrays = plan_to_record(plans["ok"])
             prec["arrays"] = {k: np.asarray(v).tolist() for k, v in sorted(arrays.items())}
-            (d / "skeleton.json").write_bytes(_json_bytes(prec))
+            (d / "skeleton.json").write_bytes(contract_bytes(prec))
         tdir = Path(out_dir) / "telemetry"
         tdir.mkdir(exist_ok=True)
         (tdir / f"{rec['contract_id']}.json").write_bytes(_json_bytes(tele))
@@ -236,14 +255,20 @@ def run_transit_skeleton_batch(entries, *, data_root, cache_dir, out_dir, worker
                                      out_dir=out_dir, workers=workers, log=log)
 
 
-def run_intent_skeleton_batch(entries, *, intent, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, log=print):
+def run_intent_skeleton_batch(entries, *, intent, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, log=print, prewarm_doc=None):
     """共享骨架预建和派发；旧 run_transit_skeleton_batch 保留包装。"""
     import multiprocessing as mp
     from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
     from .joint_intent import _cost_order, prewarm_all
     out = Path(out_dir)
     t_start = time.time()
-    pw = prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
+    if prewarm_doc is not None and intent != "close_observation":
+        raise ValueError("prewarm_doc is supported only for close_observation")
+    pw = prewarm_doc if prewarm_doc is not None else prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
+    if intent == "close_observation" and pw["wall_s"] > 2700.0:
+        summary = {"stage": "skeleton", "intent": intent, "complete": False, "checkpoint": {"triggered": ["prewarm_wall"]}, "prewarm": pw}
+        write_json(out / "summary.json", summary, indent=1)
+        return summary
     write_json(out / "prewarm.json", pw, indent=1)
     sizes = {tuple(map(int, k.split(":"))): v for k, v in pw["group_size"].items()}
     ordered = sorted(entries, key=lambda e: e["order"])
@@ -307,6 +332,11 @@ def write_outputs(out, rows, *, expected, wall_s, dispatch_wall_s, workers, prew
         chk = feint_skeleton_checkpoint(det, expected_count=expected)
         fb = dict(fallback_checkpoint(det), triggered=False, diagnostic_only=True)
         triggered = list(chk["triggered"])
+    elif intent == "close_observation":
+        from .close_observation_report import skeleton_checkpoint as close_skeleton_checkpoint
+        chk = close_skeleton_checkpoint(det, expected_count=expected)
+        fb = dict(fallback_checkpoint(det), triggered=False, diagnostic_only=True)
+        triggered = list(chk["triggered"]) + (["skeleton_wall"] if dispatch_wall_s > 1800.0 else [])
     else:
         chk = skeleton_checkpoint(det, expected_count=expected)
         fb = fallback_checkpoint(det)

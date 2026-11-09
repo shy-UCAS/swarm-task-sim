@@ -132,6 +132,8 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
             from ..motion.intents.intrusion import last_attempt_timing
         elif task.intent == "feint":                # V8-18 指令 0.2：feint 遥测分派
             from ..motion.intents.feint import last_attempt_timing
+        elif task.intent == "close_observation":
+            from ..motion.intents.close_observation import last_attempt_timing
         else:
             from ..motion.intents.monitoring import last_attempt_timing
         t["skeleton_detail"] = last_attempt_timing()
@@ -195,6 +197,13 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
         if not meas["all_single"]:
             return {"ok": False, "stage": "measured_feint_entries", "code": "candidate_rejected",
                     "reason": "measured_feint_entries", **out}
+    if task.intent == "close_observation":
+        from .close_observation_report import measured_members as close_measured
+        meas = close_measured(ctx, tracks, release, task.target_id)
+        out["measured_close_observation"] = meas
+        if not meas["all_single"]:
+            return {"ok": False, "stage": "measured_close_observation_entries", "code": "candidate_rejected",
+                    "reason": "measured_close_observation_entries", **out}
     return {"ok": True, "stage": "verified", **out}
 
 

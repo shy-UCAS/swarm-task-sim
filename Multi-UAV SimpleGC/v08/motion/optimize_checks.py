@@ -677,3 +677,69 @@ def check_feint(ctx, skeleton, trajectories, settings):
             failures.append({"kind": kind, "member": m,
                              "conditions": [k for k, ok in scr["conditions"].items() if not ok]})
     return {"passed": not failures, "failures": failures, "boundaries": boundaries, "nominal_members": nominal_members}
+
+
+CLOSE_FAILURE_KIND = {"started_outside_target_warning": "nominal_start_inside", "single_warning_visit": "nominal_multiple_visits",
+    "max_target_layer_one": "nominal_layers", "other_layers_within_limit": "nominal_layers",
+    "observation_dwell": "nominal_observation_dwell", "no_revisit_window": "nominal_revisit",
+    "ended_outside_all_warning": "nominal_end_inside"}
+
+def check_close_observation(ctx, skeleton, trajectories, settings):
+    """dict: passed, failures, boundaries, nominal_members。均在优化后的曲线上重算（时间网格照录 check_monitoring）：
+    1) 冻结 crossing_analysis 查全部 warning（完整曲线、不传 skip_ranges）：单次直线穿越、两侧 10 m、目标入圈前 100 m、
+       未穿越部分离边界 10 m；目标恰一入一出；
+    2) 终点离所有 warning ≥ retreat_clearance_m；
+    3) 名义判据：释放起至移动结束 + 末端保持的 10 Hz p/v 调 screen_close_observation_member，全部条件成立。
+    过境没有掉头区间，不调用监视"必须重访"。成功由这些检查与 solve_joint 原阈值物理检查共同决定。"""
+    from ..config import load_config
+    from ..scene.exact import signed_distance
+    from .connect import crossing_analysis
+    from .nominal_checks import screen_close_observation_member
+    from .optimize import physical_limits
+    from .transit_chords import transit_base
+    lim = physical_limits(settings)
+    M = load_config("monitoring").values
+    target = skeleton.witnesses["target_id"]
+    cons = transit_base(ctx, target, intent="close_observation")
+    failures = []
+    boundaries, nominal_members = {}, {}
+    for m in sorted(trajectories):
+        tr = trajectories[m]
+        ts = _grid_times(tr)
+        xy = tr.evaluate(ts + tr.release_s, 0)
+        viol, cross = crossing_analysis(xy, cons["crossing_boundaries"], target, band_m=ctx.params["pre_entry_warning_clearance_m"],
+                                        align_m=ctx.params["alignment_length_m"])
+        boundaries[m] = {"violations": viol, "crossings": [(c.facility_id, c.direction, float(c.s_m)) for c in cross]}
+        if viol:
+            failures.append({"kind": "boundary_crossing", "member": m, "first": viol[0], "count": len(viol)})
+        dirs = [c.direction for c in cross if c.facility_id == target]
+        if dirs != ["in", "out"]:
+            failures.append({"kind": "target_single_crossing", "member": m, "directions": dirs})
+        end = tr.evaluate(tr.end_s, 0)
+        for fid, geom in cons["crossing_boundaries"].items():
+            sd = float(signed_distance(geom, end))
+            if not sd >= M["retreat_clearance_m"]:
+                failures.append({"kind": "terminal_clearance", "member": m, "facility": fid, "signed_m": sd})
+        r_us = int(round(tr.release_s * 10)) * 100_000
+        e_us = int(math.floor((tr.end_s + lim["hold_s"]) * 10 + 1e-9)) * 100_000
+        t_us = np.arange(r_us, e_us + 1, 100_000, dtype=np.int64)
+        tt = t_us / US
+        p = np.zeros((len(tt), 3))
+        v = np.zeros((len(tt), 3))
+        p[:, :2] = tr.evaluate(tt, 0)
+        v[:, :2] = tr.evaluate(tt, 1)
+        p[:, 2] = tr.altitude_m
+        scr = screen_close_observation_member(ctx.facilities, target, t_us, p, v)
+        nominal_members[m] = {k: scr[k] for k in ("passed", "conditions", "counts", "levels", "observation_dwell", "revisit", "revisit_work")}
+        kinds = []
+        for k, ok in scr["conditions"].items():
+            if not ok:
+                kind = CLOSE_FAILURE_KIND[k]
+                if k == "single_warning_visit":
+                    kind = "nominal_not_entered" if scr["counts"]["visits"] == 0 else "nominal_multiple_visits"
+                if kind not in kinds:
+                    kinds.append(kind)
+        for kind in kinds:
+            failures.append({"kind": kind, "member": m,
+                             "conditions": [k for k, ok in scr["conditions"].items() if not ok]})
+    return {"passed": not failures, "failures": failures, "boundaries": boundaries, "nominal_members": nominal_members}

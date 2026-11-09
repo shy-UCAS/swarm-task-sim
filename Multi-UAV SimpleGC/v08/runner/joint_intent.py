@@ -20,7 +20,7 @@ from . import joint_report as JR
 from .monitoring import jsonable, write_json
 from .runtime_defaults import DEFAULT_WORKERS
 
-INTENTS = ("monitoring", "transit", "intrusion", "feint")
+INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation")
 
 
 # ---------------------------------------------------------------- 单合同
@@ -34,6 +34,8 @@ def _intent_module(intent):
         from ..motion.intents import intrusion as mod
     elif intent == "feint":
         from ..motion.intents import feint as mod
+    elif intent == "close_observation":
+        from ..motion.intents import close_observation as mod
     else:
         from ..motion.intents import transit as mod
     return mod
@@ -57,6 +59,14 @@ def _intent_attempt_summary(rec, key, intent):
                                            for m, v in sorted(rec["measured_intrusion"]["members"].items())}
     if intent == "feint" and rec.get("measured_feint") is not None:
         s["measured_feint_entries"] = {m: v["entry_counts"] for m, v in sorted(rec["measured_feint"]["members"].items())}
+    if intent == "close_observation":
+        from .close_observation_report import project_attempt
+        if opt is not None and opt.get("semantic") is not None:
+            s["optimize"]["semantic_members"] = jsonable(opt["semantic"]["nominal_members"])
+            s["optimize"]["semantic_boundaries"] = jsonable(opt["semantic"]["boundaries"])
+        if rec.get("measured_close_observation") is not None:
+            s["measured_close_observation_entries"] = {m: v["warning_entry_count"] for m, v in sorted(rec["measured_close_observation"]["members"].items())}
+        s = project_attempt(s)
     return s
 
 
@@ -64,7 +74,7 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
     if intent == "monitoring":
         return JM.run_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir,
                                should_stop=should_stop, keep=keep)
-    if intent not in ("transit", "intrusion", "feint"):
+    if intent not in ("transit", "intrusion", "feint", "close_observation"):
         raise ValueError(f"本项只支持 {INTENTS}：{intent!r}")
     from ..contract.monitoring import initial_states
     from ..contract.single_intent import mission_for_intent
@@ -159,15 +169,24 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
                    "formation": formation_block(plan_.formation or {}, plan_.repairs)}
             rec["feint"] = {k: blk[k] for k in ("turn", "formation", "members")}
             rec["retained_p0_ok"] = bool(rec["retained_p0_ok"] and meas["all_single"])
+        if intent == "close_observation":
+            from .close_observation_report import measured_members as close_measured, result_block as close_result
+            meas = close_measured(ctx, res["tracks"], res["release_us"], task.target_id)
+            rec["close_observation"] = close_result(res["plan"], res["opt"]["maps"], meas)
+            rec["retained_p0_ok"] = bool(rec["retained_p0_ok"] and meas["all_single"])
         rec["deviation"] = JM.member_deviation(res)
         rec["tracking"] = JM.tracking_stats(res)
         try:
             rec["phase_metrics"] = phase_diagnostics(res, intent=intent, ctx=ctx)
         except Exception:
+            if intent == "close_observation":
+                raise
             rec["phase_metrics"] = {"error": traceback.format_exc()}
         try:
             rec["phase_durations"] = phase_durations(res, intent=intent)
         except Exception:
+            if intent == "close_observation":
+                raise
             rec["phase_durations"] = {"error": traceback.format_exc()}
         plan = res["plan"]
         rec["nominal_duration_s"] = float(plan.nominal_duration_s)
@@ -183,6 +202,8 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
         rec["intrusion"] = None
     elif intent == "feint":
         rec["feint"] = None
+    elif intent == "close_observation":
+        rec["close_observation"] = None
     if out_dir is not None:
         last = out["records"][-1] if (out["records"] and not out["success"]) else None
         save_intent_contract(Path(out_dir), rec, out["result"], last_failed=last)
@@ -201,12 +222,17 @@ def save_intent_contract(out, rec, result, last_failed=None):
     窗口；失败为 None），失败见证另含实测三层进入次数。墙钟、缓存命中、traceback 只进合同目录外的 telemetry。"""
     _json_bytes = JM._json_bytes
     intent = rec.get("intent", "transit")
+    def contract_bytes(value):
+        if intent == "close_observation":
+            from .close_observation_report import assert_contract_payload
+            assert_contract_payload(jsonable(value))
+        return _json_bytes(value)
     d = out / "contracts" / rec["contract_id"]
     d.mkdir(parents=True, exist_ok=False)
     contract = {k: rec[k] for k in ("contract_id", "intent", "family_id", "order", "draw_index", "branch",
                                     "facility_count", "vehicle_count", "group_id", "member_ids", "group_size",
                                     "target_id", "initial_speed_m_s", "formation_prior")}
-    (d / "contract.json").write_bytes(_json_bytes(contract))
+    (d / "contract.json").write_bytes(contract_bytes(contract))
     det_attempts = [{k: v for k, v in s.items() if k not in ("timing", "traceback")} for s in rec["attempt_log"]]
     result_doc = {"intent": intent, "success": rec["success"], "attempts": rec["attempts"], "failure": rec["failure"],
                   "attempt_log": det_attempts, "release_us": rec["release_us"], "settings_sha256": rec["settings_sha256"],
@@ -222,13 +248,15 @@ def save_intent_contract(out, rec, result, last_failed=None):
         result_doc["intrusion"] = rec.get("intrusion")
     if intent == "feint":
         result_doc["feint"] = rec.get("feint")
-    (d / "result.json").write_bytes(_json_bytes(result_doc))
+    if intent == "close_observation":
+        result_doc["close_observation"] = rec.get("close_observation")
+    (d / "result.json").write_bytes(contract_bytes(result_doc))
     if result is not None and result.get("ok"):
         plan = result["plan"]
         from .monitoring import plan_to_record
         prec, arrays = plan_to_record(plan)
         prec["arrays"] = {k: np.asarray(v).tolist() for k, v in sorted(arrays.items())}
-        (d / "skeleton.json").write_bytes(_json_bytes(prec))
+        (d / "skeleton.json").write_bytes(contract_bytes(prec))
         sol = result["opt"]["solution"]
         opt_doc = {"members": {m: {"release_s": t.release_s, "end_s": t.end_s, "altitude_m": t.altitude_m,
                                    "knots": t.knots, "controls": t.controls}
@@ -238,7 +266,7 @@ def save_intent_contract(out, rec, result, last_failed=None):
                    "diagnostics": {k: jsonable(sol.diagnostics.get(k)) for k in
                                    ("nit", "nfev", "message", "value", "terms", "max_abs_grad", "reference_deviation",
                                     "symmetry_break", "settings_sha256")}}
-        (d / "optimized.json").write_bytes(_json_bytes(opt_doc))
+        (d / "optimized.json").write_bytes(contract_bytes(opt_doc))
         for m, tr in sorted(result["tracks"].items()):
             td = d / "tracks" / m
             td.mkdir(parents=True, exist_ok=False)
@@ -266,7 +294,9 @@ def save_intent_contract(out, rec, result, last_failed=None):
             doc["measured_intrusion"] = jsonable(last_failed["measured_intrusion"])
         if intent == "feint" and last_failed.get("measured_feint") is not None:
             doc["measured_feint"] = jsonable(last_failed["measured_feint"])
-        (d / "failure_witness.json").write_bytes(_json_bytes(doc))
+        if intent == "close_observation" and last_failed.get("measured_close_observation") is not None:
+            doc["measured_close_observation"] = jsonable(last_failed["measured_close_observation"])
+        (d / "failure_witness.json").write_bytes(contract_bytes(doc))
     tele = out / "telemetry"
     tele.mkdir(exist_ok=True)
     (tele / f"{rec['contract_id']}.json").write_bytes(_json_bytes(
@@ -280,6 +310,9 @@ def record_row(rec):
     row["phase_durations"] = rec.get("phase_durations")
     row["nominal_duration_s"] = rec.get("nominal_duration_s")
     row["lateral_spacing_m"] = rec.get("lateral_spacing_m")
+    if rec.get("intent") == "close_observation":
+        row["close_observation"] = rec.get("close_observation")
+        row["tracking"] = rec.get("tracking")
     return row
 
 
@@ -307,6 +340,8 @@ def _pool_task(task):
             from ..motion import intrusion_chords as TC
         elif intent == "feint":
             from ..motion import feint_chords as TC
+        elif intent == "close_observation":
+            from ..motion import transit_chords as TC
         else:
             from ..motion import transit_chords as TC
         before = dict(TC.STATS)
@@ -319,7 +354,7 @@ def _pool_task(task):
                    skeleton_detail=[((a.get("timing") or {}).get("skeleton_detail") or {}) for a in rec["attempt_log"]],
                    nit=[(a.get("timing") or {}).get("nit") for a in rec["attempt_log"]],
                    chord_cache={k: TC.STATS[k] - before.get(k, 0) for k in TC.STATS})
-        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion", "feint"):
+        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion", "feint", "close_observation"):
             from .transit_report import group_reference_curves
             from ..contract.single_intent import mission_for_intent
             from ..sampler.common import sample_common
@@ -556,12 +591,14 @@ def prewarm_all(entries, *, data_root, cache_dir, workers, draws=range(5), log=p
 # ---------------------------------------------------------------- 批次
 
 def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, settings=None,
-                 stage="quick", log=print, prewarm=True):
+                 stage="quick", log=print, prewarm=True, prewarm_doc=None):
     """keys：[(order, draw)]。先预建（过境），再按成本降序单合同动态派发到 workers 个进程；写 records/summary。"""
     out = Path(out_dir)
     t0 = time.time()
-    pw = (prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
-          if prewarm else None)
+    if prewarm_doc is not None and intent != "close_observation":
+        raise ValueError("prewarm_doc is supported only for close_observation")
+    pw = (prewarm_doc if prewarm_doc is not None else
+          (prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent) if prewarm else None))
     if pw is not None:
         write_json(out / "prewarm.json", pw, indent=1)
     sizes = {tuple(map(int, k.split(":"))): v for k, v in (pw or {}).get("group_size", {}).items()}
@@ -579,6 +616,8 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     complete = (len(rows) == len(keys) and not any(r.get("error") or r.get("incomplete") for r in rows)
                 and not any(r.get("unknown_attempts") for r in good)
                 and not (chk or {}).get("metrics", {}).get("attempts_undetermined", False))
+    if intent == "close_observation":
+        complete = bool(complete and not any(a.get("stage") == "exception" for r in rows for a in r.get("attempt_log", [])))
     p0 = [r["contract_id"] for r in good if r.get("success") and not r.get("retained_p0_ok")]
     summary = {"stage": stage, "intent": intent, "expected_count": len(keys), "completed": len(rows),
                "complete": complete, "checkpoint": chk, "workers": workers, "wall_s": time.time() - t0,
@@ -593,7 +632,7 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     return summary
 
 
-def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="transit", log=print):
+def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="transit", log=print, prewarm_doc=None):
     """全量 200 + 多样性 10 族 × 10 branch（draw 0），沿用旧 full_stage 的 7200 s 合作退出预算（防卡死，到期为
     incomplete）；复跑 5 键在开始前写 rerun_keys.json。全量成功率与分档只看 200 主合同。"""
     from .monitoring import select_diversity_families
@@ -605,7 +644,9 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                                          "rule": "全量开始前按 (order, draw) 字典序取前 5 个合同"}, indent=1)
     div_fams = select_diversity_families(entries)
     (out / "diversity").mkdir()
-    pw = prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
+    if prewarm_doc is not None and intent != "close_observation":
+        raise ValueError("prewarm_doc is supported only for close_observation")
+    pw = prewarm_doc if prewarm_doc is not None else prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
     write_json(out / "prewarm.json", pw, indent=1)
     sizes = {tuple(map(int, k.split(":"))): v for k, v in pw["group_size"].items()}
     klist = [("full", o, d, None) for o, d in keys]
@@ -639,6 +680,11 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
     elif intent == "feint":
         from .feint_report import full_checkpoint as feint_full_checkpoint
         chk = feint_full_checkpoint(good, blocks_after) if full_rows else None
+    elif intent == "close_observation":
+        from .close_observation_report import full_checkpoint as close_full_checkpoint
+        chk = close_full_checkpoint(good, blocks_after) if full_rows else None
+        complete = bool(complete and (chk or {}).get("metrics", {}).get("frechet_pairs", 0) > 0)
+        complete = bool(complete and not any(a.get("stage") == "exception" for r in full_rows for a in r.get("attempt_log", [])))
     else:
         chk = JR.full_checkpoint(good, blocks_after) if full_rows else None
     disp_wall = time.time() - t_dispatch
@@ -667,6 +713,8 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                                for k in ("cache_hits", "cache_misses_computed")},
                "wall_budget_s": JM.WALL_BUDGET_S,
                "wall_budget_source": "joint_monitoring.WALL_BUDGET_S（旧 full_stage 合作退出，防卡死；到期为 incomplete）"}
+    if intent == "close_observation" and any(a.get("stage") == "exception" for r in div_rows for a in r.get("attempt_log", [])):
+        summary["diversity_complete"] = False
     write_json(out / "summary.json", summary, indent=1)
     return summary
 
