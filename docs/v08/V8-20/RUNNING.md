@@ -23,3 +23,5 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 第 2 部分现已通过：13 项新测试、168 项相关旧测试、100 合同第一轮字节门禁。复现旧意图门禁使用本目录 run_old_intent_gate.py <intent> 2 --round <全新字母数字轮次>，仍须先开启资源监控。阶段入口未实现前不得运行新意图生产。
 
 当前停止于第 3 部分成本检查点。不要直接续跑第 4–7 部分；完整检查、实测、缺项与停止理由见 REPORT 和 part3/checkpoint.json。所有进程已停，监控已刷盘正常退出。PowerShell 读取 UTC ISO 时间做间隔计算时用 ConvertFrom-Json -DateKind String，避免自动转为 DateTime 后再次 Parse 丢失时区；主实测耗时始终来自 Python perf_counter。
+
+第 3 部分已保存并推送为 5a37cf7efe7d5b9a6f5a555541e03c5cf8cec60d。第 8 部分仅失败交付回执；最终提交与远端核对见本任务外部 run/part8/final_push.json。
