@@ -84,7 +84,10 @@ def run_transit_skeleton_contract(ctx, entry, draw, *, out_dir=None):
 
 
 def _skeleton_modules(intent):
-    if intent == "intrusion":
+    if intent == "area_search":
+        from ..motion import transit_chords as TC
+        from ..motion.intents import area_search as mod
+    elif intent == "intrusion":
         from ..motion import intrusion_chords as TC
         from ..motion.intents import intrusion as mod
     elif intent == "feint":

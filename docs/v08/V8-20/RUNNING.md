@@ -17,3 +17,7 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 第 2 部分先运行 test_preset_numeric_v20.py、合同/独立参考自加测试和受影响旧测试，再进入第一轮五意图门禁。第 9.2 预置等待第 3/4 部分接口；第 9.3 等全部产物齐全才运行。未运行或 skip 不记通过。
 
 只推 review/v08/V8-20-area-search；push 后必须 ls-remote 核对完整 SHA。三份 owner_rerun.json 不动、不提交；不推 main、不强推、不合并 dev。
+
+重启后资源监控与恢复状态见 REPORT 末尾、本目录 monitor_resources.ps1/analyze_resources.py，以及本任务外部 run/system_monitor/session.json。监控不进入 contracts；原中断监视 r1 保留，接续使用 r2。
+
+第 2 部分现已通过：13 项新测试、168 项相关旧测试、100 合同第一轮字节门禁。复现旧意图门禁使用本目录 run_old_intent_gate.py <intent> 2 --round <全新字母数字轮次>，仍须先开启资源监控。阶段入口未实现前不得运行新意图生产。

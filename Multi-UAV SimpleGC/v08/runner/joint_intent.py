@@ -20,7 +20,7 @@ from . import joint_report as JR
 from .monitoring import jsonable, write_json
 from .runtime_defaults import DEFAULT_WORKERS
 
-INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation")
+INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search")
 
 
 # ---------------------------------------------------------------- 单合同
@@ -30,7 +30,9 @@ def _transit_attempt_summary(rec, key):
 
 
 def _intent_module(intent):
-    if intent == "intrusion":
+    if intent == "area_search":
+        from ..motion.intents import area_search as mod
+    elif intent == "intrusion":
         from ..motion.intents import intrusion as mod
     elif intent == "feint":
         from ..motion.intents import feint as mod
@@ -74,7 +76,7 @@ def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=Non
     if intent == "monitoring":
         return JM.run_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir,
                                should_stop=should_stop, keep=keep)
-    if intent not in ("transit", "intrusion", "feint", "close_observation"):
+    if intent not in ("transit", "intrusion", "feint", "close_observation", "area_search"):
         raise ValueError(f"本项只支持 {INTENTS}：{intent!r}")
     from ..contract.monitoring import initial_states
     from ..contract.single_intent import mission_for_intent

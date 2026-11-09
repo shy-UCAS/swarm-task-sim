@@ -4,11 +4,18 @@
 公共条件与目标（同一 sequence 键），再用 dataclasses.replace **仅替换唯一 TaskSpec 的 intent**。policy_version 保留
 旧值作配对输入身份，不以换版本重播 RNG；意图写在外部 manifest 和各意图自己的输出中。其他意图抛 ContractInvalid。
 """
-from dataclasses import replace
+from dataclasses import dataclass, replace
+from typing import Optional
 
-from .monitoring import ContractInvalid, monitoring_mission, validate_mission
+from .monitoring import ContractInvalid, TaskSpec, monitoring_mission, validate_mission
 
-GENERATION_INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation")
+GENERATION_INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search")
+
+
+@dataclass(frozen=True)
+class AreaSearchTaskSpec(TaskSpec):
+    """Only area_search carries a private candidate survey; old TaskSpec is unchanged."""
+    survey: Optional[dict] = None
 
 
 def validate_single_mission(mission, ctx):
@@ -19,12 +26,12 @@ def validate_single_mission(mission, ctx):
     task = mission.tasks[0]
     if task.intent == "monitoring":
         return validate_mission(mission, ctx)
-    if task.intent not in ("transit", "intrusion", "feint", "close_observation"):
+    if task.intent not in ("transit", "intrusion", "feint", "close_observation", "area_search"):
         raise ContractInvalid(f"本项只支持 {GENERATION_INTENTS}：{task.intent!r}")
     intent = task.intent
     validate_mission(replace(mission, tasks=(replace(task, intent="monitoring"),)), ctx)
     if mission.tasks[0].intent != intent or not mission.tasks[0].final:
-        what = {"transit": "过境", "intrusion": "突入", "feint": "佯动", "close_observation": "抵近观察"}[intent]
+        what = {"transit": "过境", "intrusion": "突入", "feint": "佯动", "close_observation": "抵近观察", "area_search": "区域侦察"}[intent]
         raise ContractInvalid(f"{what}任务非法：{mission.tasks[0]!r}")
     return True
 
@@ -62,7 +69,19 @@ def close_observation_mission(ctx, common):
     return mission
 
 
+def area_search_mission(ctx, common):
+    """Preserve the original public and sequence draws; attach no candidate survey yet."""
+    mon = monitoring_mission(ctx, common)
+    old = mon.tasks[0]
+    task = AreaSearchTaskSpec(old.task_id, "area_search", old.target_id, old.switch_mode, old.final)
+    mission = replace(mon, tasks=(task,))
+    validate_single_mission(mission, ctx)
+    return mission
+
+
 def mission_for_intent(ctx, common, intent):
+    if intent == "area_search":
+        return area_search_mission(ctx, common)
     if intent == "monitoring":
         return monitoring_mission(ctx, common)
     if intent == "transit":

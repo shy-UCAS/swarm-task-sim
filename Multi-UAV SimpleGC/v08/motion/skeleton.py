@@ -179,6 +179,10 @@ def _emit_line(cur):
 def references_from_skeleton(skeleton, *, warnings=None, target_id=None, band_m=None, align_m=None):
     """返回 (TimeReference 元组, 语义直线区间, 成员站点→时间映射)。
     移动参考 = 名义分段匀加速运动，[release, release + travel]（不含末端保持；附录裁定 9.4）。"""
+    if (getattr(skeleton, "witnesses", None) or {}).get("intent") == "area_search":
+        from .area_search_reference import references_area_search
+        return references_area_search(skeleton, warnings=warnings, target_id=target_id,
+                                      band_m=band_m, align_m=align_m)
     if (getattr(skeleton, "witnesses", None) or {}).get("dwell_windows"):
         from .dwell_nominal import references_with_dwell
         return references_with_dwell(skeleton, warnings=warnings, target_id=target_id,

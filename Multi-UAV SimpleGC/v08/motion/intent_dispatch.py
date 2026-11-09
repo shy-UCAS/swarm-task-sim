@@ -3,7 +3,7 @@
 启用 monitoring、transit、intrusion（V8-17 指令 2.2）与 feint（V8-18 指令 2.2）；其他意图明确拒绝。每次调用时按模块属性取函数（不缓存函数对象），
 监视仍是旧函数本身（`is` 相同）。
 """
-SUPPORTED = ("monitoring", "transit", "intrusion", "feint", "close_observation")
+SUPPORTED = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search")
 
 
 def _unsupported(intent):
@@ -11,6 +11,9 @@ def _unsupported(intent):
 
 
 def skeleton_builder(intent):
+    if intent == "area_search":
+        from .intents import area_search
+        return area_search.propose_and_build
     if intent == "monitoring":
         from .intents import monitoring
         return monitoring.propose_and_build
@@ -30,6 +33,9 @@ def skeleton_builder(intent):
 
 
 def semantic_checker(intent):
+    if intent == "area_search":
+        from .area_search_checks import check_area_search
+        return check_area_search
     from . import optimize_checks
     if intent == "monitoring":
         return optimize_checks.check_monitoring
@@ -45,6 +51,9 @@ def semantic_checker(intent):
 
 
 def nominal_screen(intent):
+    if intent == "area_search":
+        from .area_search_checks import screen_area_search
+        return screen_area_search
     from . import nominal_checks
     if intent == "monitoring":
         return nominal_checks.screen_member
