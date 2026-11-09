@@ -53,9 +53,26 @@ class SelectedCurve(unittest.TestCase):
         self.assertEqual(member["warning_sdf_m"], -15.)
         self.assertEqual(member["alert_sdf_m"], 125.)
         self.assertEqual(member["endpoint_distance_m"], 735.)
-        self.assertTrue(result.witnesses["screen"]["m"]["passed"])
+        # This fixture crosses the deep layers; the whole-path screen must reject it.
+        self.assertFalse(result.witnesses["screen"]["m"]["passed"])
+        self.assertFalse(result.witnesses["screen"]["m"]["conditions"]["max_target_layer_one"])
+        self.assertEqual(result.witnesses["screen"]["m"]["counts"]["max_target_layer"], 3)
+        self.assertTrue(result.witnesses["screen"]["m"]["conditions"]["observation_dwell"])
         self.assertEqual(result.members, plan.members)
         self.assertEqual(result.witnesses["member_map_transit"], plan.witnesses["member_map_transit"])
+
+    def test_offset_chord_stays_outside_alert_and_passes_screen(self):
+        ctx, plan = fixture()
+        # The line y=225 has minimum alert SDF 225-160=65 m, exceeding the existing 10 m margin.
+        xy = tuple((x, 225.) for x, _ in plan.members["m"].curve_xy)
+        member = replace(plan.members["m"], curve_xy=xy)
+        plan = replace(plan, members={"m": member}, reference_xy=xy)
+        result = C.add_dwell(ctx, plan, FirstChoice())
+        self.assertIsNone(result.failure)
+        self.assertGreaterEqual(min(C._margins(C.TC.transit_base(ctx, "t", intent=C.INTENT)["base"],
+                                              np.asarray(xy))["alert:t"]), 10.)
+        self.assertTrue(result.witnesses["screen"]["m"]["passed"])
+        self.assertEqual(result.witnesses["screen"]["m"]["counts"]["max_target_layer"], 1)
 
     def test_empty_set_does_not_consume_rng_or_change_geometry(self):
         ctx, plan = fixture()

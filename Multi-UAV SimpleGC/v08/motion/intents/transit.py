@@ -567,7 +567,7 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
     u, n = TC.frame(th)
     o = np.asarray(tgt.center, float)
     offsets = [slots.offsets[m] for m in slots.order]
-    P = {"intent": task.intent, "theta_idx": int(ti), "theta_deg": float(TC.THETA_STEP_DEG * int(ti)), "h_m": float(h),
+    P = {"intent": getattr(task, "intent", "transit"), "theta_idx": int(ti), "theta_deg": float(TC.THETA_STEP_DEG * int(ti)), "h_m": float(h),
          "origin_xy": tuple(map(float, o)), "u": tuple(map(float, u)), "n": tuple(map(float, n)),
          "cell_index": ci, "cells_feasible": len(cells), "chord_query_id": doc.get("query_id"),
          "x_c": xc, "x_t": float(xt), "x_in": float(x_in), "collect_D_m": D_c, "collect_candidates": len(Ds),
@@ -636,7 +636,7 @@ def _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, r
     t0 = time.perf_counter()
     plan = build_candidate(ctx, group, task, states, key, P)
     _tick(S, "candidate_s", time.perf_counter() - t0)
-    if task.intent == "close_observation" and plan.failure is None:
+    if P["intent"] == "close_observation" and plan.failure is None:
         from .close_observation import add_dwell
         plan = add_dwell(ctx, plan, rng)
     if plan.failure is not None:
