@@ -1,0 +1,26 @@
+--- a/Multi-UAV SimpleGC/v08/motion/intents/close_observation.py
++++ b/Multi-UAV SimpleGC/v08/motion/intents/close_observation.py
+@@ -183,6 +183,7 @@
+                           "certified_length_m", "inset_length_m"), DATA)
+ LP = dict.fromkeys(("feasible", "fallback_reason", "lp_status", "lp_message", "lp_nit", "objective", "max_residual",
+                     "kappa_max", "slope_max", "n_controls"), DATA)
++LP["max_residual"] = dict.fromkeys(("slope", "curvature_per_m", "corridor_m"), DATA)
+ CURVE_AUDIT = {**dict.fromkeys(("ok", "kappa_max_abs", "at_x", "min_den", "slope_max", "turn_ok", "lane_ok", "slope_ok",
+                                "candidates"), DATA), "lane": MAP(DATA)}
+ CHORD_ERROR = dict.fromkeys(("lane", "constraint", "margin_m", "check", "interval", "required_m", "straight_m", "facility",
+--- a/Multi-UAV SimpleGC/tests/v08/V8-19/test_extra_selected_curve_v19.py
++++ b/Multi-UAV SimpleGC/tests/v08/V8-19/test_extra_selected_curve_v19.py
+@@ -113,6 +113,13 @@
+         self.assertEqual(nom.time_at_s(165.), nom.arrival_s)
+         self.assertEqual(refs[0].end_s, nom.release_s + (nom.end_s - nom.release_s))
+ 
++    def test_existing_lp_residual_object_has_explicit_child_whitelist(self):
++        residual = {"slope": 0., "curvature_per_m": 0., "corridor_m": 0.}
++        self.assertEqual(C.project({"max_residual": residual}, C.LP, "plan.proposal.lp"),
++                         {"max_residual": residual})
++        with self.assertRaisesRegex(ValueError, r"plan\.proposal\.lp\.max_residual\.cache_hit"):
++            C.project({"max_residual": {**residual, "cache_hit": 1}}, C.LP, "plan.proposal.lp")
++
+     def test_unknown_nested_fields_are_reported_with_location(self):
+         _, plan = fixture()
+         bad = replace(plan, proposal={"intent": C.INTENT, "lp": {"cache_hit": 1}})

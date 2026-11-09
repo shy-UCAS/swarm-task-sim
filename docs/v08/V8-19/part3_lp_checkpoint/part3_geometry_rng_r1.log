@@ -1,0 +1,70 @@
+F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\transit_numeric.py:123: UserWarning: A NumPy version >=1.23.5 and <2.3.0 is required for this version of SciPy (detected version 2.5.3)
+  from scipy.interpolate import BSpline
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 169, in add_dwell
+    return project_plan(replace(plan, witnesses=witnesses, nominal_duration_s=total,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 284, in project_plan
+    proposal = project(plan.proposal, PROPOSAL, "plan.proposal")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 272, in project
+    return {k: project(v, schema[k], f"{where}.{k}") for k, v in value.items()}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 272, in project
+    return {k: project(v, schema[k], f"{where}.{k}") for k, v in value.items()}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 263, in project
+    raise ValueError(f"unexpected non-scalar contract value at {where}")
+ValueError: unexpected non-scalar contract value at plan.proposal.lp.max_residual
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\part3_resume\audit_geometry_cache.py", line 327, in <module>
+    main()
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\part3_resume\audit_geometry_cache.py", line 317, in main
+    result = {"prefix": prefix_audit, "cache": cache_audit, "enumeration": enumerate_queries, "maximum": maximum_audit}[arg](out)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\part3_resume\audit_geometry_cache.py", line 154, in prefix_audit
+    new, new_rng, before = traced_build(C, setup(order, draw, C.INTENT, RUN / "cache"), capture=True)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\part3_resume\audit_geometry_cache.py", line 119, in traced_build
+    plan = mod.propose_and_build(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 30, in propose_and_build
+    return project_plan(T.propose_and_build(ctx, group, task, states, key))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\transit.py", line 537, in propose_and_build
+    plan = width_then_build(chain, width_probe, build)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\skeleton.py", line 33, in width_then_build
+    return build(c, payload)
+           ^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\transit.py", line 535, in build
+    return _build_with_cells(S, ctx, group, task, states, key, payload, b, steps_log, rng, crng)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\transit.py", line 641, in _build_with_cells
+    plan = add_dwell(ctx, plan, rng)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\part3_resume\audit_geometry_cache.py", line 109, in add
+    return original_add(ctx, plan, rng)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 174, in add_dwell
+    return _ordinary_failure(plan, "close_obs_reference", diagnostics, type(exc).__name__)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 109, in _ordinary_failure
+    return project_plan(replace(plan, failure=failure, witnesses={**(plan.witnesses or {}),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 284, in project_plan
+    proposal = project(plan.proposal, PROPOSAL, "plan.proposal")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 272, in project
+    return {k: project(v, schema[k], f"{where}.{k}") for k, v in value.items()}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 272, in project
+    return {k: project(v, schema[k], f"{where}.{k}") for k, v in value.items()}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC\v08\motion\intents\close_observation.py", line 263, in project
+    raise ValueError(f"unexpected non-scalar contract value at {where}")
+ValueError: unexpected non-scalar contract value at plan.proposal.lp.max_residual
+ERROR conda.cli.main_run:execute(142): `conda run python -B F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\part3_resume\audit_geometry_cache.py prefix` failed. (See above for error)

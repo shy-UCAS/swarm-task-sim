@@ -1,0 +1,18 @@
+{
+ "error_field": "plan.proposal.lp.max_residual",
+ "actual_type": "dict",
+ "actual_value": {
+  "corridor_m": 0.0,
+  "curvature_per_m": 4.884981308350689e-16,
+  "slope": 0.0
+ },
+ "baseline_artifact": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-08_V8-19_close_observation\\run\\out\\gates_2_r1\\transit\\contracts\\o01_d0\\skeleton.json",
+ "artifact_sha256": "4d1b1a7309cdbe68f09f3e1a0cf0cd8297fad372312cbfb172afbc3307fc2efd",
+ "producer": "v08/motion/transit_numeric.py:curve_lp",
+ "consumer": "v08/motion/intents/close_observation.py:LP/project",
+ "declared_new_schema": "DATA (scalar/sequence only; dictionaries rejected)",
+ "diagnosis": "The new whitelist incorrectly declares an existing nested residual object as scalar. This is an implementation error, outside authorized self-added expectation/legacy-default/floating-point repairs.",
+ "raw_reason": "ValueError('unexpected non-scalar contract value at plan.proposal.lp.max_residual')",
+ "implementation_changed_after_failure": false,
+ "failed_audit_rerun": false
+}

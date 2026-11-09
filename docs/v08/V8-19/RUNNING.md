@@ -1,8 +1,8 @@
-# V8-19 当前失败检查点的复现
+# V8-19 当前检查点复现
 
-当前停在第3部分快速检查。第2部分第一轮四意图门禁80/80通过；第3部分新增自加测试1项失败，相关旧回归2项error。源代码和失败断言均保留，`part3_checkpoint/PROPOSED_*.patch`只是审查建议，没有应用或测试。完整生成CLI、第4–8部分验收和acceptance.json尚未完成。
+当前源码的两项获准修正提交为`bb7a6ce9d7a523549454ae92cb19bab4a5afa5f1`。修正后的选点6项、独立16项、相关旧测试134项全部通过；随后真实几何审计首键因新LP白名单误将`max_residual`字典当标量而停止。未应用修复，未重跑失败审计。完整CLI和第4–8部分验收尚未完成。
 
-使用PowerShell7，代码目录为`F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC`。读取`.conda-env`，本项目为llm；不安装或升级包。
+使用PowerShell7，读取项目`.conda-env`（llm），四线程变量设1。不安装或升级包。
 
 ```powershell
 Set-Location -LiteralPath 'F:\CASIA\Drone Swarm Situational Awareness Algorithm\Simulation-v08\Multi-UAV SimpleGC'
@@ -16,27 +16,30 @@ $env:NUMEXPR_NUM_THREADS = '1'
 $env:PYTHONDONTWRITEBYTECODE = '1'
 ```
 
-以下三份检查当前全部通过（8/3/5）。每条独立执行，检查退出码。
+以下检查本轮为8/8、3/3、5/5、6/6通过。每条独立执行并检查退出码。
 
 ```powershell
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-19 -p test_preset_numeric_v19.py -v
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-19 -p test_preset_local_geometry_v19.py -v
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-19 -p test_extra_dwell_reference_v19.py -v
-```
-
-下条复现本次自加检查点的4通过、1失败；失败是整段经过圆心的解析夹具被错误预期为名义预筛全通过。预筛实际最大层3，只有`max_target_layer_one`条件为False。按规则暂停依赖批次，不能应用建议后自行重跑。
-
-```powershell
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-19 -p test_extra_selected_curve_v19.py -v
 ```
 
-旧回归两项error的原日志和所有27文件结果在`part3_checkpoint/part3_old_tests_r1/`及`part3_checkpoint/part3_old_tests_remainder_r1/`。错误来自旧桩没有`intent`属性；旧文件没有修改。完整命令、所需输入变量及真实日志见同目录的`run_related_tests_part3*.py`。这些脚本的证据输出路径要求不存在，不能覆盖本轮原始目录。
+本轮27文件134项旧回归的全部命令、环境和日志在`part3_lp_checkpoint/run_old_tests_r2.py`及`part3_lp_checkpoint/part3_old_tests_r2/`。旧SceneGate沿用已接受替代，其他实际执行项无跳过；脚本输出目录须为全新路径，不得覆盖本轮原始目录。
 
-产物预置9.3按用户澄清留待相应结果齐全后运行。届时须生成真实`acceptance.json`，完整执行三项；此前setUpClass跳过不是通过。以下是指令指定形式，当前文件缺失，尚不能执行：
+当前LP问题可以只调用纯投影函数复现，不必重新构造几何。下条预期抛`ValueError`，不是通过测试；它不会写文件或运行优化/仿真。
+
+```powershell
+& $condaExe run -n llm --no-capture-output python -B -c 'from v08.motion.intents.close_observation import project, LP; project({"max_residual":{"slope":0.0,"curvature_per_m":0.0,"corridor_m":0.0}},LP,"plan.proposal.lp")'
+```
+
+`part3_lp_checkpoint/PROPOSED_LP_RESIDUAL_SCHEMA.patch`仅为未应用的修正与回归测试建议。完整真实几何审计脚本和首轮失败在`part3_lp_checkpoint/audit_geometry_cache.py`、`part3_geometry_rng_r1/`，后续恢复须使用新轮次输出目录。缓存冷/热/1对2进程及最大查询试测未运行；身份枚举178项仅为诊断，不是预建。
+
+产物预置9.3按用户澄清留待相应结果齐全后完整执行。当前acceptance.json尚不存在，历史setUpClass跳过不算通过。后续指定形式如下，当前不可执行：
 
 ```powershell
 $env:V8_19_ACCEPTANCE = (Resolve-Path '..\docs\v08\V8-19\acceptance.json').Path
 & $condaExe run -n llm --no-capture-output python -B -m unittest discover -s tests/v08/V8-19 -p test_preset_local_artifacts_v19.py -v
 ```
 
-完整生成、200骨架、20快批、200+100全量及5键复跑均未启动；第2轮旧意图门禁须在最终共享代码完成后运行。运行根为`F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\run`，每次使用新输出目录，合同比较排除[]。24进程运行前后分别通知用户；当前没有待运行的24进程任务。
+新意图200骨架、20快批、200+100全量和5键复跑均未启动；完整CLI尚未实现。第二轮四意图门禁须在全部共享修改完成后运行，第一轮80/80不覆盖之后代码。24进程运行前后通知用户；当前没有运行中的24进程任务。运行根为`F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-08_V8-19_close_observation\run`；每轮新目录，合同比较排除[]。预建超过2700秒停止，正式200骨架派发超过1800秒停止。
