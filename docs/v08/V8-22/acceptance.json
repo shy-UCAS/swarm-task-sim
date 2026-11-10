@@ -1,0 +1,2031 @@
+{
+  "task": "V8-22 monitoring common pre-entry regeneration",
+  "source_head": "448d20440c49da267f24fb39fbb974563f6ab0b3",
+  "source_parent_chain": [
+    "448d20440c49da267f24fb39fbb974563f6ab0b3",
+    "412125ffe7f6a95274059c23fee96ddc11337add",
+    "e2f6ee1436827b07abd6ec3a991e6605ade6c585"
+  ],
+  "status": "passed",
+  "stop_reason": null,
+  "merge_conditions": {
+    "step0_no_unexpected_test_regression": true,
+    "step1_five_intents_100_of_100_byte_equal": true,
+    "step2_all_requested_checkpoint_items_pass": true,
+    "step3_all_requested_checkpoint_items_pass": true,
+    "step4_five_single_worker_reruns_byte_equal": true
+  },
+  "merge_eligible": true,
+  "step0": {
+    "no_unexpected_regression": true,
+    "new_tests_passed": 3,
+    "baseline_counts": {
+      "passed": 356,
+      "skipped": 28,
+      "failed": 3,
+      "error": 5
+    },
+    "review_counts": {
+      "passed": 359,
+      "skipped": 28,
+      "failed": 3,
+      "error": 5
+    },
+    "outcome_differences": [],
+    "common_nonpassing_not_counted_as_passed": true,
+    "notes": [
+      "V8-12: missing V8_12_DATA_ROOT and inherited Frechet expectation failure",
+      "V8-13/V8-14: required legacy-output environment variables absent; identical setup errors in both versions",
+      "28 local acceptance/real-input tests skipped identically; see full JUnit and differences.json"
+    ]
+  },
+  "step1": {
+    "total": 100,
+    "equal_count": 100,
+    "files_compared": 2875,
+    "different_file_count": 0,
+    "exclusions": [],
+    "passed": true
+  },
+  "step2": {
+    "stage": "quick",
+    "main": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\quick",
+      "expected": 20,
+      "contracts": 20,
+      "successes": 20,
+      "success_rate": 1.0,
+      "by_group_size": {
+        "1-4": {
+          "contracts": 12,
+          "successes": 12,
+          "rate": 1.0,
+          "gap": 0.0
+        },
+        "5-8": {
+          "contracts": 4,
+          "successes": 4,
+          "rate": 1.0,
+          "gap": 0.0
+        },
+        "9-12": {
+          "contracts": 4,
+          "successes": 4,
+          "rate": 1.0,
+          "gap": 0.0
+        }
+      },
+      "group_gap_gt_10pp": false,
+      "incomplete_or_errors": [],
+      "failed_contracts": [],
+      "failure_attempts_by_stage": {
+        "optimize_monitoring": 4,
+        "skeleton": 4
+      },
+      "failure_attempts_by_skeleton_stage": {
+        "boundary_crossing": 1,
+        "egress": 1,
+        "ingress": 2
+      },
+      "failure_attempts_by_reason": {
+        "optimize_residual": 4,
+        "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+        "没有可用的入圈直线与连接": 2,
+        "没有可用的出圈直线与终点": 1
+      },
+      "failed_attempts": 8,
+      "final_failures_by_code": {},
+      "final_failures_by_reason": {},
+      "start_route_failed_attempts": 0,
+      "measured_monitoring_entries_failed_attempts": 0,
+      "formation_yields": 0,
+      "formation_yield_contracts": [],
+      "formation_yield_definition": "retained formation.start != formation.realized; loose-prior mapping is not a yield",
+      "saved_successes_reverified": 20,
+      "min_saved_separation_m": 3.1841362948937584,
+      "retained_p0_violations": [],
+      "retained_p0_violation_count": 0,
+      "failure_reason_source": "canonical saved result.json attempt_log",
+      "optimization_failure_detail_occurrences": {
+        "monitoring_failures/nominal_revisit": 16
+      }
+    },
+    "runner_summary_complete": true,
+    "runner_checkpoint_diagnostic": {
+      "metrics": {
+        "attempts_undetermined": false,
+        "contracts": 20,
+        "contracts_with_optimization_time_diagnostic": 20,
+        "optimization_s_median": 15.58300054999927,
+        "post_optimization_failures_median": 0.0,
+        "retained_p0_violations": [],
+        "skeleton_failures_total_diagnostic": 4,
+        "success_attempts_median_diagnostic": 1.0,
+        "success_rate": 1.0,
+        "successes": 20
+      },
+      "triggered": []
+    },
+    "checks": {
+      "retained_p0_zero": true,
+      "complete": true,
+      "successes_ge_17": true,
+      "measured_entry_failed_attempts_le_2": true,
+      "start_route_failed_attempts_le_10": true
+    },
+    "passed": true
+  },
+  "step3": {
+    "stage": "full",
+    "main": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full",
+      "expected": 200,
+      "contracts": 200,
+      "successes": 198,
+      "success_rate": 0.99,
+      "by_group_size": {
+        "1-4": {
+          "contracts": 110,
+          "successes": 110,
+          "rate": 1.0,
+          "gap": -0.01
+        },
+        "5-8": {
+          "contracts": 56,
+          "successes": 55,
+          "rate": 0.9821428571428571,
+          "gap": 0.007857142857142858
+        },
+        "9-12": {
+          "contracts": 34,
+          "successes": 33,
+          "rate": 0.9705882352941176,
+          "gap": 0.019411764705882354
+        }
+      },
+      "group_gap_gt_10pp": false,
+      "incomplete_or_errors": [],
+      "failed_contracts": [
+        "o14_d1",
+        "o28_d0"
+      ],
+      "failure_attempts_by_stage": {
+        "optimize": 3,
+        "optimize_monitoring": 55,
+        "skeleton": 120
+      },
+      "failure_attempts_by_skeleton_stage": {
+        "boundary_crossing": 9,
+        "egress": 18,
+        "ingress": 75,
+        "start_route": 2,
+        "turns": 16
+      },
+      "failure_attempts_by_reason": {
+        "optimize_residual": 58,
+        "turn_joint_set_empty：收拢—掉头—接回—展开整体可行集合为空": 16,
+        "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 3,
+        "成员 uav_02 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 2,
+        "成员 uav_03 没有可用的起点路由": 1,
+        "成员 uav_06 没有可用的起点路由": 1,
+        "成员 uav_06 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 2,
+        "成员 uav_09 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+        "成员 uav_11 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+        "没有可用的入圈直线与连接": 75,
+        "没有可用的出圈直线与终点": 18
+      },
+      "failed_attempts": 178,
+      "final_failures_by_code": {
+        "budget_exhausted": 2
+      },
+      "final_failures_by_reason": {
+        "20 次随机构造用完预算": 2
+      },
+      "start_route_failed_attempts": 2,
+      "measured_monitoring_entries_failed_attempts": 0,
+      "formation_yields": 0,
+      "formation_yield_contracts": [],
+      "formation_yield_definition": "retained formation.start != formation.realized; loose-prior mapping is not a yield",
+      "saved_successes_reverified": 198,
+      "min_saved_separation_m": 3.11640970741065,
+      "retained_p0_violations": [],
+      "retained_p0_violation_count": 0,
+      "failure_reason_source": "canonical saved result.json attempt_log",
+      "optimization_failure_detail_occurrences": {
+        "monitoring_failures/nominal_dwell": 89,
+        "monitoring_failures/nominal_revisit": 125,
+        "physical_failures/dynamic": 7,
+        "physical_failures/separation": 1,
+        "physical_failures/turn_radius": 1
+      }
+    },
+    "runner_summary_complete": true,
+    "runner_checkpoint_diagnostic": {
+      "metrics": {
+        "attempts_undetermined": false,
+        "contracts": 200,
+        "facility_gap": {
+          "1": {
+            "gap": -0.01,
+            "n": 85,
+            "rate": 1.0,
+            "successes": 85
+          },
+          "2": {
+            "gap": 0.0017647058823529412,
+            "n": 85,
+            "rate": 0.9882352941176471,
+            "successes": 84
+          },
+          "3": {
+            "gap": 0.023333333333333334,
+            "n": 30,
+            "rate": 0.9666666666666667,
+            "successes": 29
+          }
+        },
+        "frechet_pooled_median": 75.91923557418846,
+        "group_gap": {
+          "0": {
+            "gap": -0.01,
+            "n": 110,
+            "rate": 1.0,
+            "successes": 110
+          },
+          "1": {
+            "gap": 0.007857142857142858,
+            "n": 56,
+            "rate": 0.9821428571428571,
+            "successes": 55
+          },
+          "2": {
+            "gap": 0.019411764705882354,
+            "n": 34,
+            "rate": 0.9705882352941176,
+            "successes": 33
+          }
+        },
+        "post_optimization_failures_median": 0.0,
+        "skeleton_failures_total_diagnostic": 120,
+        "speed_gap": {
+          "0": {
+            "gap": 0.019850746268656717,
+            "n": 67,
+            "rate": 0.9701492537313433,
+            "successes": 65
+          },
+          "1": {
+            "gap": -0.01,
+            "n": 61,
+            "rate": 1.0,
+            "successes": 61
+          },
+          "2": {
+            "gap": -0.01,
+            "n": 72,
+            "rate": 1.0,
+            "successes": 72
+          }
+        },
+        "success_attempts_median_diagnostic": 1.0,
+        "success_rate": 0.99
+      },
+      "triggered": []
+    },
+    "diversity": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full\\diversity",
+      "expected": 100,
+      "contracts": 100,
+      "successes": 100,
+      "success_rate": 1.0,
+      "by_group_size": {
+        "1-4": {
+          "contracts": 50,
+          "successes": 50,
+          "rate": 1.0,
+          "gap": 0.0
+        },
+        "5-8": {
+          "contracts": 30,
+          "successes": 30,
+          "rate": 1.0,
+          "gap": 0.0
+        },
+        "9-12": {
+          "contracts": 20,
+          "successes": 20,
+          "rate": 1.0,
+          "gap": 0.0
+        }
+      },
+      "group_gap_gt_10pp": false,
+      "incomplete_or_errors": [],
+      "failed_contracts": [],
+      "failure_attempts_by_stage": {
+        "optimize_monitoring": 17,
+        "skeleton": 8
+      },
+      "failure_attempts_by_skeleton_stage": {
+        "ingress": 3,
+        "reference/speed": 2,
+        "start_route": 3
+      },
+      "failure_attempts_by_reason": {
+        "optimize_residual": 17,
+        "参考曲线不满足引导接口：第 10737 条弦与前一条方向差 3.1168691485099185 rad 超过 0.2 rad": 1,
+        "参考曲线不满足引导接口：第 35020 条弦与前一条方向差 3.0985828767791013 rad 超过 0.2 rad": 1,
+        "成员 uav_01 没有可用的起点路由": 1,
+        "成员 uav_05 没有可用的起点路由": 1,
+        "成员 uav_08 没有可用的起点路由": 1,
+        "没有可用的入圈直线与连接": 3
+      },
+      "failed_attempts": 25,
+      "final_failures_by_code": {},
+      "final_failures_by_reason": {},
+      "start_route_failed_attempts": 3,
+      "measured_monitoring_entries_failed_attempts": 0,
+      "formation_yields": 0,
+      "formation_yield_contracts": [],
+      "formation_yield_definition": "retained formation.start != formation.realized; loose-prior mapping is not a yield",
+      "saved_successes_reverified": 100,
+      "min_saved_separation_m": 3.1599101814066413,
+      "retained_p0_violations": [],
+      "retained_p0_violation_count": 0,
+      "failure_reason_source": "canonical saved result.json attempt_log",
+      "optimization_failure_detail_occurrences": {
+        "monitoring_failures/nominal_dwell": 16,
+        "monitoring_failures/nominal_revisit": 23
+      }
+    },
+    "frechet_after_pooled": 75.91923557418846,
+    "frechet_before_pooled": 75.91937511557015,
+    "saved_verification_input_identity": {
+      "diversity": {
+        "records_sha256": "6eada714cfa13fecab9fae8b171c5bc5a4fc21e345158f2308dc0023b3a53643",
+        "contract_file_count": 2700,
+        "contract_manifest_sha256": "82f850d3f8d9b5efeb024b099a2518e99d985965faf6665f48704ca7a9900281"
+      },
+      "main": {
+        "records_sha256": "3d53fb14eb3a747332551e3a300e60f04a6ca1817e9a92e07f6f8e2445859a13",
+        "contract_file_count": 5556,
+        "contract_manifest_sha256": "65b9e03ce2193c0582443bd01c93a4b082c147edae46d6a715ab822d93abc7fd"
+      }
+    },
+    "verification_workers": 2,
+    "checks": {
+      "retained_p0_zero": true,
+      "complete": true,
+      "successes_ge_185": true,
+      "group_gap_le_10pp": true,
+      "diversity_successes_ge_90": true,
+      "diversity_retained_p0_zero": true,
+      "diversity_complete": true
+    },
+    "passed": true
+  },
+  "step4": {
+    "passed": true,
+    "total": 5,
+    "equal_count": 5,
+    "exclusions": [],
+    "source_workers_actual": 24,
+    "repeat_workers_actual": 1,
+    "legacy_report_workers_source": 8
+  },
+  "p0_conditions": {
+    "other_five_intents_any_file_difference": 0,
+    "monitoring_retained_violations_quick": 0,
+    "monitoring_retained_violations_full": 0,
+    "monitoring_retained_violations_diversity": 0,
+    "serial_rerun_mismatch": false
+  },
+  "outputs": {
+    "full": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full",
+      "exists": true
+    },
+    "diversity": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full\\diversity",
+      "exists": true
+    },
+    "quick": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\quick",
+      "exists": true
+    },
+    "rerun": {
+      "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\rerun",
+      "exists": true
+    }
+  },
+  "entry_diagnostics": {
+    "old_monitoring": {
+      "label": "old_monitoring",
+      "run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-04_V8-14_skeleton\\out\\full_v14c",
+      "contracts": 198,
+      "contracts_with_any_member_entries_ne_1": 83,
+      "members_entries_ne_1": 303,
+      "contracts_with_entry_before_collection": 86,
+      "first_entry_spread_s": {
+        "n": 198,
+        "P50": 15.200000000000045,
+        "P90": 507.84000000000015,
+        "max": 1255.6
+      },
+      "release_to_first_entry_s": {
+        "n": 198,
+        "P50": 384.9,
+        "P90": 857.5100000000002,
+        "max": 1749.0
+      },
+      "mean_dist_to_centroid_at_first_entry_m": {
+        "n": 178,
+        "P50": 37.45247190306279,
+        "P90": 723.2213265657465,
+        "max": 2035.1693363234156
+      }
+    },
+    "transit": {
+      "label": "transit",
+      "run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-05_V8-16_transit\\run\\out\\full_transit_r2",
+      "contracts": 200,
+      "contracts_with_any_member_entries_ne_1": 0,
+      "members_entries_ne_1": 0,
+      "contracts_with_entry_before_collection": 0,
+      "first_entry_spread_s": {
+        "n": 200,
+        "P50": 7.85000000000008,
+        "P90": 33.07,
+        "max": 78.29999999999995
+      },
+      "release_to_first_entry_s": {
+        "n": 200,
+        "P50": 638.0999999999999,
+        "P90": 1130.7299999999998,
+        "max": 1782.7
+      },
+      "mean_dist_to_centroid_at_first_entry_m": {
+        "n": 186,
+        "P50": 23.04376764465478,
+        "P90": 49.7869085672353,
+        "max": 84.90017504054707
+      }
+    },
+    "quick_monitoring": {
+      "label": "quick_monitoring",
+      "run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\quick",
+      "contracts": 20,
+      "contracts_with_any_member_entries_ne_1": 0,
+      "members_entries_ne_1": 0,
+      "contracts_with_entry_before_collection": 0,
+      "first_entry_spread_s": {
+        "n": 20,
+        "P50": 4.900000000000006,
+        "P90": 17.940000000000012,
+        "max": 28.100000000000023
+      },
+      "release_to_first_entry_s": {
+        "n": 20,
+        "P50": 579.35,
+        "P90": 901.59,
+        "max": 1433.5
+      },
+      "mean_dist_to_centroid_at_first_entry_m": {
+        "n": 19,
+        "P50": 19.093299233936243,
+        "P90": 46.681040218745196,
+        "max": 58.14439774138513
+      }
+    },
+    "new_monitoring": {
+      "label": "new_monitoring",
+      "run": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full",
+      "contracts": 198,
+      "contracts_with_any_member_entries_ne_1": 0,
+      "members_entries_ne_1": 0,
+      "contracts_with_entry_before_collection": 9,
+      "first_entry_spread_s": {
+        "n": 198,
+        "P50": 6.249999999999943,
+        "P90": 25.33,
+        "max": 64.80000000000007
+      },
+      "release_to_first_entry_s": {
+        "n": 198,
+        "P50": 661.6500000000001,
+        "P90": 1137.88,
+        "max": 1749.0
+      },
+      "mean_dist_to_centroid_at_first_entry_m": {
+        "n": 184,
+        "P50": 22.77153118001536,
+        "P90": 49.473761644664364,
+        "max": 84.91645715160239
+      }
+    }
+  },
+  "protected_owners": [
+    {
+      "path": "docs/v08/V8-17/owner_rerun.json",
+      "before_sha256": "d9c0022bf84636eb61d0b27a2f65bf3f6c490c738046087036f22b14cdf65bd0",
+      "after_sha256": "d9c0022bf84636eb61d0b27a2f65bf3f6c490c738046087036f22b14cdf65bd0",
+      "unchanged": true,
+      "before_mtime_ticks": 639295863982959141,
+      "after_mtime_ticks": 639295863982959141,
+      "mtime_unchanged": true
+    },
+    {
+      "path": "docs/v08/V8-18/owner_rerun.json",
+      "before_sha256": "0482b9c83fcb274d9fc14177fc8027d73d191afc1e1e8345187cfe74276b8e4b",
+      "after_sha256": "0482b9c83fcb274d9fc14177fc8027d73d191afc1e1e8345187cfe74276b8e4b",
+      "unchanged": true,
+      "before_mtime_ticks": 639297427221550675,
+      "after_mtime_ticks": 639297427221550675,
+      "mtime_unchanged": true
+    },
+    {
+      "path": "docs/v08/V8-19/owner_rerun.json",
+      "before_sha256": "1fe675d274cc5deeb7e3676e94f92d1902fcf0ad7e6b05c0c24ca2a72bb429d7",
+      "after_sha256": "1fe675d274cc5deeb7e3676e94f92d1902fcf0ad7e6b05c0c24ca2a72bb429d7",
+      "unchanged": true,
+      "before_mtime_ticks": 639298057856432942,
+      "after_mtime_ticks": 639298057856432942,
+      "mtime_unchanged": true
+    },
+    {
+      "path": "docs/v08/V8-20/owner_rerun.json",
+      "before_sha256": "b217dda4423aa03027c9c736d0c69bfa536eabf49a14fb2a62972ee76d500b89",
+      "after_sha256": "b217dda4423aa03027c9c736d0c69bfa536eabf49a14fb2a62972ee76d500b89",
+      "unchanged": true,
+      "before_mtime_ticks": 639298976482599749,
+      "after_mtime_ticks": 639298976482599749,
+      "mtime_unchanged": true
+    }
+  ],
+  "collection_marker_investigation": {
+    "original_diagnostic_unchanged": true,
+    "method": "Original script compares first entry to global closest frame to collection CENTER over the whole trajectory. Audit also reads saved collection station times and each member's own collection SLOT.",
+    "marked_contracts": 9,
+    "marked_members": 21,
+    "global_nearest_center_in_egress": 21,
+    "global_nearest_center_in_patrol": 0,
+    "global_nearest_center_in_collect_ingress": 0,
+    "first_entry_before_planned_collection_station": 0,
+    "min_first_entry_after_collection_station_s": 18.176821912298692,
+    "max_nearest_measured_slot_distance_m": 0.4280308921170752,
+    "details": [
+      {
+        "contract": "o04_d3",
+        "member": "uav_03",
+        "first_warning_entry_s": 1029.7,
+        "global_nearest_collection_center_s": 2339.9,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 990.3560201914087,
+        "patrol_start_s": 1201.6633667517428,
+        "patrol_end_s": 2111.129318822153,
+        "first_entry_minus_collection_station_s": 39.34397980859137,
+        "nearest_measured_slot_before_entry_s": 990.4,
+        "nearest_measured_slot_before_entry_distance_m": 0.22521941048775598,
+        "slot_xy": [
+          996.4786618171597,
+          1162.9118873336768
+        ],
+        "collection_center_xy": [
+          972.8132790974024,
+          1157.6516923199758
+        ]
+      },
+      {
+        "contract": "o12_d2",
+        "member": "uav_02",
+        "first_warning_entry_s": 732.1,
+        "global_nearest_collection_center_s": 2877.7,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 670.9335598615517,
+        "patrol_start_s": 775.2809608882669,
+        "patrol_end_s": 2782.746105141562,
+        "first_entry_minus_collection_station_s": 61.166440138448365,
+        "nearest_measured_slot_before_entry_s": 670.9,
+        "nearest_measured_slot_before_entry_distance_m": 0.2634896437071164,
+        "slot_xy": [
+          1410.587637000023,
+          1542.7357239442103
+        ],
+        "collection_center_xy": [
+          1407.5217938956405,
+          1659.8932680154994
+        ]
+      },
+      {
+        "contract": "o12_d2",
+        "member": "uav_06",
+        "first_warning_entry_s": 724.3,
+        "global_nearest_collection_center_s": 2865.2,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 670.9070569545721,
+        "patrol_start_s": 772.8786152587917,
+        "patrol_end_s": 2771.517282099944,
+        "first_entry_minus_collection_station_s": 53.39294304542784,
+        "nearest_measured_slot_before_entry_s": 670.9,
+        "nearest_measured_slot_before_entry_distance_m": 0.0554064993018347,
+        "slot_xy": [
+          1409.8211762239273,
+          1572.0251099620327
+        ],
+        "collection_center_xy": [
+          1407.5217938956405,
+          1659.8932680154994
+        ]
+      },
+      {
+        "contract": "o12_d2",
+        "member": "uav_07",
+        "first_warning_entry_s": 716.9,
+        "global_nearest_collection_center_s": 2854.5,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 670.9898635988837,
+        "patrol_start_s": 770.5638260724124,
+        "patrol_end_s": 2762.0749311662917,
+        "first_entry_minus_collection_station_s": 45.91013640111623,
+        "nearest_measured_slot_before_entry_s": 671.0,
+        "nearest_measured_slot_before_entry_distance_m": 0.07958425915434829,
+        "slot_xy": [
+          1409.0547154478318,
+          1601.3144959798549
+        ],
+        "collection_center_xy": [
+          1407.5217938956405,
+          1659.8932680154994
+        ]
+      },
+      {
+        "contract": "o17_d4",
+        "member": "uav_05",
+        "first_warning_entry_s": 746.3,
+        "global_nearest_collection_center_s": 3021.2,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 716.6414097835595,
+        "patrol_start_s": 850.0941524470242,
+        "patrol_end_s": 2894.828458427862,
+        "first_entry_minus_collection_station_s": 29.658590216440416,
+        "nearest_measured_slot_before_entry_s": 716.6,
+        "nearest_measured_slot_before_entry_distance_m": 0.266815110943825,
+        "slot_xy": [
+          3085.034069135812,
+          3796.478400824113
+        ],
+        "collection_center_xy": [
+          3130.3172223460333,
+          3868.599381306908
+        ]
+      },
+      {
+        "contract": "o17_d4",
+        "member": "uav_07",
+        "first_warning_entry_s": 757.7,
+        "global_nearest_collection_center_s": 2999.9,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 716.638080302601,
+        "patrol_start_s": 842.0051057414581,
+        "patrol_end_s": 2867.6271688203983,
+        "first_entry_minus_collection_station_s": 41.06191969739905,
+        "nearest_measured_slot_before_entry_s": 716.6,
+        "nearest_measured_slot_before_entry_distance_m": 0.24536231031744835,
+        "slot_xy": [
+          3136.786244233208,
+          3878.902378518736
+        ],
+        "collection_center_xy": [
+          3130.3172223460333,
+          3868.599381306908
+        ]
+      },
+      {
+        "contract": "o17_d4",
+        "member": "uav_08",
+        "first_warning_entry_s": 772.7,
+        "global_nearest_collection_center_s": 3009.6,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 716.6842496064494,
+        "patrol_start_s": 833.9659518935289,
+        "patrol_end_s": 2871.4094234153786,
+        "first_entry_minus_collection_station_s": 56.01575039355066,
+        "nearest_measured_slot_before_entry_s": 716.7,
+        "nearest_measured_slot_before_entry_distance_m": 0.10148430229422839,
+        "slot_xy": [
+          3188.5384193306036,
+          3961.326356213359
+        ],
+        "collection_center_xy": [
+          3130.3172223460333,
+          3868.599381306908
+        ]
+      },
+      {
+        "contract": "o17_d4",
+        "member": "uav_12",
+        "first_warning_entry_s": 741.0,
+        "global_nearest_collection_center_s": 3042.8,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 716.7122276859197,
+        "patrol_start_s": 854.2077879269272,
+        "patrol_end_s": 2919.3695053892275,
+        "first_entry_minus_collection_station_s": 24.287772314080257,
+        "nearest_measured_slot_before_entry_s": 716.7,
+        "nearest_measured_slot_before_entry_distance_m": 0.07878648715172522,
+        "slot_xy": [
+          3059.157981587114,
+          3755.266411976802
+        ],
+        "collection_center_xy": [
+          3130.3172223460333,
+          3868.599381306908
+        ]
+      },
+      {
+        "contract": "o18_d1",
+        "member": "uav_05",
+        "first_warning_entry_s": 561.1,
+        "global_nearest_collection_center_s": 3433.5,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 539.1491816624573,
+        "patrol_start_s": 668.572444782589,
+        "patrol_end_s": 2982.2866340017245,
+        "first_entry_minus_collection_station_s": 21.950818337542728,
+        "nearest_measured_slot_before_entry_s": 539.1,
+        "nearest_measured_slot_before_entry_distance_m": 0.4280308921170752,
+        "slot_xy": [
+          4074.728200396808,
+          5000.425789638721
+        ],
+        "collection_center_xy": [
+          4086.439818645739,
+          4993.210190860688
+        ]
+      },
+      {
+        "contract": "o23_d1",
+        "member": "uav_05",
+        "first_warning_entry_s": 1004.5,
+        "global_nearest_collection_center_s": 2837.1,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 972.7751284197057,
+        "patrol_start_s": 1147.3912431633846,
+        "patrol_end_s": 2614.128034512051,
+        "first_entry_minus_collection_station_s": 31.724871580294348,
+        "nearest_measured_slot_before_entry_s": 972.8,
+        "nearest_measured_slot_before_entry_distance_m": 0.15333782458232292,
+        "slot_xy": [
+          648.3001644787171,
+          3350.6273168591993
+        ],
+        "collection_center_xy": [
+          599.1081448442869,
+          3391.1613157163333
+        ]
+      },
+      {
+        "contract": "o23_d1",
+        "member": "uav_06",
+        "first_warning_entry_s": 1011.2,
+        "global_nearest_collection_center_s": 2841.2,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 972.7434459668701,
+        "patrol_start_s": 1151.175762370896,
+        "patrol_end_s": 2616.484541011255,
+        "first_entry_minus_collection_station_s": 38.45655403312992,
+        "nearest_measured_slot_before_entry_s": 972.7,
+        "nearest_measured_slot_before_entry_distance_m": 0.2678523024093645,
+        "slot_xy": [
+          623.704154661502,
+          3370.8943162877663
+        ],
+        "collection_center_xy": [
+          599.1081448442869,
+          3391.1613157163333
+        ]
+      },
+      {
+        "contract": "o23_d1",
+        "member": "uav_07",
+        "first_warning_entry_s": 991.5,
+        "global_nearest_collection_center_s": 2833.6,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 972.8281513237969,
+        "patrol_start_s": 1139.8118627467923,
+        "patrol_end_s": 2614.050462375283,
+        "first_entry_minus_collection_station_s": 18.671848676203126,
+        "nearest_measured_slot_before_entry_s": 972.8,
+        "nearest_measured_slot_before_entry_distance_m": 0.17638899492328722,
+        "slot_xy": [
+          697.4921841131473,
+          3310.0933180020647
+        ],
+        "collection_center_xy": [
+          599.1081448442869,
+          3391.1613157163333
+        ]
+      },
+      {
+        "contract": "o23_d1",
+        "member": "uav_08",
+        "first_warning_entry_s": 997.8,
+        "global_nearest_collection_center_s": 2834.7,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 972.732031582289,
+        "patrol_start_s": 1143.531944665626,
+        "patrol_end_s": 2613.3769924862627,
+        "first_entry_minus_collection_station_s": 25.067968417710972,
+        "nearest_measured_slot_before_entry_s": 972.7,
+        "nearest_measured_slot_before_entry_distance_m": 0.1974805415562369,
+        "slot_xy": [
+          672.8961742959322,
+          3330.360317430632
+        ],
+        "collection_center_xy": [
+          599.1081448442869,
+          3391.1613157163333
+        ]
+      },
+      {
+        "contract": "o23_d4",
+        "member": "uav_02",
+        "first_warning_entry_s": 771.0,
+        "global_nearest_collection_center_s": 2677.0,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 733.9070475069669,
+        "patrol_start_s": 857.9491553553532,
+        "patrol_end_s": 2557.3938352809514,
+        "first_entry_minus_collection_station_s": 37.09295249303307,
+        "nearest_measured_slot_before_entry_s": 733.9,
+        "nearest_measured_slot_before_entry_distance_m": 0.043297782817040775,
+        "slot_xy": [
+          2554.86826310657,
+          2984.7900352032307
+        ],
+        "collection_center_xy": [
+          2541.3076136016525,
+          3047.0714019517945
+        ]
+      },
+      {
+        "contract": "o23_d4",
+        "member": "uav_07",
+        "first_warning_entry_s": 769.4,
+        "global_nearest_collection_center_s": 2687.1,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 733.8863776321675,
+        "patrol_start_s": 845.4091513265071,
+        "patrol_end_s": 2558.1116904772134,
+        "first_entry_minus_collection_station_s": 35.513622367832454,
+        "nearest_measured_slot_before_entry_s": 733.9,
+        "nearest_measured_slot_before_entry_distance_m": 0.08368206672979815,
+        "slot_xy": [
+          2568.4289126114872,
+          2922.508668454667
+        ],
+        "collection_center_xy": [
+          2541.3076136016525,
+          3047.0714019517945
+        ]
+      },
+      {
+        "contract": "o23_d4",
+        "member": "uav_08",
+        "first_warning_entry_s": 770.1,
+        "global_nearest_collection_center_s": 2680.9,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 733.8114879363538,
+        "patrol_start_s": 851.710488384787,
+        "patrol_end_s": 2556.52872902393,
+        "first_entry_minus_collection_station_s": 36.28851206364618,
+        "nearest_measured_slot_before_entry_s": 733.8,
+        "nearest_measured_slot_before_entry_distance_m": 0.07057027591109576,
+        "slot_xy": [
+          2561.6485878590283,
+          2953.649351828949
+        ],
+        "collection_center_xy": [
+          2541.3076136016525,
+          3047.0714019517945
+        ]
+      },
+      {
+        "contract": "o28_d2",
+        "member": "uav_05",
+        "first_warning_entry_s": 645.8,
+        "global_nearest_collection_center_s": 2516.8,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 624.8661913971561,
+        "patrol_start_s": 747.1855315543921,
+        "patrol_end_s": 2401.9628701479473,
+        "first_entry_minus_collection_station_s": 20.933808602843897,
+        "nearest_measured_slot_before_entry_s": 624.9,
+        "nearest_measured_slot_before_entry_distance_m": 0.21575345696071258,
+        "slot_xy": [
+          4490.526766238872,
+          2715.975799432908
+        ],
+        "collection_center_xy": [
+          4591.666974498744,
+          2814.777019950694
+        ]
+      },
+      {
+        "contract": "o30_d1",
+        "member": "uav_03",
+        "first_warning_entry_s": 637.7,
+        "global_nearest_collection_center_s": 1967.2,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 619.5231780877014,
+        "patrol_start_s": 783.2973072174806,
+        "patrol_end_s": 1845.262557092982,
+        "first_entry_minus_collection_station_s": 18.176821912298692,
+        "nearest_measured_slot_before_entry_s": 619.5,
+        "nearest_measured_slot_before_entry_distance_m": 0.2027767911343734,
+        "slot_xy": [
+          1006.5705984668803,
+          3601.1320764620314
+        ],
+        "collection_center_xy": [
+          1029.445169700143,
+          3597.7447031726024
+        ]
+      },
+      {
+        "contract": "o30_d1",
+        "member": "uav_04",
+        "first_warning_entry_s": 639.9,
+        "global_nearest_collection_center_s": 1973.0,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 619.5256420873525,
+        "patrol_start_s": 784.7096595533169,
+        "patrol_end_s": 1851.423994427556,
+        "first_entry_minus_collection_station_s": 20.374357912647497,
+        "nearest_measured_slot_before_entry_s": 619.5,
+        "nearest_measured_slot_before_entry_distance_m": 0.2243332204011284,
+        "slot_xy": [
+          983.6960272336174,
+          3604.51944975146
+        ],
+        "collection_center_xy": [
+          1029.445169700143,
+          3597.7447031726024
+        ]
+      },
+      {
+        "contract": "o40_d3",
+        "member": "uav_07",
+        "first_warning_entry_s": 596.8,
+        "global_nearest_collection_center_s": 3444.5,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 575.1161207243883,
+        "patrol_start_s": 878.3257570338461,
+        "patrol_end_s": 3054.626240334664,
+        "first_entry_minus_collection_station_s": 21.683879275611616,
+        "nearest_measured_slot_before_entry_s": 575.1,
+        "nearest_measured_slot_before_entry_distance_m": 0.14929602827535657,
+        "slot_xy": [
+          2059.2974759143826,
+          1056.9224680562402
+        ],
+        "collection_center_xy": [
+          2064.8206044212275,
+          1038.4678949640977
+        ]
+      },
+      {
+        "contract": "o40_d3",
+        "member": "uav_09",
+        "first_warning_entry_s": 601.1,
+        "global_nearest_collection_center_s": 3449.7,
+        "global_nearest_center_phase": "egress",
+        "planned_collection_station_s": 575.1697817406443,
+        "patrol_start_s": 882.5399850793679,
+        "patrol_end_s": 3059.147741024953,
+        "first_entry_minus_collection_station_s": 25.930218259355684,
+        "nearest_measured_slot_before_entry_s": 575.2,
+        "nearest_measured_slot_before_entry_distance_m": 0.2796448246274544,
+        "slot_xy": [
+          2070.3437329280723,
+          1020.0133218719552
+        ],
+        "collection_center_xy": [
+          2064.8206044212275,
+          1038.4678949640977
+        ]
+      }
+    ]
+  },
+  "additional_quick_vs_full_reproducibility": {
+    "source_head": "448d20440c49da267f24fb39fbb974563f6ab0b3",
+    "workers_serial": 1,
+    "workers_parallel": 24,
+    "exclusions": [],
+    "total": 20,
+    "equal_count": 20,
+    "files_compared": 575,
+    "comparisons": [
+      {
+        "contract_id": "o01_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o01_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o02_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy",
+          "tracks/uav_09/a.npy",
+          "tracks/uav_09/p.npy",
+          "tracks/uav_09/segment_index.npy",
+          "tracks/uav_09/tau_us.npy",
+          "tracks/uav_09/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o02_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o03_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o03_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o04_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o04_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o05_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy",
+          "tracks/uav_09/a.npy",
+          "tracks/uav_09/p.npy",
+          "tracks/uav_09/segment_index.npy",
+          "tracks/uav_09/tau_us.npy",
+          "tracks/uav_09/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o05_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o06_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o06_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o07_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o07_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy",
+          "tracks/uav_09/a.npy",
+          "tracks/uav_09/p.npy",
+          "tracks/uav_09/segment_index.npy",
+          "tracks/uav_09/tau_us.npy",
+          "tracks/uav_09/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o08_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o08_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o09_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o09_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o11_d0",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy",
+          "tracks/uav_09/a.npy",
+          "tracks/uav_09/p.npy",
+          "tracks/uav_09/segment_index.npy",
+          "tracks/uav_09/tau_us.npy",
+          "tracks/uav_09/v.npy",
+          "tracks/uav_10/a.npy",
+          "tracks/uav_10/p.npy",
+          "tracks/uav_10/segment_index.npy",
+          "tracks/uav_10/tau_us.npy",
+          "tracks/uav_10/v.npy",
+          "tracks/uav_11/a.npy",
+          "tracks/uav_11/p.npy",
+          "tracks/uav_11/segment_index.npy",
+          "tracks/uav_11/tau_us.npy",
+          "tracks/uav_11/v.npy",
+          "tracks/uav_12/a.npy",
+          "tracks/uav_12/p.npy",
+          "tracks/uav_12/segment_index.npy",
+          "tracks/uav_12/tau_us.npy",
+          "tracks/uav_12/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      },
+      {
+        "contract_id": "o11_d1",
+        "files": [
+          "contract.json",
+          "optimized.json",
+          "result.json",
+          "skeleton.json",
+          "tracks/uav_01/a.npy",
+          "tracks/uav_01/p.npy",
+          "tracks/uav_01/segment_index.npy",
+          "tracks/uav_01/tau_us.npy",
+          "tracks/uav_01/v.npy",
+          "tracks/uav_02/a.npy",
+          "tracks/uav_02/p.npy",
+          "tracks/uav_02/segment_index.npy",
+          "tracks/uav_02/tau_us.npy",
+          "tracks/uav_02/v.npy",
+          "tracks/uav_03/a.npy",
+          "tracks/uav_03/p.npy",
+          "tracks/uav_03/segment_index.npy",
+          "tracks/uav_03/tau_us.npy",
+          "tracks/uav_03/v.npy",
+          "tracks/uav_04/a.npy",
+          "tracks/uav_04/p.npy",
+          "tracks/uav_04/segment_index.npy",
+          "tracks/uav_04/tau_us.npy",
+          "tracks/uav_04/v.npy",
+          "tracks/uav_05/a.npy",
+          "tracks/uav_05/p.npy",
+          "tracks/uav_05/segment_index.npy",
+          "tracks/uav_05/tau_us.npy",
+          "tracks/uav_05/v.npy",
+          "tracks/uav_06/a.npy",
+          "tracks/uav_06/p.npy",
+          "tracks/uav_06/segment_index.npy",
+          "tracks/uav_06/tau_us.npy",
+          "tracks/uav_06/v.npy",
+          "tracks/uav_07/a.npy",
+          "tracks/uav_07/p.npy",
+          "tracks/uav_07/segment_index.npy",
+          "tracks/uav_07/tau_us.npy",
+          "tracks/uav_07/v.npy",
+          "tracks/uav_08/a.npy",
+          "tracks/uav_08/p.npy",
+          "tracks/uav_08/segment_index.npy",
+          "tracks/uav_08/tau_us.npy",
+          "tracks/uav_08/v.npy",
+          "tracks/uav_09/a.npy",
+          "tracks/uav_09/p.npy",
+          "tracks/uav_09/segment_index.npy",
+          "tracks/uav_09/tau_us.npy",
+          "tracks/uav_09/v.npy",
+          "tracks/uav_10/a.npy",
+          "tracks/uav_10/p.npy",
+          "tracks/uav_10/segment_index.npy",
+          "tracks/uav_10/tau_us.npy",
+          "tracks/uav_10/v.npy",
+          "tracks/uav_11/a.npy",
+          "tracks/uav_11/p.npy",
+          "tracks/uav_11/segment_index.npy",
+          "tracks/uav_11/tau_us.npy",
+          "tracks/uav_11/v.npy",
+          "tracks/uav_12/a.npy",
+          "tracks/uav_12/p.npy",
+          "tracks/uav_12/segment_index.npy",
+          "tracks/uav_12/tau_us.npy",
+          "tracks/uav_12/v.npy"
+        ],
+        "file_sets_equal": true,
+        "bytes_equal": true,
+        "differing": [],
+        "only_source": [],
+        "only_repeat": []
+      }
+    ],
+    "all_equal": true
+  },
+  "runtimes": {
+    "quick": {
+      "argv": [
+        "C:\\Users\\shy\\anaconda3\\envs\\llm\\python.exe",
+        "-B",
+        "tools/v08/run_joint_monitoring.py",
+        "--stage",
+        "quick",
+        "--workers",
+        "1",
+        "--devset",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\docs\\v08\\V8-03\\devset_v08.json",
+        "--data-root",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData",
+        "--cache",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\cache",
+        "--out",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\quick"
+      ],
+      "status": "finished",
+      "exit_code": 0,
+      "wall_s": 1400.460652400001,
+      "workers_requested": 1,
+      "source_unchanged": true
+    },
+    "full_and_diversity": {
+      "argv": [
+        "C:\\Users\\shy\\anaconda3\\envs\\llm\\python.exe",
+        "-B",
+        "tools/v08/run_joint_monitoring.py",
+        "--stage",
+        "full",
+        "--workers",
+        "24",
+        "--devset",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\docs\\v08\\V8-03\\devset_v08.json",
+        "--data-root",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData",
+        "--cache",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\cache",
+        "--out",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full"
+      ],
+      "status": "finished",
+      "exit_code": 0,
+      "wall_s": 2767.1449960000027,
+      "workers_requested": 24,
+      "source_unchanged": true
+    },
+    "rerun": {
+      "argv": [
+        "C:\\Users\\shy\\anaconda3\\envs\\llm\\python.exe",
+        "-B",
+        "tools/v08/run_joint_monitoring.py",
+        "--stage",
+        "rerun",
+        "--workers",
+        "1",
+        "--devset",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\Simulation-v08\\docs\\v08\\V8-03\\devset_v08.json",
+        "--data-root",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\SwarmData",
+        "--cache",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\cache",
+        "--out",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\rerun",
+        "--keys",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full\\rerun_keys.json",
+        "--compare-to",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full"
+      ],
+      "status": "finished",
+      "exit_code": 0,
+      "wall_s": 209.70906670000113,
+      "workers_requested": 1,
+      "source_unchanged": true
+    },
+    "saved_output_verification": {
+      "argv": [
+        "C:\\Users\\shy\\anaconda3\\envs\\llm\\python.exe",
+        "-B",
+        "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\scripts\\verify_saved_batches.py"
+      ],
+      "status": "finished",
+      "exit_code": 0,
+      "wall_s": 994.2255386999968,
+      "workers_requested": 2,
+      "source_unchanged": true
+    }
+  },
+  "resource_monitor": {
+    "samples": 3427,
+    "invalid_lines": 0,
+    "sample_errors": 0,
+    "first_utc": "2026-11-10T11:53:28.7068101Z",
+    "last_utc": "2026-11-10T13:48:25.7572546Z",
+    "max_sample_gap_s": 5.061256,
+    "min_available_gib": 19.83647918701172,
+    "peak_committed_gib": 60.15214157104492,
+    "peak_cpu_percent": 100,
+    "peak_python_count": 32,
+    "peak_python_private_gib": 20.165271759033203,
+    "peak_disk_queue": 24,
+    "last_event": {
+      "event": "stopped",
+      "utc": "2026-11-10T13:48:27.7605008Z",
+      "samples": 3427
+    }
+  },
+  "entry_point_note": "Original --stage full jointly dispatches 200 full + 100 diversity contracts; --stage diversity alone is unsupported. No source changed.",
+  "runtime_note": "Conda llm unchanged. Existing local pytest 7.4.4 was copied to run/test_runtime and temporarily loaded; pytest cache and Python bytecode disabled.",
+  "created_utc": "2026-11-10T13:48:31.330577+00:00",
+  "evidence_files": {
+    "evidence\\baseline_audit.json": "2f03235c599cbb4b02870ccfbee0f2196d1dbf92ff1d2f6275ba4184d32aa4fa",
+    "evidence\\collection_marker_audit.json": "7854467a41d8e11469af8d1876ac57ff6f087b45fc647a87a9067b86ab2ccdbe",
+    "evidence\\entry_diagnostics.json": "5e382b40ed356c90a19ed2cb476f345e0b3257da9fe1a68b8b2876e9cedad717",
+    "evidence\\failure_reasons.json": "65ee4abbef529103836740561fbb05476a57bf865c162e1e6e5c110840583510",
+    "evidence\\full.json": "316d651c459f18a0433e6a3acaf311db45ce3f00b9a1edc73f98842a2c5fde47",
+    "evidence\\gates.json": "4db442d956f9dc227f45aa9b375f38af3f125f83e1d169d507f601aa1ec83685",
+    "evidence\\payload_audit.json": "ee7995fc5e33c9242c58d030d7d917046d961ed255951502e88a186128e8c0c9",
+    "evidence\\quick.json": "be1b48ef38f3ec2b05a3976d32465e36e06996c51d5d9ad91f979401b1f0e4a9",
+    "evidence\\quick_vs_full.json": "af26a1960c39c9f036cadb242304aeb26e7c60d4603ae0d540f687aace618dcd",
+    "evidence\\rerun.json": "79ce6482395c5b9ea995e3f6ffb475add0117f5cfd6ebeb9e87ee5242a75817f",
+    "evidence\\resources.json": "562c2842948fefabb17d7dadcb42971d08f9c83a2f24ce9f577cee4fe59a2c98",
+    "evidence\\source_snapshot.json": "ef4d6ebbfaf7fcad3ad835f16d4f5e062599fec1cbdaf32023c28e5728338a44",
+    "evidence\\step0.json": "1c68904dfcce5456d7f61411d78edae27ac46c34154dd52bbfbfebe81f88265e",
+    "evidence\\tests.json": "879d107abaf88c859f60bd20f23c77c734f6d6154941c30e8f5a8b10dc68a838"
+  },
+  "failure_reason_statistics": {
+    "source": "contracts/<id>/result.json: canonical attempt_log; records.json is a reduced index",
+    "batches": {
+      "quick": {
+        "failed_attempts": 8,
+        "stages": {
+          "optimize_monitoring": 4,
+          "skeleton": 4
+        },
+        "reasons": {
+          "optimize_residual": 4,
+          "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+          "没有可用的入圈直线与连接": 2,
+          "没有可用的出圈直线与终点": 1
+        },
+        "skeleton_substages": {
+          "boundary_crossing": 1,
+          "egress": 1,
+          "ingress": 2
+        },
+        "optimization_detail_occurrences": {
+          "monitoring_failures/nominal_revisit": 16
+        }
+      },
+      "full": {
+        "failed_attempts": 178,
+        "stages": {
+          "optimize": 3,
+          "optimize_monitoring": 55,
+          "skeleton": 120
+        },
+        "reasons": {
+          "optimize_residual": 58,
+          "turn_joint_set_empty：收拢—掉头—接回—展开整体可行集合为空": 16,
+          "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 3,
+          "成员 uav_02 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 2,
+          "成员 uav_03 没有可用的起点路由": 1,
+          "成员 uav_06 没有可用的起点路由": 1,
+          "成员 uav_06 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 2,
+          "成员 uav_09 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+          "成员 uav_11 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+          "没有可用的入圈直线与连接": 75,
+          "没有可用的出圈直线与终点": 18
+        },
+        "skeleton_substages": {
+          "boundary_crossing": 9,
+          "egress": 18,
+          "ingress": 75,
+          "start_route": 2,
+          "turns": 16
+        },
+        "optimization_detail_occurrences": {
+          "monitoring_failures/nominal_dwell": 89,
+          "monitoring_failures/nominal_revisit": 125,
+          "physical_failures/dynamic": 7,
+          "physical_failures/separation": 1,
+          "physical_failures/turn_radius": 1
+        }
+      },
+      "diversity": {
+        "failed_attempts": 25,
+        "stages": {
+          "optimize_monitoring": 17,
+          "skeleton": 8
+        },
+        "reasons": {
+          "optimize_residual": 17,
+          "参考曲线不满足引导接口：第 10737 条弦与前一条方向差 3.1168691485099185 rad 超过 0.2 rad": 1,
+          "参考曲线不满足引导接口：第 35020 条弦与前一条方向差 3.0985828767791013 rad 超过 0.2 rad": 1,
+          "成员 uav_01 没有可用的起点路由": 1,
+          "成员 uav_05 没有可用的起点路由": 1,
+          "成员 uav_08 没有可用的起点路由": 1,
+          "没有可用的入圈直线与连接": 3
+        },
+        "skeleton_substages": {
+          "ingress": 3,
+          "reference/speed": 2,
+          "start_route": 3
+        },
+        "optimization_detail_occurrences": {
+          "monitoring_failures/nominal_dwell": 16,
+          "monitoring_failures/nominal_revisit": 23
+        }
+      }
+    }
+  },
+  "contract_payload_audit": {
+    "json_payload_scan_passed": true,
+    "forbidden_fields_or_host_paths": [],
+    "roots": [
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\quick\\contracts",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full\\contracts",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full\\diversity\\contracts",
+      "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\rerun\\contracts"
+    ],
+    "checked_utc": "2026-11-10T13:48:25.9895559Z"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "stage": "quick",
+  "main": {
+    "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\quick",
+    "expected": 20,
+    "contracts": 20,
+    "successes": 20,
+    "success_rate": 1.0,
+    "by_group_size": {
+      "1-4": {
+        "contracts": 12,
+        "successes": 12,
+        "rate": 1.0,
+        "gap": 0.0
+      },
+      "5-8": {
+        "contracts": 4,
+        "successes": 4,
+        "rate": 1.0,
+        "gap": 0.0
+      },
+      "9-12": {
+        "contracts": 4,
+        "successes": 4,
+        "rate": 1.0,
+        "gap": 0.0
+      }
+    },
+    "group_gap_gt_10pp": false,
+    "incomplete_or_errors": [],
+    "failed_contracts": [],
+    "failure_attempts_by_stage": {
+      "optimize_monitoring": 4,
+      "skeleton": 4
+    },
+    "failure_attempts_by_skeleton_stage": {
+      "boundary_crossing": 1,
+      "egress": 1,
+      "ingress": 2
+    },
+    "failure_attempts_by_reason": {
+      "optimize_residual": 4,
+      "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+      "没有可用的入圈直线与连接": 2,
+      "没有可用的出圈直线与终点": 1
+    },
+    "failed_attempts": 8,
+    "final_failures_by_code": {},
+    "final_failures_by_reason": {},
+    "start_route_failed_attempts": 0,
+    "measured_monitoring_entries_failed_attempts": 0,
+    "formation_yields": 0,
+    "formation_yield_contracts": [],
+    "formation_yield_definition": "retained formation.start != formation.realized; loose-prior mapping is not a yield",
+    "saved_successes_reverified": 20,
+    "min_saved_separation_m": 3.1841362948937584,
+    "retained_p0_violations": [],
+    "retained_p0_violation_count": 0,
+    "failure_reason_source": "canonical saved result.json attempt_log",
+    "optimization_failure_detail_occurrences": {
+      "monitoring_failures/nominal_revisit": 16
+    }
+  },
+  "runner_summary_complete": true,
+  "runner_checkpoint_diagnostic": {
+    "metrics": {
+      "attempts_undetermined": false,
+      "contracts": 20,
+      "contracts_with_optimization_time_diagnostic": 20,
+      "optimization_s_median": 15.58300054999927,
+      "post_optimization_failures_median": 0.0,
+      "retained_p0_violations": [],
+      "skeleton_failures_total_diagnostic": 4,
+      "success_attempts_median_diagnostic": 1.0,
+      "success_rate": 1.0,
+      "successes": 20
+    },
+    "triggered": []
+  },
+  "checks": {
+    "retained_p0_zero": true,
+    "complete": true,
+    "successes_ge_17": true,
+    "measured_entry_failed_attempts_le_2": true,
+    "start_route_failed_attempts_le_10": true
+  },
+  "passed": true
+}

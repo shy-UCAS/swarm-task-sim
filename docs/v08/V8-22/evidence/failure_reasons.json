@@ -1,0 +1,86 @@
+{
+  "source": "contracts/<id>/result.json: canonical attempt_log; records.json is a reduced index",
+  "batches": {
+    "quick": {
+      "failed_attempts": 8,
+      "stages": {
+        "optimize_monitoring": 4,
+        "skeleton": 4
+      },
+      "reasons": {
+        "optimize_residual": 4,
+        "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 1,
+        "没有可用的入圈直线与连接": 2,
+        "没有可用的出圈直线与终点": 1
+      },
+      "skeleton_substages": {
+        "boundary_crossing": 1,
+        "egress": 1,
+        "ingress": 2
+      },
+      "optimization_detail_occurrences": {
+        "monitoring_failures/nominal_revisit": 16
+      }
+    },
+    "full": {
+      "failed_attempts": 178,
+      "stages": {
+        "optimize": 3,
+        "optimize_monitoring": 55,
+        "skeleton": 120
+      },
+      "reasons": {
+        "optimize_residual": 58,
+        "turn_joint_set_empty：收拢—掉头—接回—展开整体可行集合为空": 16,
+        "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 3,
+        "成员 uav_02 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 2,
+        "成员 uav_03 没有可用的起点路由": 1,
+        "成员 uav_06 没有可用的起点路由": 1,
+        "成员 uav_06 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 2,
+        "成员 uav_09 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+        "成员 uav_11 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+        "没有可用的入圈直线与连接": 75,
+        "没有可用的出圈直线与终点": 18
+      },
+      "skeleton_substages": {
+        "boundary_crossing": 9,
+        "egress": 18,
+        "ingress": 75,
+        "start_route": 2,
+        "turns": 16
+      },
+      "optimization_detail_occurrences": {
+        "monitoring_failures/nominal_dwell": 89,
+        "monitoring_failures/nominal_revisit": 125,
+        "physical_failures/dynamic": 7,
+        "physical_failures/separation": 1,
+        "physical_failures/turn_radius": 1
+      }
+    },
+    "diversity": {
+      "failed_attempts": 25,
+      "stages": {
+        "optimize_monitoring": 17,
+        "skeleton": 8
+      },
+      "reasons": {
+        "optimize_residual": 17,
+        "参考曲线不满足引导接口：第 10737 条弦与前一条方向差 3.1168691485099185 rad 超过 0.2 rad": 1,
+        "参考曲线不满足引导接口：第 35020 条弦与前一条方向差 3.0985828767791013 rad 超过 0.2 rad": 1,
+        "成员 uav_01 没有可用的起点路由": 1,
+        "成员 uav_05 没有可用的起点路由": 1,
+        "成员 uav_08 没有可用的起点路由": 1,
+        "没有可用的入圈直线与连接": 3
+      },
+      "skeleton_substages": {
+        "ingress": 3,
+        "reference/speed": 2,
+        "start_route": 3
+      },
+      "optimization_detail_occurrences": {
+        "monitoring_failures/nominal_dwell": 16,
+        "monitoring_failures/nominal_revisit": 23
+      }
+    }
+  }
+}

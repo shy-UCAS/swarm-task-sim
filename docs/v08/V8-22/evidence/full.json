@@ -1,0 +1,248 @@
+{
+  "stage": "full",
+  "main": {
+    "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full",
+    "expected": 200,
+    "contracts": 200,
+    "successes": 198,
+    "success_rate": 0.99,
+    "by_group_size": {
+      "1-4": {
+        "contracts": 110,
+        "successes": 110,
+        "rate": 1.0,
+        "gap": -0.01
+      },
+      "5-8": {
+        "contracts": 56,
+        "successes": 55,
+        "rate": 0.9821428571428571,
+        "gap": 0.007857142857142858
+      },
+      "9-12": {
+        "contracts": 34,
+        "successes": 33,
+        "rate": 0.9705882352941176,
+        "gap": 0.019411764705882354
+      }
+    },
+    "group_gap_gt_10pp": false,
+    "incomplete_or_errors": [],
+    "failed_contracts": [
+      "o14_d1",
+      "o28_d0"
+    ],
+    "failure_attempts_by_stage": {
+      "optimize": 3,
+      "optimize_monitoring": 55,
+      "skeleton": 120
+    },
+    "failure_attempts_by_skeleton_stage": {
+      "boundary_crossing": 9,
+      "egress": 18,
+      "ingress": 75,
+      "start_route": 2,
+      "turns": 16
+    },
+    "failure_attempts_by_reason": {
+      "optimize_residual": 58,
+      "turn_joint_set_empty：收拢—掉头—接回—展开整体可行集合为空": 16,
+      "成员 uav_01 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 3,
+      "成员 uav_02 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 2,
+      "成员 uav_03 没有可用的起点路由": 1,
+      "成员 uav_06 没有可用的起点路由": 1,
+      "成员 uav_06 边界穿越不合规：graze_or_touch_band（设施 facility_02）": 2,
+      "成员 uav_09 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+      "成员 uav_11 边界穿越不合规：graze_or_touch_band（设施 facility_01）": 1,
+      "没有可用的入圈直线与连接": 75,
+      "没有可用的出圈直线与终点": 18
+    },
+    "failed_attempts": 178,
+    "final_failures_by_code": {
+      "budget_exhausted": 2
+    },
+    "final_failures_by_reason": {
+      "20 次随机构造用完预算": 2
+    },
+    "start_route_failed_attempts": 2,
+    "measured_monitoring_entries_failed_attempts": 0,
+    "formation_yields": 0,
+    "formation_yield_contracts": [],
+    "formation_yield_definition": "retained formation.start != formation.realized; loose-prior mapping is not a yield",
+    "saved_successes_reverified": 198,
+    "min_saved_separation_m": 3.11640970741065,
+    "retained_p0_violations": [],
+    "retained_p0_violation_count": 0,
+    "failure_reason_source": "canonical saved result.json attempt_log",
+    "optimization_failure_detail_occurrences": {
+      "monitoring_failures/nominal_dwell": 89,
+      "monitoring_failures/nominal_revisit": 125,
+      "physical_failures/dynamic": 7,
+      "physical_failures/separation": 1,
+      "physical_failures/turn_radius": 1
+    }
+  },
+  "runner_summary_complete": true,
+  "runner_checkpoint_diagnostic": {
+    "metrics": {
+      "attempts_undetermined": false,
+      "contracts": 200,
+      "facility_gap": {
+        "1": {
+          "gap": -0.01,
+          "n": 85,
+          "rate": 1.0,
+          "successes": 85
+        },
+        "2": {
+          "gap": 0.0017647058823529412,
+          "n": 85,
+          "rate": 0.9882352941176471,
+          "successes": 84
+        },
+        "3": {
+          "gap": 0.023333333333333334,
+          "n": 30,
+          "rate": 0.9666666666666667,
+          "successes": 29
+        }
+      },
+      "frechet_pooled_median": 75.91923557418846,
+      "group_gap": {
+        "0": {
+          "gap": -0.01,
+          "n": 110,
+          "rate": 1.0,
+          "successes": 110
+        },
+        "1": {
+          "gap": 0.007857142857142858,
+          "n": 56,
+          "rate": 0.9821428571428571,
+          "successes": 55
+        },
+        "2": {
+          "gap": 0.019411764705882354,
+          "n": 34,
+          "rate": 0.9705882352941176,
+          "successes": 33
+        }
+      },
+      "post_optimization_failures_median": 0.0,
+      "skeleton_failures_total_diagnostic": 120,
+      "speed_gap": {
+        "0": {
+          "gap": 0.019850746268656717,
+          "n": 67,
+          "rate": 0.9701492537313433,
+          "successes": 65
+        },
+        "1": {
+          "gap": -0.01,
+          "n": 61,
+          "rate": 1.0,
+          "successes": 61
+        },
+        "2": {
+          "gap": -0.01,
+          "n": 72,
+          "rate": 1.0,
+          "successes": 72
+        }
+      },
+      "success_attempts_median_diagnostic": 1.0,
+      "success_rate": 0.99
+    },
+    "triggered": []
+  },
+  "diversity": {
+    "path": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-22_monitoring_entry\\run\\full\\diversity",
+    "expected": 100,
+    "contracts": 100,
+    "successes": 100,
+    "success_rate": 1.0,
+    "by_group_size": {
+      "1-4": {
+        "contracts": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "gap": 0.0
+      },
+      "5-8": {
+        "contracts": 30,
+        "successes": 30,
+        "rate": 1.0,
+        "gap": 0.0
+      },
+      "9-12": {
+        "contracts": 20,
+        "successes": 20,
+        "rate": 1.0,
+        "gap": 0.0
+      }
+    },
+    "group_gap_gt_10pp": false,
+    "incomplete_or_errors": [],
+    "failed_contracts": [],
+    "failure_attempts_by_stage": {
+      "optimize_monitoring": 17,
+      "skeleton": 8
+    },
+    "failure_attempts_by_skeleton_stage": {
+      "ingress": 3,
+      "reference/speed": 2,
+      "start_route": 3
+    },
+    "failure_attempts_by_reason": {
+      "optimize_residual": 17,
+      "参考曲线不满足引导接口：第 10737 条弦与前一条方向差 3.1168691485099185 rad 超过 0.2 rad": 1,
+      "参考曲线不满足引导接口：第 35020 条弦与前一条方向差 3.0985828767791013 rad 超过 0.2 rad": 1,
+      "成员 uav_01 没有可用的起点路由": 1,
+      "成员 uav_05 没有可用的起点路由": 1,
+      "成员 uav_08 没有可用的起点路由": 1,
+      "没有可用的入圈直线与连接": 3
+    },
+    "failed_attempts": 25,
+    "final_failures_by_code": {},
+    "final_failures_by_reason": {},
+    "start_route_failed_attempts": 3,
+    "measured_monitoring_entries_failed_attempts": 0,
+    "formation_yields": 0,
+    "formation_yield_contracts": [],
+    "formation_yield_definition": "retained formation.start != formation.realized; loose-prior mapping is not a yield",
+    "saved_successes_reverified": 100,
+    "min_saved_separation_m": 3.1599101814066413,
+    "retained_p0_violations": [],
+    "retained_p0_violation_count": 0,
+    "failure_reason_source": "canonical saved result.json attempt_log",
+    "optimization_failure_detail_occurrences": {
+      "monitoring_failures/nominal_dwell": 16,
+      "monitoring_failures/nominal_revisit": 23
+    }
+  },
+  "frechet_after_pooled": 75.91923557418846,
+  "frechet_before_pooled": 75.91937511557015,
+  "saved_verification_input_identity": {
+    "diversity": {
+      "records_sha256": "6eada714cfa13fecab9fae8b171c5bc5a4fc21e345158f2308dc0023b3a53643",
+      "contract_file_count": 2700,
+      "contract_manifest_sha256": "82f850d3f8d9b5efeb024b099a2518e99d985965faf6665f48704ca7a9900281"
+    },
+    "main": {
+      "records_sha256": "3d53fb14eb3a747332551e3a300e60f04a6ca1817e9a92e07f6f8e2445859a13",
+      "contract_file_count": 5556,
+      "contract_manifest_sha256": "65b9e03ce2193c0582443bd01c93a4b082c147edae46d6a715ab822d93abc7fd"
+    }
+  },
+  "verification_workers": 2,
+  "checks": {
+    "retained_p0_zero": true,
+    "complete": true,
+    "successes_ge_185": true,
+    "group_gap_le_10pp": true,
+    "diversity_successes_ge_90": true,
+    "diversity_retained_p0_zero": true,
+    "diversity_complete": true
+  },
+  "passed": true
+}
