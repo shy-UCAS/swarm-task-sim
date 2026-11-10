@@ -27,3 +27,5 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 第 3 部分已保存并推送为 5a37cf7efe7d5b9a6f5a555541e03c5cf8cec60d。第 8 部分仅失败交付回执；最终提交与远端核对见本任务外部 run/part8/final_push.json。
 
 新恢复命令与结果将登记全新 run/cost_ruling_r1；后台监控 session.json 指向新 cost_ruling 轮次。原门禁/单查询/失败交付证据均保留。
+
+新裁定后的第 3 部分已通过：见 cost_ruling/part3_complete/checkpoint.json。下一步第 4 部分，保持监控；不得把最大补例 attempt 13 计为生产获胜。
