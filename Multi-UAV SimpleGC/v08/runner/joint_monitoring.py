@@ -211,6 +211,14 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
         if not meas["all_single"]:
             return {"ok": False, "stage": "measured_feint_entries", "code": "candidate_rejected",
                     "reason": "measured_feint_entries", **out}
+    if task.intent == "monitoring":
+        # V8-22：冻结监视判据不查预警进入次数；保留前按每成员释放后实测 10 Hz 帧复算目标预警进入次数，
+        # 非 1 为普通失败（P0：首次入圈事件时刻；同 V8-17–V8-20 的做法）
+        meas = monitoring_entry_counts(ctx, tracks, release, task.target_id)
+        out["measured_monitoring"] = meas
+        if not meas["all_single"]:
+            return {"ok": False, "stage": "measured_monitoring_entries", "code": "candidate_rejected",
+                    "reason": "measured_monitoring_entries", **out}
     if task.intent == "close_observation":
         from .close_observation_report import measured_members as close_measured
         meas = close_measured(ctx, tracks, release, task.target_id)
@@ -219,6 +227,25 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
             return {"ok": False, "stage": "measured_close_observation_entries", "code": "candidate_rejected",
                     "reason": "measured_close_observation_entries", **out}
     return {"ok": True, "stage": "verified", **out}
+
+
+def monitoring_entry_counts(ctx, tracks, release_us, target_id):
+    """每成员释放后、第 0 段实测帧上目标 warning 的进入次数（首帧在圈内也计 1 次）。"""
+    from ..scene.exact import signed_distance
+    # 预警几何直接取公共场景中的显式 warning 圈层（与冻结段核验同一数据源）
+    W = next(e["geometry"] for e in ctx.scene["entities"]
+             if e.get("type") == "protection_zone" and e.get("facility_id") == target_id and e.get("layer") == "warning")
+    members = {}
+    for mid in sorted(set(tracks) & set(release_us)):
+        tr = tracks[mid]
+        mask = (np.asarray(tr.tau_us) >= release_us[mid]) & (np.asarray(tr.segment_index) == 0)
+        xy = np.asarray(tr.p, float)[mask, :2]
+        inside = np.asarray(signed_distance(W, xy), float) <= 0.0 if len(xy) else np.zeros(0, bool)
+        prev = np.r_[False, inside[:-1]] if len(inside) else np.zeros(0, bool)
+        starts = np.flatnonzero(inside & ~prev)
+        members[mid] = {"warning_entry_count": int(len(starts)),
+                        "first_warning_entry_us": int(np.asarray(tr.tau_us)[mask][starts[0]]) if len(starts) else None}
+    return {"members": members, "all_single": all(v["warning_entry_count"] == 1 for v in members.values())}
 
 
 def _attempt_summary(rec, key):

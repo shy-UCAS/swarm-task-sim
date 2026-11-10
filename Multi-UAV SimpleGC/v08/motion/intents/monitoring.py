@@ -1128,14 +1128,42 @@ def _plan_egress(S, slots, E0, rng, crng):
 
 
 # V8-16 指令 3.1：_inward_start / _count / _route / _plan_starts 的函数体机械抽取到 shared_routes；
-# 旧名字保留为包装：_route 传原 skeleton_planner，_plan_starts 传原 _route，签名与计算不变。
+# 旧名字保留为包装；V8-22 起 _route 改用过境同款首次入圈前路由（见下），_plan_starts 签名不变。
 from ..shared_routes import _count, _inward_start, plan_starts as _shared_plan_starts  # noqa: E402,F401
 from ..shared_routes import route_to_slot as _shared_route_to_slot  # noqa: E402
 
 
+class _PreEntryRouteView:
+    """V8-22：监视的起点路由改用与过境及其后各意图相同的首次入圈前路由（共用进场与汇合方式）。
+    只替换 route_to_slot 读取的 cg_route（base + 目标 warning 外 10 m，与 intents.transit._Setup 相同的约束与缓存键
+    规则）；其余属性透传给监视 _Setup。入圈直线、出圈直线仍用原 S.cg_route（它们本来就要穿越目标 warning）。"""
+
+    def __init__(self, S):
+        from ...scene.field import Clearance
+        from ..layer_limits import constraints_identity
+        self._S = S
+        P = S.ctx.params
+        pre = Clearance("preentry_warning:" + S.target, S.tgt.layers["warning"], 1, P["pre_entry_warning_clearance_m"])
+        route = list(S.cons["base"]) + [pre]
+        self.cg_route = S.ctx.combined(("route", "monitoring_preentry", constraints_identity(route)), route)
+
+    def __getattr__(self, name):
+        return getattr(self._S, name)
+
+
 def _route(S, p0, slot, u, rng):
-    """起点 → 槽位：折线 + 圆角（直线上才允许穿越边界）。骨架余量 Δ 给圆角向内切入留余地。"""
-    return _shared_route_to_slot(S, p0, slot, u, rng, planner_factory=skeleton_planner)
+    """起点 → 槽位：折线 + 圆角（直线上才允许穿越边界）。V8-22（算法线反馈：监视进场形态捷径，P0）：
+    改为过境同款路由——可视图 transit_chords.entry_planner（目标 warning 外扩 10 + Δ 作阻挡）+ 首次入圈前保守栅格；
+    此前监视用 connect.skeleton_planner，路线可在到达集合槽位之前穿过目标预警层（实测预警进入 2 次、入圈时未汇合）。"""
+    from .. import transit_chords as TC
+    view = S.__dict__.get("_preentry_view")
+    if view is None:
+        view = _PreEntryRouteView(S)
+        S.__dict__["_preentry_view"] = view
+
+    def planner_factory(ctx, delta):
+        return TC.entry_planner(ctx, S.target, delta)
+    return _shared_route_to_slot(view, p0, slot, u, rng, planner_factory=planner_factory)
 
 
 def _plan_starts(S, slots, C, u, rng):
