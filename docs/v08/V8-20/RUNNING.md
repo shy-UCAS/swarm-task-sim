@@ -1,6 +1,6 @@
 # V8-20 运行登记
 
-当前从 7b942db 按成本裁定恢复。第 1、2 部分接受，先单独提交新端点集合/按需扫描规则，再以单进程完成成本和真实 12 机专项检查，通过后按顺序继续；原输出不覆盖。后文旧停止状态为历史记录。
+当前第 1–8 部分执行检查完成，全部产物保留；最终研究接受待规划审查方复跑。下文旧停止状态和中间进度均为历史记录；最新结论见 REPORT 最后的成本裁定轮第 8 部分及 acceptance.json。不得重用既有输出目录。
 
 工作树：F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08
 代码工作目录：该工作树 Multi-UAV SimpleGC
@@ -39,3 +39,7 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 第 6 部分快批 20 完成，墙钟 94.992606 s，passed=True；检查点见 acceptance.part6_checkpoint。
 
 第 7 部分完成：full+div 运行器 740.289784s；serial5 60.021166s；原样产物预置3/3、skip0。各阶段输出和完整合同 SHA 索引见 part7_cost_ruling/。使用 --prewarm-from 复用第 5 部分 prewarm.json，预建不重复计入 skeleton/quick/full。
+
+最终监控已正常停止：F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-09_V8-20_area_search\run\system_monitor\monitor_cost_ruling_20261110T043453Z。资源摘要与索引见 part8_cost_ruling/。最终 SHA/远端核对见 F:\CASIA\Drone Swarm Situational Awareness Algorithm\_handoff\2026-11-09_V8-20_area_search\run\delivery_cost_ruling_r1\final_push.json。如需复查异常，先读 run/RECOVERY.md、system_monitor/session.json/current_job.json 与最近一轮 telemetry/*.current_attempt.json；用 analyze_resources.py <监控目录> --out <全新摘要路径> 读取，保留原始 metrics.jsonl，不将坏尾行算成功。
+
+完整生产命令见 part5_cost_ruling、part6_cost_ruling、part7_cost_ruling 的运行器与 watchdog.argv。各批次均明确 --prewarm-from <run/prewarm/area_cost_ruling_r1/prewarm.json>；预建仅含字段/弦/扇区，worker 缓存 miss 在进程内计算，不写共享缓存。复跑固定 --workers 1，比较目录不排除文件。
