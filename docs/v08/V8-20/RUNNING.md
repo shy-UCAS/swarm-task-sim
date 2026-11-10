@@ -1,6 +1,6 @@
 # V8-20 运行登记
 
-当前第 1、2 部分完成，第 3 部分成本检查点未过，已停止全部后续计算。acceptance.json 记录第一轮五意图门禁及停止证据；本分支未获完整验收。第 4–7 部分未执行，不得自动续跑或覆盖原输出。
+当前从 7b942db 按成本裁定恢复。第 1、2 部分接受，先单独提交新端点集合/按需扫描规则，再以单进程完成成本和真实 12 机专项检查，通过后按顺序继续；原输出不覆盖。后文旧停止状态为历史记录。
 
 工作树：F:/CASIA/Drone Swarm Situational Awareness Algorithm/Simulation-v08
 代码工作目录：该工作树 Multi-UAV SimpleGC
@@ -25,3 +25,5 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 当前停止于第 3 部分成本检查点。不要直接续跑第 4–7 部分；完整检查、实测、缺项与停止理由见 REPORT 和 part3/checkpoint.json。所有进程已停，监控已刷盘正常退出。PowerShell 读取 UTC ISO 时间做间隔计算时用 ConvertFrom-Json -DateKind String，避免自动转为 DateTime 后再次 Parse 丢失时区；主实测耗时始终来自 Python perf_counter。
 
 第 3 部分已保存并推送为 5a37cf7efe7d5b9a6f5a555541e03c5cf8cec60d。第 8 部分仅失败交付回执；最终提交与远端核对见本任务外部 run/part8/final_push.json。
+
+新恢复命令与结果将登记全新 run/cost_ruling_r1；后台监控 session.json 指向新 cost_ruling 轮次。原门禁/单查询/失败交付证据均保留。

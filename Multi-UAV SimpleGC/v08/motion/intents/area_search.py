@@ -15,7 +15,7 @@ from ...sim.guidance import make_curve,nominal_time,speed_profile
 from ...sim.kernel import member_config
 from .. import transit_chords as TC
 from ..area_search_geometry import (feasible_sector_cells,filter_entry_cells,make_survey,
-    radial_record,audit_complete_curve)
+    radial_record,audit_complete_curve,selected_sector_choice)
 from ..area_search_numeric import assign_blocks,draw_hierarchy,scan_vertices
 from ..connect import crossing_analysis,fillet_route
 from ..formation import formation_slots,mapped_start,retreat_chain
@@ -210,22 +210,27 @@ def propose_and_build(ctx,group,task,states,key):
         if not entries:
             return _failure("area_search_entry",key,detail={"formations":steps})
         chord,sector,c=draw_hierarchy(entries,rng)
+        scan_start=time.perf_counter()
+        choice=selected_sector_choice(ctx,task.target_id,len(group.member_ids),H,sector,c)
+        _LAST_TIMING["selected_inner_scan_s"]=time.perf_counter()-scan_start
         ti,h,xt,xin,Ds=chord["cell"]
         D=float(Ds[int(rng.integers(len(Ds)))]);xc=float(xin)-D
         u,n=TC.frame(TC.thetas()[int(ti)]);origin=np.asarray(S.tgt.center,float)
         P={"intent":INTENT,"theta_idx":int(ti),"theta_deg":float(ti*TC.THETA_STEP_DEG),"h_m":float(h),"origin_xy":origin.tolist(),"u":u.tolist(),"n":n.tolist(),
            "x_c":xc,"collect_D_m":D,"chord_query_id":doc.get("query_id"),"cell_index":int(chord["cell_index"]),"cells_feasible":len(doc["cells"]),"filtered_cells":len(entries),
            "mu_deg":sector["mu_deg"],"span_deg":sector["span_deg"],"c":int(c),"K":int(len(group.member_ids)*c),"beta_deg":chord["beta_deg"],"Q":chord["Q"].tolist(),
-           "inner_offset_m":sector["choices"][c]["inner_offset_m"],"outer_offset_m":ao,"sector_count":len(sectors),"c_count":len(sector["choices"]),"formation_steps":steps,"member_slot_order":list(slots.order)}
-        survey=make_survey(S.tgt.geometry,S.tgt.center,ao,P["mu_deg"],P["span_deg"],len(group.member_ids),c,sector["choices"][c],H)
+           "inner_offset_m":choice["inner_offset_m"],"outer_offset_m":ao,"sector_count":len(sectors),"c_count":len(sector["choices"]),"formation_steps":steps,"member_slot_order":list(slots.order)}
+        survey=make_survey(S.tgt.geometry,S.tgt.center,ao,P["mu_deg"],P["span_deg"],len(group.member_ids),c,choice,H)
         witnesses={"intent":INTENT,"target_id":task.target_id,"survey":survey,"independent_members":{},"turn_ranges":{},"bone_nominal_screen":None,"nominal_duration_s":None,"formation_steps":steps,
-            "area_geometry":{"sector_cells":len(sectors),"entry_cells_before":len(doc["cells"]),"entry_cells_after":len(entries),"rejected_by_condition":{},"inner_gaps_m":sector["choices"][c]["inner_gaps_m"],"outer_gaps_m":sector["choices"][c]["outer_gaps_m"],"strip_lengths_m":sector["choices"][c]["strip_lengths_m"],"base_min_margin_m":None}}
+            "area_geometry":{"sector_cells":len(sectors),"entry_cells_before":len(doc["cells"]),"entry_cells_after":len(entries),"rejected_by_condition":{},"inner_gaps_m":choice["inner_gaps_m"],"outer_gaps_m":choice["outer_gaps_m"],"strip_lengths_m":choice["strip_lengths_m"],"base_min_margin_m":None}}
+        if not choice["radial_band_ok"]:
+            return _failure("area_search_route",key,P,witnesses,detail={"constraint":"radial_band","rays":choice["failed_radial_indices"]})
         C=origin+xc*u+float(h)*n;captured=[]
         starts,meta=plan_starts(S,slots,C,u,crng,route_fn=lambda s,p,slot,d,r:_route_with_vertices(s,p,slot,d,r,task.target_id,captured))
         if starts is None:
             return _failure("start_route",key,P,witnesses,detail={"member":meta})
         captured={mid:data for mid,data in zip(slots.order,captured)}
-        choice=sector["choices"][c];inner,outer=np.asarray(choice["inner_xy"]),np.asarray(choice["outer_xy"])
+        inner,outer=np.asarray(choice["inner_xy"]),np.asarray(choice["outer_xy"])
         blocks=assign_blocks(slots.offsets,slots.order,outer[np.arange(len(group.member_ids))*c],u,slots.realized)
         curves,heads,collect_indices,samples={},{},{},{}
         for mid in slots.order:
@@ -260,6 +265,11 @@ def propose_and_build(ctx,group,task,states,key):
                 "block_index":int(blocks[mid]),"strip_indices":indices,"first_outer_omitted":head["omitted"],"slot_xy":chord["splits"][mid].tolist(),"head_kind":head["kind"]}
             witnesses["turn_ranges"][mid]=turns
             curves[mid]=sample.xy;heads[mid]=prims;collect_indices[mid]=collect_index;samples[mid]=sample
+        depths=dict(_LAST_TIMING.get("split_depths_m",{}))
+        shallow={mid:depth for mid,depth in depths.items() if depth<10.}
+        _LAST_TIMING["split_depth_rejected"]=bool(shallow)
+        if shallow:
+            return _failure("area_search_route",key,P,witnesses,detail={"constraint":"turn_cut_depth","minimum_m":10.,"split_depths_m":depths,"shallow_members":sorted(shallow)})
         # Geometric checks only. No separation or nominal coverage rejection here.
         for mid in slots.order:
             audit=audit_complete_curve(S.base,curves[mid],heads[mid])

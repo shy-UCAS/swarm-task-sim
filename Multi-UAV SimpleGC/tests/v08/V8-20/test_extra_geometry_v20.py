@@ -6,7 +6,7 @@ from types import SimpleNamespace as NS
 import numpy as np
 
 from task_v07.geometry import offset_geometry,radial_points_exact
-from v08.motion.area_search_geometry import minimum_inner_offset,member_split_points,legal_ray_intervals,_scan_angle_cells
+from v08.motion.area_search_geometry import minimum_inner_offset,member_split_points,legal_ray_intervals,_endpoint_angle_cells,_endpoint_choice
 from v08.scene.exact import signed_distance
 from v08.scene.field import Clearance
 
@@ -46,14 +46,27 @@ class GeometryTests(unittest.TestCase):
         self.assertEqual(minimum_inner_offset(base,(0.,0.),angles,400.,150.),want)
         self.assertLess(2*(100.+want-.5)*math.sin(math.radians(3.75)),40.)
 
-    def test_vectorized_scan_keeps_each_cells_first_grid_value(self):
+    def test_cost_ruling_endpoint_set_without_per_c_scan(self):
+        from unittest.mock import patch
         base={"type":"Circle","center_m":[0.,0.],"radius_m":100.}
-        choices=_scan_angle_cells(base,(0.,0.),2,2,400.,150.,50.)
-        root=40./(2*math.sin(math.radians(3.75)))-100.
-        want=150.+.5*math.ceil((root-150.)/.5)
-        self.assertEqual(choices[(0,30)]["inner_offset_m"],want)
-        self.assertNotIn((0,20),choices)  # Required radius exceeds the 440 m length bound.
-        self.assertTrue(all(x>=40. for x in choices[(0,30)]["inner_gaps_m"]))
+        # At a_hi=340, R=440. K=4, span30 gives gap57.55; span20 gives38.38.
+        with patch("v08.motion.area_search_geometry.first_grid_inner",side_effect=AssertionError("table must not scan")):
+            choices=_endpoint_angle_cells(base,(0.,0.),2,2,400.,150.,50.)
+        self.assertAlmostEqual(choices[(0,30)]["inner_upper_m"],340.,delta=1e-9)
+        self.assertNotIn((0,20),choices)
+        self.assertGreater(880.*math.sin(math.radians(3.75)),40.)
+        self.assertLess(880.*math.sin(math.radians(2.5)),40.)
+
+    def test_cost_ruling_two_frozen_fixed_offset_calls(self):
+        from unittest.mock import patch
+        base={"type":"Circle","center_m":[0.,0.],"radius_m":100.}
+        angles=np.radians([-11.25,-3.75,3.75,11.25])
+        with patch("v08.motion.area_search_geometry.radial_points_exact",wraps=radial_points_exact) as frozen:
+            choice=_endpoint_choice(base,(0.,0.),angles,400.,150.,50.)
+        self.assertIsNotNone(choice)
+        self.assertEqual(frozen.call_count,2)
+        radii=[call.args[0]["radius_m"] for call in frozen.call_args_list]
+        np.testing.assert_allclose(radii,[500.,440.],rtol=0.,atol=1e-9)
 
     def test_polygon_and_buffer_grid_certificate_and_feature_change(self):
         vertices=[[-100.,-100.],[100.,-100.],[100.,100.],[-100.,100.]]

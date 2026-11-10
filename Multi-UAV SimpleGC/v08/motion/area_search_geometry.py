@@ -1,7 +1,7 @@
 """V8-20 exact radial intervals and complete finite sector sets (appendix rules 1/2).
 
-The 0.5 m scan is vectorized across angle cells, never replaced by a root or an
-approximate spacing formula. Geometry routines consume no random numbers.
+Endpoint feasibility follows the 2026-11-09 cost ruling. Only the selected c
+uses the prescribed 0.5 m scan. Geometry routines consume no random numbers.
 """
 import hashlib
 import json
@@ -17,6 +17,7 @@ from . import transit_chords as TC
 from .area_search_numeric import first_grid_inner, strip_angles
 
 VERSION = "area_search-v20"
+SECTOR_RULE = "endpoint-feasibility-demand-grid-20261109"
 MU_DEG = tuple(range(0,360,5))
 SPAN_DEG = tuple(range(10,91,5))
 RAY_DEG = np.arange(720)*.5
@@ -114,8 +115,9 @@ def radial_record(ctx,target_id,angle_rad,outer_offset_m,rho_m,*,outer_xy=None):
                 if all(float(_margin(c,point))>=0. for c in base):
                     exit_xy=point
                 break
-    return {"angle_rad":float(angle_rad),"unit":u,"outer_xy":outer,"outer_radius_m":radius,
-            "legal_intervals":intervals,"component":component,"exit_xy":exit_xy,
+    return {"angle_rad":float(angle_rad),"unit":u.tolist(),"outer_xy":outer.tolist(),"outer_radius_m":radius,
+            "legal_intervals":[list(x) for x in intervals],"component":None if component is None else list(component),
+            "exit_xy":None if exit_xy is None else exit_xy.tolist(),
             "corridor_ok":bool(component is not None and exit_xy is not None)}
 
 
@@ -147,7 +149,7 @@ def bounding_radius(base,center,offset):
 def sector_identity(ctx,target_id,member_count,altitude_m):
     from ..config import load_config
     f=ctx.facility_by_id[target_id]
-    doc={"version":VERSION,"intent":"area_search","context":ctx.cache_key,"target":target_id,
+    doc={"version":VERSION,"sector_rule":SECTOR_RULE,"intent":"area_search","context":ctx.cache_key,"target":target_id,
          "N":int(member_count),"altitude_m":float(altitude_m),"geometry":f.geometry,"center":f.center,"offsets":f.offsets,
          "mu_deg":MU_DEG,"span_deg":SPAN_DEG,"radial_step_deg":.5,"inner_step_m":.5,
          "min_gap_m":40.,"min_length_m":60.,"outer_gap_footprint_factor":1.6,
@@ -157,43 +159,64 @@ def sector_identity(ctx,target_id,member_count,altitude_m):
     return hashlib.sha256(raw.encode()).hexdigest(),doc
 
 
-def _scan_angle_cells(base,center,n,c,ao,lower,rf):
-    """Shared exact endpoint evaluations; each cell still takes its first grid tick."""
+def _endpoint_choice(base,center,angles,ao,lower,rf,*,outer_xy=None):
+    """Cost ruling 2.1: outer endpoints and inner endpoints at a_hi; no scan."""
+    angles=np.asarray(angles,float);center=np.asarray(center,float)
+    outer=(radial_points_exact(offset_geometry(base,ao),center,angles)
+           if outer_xy is None else np.asarray(outer_xy,float))
+    radius=np.linalg.norm(outer-center,axis=1)
+    unit=np.c_[np.cos(angles),np.sin(angles)]
+    upper=float(np.min(signed_distance(base,center+(radius-60.)[:,None]*unit)))
+    if upper<lower or not np.all(np.linalg.norm(np.diff(outer,axis=0),axis=1)<=1.6*rf):
+        return None
+    inner=radial_points_exact(offset_geometry(base,upper),center,angles)
+    if not np.all(np.linalg.norm(np.diff(inner,axis=0),axis=1)>=40.):
+        return None
+    return {"inner_upper_m":upper}
+
+
+def _endpoint_angle_cells(base,center,n,c,ao,lower,rf):
+    """Share outer evaluations while applying the fixed-offset rule per cell."""
     pairs=[(mu,span) for mu in MU_DEG for span in SPAN_DEG]
     angles=np.asarray([strip_angles(mu,span,n,c) for mu,span in pairs])
     unique,indices=np.unique(angles,return_inverse=True)
-    indices=indices.reshape(angles.shape)
-    outer_unique=radial_points_exact(offset_geometry(base,ao),center,unique)
-    outer=outer_unique[indices]
-    outer_gaps=np.linalg.norm(np.diff(outer,axis=1),axis=2)
-    radius=np.linalg.norm(outer-np.asarray(center),axis=2)
-    unit=np.stack([np.cos(angles),np.sin(angles)],axis=-1)
-    upper=np.min(signed_distance(base,np.asarray(center)+(radius-60.)[...,None]*unit),axis=1)
-    pending=np.all(outer_gaps<=1.6*rf,axis=1)&(upper>=lower)
-    found={}
-    if not np.any(pending):
-        return found
-    for tick in range(math.floor((float(upper[pending].max())-lower)/.5)+1):
-        offset=lower+.5*tick
-        rows=np.flatnonzero(pending&(offset<=upper))
-        if not len(rows):
-            break
-        # Frozen evaluator, on the original float angles; no contour approximation.
-        inner_unique=radial_points_exact(offset_geometry(base,offset),center,unique)
-        inner=inner_unique[indices[rows]]
-        gaps=np.linalg.norm(np.diff(inner,axis=1),axis=2)
-        lengths=np.linalg.norm(outer[rows]-inner,axis=2)
-        good=np.all(gaps>=40.,axis=1)&np.all(lengths>=60.,axis=1)
-        for j in np.flatnonzero(good):
-            idx=int(rows[j]);mu,span=pairs[idx]
-            found[(mu,span)]={"inner_offset_m":float(offset),"inner_xy":inner[j].tolist(),"outer_xy":outer[idx].tolist(),
-                             "angles_rad":angles[idx].tolist(),"inner_gaps_m":gaps[j].tolist(),
-                             "outer_gaps_m":outer_gaps[idx].tolist(),"strip_lengths_m":lengths[j].tolist()}
-            pending[idx]=False
-        pending &= offset<upper
-        if not np.any(pending):
-            break
-    return found
+    outer=radial_points_exact(offset_geometry(base,ao),center,unique)[indices.reshape(angles.shape)]
+    result={}
+    for pair,aa,oo in zip(pairs,angles,outer):
+        choice=_endpoint_choice(base,center,aa,ao,lower,rf,outer_xy=oo)
+        if choice is not None:
+            result[pair]=choice
+    return result
+
+
+def selected_sector_choice(ctx,target_id,member_count,altitude_m,sector,c):
+    """Scan just the selected c, then certify its actual radial band."""
+    f=ctx.facility_by_id[target_id]
+    rho=.4*float(altitude_m);rf=.5*float(altitude_m)
+    ao=float(f.offsets["warning"])-12.5-rho
+    lower=float(f.offsets["alert"])+12.5+rho
+    angles=strip_angles(sector["mu_deg"],sector["span_deg"],int(member_count),int(c))
+    try:
+        ai=minimum_inner_offset(f.geometry,f.center,angles,ao,lower)
+    except ValueError as error:
+        raise RuntimeError("endpoint-feasible selected c has no prescribed grid result") from error
+    inner=radial_points_exact(offset_geometry(f.geometry,ai),f.center,angles)
+    outer=radial_points_exact(offset_geometry(f.geometry,ao),f.center,angles)
+    gaps=np.linalg.norm(np.diff(inner,axis=0),axis=1)
+    outer_gaps=np.linalg.norm(np.diff(outer,axis=0),axis=1)
+    lengths=np.linalg.norm(outer-inner,axis=1)
+    if not (np.all(gaps>=40.) and np.all(outer_gaps<=1.6*rf) and np.all(lengths>=60.)):
+        raise RuntimeError("selected grid endpoints failed their original inequalities")
+    # The target's exact legal intervals and exit corridors are shared by all cells.
+    table=radial_legal_table(ctx,target_id,outer_offset_m=ao,rho_m=rho)
+    start=int(round((sector["mu_deg"]-sector["span_deg"]/2)/.5))
+    rays=[j%720 for j in range(start,start+int(sector["span_deg"]/.5)+1)]
+    pp=radial_points_exact(offset_geometry(f.geometry,ai),f.center,np.radians(RAY_DEG[rays]))
+    rr=np.linalg.norm(pp-np.asarray(f.center),axis=1)
+    bad=[j for j,r in zip(rays,rr) if not table[j]["corridor_ok"] or table[j]["component"][0]>r-rho]
+    return {"inner_offset_m":float(ai),"inner_xy":inner.tolist(),"outer_xy":outer.tolist(),
+            "angles_rad":angles.tolist(),"inner_gaps_m":gaps.tolist(),"outer_gaps_m":outer_gaps.tolist(),
+            "strip_lengths_m":lengths.tolist(),"radial_band_ok":not bad,"failed_radial_indices":bad}
 
 
 def feasible_sector_cells(ctx,target_id,member_count,altitude_m):
@@ -206,6 +229,9 @@ def feasible_sector_cells(ctx,target_id,member_count,altitude_m):
         doc=json.loads(cache.read_text(encoding="utf-8"))
         if doc["identity"]!=json.loads(json.dumps(identity)):
             raise ValueError("sector cache identity mismatch")
+        f=ctx.facility_by_id[target_id]
+        ao=float(f.offsets["warning"])-12.5-.4*float(altitude_m)
+        ctx.extra[(VERSION,"radial",target_id,ao,.4*float(altitude_m))]=doc["rays"]
         cells=doc["cells"]
         for cell in cells:
             cell["choices"]={int(k):v for k,v in cell["choices"].items()}
@@ -218,20 +244,14 @@ def feasible_sector_cells(ctx,target_id,member_count,altitude_m):
     table=radial_legal_table(ctx,target_id,outer_offset_m=ao,rho_m=rho)
     limit=math.floor(outer_perimeter(f.geometry,ao)/40.)+1
     by_cell={}
-    inner_rays={}
-    ray_angles=np.radians(RAY_DEG)
+    # Ray interval/exit certificates are computed once per target, not per c.
     for c in range(2,limit//int(member_count)+1,2):
-        choices=_scan_angle_cells(f.geometry,f.center,int(member_count),c,ao,lower,rf)
+        choices=_endpoint_angle_cells(f.geometry,f.center,int(member_count),c,ao,lower,rf)
         for (mu,span),choice in sorted(choices.items()):
-            ai=choice["inner_offset_m"]
-            if ai not in inner_rays:
-                points=radial_points_exact(offset_geometry(f.geometry,ai),f.center,ray_angles)
-                inner_rays[ai]=np.linalg.norm(points-np.asarray(f.center),axis=1)
             start=int(round((mu-span/2)/.5))
             rays=[j%720 for j in range(start,start+int(span/.5)+1)]
-            if not all(table[j]["corridor_ok"] and table[j]["component"][0]<=inner_rays[ai][j]-rho for j in rays):
-                continue
-            by_cell.setdefault((mu,span),{})[c]=choice
+            if all(table[j]["corridor_ok"] for j in rays):
+                by_cell.setdefault((mu,span),{})[c]=choice
     cells=[{"mu_deg":mu,"span_deg":span,"choices":choices} for (mu,span),choices in sorted(by_cell.items())]
     ctx.extra[memory_key]=cells
     return cells
@@ -244,7 +264,9 @@ def write_sector_cache(ctx,target_id,member_count,altitude_m):
     p.parent.mkdir(parents=True,exist_ok=True)
     if not p.exists():
         with p.open("x",encoding="utf-8",newline="\n") as out:
-            json.dump({"identity":identity,"cells":cells},out,sort_keys=True,separators=(",",":"))
+            f=ctx.facility_by_id[target_id]
+            rays=radial_legal_table(ctx,target_id,outer_offset_m=float(f.offsets["warning"])-12.5-.4*float(altitude_m),rho_m=.4*float(altitude_m))
+            json.dump({"identity":identity,"cells":cells,"rays":rays},out,sort_keys=True,separators=(",",":"))
             out.write("\n")
     return {"query_id":qid,"cells":len(cells),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
 

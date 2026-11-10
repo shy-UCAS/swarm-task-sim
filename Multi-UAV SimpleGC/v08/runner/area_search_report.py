@@ -65,14 +65,14 @@ def smoke_geometry(entries,*,keys,data_root,cache_dir,out_dir):
                 row["maximum_feasible_span_deg"]=max((c["span_deg"] for c in ctx.extra[cache_key]),default=None)
         row["wall_s"]=time.perf_counter()-start
         shallow={m:d for m,d in row["split_depths_m"].items() if d<10.}
-        row["split_depth_stop"]=shallow
+        row["split_depth_below_10"]=shallow
         write_json(folder/"query.json",row,indent=1)
         rows.append(row)
         write_json(out/"records.json",rows,indent=1)
-        print(json.dumps({k:row.get(k) for k in ("order","draw","status","wall_s","split_depths_m","split_depth_stop")},ensure_ascii=False),flush=True)
-        if shallow or row["status"]=="implementation_exception":
+        print(json.dumps({k:row.get(k) for k in ("order","draw","status","wall_s","split_depths_m","split_depth_below_10")},ensure_ascii=False),flush=True)
+        if row["status"]=="implementation_exception":
             summary={"complete":False,"stage":"smoke","intent":"area_search","rows":len(rows),"planned":len(keys),
-                     "wall_s":time.perf_counter()-started,"checkpoint":{"triggered":["split_start_depth_below_10"] if shallow else ["implementation_exception"]},"p0":[]}
+                     "wall_s":time.perf_counter()-started,"checkpoint":{"triggered":["implementation_exception"]},"p0":[]}
             write_json(out/"summary.json",summary,indent=1)
             return summary
     summary={"complete":True,"stage":"smoke","intent":"area_search","rows":len(rows),"planned":len(keys),
