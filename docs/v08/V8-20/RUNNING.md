@@ -35,3 +35,5 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 第 4 部分完成：第二轮五意图 100/100 字节门禁通过，见 part4/checkpoint.json。下一步独立运行区域侦察 --stage prewarm（24 进程，先通知），通过后另开 --stage skeleton --prewarm-from <本轮 prewarm.json>，分别控制 2700/1800 秒墙钟。
 
 第 5 部分完成：预建 1624.419810 s，骨架 83.007528 s，检查点 passed=True；正式输出见 acceptance.part5_checkpoint，使用同一 prewarm.json 分隔两项计时。
+
+第 6 部分快批 20 完成，墙钟 94.992606 s，passed=True；检查点见 acceptance.part6_checkpoint。
