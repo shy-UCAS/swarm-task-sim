@@ -33,3 +33,5 @@ Shell：C:/Users/shy/.cache/codex-runtimes/codex-primary-runtime/dependencies/na
 第 4 部分本地检查通过，第二轮五旧意图门禁待运行；源码绑定和自检结果见 part4/pre_gate.json。每组单独通知后调用 run_old_intent_gate.py <intent> 4 --round r1，不覆盖既有输出。正式区域侦察预建和批次尚未运行。
 
 第 4 部分完成：第二轮五意图 100/100 字节门禁通过，见 part4/checkpoint.json。下一步独立运行区域侦察 --stage prewarm（24 进程，先通知），通过后另开 --stage skeleton --prewarm-from <本轮 prewarm.json>，分别控制 2700/1800 秒墙钟。
+
+第 5 部分完成：预建 1624.419810 s，骨架 83.007528 s，检查点 passed=True；正式输出见 acceptance.part5_checkpoint，使用同一 prewarm.json 分隔两项计时。
