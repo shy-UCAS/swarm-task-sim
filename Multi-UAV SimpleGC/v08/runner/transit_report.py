@@ -292,7 +292,8 @@ def frechet_blocks(div_rows, key="curve_after", *, intent="transit"):
                        "attempted": len(rs), "success": sum(bool(r.get("success")) for r in rs),
                        "comparable": len(ok), "endpoint_m": [endpoint_distances(ok[i], ok[j]) for i, j in pairs],
                        "na_reasons": [r.get("frechet_na") for r in rs if r.get("success") and r.get(key) is None],
-                       "scope": {"intrusion": "intrusion_warning_to_terminal_v17",
+                       "scope": {"area_search": "area_search_warning_entry_to_last_exit_v20",
+                                   "intrusion": "intrusion_warning_to_terminal_v17",
                                  "feint": "feint_alert_entry_to_exit_v18",
                                  "close_observation": "close_observation_warning_entry_to_exit_v19"}.get(intent, "transit_crossing_v16")})
     return blocks

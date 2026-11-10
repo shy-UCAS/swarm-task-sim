@@ -73,6 +73,9 @@ def _intent_attempt_summary(rec, key, intent):
 
 
 def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=None, should_stop=None, keep=None):
+    if intent == "area_search":
+        from .area_search_report import run_contract as area_contract
+        return area_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir, should_stop=should_stop, keep=keep)
     if intent == "monitoring":
         return JM.run_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir,
                                should_stop=should_stop, keep=keep)
@@ -222,6 +225,9 @@ def save_intent_contract(out, rec, result, last_failed=None):
     """共享序列化（明确字段白名单）：用 rec["intent"] 选择附加块。过境保持原文件 bytes（不补 intrusion:null、crossing
     表、版本号或新默认字段）；intrusion 的 result.json 增加 "intrusion" 块（σ、x_e 来自保留提案，成员事件来自实测释放后
     窗口；失败为 None），失败见证另含实测三层进入次数。墙钟、缓存命中、traceback 只进合同目录外的 telemetry。"""
+    if rec.get("intent") == "area_search":
+        from .area_search_report import save_contract as area_save
+        return area_save(out, rec, result, last_failed=last_failed)
     _json_bytes = JM._json_bytes
     intent = rec.get("intent", "transit")
     def contract_bytes(value):
@@ -312,6 +318,11 @@ def record_row(rec):
     row["phase_durations"] = rec.get("phase_durations")
     row["nominal_duration_s"] = rec.get("nominal_duration_s")
     row["lateral_spacing_m"] = rec.get("lateral_spacing_m")
+    if rec.get("intent") == "area_search":
+        row["area_search"] = rec.get("area_search")
+        row["survey"] = rec.get("survey")
+        row["survey_attempt"] = rec.get("survey_attempt")
+        row["tracking"] = rec.get("tracking")
     if rec.get("intent") == "close_observation":
         row["close_observation"] = rec.get("close_observation")
         row["tracking"] = rec.get("tracking")
@@ -356,7 +367,7 @@ def _pool_task(task):
                    skeleton_detail=[((a.get("timing") or {}).get("skeleton_detail") or {}) for a in rec["attempt_log"]],
                    nit=[(a.get("timing") or {}).get("nit") for a in rec["attempt_log"]],
                    chord_cache={k: TC.STATS[k] - before.get(k, 0) for k in TC.STATS})
-        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion", "feint", "close_observation"):
+        if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion", "feint", "close_observation", "area_search"):
             from .transit_report import group_reference_curves
             from ..contract.single_intent import mission_for_intent
             from ..sampler.common import sample_common
@@ -597,7 +608,7 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     """keys：[(order, draw)]。先预建（过境），再按成本降序单合同动态派发到 workers 个进程；写 records/summary。"""
     out = Path(out_dir)
     t0 = time.time()
-    if prewarm_doc is not None and intent != "close_observation":
+    if prewarm_doc is not None and intent not in ("close_observation", "area_search"):
         raise ValueError("prewarm_doc is supported only for close_observation")
     pw = (prewarm_doc if prewarm_doc is not None else
           (prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent) if prewarm else None))
@@ -614,7 +625,11 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     rows.sort(key=lambda r: r["contract_id"])
     write_json(out / "records.json", rows, indent=1)
     good = [r for r in rows if not r.get("error")]
-    chk = JR.quick_checkpoint(good) if stage == "quick" else None
+    if intent == "area_search" and stage == "quick":
+        from .area_search_report import quick_checkpoint as area_quick_checkpoint
+        chk = area_quick_checkpoint(good)
+    else:
+        chk = JR.quick_checkpoint(good) if stage == "quick" else None
     complete = (len(rows) == len(keys) and not any(r.get("error") or r.get("incomplete") for r in rows)
                 and not any(r.get("unknown_attempts") for r in good)
                 and not (chk or {}).get("metrics", {}).get("attempts_undetermined", False))
@@ -646,7 +661,7 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                                          "rule": "全量开始前按 (order, draw) 字典序取前 5 个合同"}, indent=1)
     div_fams = select_diversity_families(entries)
     (out / "diversity").mkdir()
-    if prewarm_doc is not None and intent != "close_observation":
+    if prewarm_doc is not None and intent not in ("close_observation", "area_search"):
         raise ValueError("prewarm_doc is supported only for close_observation")
     pw = prewarm_doc if prewarm_doc is not None else prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
     write_json(out / "prewarm.json", pw, indent=1)
@@ -682,6 +697,10 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
     elif intent == "feint":
         from .feint_report import full_checkpoint as feint_full_checkpoint
         chk = feint_full_checkpoint(good, blocks_after) if full_rows else None
+    elif intent == "area_search":
+        from .area_search_report import full_checkpoint as area_full_checkpoint
+        chk = area_full_checkpoint(good, blocks_after) if full_rows else None
+        complete = bool(complete and (chk or {}).get("metrics", {}).get("frechet_pairs", 0) > 0)
     elif intent == "close_observation":
         from .close_observation_report import full_checkpoint as close_full_checkpoint
         chk = close_full_checkpoint(good, blocks_after) if full_rows else None

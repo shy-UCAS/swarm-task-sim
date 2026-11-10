@@ -132,6 +132,8 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
             from ..motion.intents.intrusion import last_attempt_timing
         elif task.intent == "feint":                # V8-18 指令 0.2：feint 遥测分派
             from ..motion.intents.feint import last_attempt_timing
+        elif task.intent == "area_search":
+            from ..motion.intents.area_search import last_attempt_timing
         elif task.intent == "close_observation":
             from ..motion.intents.close_observation import last_attempt_timing
         else:
@@ -145,6 +147,9 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
                      witness=f.witness, optimization_entered=False)
     t0 = time.perf_counter()
     entry_flag["optimization_entered"] = True
+    if task.intent == "area_search":
+        from dataclasses import replace
+        area_task = replace(task, survey=plan.witnesses["survey"])
     opt = optimize_segment(ctx, plan, key, settings)
     t["optimize_s"] = time.perf_counter() - t0
     diag = opt["solution"].diagnostics
@@ -167,7 +172,10 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
     tracks = stitch(results)
     release = {m: int(r.pieces[0].release_us) for m, r in zip(sorted(opt["solution"].references), results)}
     # V8-16 指令 2.1：冻结段核验按实际任务意图（监视仍为 "monitoring"）
-    verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, task.intent, task.target_id)])
+    if task.intent == "area_search":
+        verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, "area_search", task.target_id, survey=area_task.survey)])
+    else:
+        verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, task.intent, task.target_id)])
     seg_ok = all(v.passed for v in verdicts)
     visible = [visible_track(tracks[m], release[m]) for m in sorted(tracks)]
     valid = check_validity(ctx.scene, visible)
@@ -179,6 +187,12 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
                 "reason": "segment_verification", **out}
     if not valid.passed:
         return {"ok": False, "stage": "validity", "code": "candidate_rejected", "reason": "validity", **out}
+    if task.intent == "area_search":
+        from ..motion.area_search_checks import measured_area_search
+        measured = measured_area_search(ctx, tracks, release, task.target_id, area_task.survey)
+        out["measured_area_search"] = measured
+        if not measured["passed"]:
+            return {"ok": False, "stage": "measured_area_search", "code": "candidate_rejected", "reason": "measured_area_search", **out}
     if task.intent == "intrusion":
         # V8-17 指令 4.2：冻结核验之后、返回 ok=True 之前，按每成员释放后第 0 段实测 10 Hz 帧复算三层进入次数；
         # 非 1/1/1 为普通失败（消耗本 attempt），保留原始证据

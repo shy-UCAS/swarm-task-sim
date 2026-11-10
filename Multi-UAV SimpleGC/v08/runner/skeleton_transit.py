@@ -103,6 +103,9 @@ def _skeleton_modules(intent):
 
 
 def run_intent_skeleton_contract(ctx, entry, draw, *, intent, out_dir=None):
+    if intent == "area_search":
+        from .area_search_report import run_skeleton_contract as area_skeleton
+        return area_skeleton(ctx, entry, draw, out_dir=out_dir)
     """共享单段骨架运行；旧 run_transit_skeleton_contract 保留为 transit 包装。"""
     from ..contract.monitoring import initial_states
     from ..contract.single_intent import mission_for_intent
@@ -260,6 +263,10 @@ def run_transit_skeleton_batch(entries, *, data_root, cache_dir, out_dir, worker
 
 def run_intent_skeleton_batch(entries, *, intent, data_root, cache_dir, out_dir, workers=DEFAULT_WORKERS, log=print, prewarm_doc=None):
     """共享骨架预建和派发；旧 run_transit_skeleton_batch 保留包装。"""
+    if intent == "area_search":
+        from .area_search_report import run_skeleton_batch as area_batch, prewarm_all as area_prewarm
+        pw = prewarm_doc if prewarm_doc is not None else area_prewarm(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, out_dir=Path(out_dir).with_name(Path(out_dir).name + "_prewarm"), log=log)
+        return area_batch(entries, data_root=data_root, cache_dir=cache_dir, out_dir=out_dir, workers=workers, prewarm_doc=pw, log=log)
     import multiprocessing as mp
     from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
     from .joint_intent import _cost_order, prewarm_all

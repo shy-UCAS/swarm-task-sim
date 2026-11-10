@@ -15,7 +15,7 @@ from ...sim.guidance import make_curve,nominal_time,speed_profile
 from ...sim.kernel import member_config
 from .. import transit_chords as TC
 from ..area_search_geometry import (feasible_sector_cells,filter_entry_cells,make_survey,
-    radial_record,audit_complete_curve,selected_sector_choice)
+    radial_record,audit_complete_curve,selected_sector_choice,sector_identity)
 from ..area_search_numeric import assign_blocks,draw_hierarchy,scan_vertices
 from ..connect import crossing_analysis,fillet_route
 from ..formation import formation_slots,mapped_start,retreat_chain
@@ -181,7 +181,7 @@ def _slot_deviation(plan,maps):
     return worst
 
 
-def propose_and_build(ctx,group,task,states,key):
+def _propose_and_build(ctx,group,task,states,key):
     if task.intent!=INTENT:
         raise ValueError("area_search builder requires its explicit intent")
     _LAST_TIMING.clear();all_start=time.perf_counter()
@@ -196,6 +196,8 @@ def propose_and_build(ctx,group,task,states,key):
             slots=formation_slots(group,ctx.family,fkey,formation=name,lateral_step_m=step,order=order)
             doc=TC.load_chord_set(ctx,task.target_id,slots,ctx.cache_dir,intent=INTENT)
             steps.append({"formation":name,"lateral_step_m":step,"feasible_cells":len(doc["cells"]),"n_cells":doc["n_cells"],"query_id":doc.get("query_id"),"reasons":doc.get("reasons")})
+            sector_qid,_=sector_identity(ctx,task.target_id,len(group.member_ids),ctx.family.task_altitude_m)
+            _LAST_TIMING.setdefault("entry_queries",[]).append({"chord_query_id":doc.get("query_id"),"sector_query_id":sector_qid,"formation":name,"lateral_step_m":step,"original_cells":len(doc["cells"]),"filtered_cells":None,"entry_filtered_ratio":None})
             return {"slots":slots,"doc":doc} if doc["cells"] else None
         payload=width_then_build(chain,lambda name:T._echelon_payload(probe,group,b,steps) if name=="echelon" else probe(name,None),lambda name,p:p)
         if payload is None:
@@ -207,9 +209,11 @@ def propose_and_build(ctx,group,task,states,key):
         _LAST_TIMING["sector_set_s"]=time.perf_counter()-start
         entries=filter_entry_cells(ctx,task.target_id,doc["cells"],sectors,ao,offsets=slots.offsets)
         _LAST_TIMING.update(entry_cells_before=len(doc["cells"]),entry_cells_after=len(entries),sector_cells=len(sectors))
+        _LAST_TIMING["entry_queries"][-1].update(filtered_cells=len(entries),entry_filtered_ratio=(len(doc["cells"])-len(entries))/len(doc["cells"]))
         if not entries:
             return _failure("area_search_entry",key,detail={"formations":steps})
         chord,sector,c=draw_hierarchy(entries,rng)
+        _LAST_TIMING["selected_triple"]={"theta_idx":int(chord["cell"][0]),"h_m":float(chord["cell"][1]),"mu_deg":sector["mu_deg"],"span_deg":sector["span_deg"],"c":int(c)}
         scan_start=time.perf_counter()
         choice=selected_sector_choice(ctx,task.target_id,len(group.member_ids),H,sector,c)
         _LAST_TIMING["selected_inner_scan_s"]=time.perf_counter()-scan_start
@@ -271,10 +275,12 @@ def propose_and_build(ctx,group,task,states,key):
         if shallow:
             return _failure("area_search_route",key,P,witnesses,detail={"constraint":"turn_cut_depth","minimum_m":10.,"split_depths_m":depths,"shallow_members":sorted(shallow)})
         # Geometric checks only. No separation or nominal coverage rejection here.
+        _LAST_TIMING.update(shape_audit_entered=True,shape_audit_failed=False)
         for mid in slots.order:
             audit=audit_complete_curve(S.base,curves[mid],heads[mid])
             if not audit["passed"]:
-                return _failure("area_search_route",key,P,witnesses,detail={"member":mid,"constraint":audit["constraint"],"margin_m":audit["margin_m"],"chord_index":audit["chord_index"]})
+                _LAST_TIMING["shape_audit_failed"]=True
+                return _failure("area_search_route",key,P,witnesses,detail={"member":mid,"constraint":audit["constraint"],"margin_m":audit["margin_m"],"chord_index":audit["chord_index"],"shape_audit_failed":True})
             value=min(audit["minima"].values())
             old=witnesses["area_geometry"]["base_min_margin_m"]
             witnesses["area_geometry"]["base_min_margin_m"]=value if old is None else min(old,value)
@@ -308,3 +314,16 @@ def propose_and_build(ctx,group,task,states,key):
         return plan
     finally:
         _LAST_TIMING["attempt_s"]=time.perf_counter()-all_start
+
+
+def propose_and_build(ctx,group,task,states,key):
+    from ...runner.area_search_serialization import project_area_plan
+    plan=_propose_and_build(ctx,group,task,states,key)
+    if plan.failure is None:
+        from ..area_search_checks import skeleton_screen
+        started=time.perf_counter()
+        screen=skeleton_screen(ctx,plan)
+        _LAST_TIMING["bone_nominal_screen_s"]=time.perf_counter()-started
+        # Bone coverage is diagnostic only; it never causes a redraw or rejection.
+        plan=replace(plan,witnesses={**plan.witnesses,"bone_nominal_screen":screen})
+    return project_area_plan(plan)
