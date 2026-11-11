@@ -34,3 +34,8 @@ set V8_21_ACCEPTANCE=docs/v08/V8-21/acceptance.json ; python -B -m unittest disc
 ```
 
 实际执行的完整 argv、起止时间与结果以 REPORT 及运行根各阶段目录为准。
+
+
+## 只骨架修复运行补记
+
+固定基点b70d1b9，按11-11最新六条修复裁定。外置工具、完整命令/日志及R0–R2证据在run/repair_r1；R1完整预演preflight_r1，正式只骨架将用run/skeleton/r2。额外PYTHONUTF8=1仅统一日志编码，四线程变量/24或1worker及所有业务配置不变。

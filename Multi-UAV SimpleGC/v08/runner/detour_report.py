@@ -410,6 +410,7 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
     states = initial_states(ctx.family, group.member_ids)
     key0 = RngKey(ctx.family.family_id, int(draw), "shape", mission=0, branch=branch, group=group.group_id, segment=0)
     summaries = []
+    query_telemetry = []
 
     def attempt(k):
         flag = {}
@@ -420,6 +421,7 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
                    "traceback": traceback.format_exc(), "timing": {},
                    "optimization_entered": flag.get("optimization_entered")}
         summaries.append(attempt_summary(rec, k))
+        query_telemetry.append(DT.last_attempt_timing())
         return rec
 
     outcome = JM.run_attempts(key0, attempt, should_stop=should_stop)
@@ -471,7 +473,9 @@ def run_contract(ctx, entry, draw, *, settings, branch=None, out_dir=None, shoul
         rec["candidate_verdict"] = jsonable(cv)
     if out_dir is not None:
         last = outcome["records"][-1] if outcome["records"] and not outcome["success"] else None
-        save_contract(Path(out_dir), rec, selected, last_failed=last, last_attempt=len(outcome["records"]) - 1)
+        save_contract(Path(out_dir), rec, selected, last_failed=last, last_attempt=len(outcome["records"]) - 1,
+                      query_telemetry=query_telemetry)
+    rec["lp_diagnostics"] = query_diagnostics(query_telemetry)
     return rec
 
 
@@ -480,7 +484,7 @@ def _json_bytes(obj):
     return canonical_json(obj) + b"\n"
 
 
-def save_contract(out, rec, result, last_failed=None, last_attempt=None):
+def save_contract(out, rec, result, last_failed=None, last_attempt=None, *, query_telemetry=None):
     from .detour_serialization import project_document
     from .monitoring import jsonable, plan_to_record
 
@@ -535,7 +539,8 @@ def save_contract(out, rec, result, last_failed=None, last_attempt=None):
     tele.mkdir(exist_ok=True)
     (tele / f"{rec['contract_id']}.json").write_bytes(_json_bytes(jsonable(
         {"timing": [s.get("timing") for s in rec["attempt_log"]], "optimization_s": rec["optimization_s"],
-         "tracebacks": [s["traceback"] for s in rec["attempt_log"] if s.get("traceback")]})))
+         "tracebacks": [s["traceback"] for s in rec["attempt_log"] if s.get("traceback")],
+         "query_telemetry": query_telemetry})))
 
 
 def failure_witness(last, attempt):
@@ -626,6 +631,7 @@ def run_skeleton_contract(ctx, entry, draw, *, out_dir=None):
                    topology={"final": "detour"}, detour_formation=jsonable(df),
                    bone_nominal_screen=jsonable(plan.witnesses["bone_nominal_screen"]),
                    nominal_duration_s=float(plan.nominal_duration_s))
+    rec["lp_diagnostics"] = query_diagnostics(tele)
     if out_dir is not None:
         folder = Path(out_dir) / "contracts" / rec["contract_id"]
         folder.mkdir(parents=True, exist_ok=False)
@@ -714,7 +720,15 @@ def skeleton_diagnostics(rows):
         if r.get("success"):
             k = f"{r['formation_prior']}->{(r.get('formation') or {}).get('realized')}"
             forms[k] = forms.get(k, 0) + 1
+    query = [r.get("lp_diagnostics") or {} for r in rows]
     return {"attempts_completed": len(attempts), "failures_by_attempt": by_attempt, "failures_by_contract": by_contract,
+            "lp_calls": sum(q.get("lp_calls", 0) for q in query),
+            "unknown_status_count": sum(q.get("unknown_status_count", 0) for q in query),
+            "unknown_rejected_probe_contracts": sum(q.get("unknown_rejected_probe", False) for q in query),
+            "rescued_parent_queries": sum(q.get("rescued_parent_queries", 0) for q in query),
+            "rescued_periodic_queries": sum(q.get("rescued_periodic_queries", 0) for q in query),
+            "selected_lp_span_deg_q": q([v for z in query for v in z.get("selected_lp_spans", [])]),
+            "selected_geometric_span_deg_q": q([v for z in query for v in z.get("selected_geometric_spans", [])]),
             "failure_subreasons": dict(sorted(sub.items())),
             "sweep_window_rate_of_attempts": (sub.get("detour_route:sweep_window", 0) / len(attempts)) if attempts else None,
             "sigma_counts": {str(s): sum(1 for d in dr if d.get("sigma") == s) for s in (-1, 1)},
@@ -727,6 +741,25 @@ def skeleton_diagnostics(rows):
             "bone_nominal_screen_failed_contracts": sum(1 for r in rows if r.get("success") and
                                                         not (r.get("bone_nominal_screen") or {}).get("passed", False)),
             "win_attempt_q": q(r.get("attempts") for r in rows if r.get("success"))}
+
+
+def query_diagnostics(telemetry):
+    """Contract-external statistics; cache hits do not re-count solver work or statuses.
+
+    unknown_rejected_probe marks possible influence, not a proved counterfactual outcome:
+    a rejected formation query included unknown statuses. Geometry/infeasibility may also
+    have contributed. It is diagnostic only, as required by repair ruling 1.
+    """
+    probes = [p for t in telemetry for p in t.get("lp_query", [])]
+    cold = [p for p in probes if not p["cache_hit"]]
+    return {"lp_calls": sum(p["lp_calls"] for p in cold),
+            "unknown_status_count": sum(p["unknown_status_count"] for p in cold),
+            "unknown_rejected_probe": any(not p["feasible"] and p["unknown_status_count"] for p in probes),
+            "rescued_parent_queries": sum(int(p["rescued_parents"]) for p in cold),
+            "rescued_periodic_queries": sum(int(p["rescued_periodic"]) for p in cold),
+            "selected_lp_spans": [t["selected_arc"]["selected_lp_max_span_deg"] for t in telemetry if "selected_arc" in t],
+            "selected_geometric_spans": [t["selected_arc"]["selected_geometric_max_span_deg"]
+                                         for t in telemetry if "selected_arc" in t]}
 
 
 # ================================================================ 原始距离场预建（单族单进程，worker 只读）

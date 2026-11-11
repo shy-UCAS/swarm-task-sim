@@ -1,0 +1,38 @@
+{
+  "extra": {
+    "tests": 33,
+    "passed": 33,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "presets": [
+    {
+      "test": "test_preset_numeric_v21.py",
+      "exit_code": 0
+    },
+    {
+      "test": "test_preset_local_v21.py",
+      "exit_code": 0
+    },
+    {
+      "test": "test_preset_ruling_v21.py",
+      "exit_code": 0
+    }
+  ],
+  "artifact_preset": "not run, requires new full outputs",
+  "self_repairs": [
+    {
+      "authorization": 2,
+      "test": "T12",
+      "before": "expected existing tangent component to pass",
+      "after": "independent line_sublevel tangent interval is (20,20), old component rejects interior tangency; production unchanged"
+    },
+    {
+      "authorization": 2,
+      "test": "T5",
+      "before": "required float witness absolute residual <=1e-9; observed 5.093170329928398e-9",
+      "after": "compare child violation to parent violation at identical points plus unchanged1e-9, as instructed; no business tolerance change"
+    }
+  ],
+  "logs_root": "F:\\CASIA\\Drone Swarm Situational Awareness Algorithm\\_handoff\\2026-11-10_V8-21_detour\\run\\repair_r1\\tests"
+}

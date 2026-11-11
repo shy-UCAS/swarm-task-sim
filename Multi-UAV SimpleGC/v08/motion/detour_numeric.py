@@ -211,6 +211,16 @@ def start_candidates(segments, n_rows, *, periodic):
     return out
 
 
+def lp_start_candidates(query, n_rows):
+    """Ruling 2/6: each certified (parent,start) once, never weight by endpoint count."""
+    out = []
+    for parent in query["parents"]:
+        for s, end in enumerate(parent["max_end"]):
+            if int(end) - s >= int(n_rows) - 1:
+                out.append((int(parent["id"]), int(parent["ids"][s])))
+    return sorted(out)
+
+
 # ---------------------------------------------------------------- 检查点数值（指令 5；裁定 5）
 
 def _median(values):

@@ -94,15 +94,35 @@ def _xy(p):
 
 # ---------------------------------------------------------------- 队形（指令 3.1；裁定 3）
 
-def _formation_probe(band, group, fam, order, need, steps):
+def _curvature_context(ctx, H, monitoring_values):
+    from .. import monitoring_band as MB
+    spacing = ctx.params["curve_spacing_m"]
+    star = kappa_limit(spacing, load_config("guidance").values["max_turn_per_chord_rad"])
+    r_turn = (float(load_config("joint_opt").values["buffer_turn_factor"])
+              * float(monitoring_values["turn_u_min_m"]))
+    return {"H": float(H), "kappa_star": float(star), "r_turn_m": r_turn,
+            "kmax": MB.kappa_max(H, star, r_turn), "M": MB.LP_CONTROLS, "spacing_m": float(spacing)}
+
+
+def _formation_probe(band, group, fam, order, need, steps, *, ctx, monitoring_values, nominal_lo, diagnostics):
     def probe(name, step):
         slots = formation_slots(group, fam, None, formation=name, lateral_step_m=step, order=order)
         H = float(slots.max_lateral_m)
-        seg = band.segments(H)
-        ok = bool(seg["periodic"] or seg["max_span_deg"] >= need)
+        curvature = _curvature_context(ctx, H, monitoring_values)
+        seg = band.lp_arcs(H, need_deg=need, nominal_sweep_lo_deg=nominal_lo, kmax=curvature["kmax"])
+        ok = seg["feasible"]
+        diagnostics.append({"formation": name, "lateral_step_m": _f(step), "H": H,
+                            "kmax": curvature["kmax"], "M": curvature["M"], "feasible": ok,
+                            "max_span_deg": seg["max_span_deg"], "geometric_max_span_deg": seg["geometric_max_span_deg"],
+                            "cache_hit": seg["cache_hit"], "input_digest": seg["input_digest"],
+                            **seg["diagnostics"], "parents": [{"id": p["id"], "periodic": p["periodic"],
+                            "geometric_span_deg": p["geometric_span_deg"], "whole_status": p["whole_status"],
+                            "whole_feasible": p["whole_feasible"], "max_end": p["max_end"].tolist()}
+                            for p in seg["parents"]]})
         steps.append({"formation": name, "lateral_step_m": _f(step), "feasible": ok,
                       "max_arc_deg": float(seg["max_span_deg"])})
-        return {"slots": slots, "seg": seg, "H": H, "lateral_step_m": step} if ok else None
+        return {"slots": slots, "seg": seg, "H": H, "lateral_step_m": step,
+                "curvature_context": curvature} if ok else None
     return probe
 
 
@@ -142,6 +162,7 @@ def propose_and_build(ctx, group, task, states, key, *, trace=None):
 
 
 def _propose(ctx, group, task, states, key, T, trace):
+    T["business_key"] = _key_dict(key)
     C = load_detour_candidate()
     G = load_config("detour").values
     M = load_config("monitoring").values
@@ -155,7 +176,10 @@ def _propose(ctx, group, task, states, key, T, trace):
     b = float(fam.lateral_spacing_m)
     need = float(Cv["min_sweep_deg"]) + float(G["sweep_margin_deg"]) + float(G["arc_edge_guard_deg"])
     steps = []
-    probe = _formation_probe(band, group, fam, order0, need, steps)
+    T["lp_query"] = []
+    probe = _formation_probe(band, group, fam, order0, need, steps, ctx=ctx, monitoring_values=M,
+                             nominal_lo=float(Cv["min_sweep_deg"]) + float(G["sweep_margin_deg"]),
+                             diagnostics=T["lp_query"])
     chain = retreat_chain(mapped_start(group.formation_prior))
     t0 = time.perf_counter()
 
@@ -201,7 +225,7 @@ def _build(ctx, group, task, states, key, T, trace, C, G, M, cons, band, payload
     beta_out = float(rng.uniform(0.0, float(G["beta_max_deg"])))
     draw.update(beta_in_deg=beta_in, beta_out_deg=beta_out)
     # 3：Σ_hi（无 RNG；裁定 1）
-    periodic = bool(seg["periodic"])
+    periodic = bool(seg["whole_circle_feasible"])
     s_hi = DN.sigma_upper(seg["max_span_deg"], G, periodic=periodic)
     s_lo = float(Cv["min_sweep_deg"]) + float(G["sweep_margin_deg"])
     draw["sigma_hi_deg"] = float(s_hi)
@@ -212,10 +236,13 @@ def _build(ctx, group, task, states, key, T, trace, C, G, M, cons, band, payload
     draw["sigma_deg"] = Sigma
     # 5：(段, 起始行)
     L = DN.rows_needed(Sigma)
-    starts = DN.start_candidates(seg["segments"], L, periodic=periodic)
+    starts = DN.lp_start_candidates(seg, L)
     if not starts:
         return fail("detour_band", "detour_band", f"没有放得下 Σ={Sigma:.3f}° 的起始行")
     sid, k0 = starts[int(rng.integers(0, len(starts)))]
+    parent = next(p for p in seg["parents"] if p["id"] == sid)
+    arc_s = int(k0 - parent["ids"][0])
+    arc_e = arc_s + L - 1
     rows = np.arange(k0, k0 + L)
     phi0_deg = float(k0) if sigma > 0 else float(k0 + L - 1)
     phi1_deg = phi0_deg + sigma * Sigma
@@ -226,21 +253,32 @@ def _build(ctx, group, task, states, key, T, trace, C, G, M, cons, band, payload
     v = rng.random(K)
     z = MB.logit_from_quantiles(v)
     draw.update(K=K, logit_quantiles=[float(x) for x in v])
-    # 弧证书与 LP（A_curv = A；裁定 12.2 接受）
+    # Fixed parent curvature input; only positional windows clamp at the selected arc ends.
     m = rows % 360
-    A, B = MB._clamped_windows(seg["tl"][m], seg["tu"][m], False)
-    kappa_star = kappa_limit(spacing, load_config("guidance").values["max_turn_per_chord_rad"])
-    r_turn = float(load_config("joint_opt").values["buffer_turn_factor"]) * float(M["turn_u_min_m"])
-    kmax = MB.kappa_max(H, kappa_star, r_turn)
+    rid, A, B, A_curv = MB.arc_lp_inputs(parent["ids"], parent["tl"], parent["tu"], parent["A_curv"], arc_s, arc_e)
+    assert np.array_equal(rid, rows)
+    curvature = payload["curvature_context"]
+    assert curvature["H"] == H and curvature["M"] == MB.LP_CONTROLS and curvature["spacing_m"] == spacing
+    kappa_star, r_turn, kmax = curvature["kappa_star"], curvature["r_turn_m"], curvature["kmax"]
+    T["selected_arc"] = {"parent_id": sid, "parent_rows": parent["ids"].tolist(),
+                         "parent_tl_m": parent["tl"].tolist(), "parent_tu_m": parent["tu"].tolist(),
+                         "parent_A_curv_m": parent["A_curv"].tolist(), "s": arc_s, "e": arc_e,
+                         "row_ids": rows.tolist(), "A_curv_arc_m": A_curv.tolist(),
+                         "input_digest": seg["input_digest"], "curvature_context": curvature,
+                         "candidate_sha256": C.sha256, "generation_sha256": load_config("detour").sha256,
+                         "selected_lp_max_span_deg": seg["max_span_deg"],
+                         "selected_geometric_max_span_deg": seg["geometric_max_span_deg"]}
     tgt, _ = MB.lp_targets(rows, A, B, z)
     t0 = time.perf_counter()
-    lp = MB.shape_lp(rows, A, B, A, kmax=kmax, periodic=False, target=tgt, M=MB.LP_CONTROLS)
+    lp = MB.shape_lp(rows, A, B, A_curv, kmax=kmax, periodic=False, target=tgt, M=MB.LP_CONTROLS)
+    T["lp_target_status"] = lp["status"]
     _tick(T, "lp_s", t0)
     band_rec = {"center_xy": _xy(band.center), "r_star_m": band.r_star, "q_m": band.q, "eta_m": band.eta,
                 "half_span_m": float(H), "component_id": int(sid), "row_ids": [int(r) for r in rows],
                 "raw_lo_m": [_f(band.lo[j]) for j in m], "raw_hi_m": [_f(band.hi[j]) for j in m],
-                "tube_lo_m": [_f(seg["tl"][j]) for j in m], "tube_hi_m": [_f(seg["tu"][j]) for j in m],
-                "A_m": [float(x) for x in A], "B_m": [float(x) for x in B], "threshold_m": float(seg["threshold_m"])}
+                "tube_lo_m": parent["tl"][arc_s:arc_e+1].tolist(), "tube_hi_m": parent["tu"][arc_s:arc_e+1].tolist(),
+                "A_m": [float(x) for x in A], "B_m": [float(x) for x in B],
+                "threshold_m": float(H + band.q + band.eta)}
     lp_rec = {"controls": MB.LP_CONTROLS, "kappa_max": float(kmax), "status": lp["status"], "objective": lp["objective"],
               "rho0_m": None, "coefficients_m": None, "max_residual": None, "exact_curvature": None}
     T["lp_message"] = lp["message"]
@@ -250,7 +288,7 @@ def _build(ctx, group, task, states, key, T, trace, C, G, M, cons, band, payload
                     {"lp_status": lp["status"], "lp": lp_rec})
     curve = MB.construct_band_lp(lp, z)
     rho0, coef = float(curve.rho0_m), tuple(float(x) for x in curve.coefficients_m)
-    lp_rec.update(rho0_m=rho0, coefficients_m=list(coef), max_residual=_lp_residual(rows, A, B, rho0, coef, kmax))
+    lp_rec.update(rho0_m=rho0, coefficients_m=list(coef), max_residual=_lp_residual(rows, A, B, A_curv, rho0, coef, kmax))
     review = MB.exact_curvature_review(rho0, coef, phi0, phi1, H, kappa_star=kappa_star, r_turn_m=r_turn,
                                        per_circle=1440)
     lp_rec["exact_curvature"] = review
@@ -278,8 +316,10 @@ def _build(ctx, group, task, states, key, T, trace, C, G, M, cons, band, payload
     near = cons["near_geometry"]
     band_m = P["pre_entry_warning_clearance_m"]
     t0 = time.perf_counter()
-    ent = _entry_domain(cons, f_in, offsets, near, band_m, P["alignment_length_m"], G)
-    ext = _exit_domain(cons, f_out, offsets, near, band_m, G, M)
+    T["route_domain"] = []
+    ent = _entry_domain(cons, f_in, offsets, near, band_m, P["alignment_length_m"], G,
+                        diagnostics=T["route_domain"])
+    ext = _exit_domain(cons, f_out, offsets, near, band_m, G, M, diagnostics=T["route_domain"])
     _tick(T, "end_domain_s", t0)
     if ent.get("fail"):
         return fail("detour_route", ent["fail"], ent["reason"], {"intervals": ent.get("intervals")})
@@ -330,12 +370,12 @@ def _cand(C):
             "generation_sha256": load_config("detour").sha256}
 
 
-def _lp_residual(rows, A, B, rho0, coef, kmax):
+def _lp_residual(rows, A, B, A_curv, rho0, coef, kmax):
     ph = np.radians(np.r_[rows, rows[:-1] + 0.5])
     r, _, d2 = periodic_radius_derivs(ph, rho0, np.asarray(coef))
     lo = np.r_[A, np.maximum(A[:-1], A[1:])]
     hi = np.r_[B, np.minimum(B[:-1], B[1:])]
-    ac = np.r_[A, np.maximum(A[:-1], A[1:])]
+    ac = np.r_[A_curv, np.maximum(A_curv[:-1], A_curv[1:])]
     corridor = float(max(0.0, np.max(lo - r), np.max(r - hi)))
     curv = float(max(0.0, np.max(np.abs(r - d2) - kmax * ac * ac)))
     return {"corridor_m": corridor, "curvature_per_m": curv}
@@ -364,7 +404,33 @@ def _lane_line(p, u, d):
     return np.asarray(p, float) + float(d) * J(u)
 
 
-def _entry_domain(cons, f_in, offsets, near, band_m, align_m, G):
+def _domain_diagnostic(constraints, p, u, x_lo, x_hi, phase, offset):
+    """Observational only: reproduce the existing line-domain rejection, never repair it."""
+    from ..transit_chords import line_sublevel
+    world_lo, world_hi, excluded, first = -math.inf, math.inf, [], None
+    for c in constraints:
+        iv = line_sublevel(c.geometry, p, u, -float(c.minimum_m) if c.sense == -1 else float(c.minimum_m))
+        if c.sense == -1:
+            if iv is None:
+                if first is None:
+                    first = c.name
+                continue
+            world_lo, world_hi = max(world_lo, iv[0]), min(world_hi, iv[1])
+            bad = x_lo < iv[0]-1e-9 or x_hi > iv[1]+1e-9
+        else:
+            if iv is None:
+                continue
+            excluded.append({"constraint": c.name, "interval": [float(v) for v in iv]})
+            bad = iv[0] < x_hi and iv[1] > x_lo
+        if bad and first is None:
+            first = c.name
+    return {"phase": phase, "p_xy": _xy(p), "direction_xy": _xy(u), "offset": list(offset),
+            "required_interval": [float(x_lo), float(x_hi)],
+            "world_allowed_interval": [float(v) if math.isfinite(v) else None for v in (world_lo, world_hi)],
+            "first_constraint": first, "excluded_intervals": excluded}
+
+
+def _entry_domain(cons, f_in, offsets, near, band_m, align_m, G, *, diagnostics=None):
     from ..transit_chords import line_sublevel
     A = np.asarray(f_in["fillet_start_xy"], float)
     u = np.asarray(f_in["line_direction_xy"], float)
@@ -385,13 +451,15 @@ def _entry_domain(cons, f_in, offsets, near, band_m, align_m, G):
         p = _lane_line(A, u, d)
         comp = component_containing(cons["base"], p, u, x_max + l, 0.0)
         if comp is None:
+            if diagnostics is not None:
+                diagnostics.append(_domain_diagnostic(cons["base"], p, u, x_max+l, 0.0, "entry", (l,d)))
             return {"fail": "base", "reason": "进场直线（集合槽位至圆角）违反 base 约束", "intervals": info}
         lows.append(x_max + l - comp[0])
     extra_max = float(min(float(G["extension_max_m"]), min(lows)))
     return {"x_max": x_max, "extra_max": max(0.0, extra_max), "intervals": info}
 
 
-def _exit_domain(cons, f_out, offsets, near, band_m, G, M):
+def _exit_domain(cons, f_out, offsets, near, band_m, G, M, *, diagnostics=None):
     from ..transit_chords import line_sublevel
     Bp = np.asarray(f_out["fillet_end_xy"], float)
     u = np.asarray(f_out["line_direction_xy"], float)
@@ -431,6 +499,8 @@ def _exit_domain(cons, f_out, offsets, near, band_m, G, M):
         p = _lane_line(Bp, u, d)
         comp = component_containing(cons["base"], p, u, 0.0, x_min + l)
         if comp is None:
+            if diagnostics is not None:
+                diagnostics.append(_domain_diagnostic(cons["base"], p, u, 0.0, x_min+l, "exit", (l,d)))
             return {"fail": "terminal", "reason": "离开直线（圆角至终点）违反 base 约束或终点出界", "intervals": info}
         upper = min(upper, comp[1] - l)
     extra_max = float(min(float(G["extension_max_m"]), upper - x_min))

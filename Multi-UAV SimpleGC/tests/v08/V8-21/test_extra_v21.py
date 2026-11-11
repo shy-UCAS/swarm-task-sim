@@ -4,6 +4,8 @@ import json
 import math
 import tempfile
 import unittest
+import os
+from contextlib import ExitStack
 from pathlib import Path
 from types import SimpleNamespace as NS
 from unittest.mock import patch
@@ -327,6 +329,299 @@ class Checkpoints(unittest.TestCase):
         recs[40]["formation"]["realized"] = "echelon"
         self.assertIn("retreat_ratio", skeleton_checkpoint(recs, wall_s=1.0)["triggered"])
         self.assertIn("wall", skeleton_checkpoint(recs, wall_s=1800.5)["triggered"])
+
+
+def repair_band(tl, tu, *, periodic=False, first=0):
+    """Hand-defined geometric input, independent of the new query builder."""
+    from v08.motion.detour_geometry import DetourBand
+    b = DetourBand.__new__(DetourBand)
+    b._lp, b._identity = {}, ("test",)
+    b.center, b.r_star, b.q, b.eta = np.zeros(2), 2000.0, 0.0, 0.0
+    b.lo, b.hi = np.full(360, 900.0), np.full(360, 1200.0)
+    lower, upper = np.full(360, np.nan), np.full(360, np.nan)
+    rows = np.arange(first, first+len(tl))
+    lower[rows % 360], upper[rows % 360] = tl, tu
+    b.segments = lambda H: {"periodic": periodic, "segments": [{"id": 0, "rows": rows}],
+                            "tl": lower, "tu": upper, "max_span_deg": 360.0 if periodic else len(rows)-1}
+    return b
+
+
+class RepairSynthetic(unittest.TestCase):
+    def query(self, b, lo=3, need=3, kmax=.001):
+        return b.lp_arcs(0, need_deg=need, nominal_sweep_lo_deg=lo, kmax=kmax)
+
+    def test_T1_zero_width_feasible_and_empty_mid(self):
+        from v08.motion import monitoring_band as MB
+        A = np.full(10, 1000.0)
+        lp = MB.shape_lp(np.arange(10), A, A, A, kmax=.001, periodic=False)
+        self.assertTrue(lp["feasible"])
+        lo = np.array([1000,1000,1000,1000,1000,1002.0])
+        hi = np.array([1000,1002,1002,1002,1002,1002.0])
+        Ap, Bp = MB._clamped_windows(lo, hi, False)
+        self.assertTrue(np.all(Ap <= Bp))
+        self.assertEqual(min(Bp[2], Bp[3])-max(Ap[2], Ap[3]), -2)
+        self.assertEqual(MB.shape_lp(np.arange(6), Ap, Bp, Ap, kmax=.001, periodic=False)["status"], "empty_interval")
+
+    def test_T2_positive_width_still_empty_mid(self):
+        from v08.motion import monitoring_band as MB
+        lo = np.array([1000]*5+[1004.0])
+        hi = np.array([1002]+[1006.0]*5)
+        A,B = MB._clamped_windows(lo,hi,False)
+        self.assertTrue(np.all(B-A == 2))
+        self.assertEqual(min(B[2],B[3])-max(A[2],A[3]), -2)
+        self.assertFalse(MB.shape_lp(np.arange(6),A,B,A,kmax=.001,periodic=False)["feasible"])
+
+    def test_T3_rescue_nonperiodic_and_periodic(self):
+        for periodic,n in ((False,180),(True,360)):
+            lo,hi = np.full(n,1000.0),np.full(n,1002.0)
+            hi[0],lo[5] = 1000,1002
+            q = self.query(repair_band(lo,hi,periodic=periodic),160,162)
+            self.assertTrue(q["feasible"])
+            p = q["parents"][0]
+            self.assertFalse(p["whole_feasible"])
+            self.assertGreaterEqual(p["max_end"][8],179)
+            self.assertIn((0,8),DN.lp_start_candidates(q,172))
+
+    def test_T4_residual_uses_parent_curvature(self):
+        from v08.motion.intents import detour as DT
+        A,B,C = np.full(3,10.),np.full(3,20.),np.full(3,20.)
+        good = DT._lp_residual(np.arange(3),A,B,C,10.,np.zeros(120),.05)
+        wrong = DT._lp_residual(np.arange(3),A,B,A,10.,np.zeros(120),.05)
+        self.assertAlmostEqual(good["curvature_per_m"],0,delta=ATOL)
+        self.assertAlmostEqual(wrong["curvature_per_m"],5,delta=ATOL)
+
+    def test_T6_compressed_frontier_against_bruteforce(self):
+        from v08.motion import monitoring_band as MB
+        b = repair_band(np.full(9,1000.),np.full(9,1002.))
+        q = self.query(b)
+        p = q["parents"][0]
+        got = {(s,e) for s,x in enumerate(p["max_end"]) for e in range(s+3,int(x)+1)}
+        expected = set()
+        for s in range(6):
+            for e in range(s+3,9):
+                ids,A,B,C = MB.arc_lp_inputs(p["ids"],p["tl"],p["tu"],p["A_curv"],s,e)
+                if MB.shape_lp(ids,A,B,C,kmax=.001,periodic=False)["feasible"]:
+                    expected.add((s,e))
+        self.assertEqual(len(expected),21)  # 6+5+4+3+2+1
+        self.assertEqual(got,expected)
+        from v08.motion.detour_geometry import _lp_feasible_pairs_checked
+        # A solver-unknown at the longest tested pair is an unverified upper bound;
+        # the inherited positive witness still certifies shorter child arcs.
+        called=[]
+        def oracle(s,e):
+            called.append((s,e))
+            return e <= 5
+        ends = _lp_feasible_pairs_checked(8,5,3,7,oracle)
+        self.assertEqual(ends.tolist(),[5,5,5,-1,-1])
+
+    def test_T7_start_uniqueness_and_guard(self):
+        q={"parents":[{"id":0,"ids":np.arange(170),"max_end":np.array([164,164,-1])}]}
+        self.assertEqual(DN.lp_start_candidates(q,161),[(0,0),(0,1)])
+        self.assertEqual(DN.lp_start_candidates(q,165),[(0,0)])
+        G=load_config("detour").values
+        self.assertEqual(DN.sigma_upper(164,G,periodic=False),162)
+        self.assertEqual(DN.sigma_upper(162,G,periodic=False),160)
+        self.assertEqual(DN.rows_needed(160),161)
+        periodic=self.query(repair_band(np.full(360,1000.),np.full(360,1000.),periodic=True),160,162)
+        self.assertEqual(DN.lp_start_candidates(periodic,351),[(0,s) for s in range(360)])
+
+    def test_T8_full_and_failure_trace_prefixes(self):
+        from v08.motion.intents import detour as DT
+        from v08.sampler.keys import RngKey
+        b=repair_band(np.full(360,1000.),np.full(360,1000.),periodic=True)
+        fam=NS(lateral_spacing_m=24.)
+        ctx=NS(family=fam,params={"curve_spacing_m":.5,"pre_entry_warning_clearance_m":10.,"alignment_length_m":100.})
+        group=NS(member_ids=("a","b"),formation_prior="column")
+        task=NS(target_id="F")
+        cons={"near_geometry":circle(1300)}
+        key=RngKey("test",0,"shape",mission=0,branch=None,group="g",segment=0,attempt=0)
+        expected=["integers","uniform","uniform","uniform","integers","integers","random","uniform","uniform","permutation"]
+        last=[]
+        for fail in (None,"domain","route","lp","empty"):
+            trace=[]
+            with ExitStack() as stack:
+                for name,value in (("detour_constraints",cons),("band_for",b),
+                                   ("_entry_domain", {"fail":"base","reason":"fixture"} if fail=="domain" else {"x_max":-100.,"extra_max":10.}),
+                                   ("_exit_domain",{"x_min":100.,"extra_max":20.}),
+                                   ("_reference",(NS(marks={"collect":0.,"terminal":1.}),{},None,{})),
+                                   ("derive_members",{}),("plan_starts",(None,"a") if fail=="route" else ({},{})),
+                                   ("_assemble","complete")):
+                    stack.enter_context(patch.object(DT,name,return_value=value))
+                stack.enter_context(patch.object(DT,"DetourRouteView",return_value=NS(stats={},route_fn=None)))
+                if fail=="empty":
+                    stack.enter_context(patch.object(DT,"width_then_build",return_value=None))
+                if fail=="lp":
+                    from v08.motion import monitoring_band as MB
+                    b.lp_arcs(0,need_deg=162,nominal_sweep_lo_deg=160,kmax=DT._curvature_context(ctx,0,load_config("monitoring").values)["kmax"])
+                    stack.enter_context(patch.object(MB,"shape_lp",return_value={"feasible":False,"status":2,"objective":None,"message":"test"}))
+                result=DT.propose_and_build(ctx,group,task,{},key,trace=trace)
+            shape=[t for t in trace if t[0]=="shape"]
+            self.assertEqual([t[1] for t in shape],expected[:0 if fail=="empty" else 7 if fail in ("domain","lp") else 10])
+            if fail is None:
+                self.assertEqual(result,"complete")
+                last=shape
+            elif fail=="route":
+                self.assertEqual(shape,last)  # identical geometry and hot cache consume same sequence
+        # Parameterized domain change: same state at uniform, allowed changed numeric output.
+        x,y=np.random.default_rng(7),np.random.default_rng(7)
+        self.assertNotEqual(x.uniform(160,350),y.uniform(160,170))
+        self.assertEqual(x.bit_generator.state,y.bit_generator.state)
+
+    def test_T9_cache_identity_and_unknown_policy(self):
+        from v08.motion import monitoring_band as MB
+        b=repair_band(np.full(9,1000.),np.full(9,1002.))
+        a=self.query(b); calls=MB.LP_STATS["calls"]
+        hot=self.query(b)
+        self.assertTrue(hot["cache_hit"])
+        self.assertEqual(MB.LP_STATS["calls"],calls)
+        self.assertFalse(self.query(b,kmax=.002)["cache_hit"])
+        self.assertFalse(b.lp_arcs(1,need_deg=3,nominal_sweep_lo_deg=3,kmax=.001)["cache_hit"])
+        self.assertFalse(a["parents"][0]["A_curv"].flags.writeable)
+        b=repair_band(np.full(9,1000.),np.full(9,1002.))
+        with patch.object(MB,"shape_lp",return_value={"status":4,"feasible":False,"controls":None,"message":"unknown"}):
+            q=self.query(b)
+        self.assertTrue(q["complete"])
+        self.assertFalse(q["feasible"])
+        self.assertGreater(q["diagnostics"]["unknown_status_count"],0)
+        self.assertTrue(np.all(q["parents"][0]["max_end"]==-1))
+
+    def test_T12_domain_diagnostics_no_behavior_change(self):
+        from v08.motion.intents import detour as DT
+        from v08.scene.field import Clearance
+        obs=Clearance("test_obstacle",circle(10),1,2.)
+        d=DT._domain_diagnostic([obs],np.array([-20.,0.]),np.array([1.,0.]),0.,40.,"entry",(0.,0.))
+        self.assertEqual(d["first_constraint"],"test_obstacle")
+        self.assertEqual(d["excluded_intervals"][0]["interval"],[8.,32.])
+        self.assertIsNone(component_containing([obs],np.array([-20.,0.]),np.array([1.,0.]),0.,40.))
+        # Exact tangency gives the original line API a degenerate exclusion at x=20;
+        # the unchanged component implementation rejects that interior contact.
+        from v08.motion.transit_chords import line_sublevel
+        self.assertEqual(line_sublevel(obs.geometry,np.array([-20.,12.]),np.array([1.,0.]),2.),(20.,20.))
+        self.assertIsNone(component_containing([obs],np.array([-20.,12.]),np.array([1.,0.]),0.,40.))
+
+    def test_T13_schema_and_T14_checkpoint_boundaries(self):
+        from v08.runner.detour_serialization import project_document
+        with self.assertRaises(ValueError):
+            project_document({"formation_steps":[{"formation":"column","lp_calls":9}]},"skeleton_result")
+        from v08.runner.detour_report import skeleton_checkpoint
+        # Exactly 180/200, every band equally successful; 20% of eligible successes retreat.
+        rows=[]
+        for i in range(200):
+            rows.append({"contract_id":str(i),"group_size":2,"formation_prior":"abreast","success":i<180,
+                         "attempts":3,"formation":{"realized":"echelon" if i<36 else "abreast"}})
+        self.assertTrue(skeleton_checkpoint(rows,wall_s=1800)["passed"])
+        self.assertIn("wall",skeleton_checkpoint(rows,wall_s=1800.1)["triggered"])
+        rows[179]["success"]=False
+        self.assertIn("success_rate",skeleton_checkpoint(rows,wall_s=1800)["triggered"])
+        self.assertFalse(skeleton_checkpoint(rows[:-1],wall_s=1)["complete"])
+
+
+@unittest.skipUnless(os.environ.get("V8_21_REAL_TESTS")=="1","real devset tests require explicit existing input snapshot")
+class ZRepairReal(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from v08.runner.monitoring import load_entries
+        cls.snapshot=json.loads(Path(os.environ["V8_21_REPAIR_SNAPSHOT"]).read_text(encoding="utf-8"))
+        cls.entries={e["order"]:e for e in load_entries(cls.snapshot["devset"]["path"])}
+        cls.contexts={}
+
+    def context(self,o):
+        from v08.scene.context import load_context
+        if o not in self.contexts:
+            self.contexts[o]=load_context(self.entries[o],data_root=Path(self.snapshot["data_root"]),cache_dir=Path(self.snapshot["cache"]))
+        return self.contexts[o]
+
+    def test_T10_six_contracts_target_lp_or_certified_empty(self):
+        from v08.contract.single_intent import detour_mission
+        from v08.contract.monitoring import initial_states
+        from v08.sampler.common import sample_common
+        from v08.sampler.keys import RngKey
+        from v08.motion.intents import detour as DT
+        from v08.runner.monitoring import jsonable
+        evidence=[]
+        for o,d in ((7,2),(7,4),(11,1),(17,1),(17,4),(34,2)):
+            ctx=self.context(o)
+            mission=detour_mission(ctx,sample_common(ctx.family,d)); g,t=mission.groups[0],mission.tasks[0]
+            key=RngKey(ctx.family.family_id,d,"shape",mission=0,branch=None,group=g.group_id,segment=0,attempt=0)
+            p=DT.propose_and_build(ctx,g,t,initial_states(ctx.family,g.member_ids),key)
+            tm=DT.last_attempt_timing()
+            if tm.get("selected_arc"):
+                self.assertEqual(tm.get("lp_target_status"),0,(o,d,tm.get("lp_target_status")))
+            else:
+                self.assertEqual(p.failure.witness["stage"],"detour_band")
+                self.assertTrue(tm["lp_query"])
+                self.assertTrue(all(not x["feasible"] for x in tm["lp_query"]))
+            evidence.append({"key":f"o{o:02d}_d{d}","target_status":tm.get("lp_target_status"),
+                             "stage":None if p.failure is None else p.failure.witness["stage"],"telemetry":tm})
+        dest=Path(os.environ["V8_21_REPAIR_TEST_OUT"])
+        dest.mkdir(parents=True,exist_ok=True)
+        (dest/"six_contracts.json").write_text(json.dumps(jsonable(evidence),ensure_ascii=False,indent=1),encoding="utf-8")
+
+    def test_T5_real_parent_thirty_subarcs(self):
+        from v08.motion.detour_geometry import band_for,detour_constraints
+        from v08.contract.single_intent import detour_mission
+        from v08.sampler.common import sample_common
+        from v08.motion.intents import detour as DT
+        from v08.motion import monitoring_band as MB
+        from v08.motion.path import periodic_radius_derivs
+        ctx=self.context(1); mission=detour_mission(ctx,sample_common(ctx.family,0)); task=mission.tasks[0]
+        b=band_for(ctx,detour_constraints(ctx,task)); k=DT._curvature_context(ctx,0,load_config("monitoring").values)["kmax"]
+        q=b.lp_arcs(0,need_deg=162,nominal_sweep_lo_deg=160,kmax=k)
+        parents=[p for p in q["parents"] if p["whole_feasible"]]
+        self.assertTrue(parents)
+        p=parents[0]; n=360 if p["periodic"] else len(p["ids"])
+        A,B=MB._clamped_windows(p["tl"][:n],p["tu"][:n],p["periodic"])
+        whole=MB.shape_lp(p["ids"][:n],A,B,p["A_curv"][:n],kmax=k,periodic=p["periodic"])
+        self.assertTrue(whole["feasible"])
+        rng=np.random.default_rng(20261111)
+        for i in range(30):
+            span=int(rng.integers(162,min(359,n-1)+1))
+            s=int(rng.integers(0,360 if p["periodic"] else n-span))
+            if i==0:
+                s,span=0,162
+            elif i==1:
+                s,span=n-163,162
+            elif i==2 and p["periodic"]:
+                s,span=359,162  # explicit crossing of the 359°/0° seam
+            ids,Ap,Bp,Ac=MB.arc_lp_inputs(p["ids"],p["tl"],p["tu"],p["A_curv"],s,s+span)
+            rawlo=p["tl"][s:s+span+1]; rawhi=p["tu"][s:s+span+1]
+            # Independent endpoint-clamped windows, without invoking the query or shared windows.
+            expectedA=np.array([max(rawlo[max(0,j-2):min(len(rawlo),j+3)]) for j in range(len(rawlo))])
+            expectedB=np.array([min(rawhi[max(0,j-2):min(len(rawhi),j+3)]) for j in range(len(rawhi))])
+            np.testing.assert_array_equal(Ap,expectedA); np.testing.assert_array_equal(Bp,expectedB)
+            ph=np.radians(np.r_[ids,ids[:-1]+.5])
+            r,_,d2=periodic_radius_derivs(ph,0.,whole["controls"])
+            pi=np.arange(s,s+span+1) % n if p["periodic"] else np.arange(s,s+span+1)
+            pA,pB,pC=A[pi],B[pi],p["A_curv"][:n][pi]
+            # Compare child violation with the SAME parent's actual residual, not zero:
+            # the solver's float witness may already have a small nonzero residual.
+            child_lo=np.r_[Ap,np.maximum(Ap[:-1],Ap[1:])]
+            parent_lo=np.r_[pA,np.maximum(pA[:-1],pA[1:])]
+            child_hi=np.r_[Bp,np.minimum(Bp[:-1],Bp[1:])]
+            parent_hi=np.r_[pB,np.minimum(pB[:-1],pB[1:])]
+            child_cap=k*np.r_[Ac,np.maximum(Ac[:-1],Ac[1:])]**2
+            parent_cap=k*np.r_[pC,np.maximum(pC[:-1],pC[1:])]**2
+            for vchild,vparent in ((child_lo-r,parent_lo-r),(r-child_hi,r-parent_hi),
+                                   (np.abs(r-d2)-child_cap,np.abs(r-d2)-parent_cap)):
+                self.assertLessEqual(float(np.max(vchild-vparent)),ATOL)
+            self.assertTrue(MB.shape_lp(ids,Ap,Bp,Ac,kmax=k,periodic=False)["feasible"])
+
+    def test_T11_real_o03_saved_subarc_is_retained(self):
+        from v08.motion.detour_geometry import band_for,detour_constraints
+        from v08.contract.single_intent import detour_mission
+        from v08.sampler.common import sample_common
+        from v08.motion.intents import detour as DT
+        ctx=self.context(3); m=detour_mission(ctx,sample_common(ctx.family,0))
+        b=band_for(ctx,detour_constraints(ctx,m.tasks[0])); k=DT._curvature_context(ctx,0,load_config("monitoring").values)["kmax"]
+        q=b.lp_arcs(0,need_deg=162,nominal_sweep_lo_deg=160,kmax=k)
+        self.assertFalse(q["whole_circle_feasible"])
+        self.assertTrue(q["feasible"])
+        self.assertIn((0,28),DN.lp_start_candidates(q,247))
+        from v08.runner.monitoring import jsonable
+        dest=Path(os.environ["V8_21_REPAIR_TEST_OUT"])
+        dest.mkdir(parents=True,exist_ok=True)
+        (dest/"o03_query_cost.json").write_text(json.dumps(jsonable({"H":0.,"feasible":q["feasible"],
+                "cache_hit":q["cache_hit"],**q["diagnostics"]}),ensure_ascii=False,indent=1),encoding="utf-8")
 
 
 if __name__ == "__main__":

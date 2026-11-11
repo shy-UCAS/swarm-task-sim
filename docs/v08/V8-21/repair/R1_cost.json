@@ -1,0 +1,117 @@
+{
+  "stage": "R1_cost",
+  "method": "old 200-key distinct query workload + measured H-stratified .1/.5/.9 latency scenarios; baseline wall includes old route workload",
+  "old_distinct_queries": 195,
+  "old_worker_local_queries": 279,
+  "probe_count_upper_from_original_bisection": 1417,
+  "upper_work_scenario_wall_s": 959.1905819292336,
+  "measured_cold_queries": 47,
+  "measured_distinct_queries": 37,
+  "sample_counts": {
+    "zero_H": 2,
+    "positive_H": 45
+  },
+  "scenarios": [
+    {
+      "measured_percentile": 0.1,
+      "query_seconds_by_H": {
+        "zero_H": 1.3243831299987505,
+        "positive_H": 6.340000254567714e-06
+      },
+      "incremental_query_cpu_s": 72.8424923099883,
+      "parallel_work_estimate_s": 187.12862824625063,
+      "longest_worker_s": 18.28863142999944,
+      "wall_s": 187.12862824625063
+    },
+    {
+      "measured_percentile": 0.5,
+      "query_seconds_by_H": {
+        "zero_H": 6.570420449999801,
+        "positive_H": 0.006244200001674471
+      },
+      "incremental_query_cpu_s": 362.77182555036416,
+      "parallel_work_estimate_s": 199.20901713126628,
+      "longest_worker_s": 23.534668750000492,
+      "wall_s": 199.20901713126628
+    },
+    {
+      "measured_percentile": 0.9,
+      "query_seconds_by_H": {
+        "zero_H": 11.816457770000852,
+        "positive_H": 0.010827700002118945
+      },
+      "incremental_query_cpu_s": 652.3305821505215,
+      "parallel_work_estimate_s": 211.27396532293952,
+      "longest_worker_s": 28.780706070001543,
+      "wall_s": 211.27396532293952
+    }
+  ],
+  "estimated_median_wall_s": 199.20901713126628,
+  "limit_s": 1800,
+  "passed": true,
+  "lp_calls_samples": [
+    129,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    36,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    36,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    133,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    27,
+    1,
+    1,
+    36,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    36,
+    1527
+  ],
+  "whole_quick_hit_counts": {
+    "hit": 33,
+    "tried": 40
+  },
+  "limitations": [
+    "new H search paths and process-local cache reuse can differ from old workload",
+    "few zero-H cold samples; no empirical confidence interval",
+    "scenario median is a forecast, R3 must measure the full batch"
+  ],
+  "lp_seconds_quantiles": {
+    "0": 1.8999999156221747e-05,
+    "0.1": 1.9499999325489625e-05,
+    "0.5": 2.0899999071843922e-05,
+    "0.9": 0.003315199999633478,
+    "1": 4.634062299999641
+  }
+}

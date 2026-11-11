@@ -5,11 +5,13 @@
 不原地修改 ctx、facilities、layers、scene。导入时不读配置、不读场景。
 """
 import math
+import hashlib
+import time
 from types import SimpleNamespace
 
 import numpy as np
 
-VERSION = "detour-v21-r1"
+VERSION = "detour-v21-lp-arcs-r1"
 NEAR_PREFIX = "__crossing__"
 
 
@@ -160,11 +162,13 @@ class DetourBand:
         self.pm, self.cm = MB.radial_margins(self.cons, c, self.rs, allowed_mask=allowed)
         self.lo, self.hi = MB.intervals_from_margins(self.pm, self.cm, self.rs, 0.0)
         self._seg = {}
+        self._lp = {}
+        self._identity = (VERSION, tid, cons["candidate_sha256"], constraints_identity(self.cons))
 
     def segments(self, H):
         """返回 {periodic, segments:[{id,rows,A,B}], tl, tu, threshold_m, max_span_deg}。rows 为展开递增整数行。"""
         from . import monitoring_band as MB
-        key = round(float(H), 9)
+        key = float(H).hex()
         if key in self._seg:
             return self._seg[key]
         thr = float(H) + self.q + self.eta
@@ -207,6 +211,142 @@ class DetourBand:
         out = {"periodic": periodic, "segments": segs, "tl": tl, "tu": tu, "threshold_m": thr, "max_span_deg": span}
         self._seg[key] = out
         return out
+
+    def lp_arcs(self, H, *, need_deg, nominal_sweep_lo_deg, kmax):
+        """Certified subset with fixed parent curvature A; review repair rulings 1,2,5,6.
+
+        Unknown solver returns are unverified upper bounds, never feasible lower bounds.
+        Each parent stores only max_end[s]; its shorter subarcs inherit a feasible witness.
+        Geometry and the shared solver are unchanged. All returned arrays are read-only.
+        """
+        from . import monitoring_band as MB
+        seg = self.segments(H)
+        digest = hashlib.sha256()
+        for name in ("tl", "tu"):
+            digest.update(np.asarray(seg[name], dtype="<f8").tobytes())
+        for p in seg["segments"]:
+            digest.update(np.asarray(p["rows"], dtype="<i8").tobytes())
+        key = (self._identity, digest.hexdigest(), float(H).hex(), float(kmax).hex(), MB.LP_CONTROLS,
+               float(need_deg).hex(), float(nominal_sweep_lo_deg).hex(), MB.PHI_ROWS, MB.NEIGHBOR_HALF)
+        if key in self._lp:
+            return {**self._lp[key], "cache_hit": True}
+        t0 = time.perf_counter()
+        m = int(math.ceil(float(nominal_sweep_lo_deg)))
+        parents = []
+        stats = {"lp_calls": 0, "unknown_status_count": 0, "unknown_pruned_count": 0,
+                 "status_counts": {}, "lp_seconds": [], "unknown_details": []}
+
+        def solve(ids, Ap, Bp, Ac, periodic):
+            before = time.perf_counter()
+            stats["lp_calls"] += 1
+            try:
+                lp = MB.shape_lp(ids, Ap, Bp, Ac, kmax=kmax, periodic=periodic, M=MB.LP_CONTROLS)
+                status = lp["status"]
+                controls = lp.get("controls")
+                certified = bool(status == 0 and lp["feasible"] and controls is not None
+                                 and len(controls) == MB.LP_CONTROLS and np.all(np.isfinite(controls)))
+                unknown = not certified and status not in (2, "empty_interval")
+                message = lp.get("message")
+            except Exception as exc:
+                status, certified, unknown, message = "exception", False, True, repr(exc)
+            stats["lp_seconds"].append(time.perf_counter() - before)
+            st = str(status)
+            stats["status_counts"][st] = stats["status_counts"].get(st, 0) + 1
+            if unknown:
+                stats["unknown_status_count"] += 1
+                stats["unknown_details"].append({"status": st, "first_row": int(ids[0]),
+                                                  "last_row": int(ids[-1]), "periodic": bool(periodic),
+                                                  "message": message})
+            return certified, status, unknown
+
+        for sg in seg["segments"]:
+            wrapping = bool(seg["periodic"])
+            base = np.asarray(sg["rows"], int)
+            if len(base) - 1 < m and not wrapping:
+                continue
+            if wrapping:
+                ids = np.arange(2 * MB.PHI_ROWS - 1)
+                fin = np.isfinite(seg["tl"]) & np.isfinite(seg["tu"])
+                lower = np.where(fin, seg["tl"], -np.inf)
+                Ac360 = MB._clamped_windows(lower, lower, True)[0]
+                Ap, Bp = MB._clamped_windows(seg["tl"], seg["tu"], True)
+                whole, status, _ = solve(np.arange(MB.PHI_ROWS), Ap, Bp, Ac360, True)
+                Ac = Ac360[ids % MB.PHI_ROWS]
+                tlu, tuu = seg["tl"][ids % MB.PHI_ROWS], seg["tu"][ids % MB.PHI_ROWS]
+                nstarts, limit = MB.PHI_ROWS, MB.PHI_ROWS - 1
+            else:
+                ids = base.copy()
+                tlu, tuu = seg["tl"][ids % MB.PHI_ROWS], seg["tu"][ids % MB.PHI_ROWS]
+                fin = np.isfinite(tlu) & np.isfinite(tuu)
+                lower = np.where(fin, tlu, -np.inf)
+                Ac = MB._clamped_windows(lower, lower, False)[0]
+                Ap, Bp = MB._clamped_windows(tlu, tuu, False)
+                whole, status, _ = solve(ids, Ap, Bp, Ac, False)
+                nstarts, limit = max(0, len(ids) - m), len(ids) - 1
+
+            def test(s, e):
+                rid, A, B, C = MB.arc_lp_inputs(ids, tlu, tuu, Ac, s, e)
+                ok, _status, unknown = solve(rid, A, B, C, False)
+                stats["unknown_pruned_count"] += int(unknown)
+                return ok
+
+            max_end = _lp_feasible_pairs_checked(len(ids), nstarts, m, limit, test, whole_feasible=whole)
+            parent = {"id": int(sg["id"]), "ids": ids, "tl": np.asarray(tlu), "tu": np.asarray(tuu),
+                      "A_curv": np.asarray(Ac), "max_end": max_end, "start_count": nstarts,
+                      "whole_feasible": bool(whole), "whole_status": status, "periodic": wrapping,
+                      "geometric_span_deg": 360.0 if wrapping else float(len(base)-1)}
+            for name in ("ids", "tl", "tu", "A_curv", "max_end"):
+                parent[name].setflags(write=False)
+            parents.append(parent)
+        full = any(p["periodic"] and p["whole_feasible"] for p in parents)
+        span = 360.0 if full else max((float(e-s) for p in parents for s, e in enumerate(p["max_end"])
+                                      if e >= s + m), default=-1.0)
+        stats.update(query_s=time.perf_counter()-t0,
+                     certified_pairs=sum(max(0, int(e)-s-m+1) for p in parents for s,e in enumerate(p["max_end"])),
+                     rescued_parents=sum(not p["whole_feasible"] and np.any(p["max_end"] >= 0) for p in parents),
+                     rescued_periodic=sum(p["periodic"] and not p["whole_feasible"] and np.any(p["max_end"] >= 0)
+                                          for p in parents))
+        out = {"complete": True, "feasible": bool(span >= need_deg), "parents": parents,
+               "whole_circle_feasible": full, "max_span_deg": span, "kmax": float(kmax), "M": MB.LP_CONTROLS,
+               "geometric_max_span_deg": float(seg["max_span_deg"]), "min_span_rows": m,
+               "diagnostics": stats, "input_digest": digest.hexdigest(), "cache_hit": False}
+        self._lp[key] = out
+        return out
+
+
+def _lp_feasible_pairs_checked(n, nstarts, min_span, max_span, test, *, whole_feasible=False):
+    """Ruling 2: compressed certified endpoints, with inherited feasible lower bounds.
+
+    test returns True only for certified feasible. False includes unverified numeric states
+    under ruling 1; they may prune but cannot become a lower-bound witness.
+    """
+    ends = np.full(nstarts, -1, dtype=int)
+    known = -1
+    for s in range(nstarts):
+        first, upper = s + min_span, min(n-1, s+max_span)
+        if first > upper:
+            continue
+        if whole_feasible:
+            ends[s] = upper
+            continue
+        lo = known if first <= known <= upper else -1
+        if lo < 0:
+            if not test(s, first):
+                continue
+            lo = first
+        if upper > lo:
+            if test(s, upper):
+                lo = upper
+            else:
+                hi = upper
+                while hi-lo > 1:
+                    mid = (lo+hi)//2
+                    if test(s, mid):
+                        lo = mid
+                    else:
+                        hi = mid
+        ends[s] = known = lo
+    return ends
 
 
 def band_for(ctx, cons):
