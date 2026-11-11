@@ -9,7 +9,7 @@ from typing import Optional
 
 from .monitoring import ContractInvalid, TaskSpec, monitoring_mission, validate_mission
 
-GENERATION_INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search")
+GENERATION_INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search", "detour")
 
 
 @dataclass(frozen=True)
@@ -26,12 +26,13 @@ def validate_single_mission(mission, ctx):
     task = mission.tasks[0]
     if task.intent == "monitoring":
         return validate_mission(mission, ctx)
-    if task.intent not in ("transit", "intrusion", "feint", "close_observation", "area_search"):
+    if task.intent not in ("transit", "intrusion", "feint", "close_observation", "area_search", "detour"):
         raise ContractInvalid(f"本项只支持 {GENERATION_INTENTS}：{task.intent!r}")
     intent = task.intent
     validate_mission(replace(mission, tasks=(replace(task, intent="monitoring"),)), ctx)
     if mission.tasks[0].intent != intent or not mission.tasks[0].final:
-        what = {"transit": "过境", "intrusion": "突入", "feint": "佯动", "close_observation": "抵近观察", "area_search": "区域侦察"}[intent]
+        what = {"transit": "过境", "intrusion": "突入", "feint": "佯动", "close_observation": "抵近观察", "area_search": "区域侦察",
+                "detour": "迂回"}[intent]
         raise ContractInvalid(f"{what}任务非法：{mission.tasks[0]!r}")
     return True
 
@@ -79,7 +80,18 @@ def area_search_mission(ctx, common):
     return mission
 
 
+def detour_mission(ctx, common):
+    """V8-21 指令 2.4：先调用 monitoring_mission，再仅替换唯一 TaskSpec 的 intent（单段 final=True，不加 survey）；
+    目标、成员、组、初速、高度、倾向、policy_version、sequence 键不变。"""
+    mon = monitoring_mission(ctx, common)
+    mission = replace(mon, tasks=(replace(mon.tasks[0], intent="detour"),))
+    validate_single_mission(mission, ctx)
+    return mission
+
+
 def mission_for_intent(ctx, common, intent):
+    if intent == "detour":
+        return detour_mission(ctx, common)
     if intent == "area_search":
         return area_search_mission(ctx, common)
     if intent == "monitoring":

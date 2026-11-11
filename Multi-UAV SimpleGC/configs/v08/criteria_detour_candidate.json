@@ -1,0 +1,11 @@
+{
+  "schema": "v08-config-v1",
+  "name": "criteria_detour_candidate",
+  "parameters": {
+    "max_target_layer_detour": {"value": 0, "kind": "definitional", "source": "U D.2; R4 4.4: 目标预警圈外"},
+    "near_band_width_m": {"value": 300, "kind": "measured", "source": "V8-21 候选取值补充裁定（2026-11-11）第 1 节：固定口径 D300；V8-21a summary.json（_handoff/2026-11-11_DOCS-V8_sync/out/V8-21a_summary.json）SHA256 47f9dade4841a8155e0c906632c27abd5fa2ed8d567151928df66d444e5f237a；U C.4 半组横排 >=170 度 87% 与纵列可用弧 P10 252 度"},
+    "min_sweep_deg": {"value": 150, "kind": "measured", "source": "V8-21 候选取值补充裁定（2026-11-11）第 2 节：V8-21a D300.S_all.pooled.P99=135.8 度，Theta=10*ceil(P99/10)+10；V8-21a summary.json SHA256 47f9dade4841a8155e0c906632c27abd5fa2ed8d567151928df66d444e5f237a"},
+    "max_sweep_deg_exclusive": {"value": 360, "kind": "definitional", "source": "U D.2; R4 6.3.7 一次性绕行不闭合"},
+    "sweep_measure": {"value": "span", "kind": "definitional", "source": "U C.1: 连续带内区间 unwrap 后 max-min"}
+  }
+}

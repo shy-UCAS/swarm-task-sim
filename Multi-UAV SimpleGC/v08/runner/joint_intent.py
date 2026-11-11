@@ -20,7 +20,7 @@ from . import joint_report as JR
 from .monitoring import jsonable, write_json
 from .runtime_defaults import DEFAULT_WORKERS
 
-INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search")
+INTENTS = ("monitoring", "transit", "intrusion", "feint", "close_observation", "area_search", "detour")
 
 
 # ---------------------------------------------------------------- 单合同
@@ -73,6 +73,10 @@ def _intent_attempt_summary(rec, key, intent):
 
 
 def run_contract(ctx, entry, draw, *, intent, settings, branch=None, out_dir=None, should_stop=None, keep=None):
+    if intent == "detour":                          # V8-21：迂回独立运行/保存（候选核验，不走冻结 verify_segments）
+        from .detour_report import run_contract as detour_contract
+        return detour_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir,
+                               should_stop=should_stop, keep=keep)
     if intent == "area_search":
         from .area_search_report import run_contract as area_contract
         return area_contract(ctx, entry, draw, settings=settings, branch=branch, out_dir=out_dir, should_stop=should_stop, keep=keep)
@@ -225,6 +229,9 @@ def save_intent_contract(out, rec, result, last_failed=None):
     """共享序列化（明确字段白名单）：用 rec["intent"] 选择附加块。过境保持原文件 bytes（不补 intrusion:null、crossing
     表、版本号或新默认字段）；intrusion 的 result.json 增加 "intrusion" 块（σ、x_e 来自保留提案，成员事件来自实测释放后
     窗口；失败为 None），失败见证另含实测三层进入次数。墙钟、缓存命中、traceback 只进合同目录外的 telemetry。"""
+    if rec.get("intent") == "detour":
+        from .detour_report import save_contract as detour_save
+        return detour_save(out, rec, result, last_failed=last_failed)
     if rec.get("intent") == "area_search":
         from .area_search_report import save_contract as area_save
         return area_save(out, rec, result, last_failed=last_failed)
@@ -326,6 +333,16 @@ def record_row(rec):
     if rec.get("intent") == "close_observation":
         row["close_observation"] = rec.get("close_observation")
         row["tracking"] = rec.get("tracking")
+    if rec.get("intent") == "detour":
+        for k in ("detour", "candidate_verdict", "verdict_source", "tracking", "phase_metrics", "lateral_spacing_m"):
+            row[k] = rec.get(k)
+        row["attempt_log"] = [{k: a.get(k) for k in ("attempt", "ok", "stage", "skeleton_stage", "code", "reason",
+                                                      "optimization_entered", "shape_audit_failed")}
+                              | {"subreason": (a.get("witness") or {}).get("subreason"),
+                                 "failed_conditions": [f[:2] for f in (a.get("candidate_verdict") or {}).get("failures", [])],
+                                 "semantic_kinds": [f.get("kind") for f in ((a.get("optimize") or {}).get("semantic_failures") or [])],
+                                 "optimize_s": (a.get("timing") or {}).get("optimize_s"), "draw": a.get("draw")}
+                              for a in rec.get("attempt_log") or []]
     return row
 
 
@@ -367,6 +384,17 @@ def _pool_task(task):
                    skeleton_detail=[((a.get("timing") or {}).get("skeleton_detail") or {}) for a in rec["attempt_log"]],
                    nit=[(a.get("timing") or {}).get("nit") for a in rec["attempt_log"]],
                    chord_cache={k: TC.STATS[k] - before.get(k, 0) for k in TC.STATS})
+        if kind == "diversity" and rec["success"] and intent == "detour":
+            from .detour_report import group_reference_curves as detour_curves
+            from ..contract.single_intent import mission_for_intent
+            from ..sampler.common import sample_common
+            group = mission_for_intent(ctx, sample_common(ctx.family, draw), intent).groups[0]
+            got = detour_curves(ctx, group, holder["result"])
+            row["curve_before"] = None if got["before"] is None else got["before"].tolist()
+            row["curve_after"] = None if got["after"] is None else got["after"].tolist()
+            row["frechet_info"] = got["info"]
+            if got["after"] is None:
+                row["frechet_na"] = (got["info"].get("after") or {}).get("na_reason")
         if kind == "diversity" and rec["success"] and intent in ("transit", "intrusion", "feint", "close_observation", "area_search"):
             from .transit_report import group_reference_curves
             from ..contract.single_intent import mission_for_intent
@@ -608,7 +636,7 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     """keys：[(order, draw)]。先预建（过境），再按成本降序单合同动态派发到 workers 个进程；写 records/summary。"""
     out = Path(out_dir)
     t0 = time.time()
-    if prewarm_doc is not None and intent not in ("close_observation", "area_search"):
+    if prewarm_doc is not None and intent not in ("close_observation", "area_search", "detour"):
         raise ValueError("prewarm_doc is supported only for close_observation")
     pw = (prewarm_doc if prewarm_doc is not None else
           (prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent) if prewarm else None))
@@ -625,7 +653,10 @@ def run_selected(entries, keys, *, intent, data_root, cache_dir, out_dir, worker
     rows.sort(key=lambda r: r["contract_id"])
     write_json(out / "records.json", rows, indent=1)
     good = [r for r in rows if not r.get("error")]
-    if intent == "area_search" and stage == "quick":
+    if intent == "detour" and stage == "quick":
+        from .detour_report import quick_checkpoint as detour_quick_checkpoint
+        chk = detour_quick_checkpoint(rows, expected_count=len(keys))
+    elif intent == "area_search" and stage == "quick":
         from .area_search_report import quick_checkpoint as area_quick_checkpoint
         chk = area_quick_checkpoint(good)
     else:
@@ -661,7 +692,7 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
                                          "rule": "全量开始前按 (order, draw) 字典序取前 5 个合同"}, indent=1)
     div_fams = select_diversity_families(entries)
     (out / "diversity").mkdir()
-    if prewarm_doc is not None and intent not in ("close_observation", "area_search"):
+    if prewarm_doc is not None and intent not in ("close_observation", "area_search", "detour"):
         raise ValueError("prewarm_doc is supported only for close_observation")
     pw = prewarm_doc if prewarm_doc is not None else prewarm_all(entries, data_root=data_root, cache_dir=cache_dir, workers=workers, log=log, intent=intent)
     write_json(out / "prewarm.json", pw, indent=1)
@@ -697,6 +728,12 @@ def full_stage(entries, *, data_root, cache_dir, out_dir, workers, intent="trans
     elif intent == "feint":
         from .feint_report import full_checkpoint as feint_full_checkpoint
         chk = feint_full_checkpoint(good, blocks_after) if full_rows else None
+    elif intent == "detour":
+        from .detour_report import SCOPE as DETOUR_SCOPE, full_checkpoint as detour_full_checkpoint
+        for blk in blocks_after + blocks_before:
+            blk["scope"] = DETOUR_SCOPE
+        chk = detour_full_checkpoint(good, blocks_after) if full_rows else None
+        complete = bool(complete and not any(a.get("stage") == "exception" for r in full_rows for a in r.get("attempt_log", [])))
     elif intent == "area_search":
         from .area_search_report import full_checkpoint as area_full_checkpoint
         chk = area_full_checkpoint(good, blocks_after) if full_rows else None

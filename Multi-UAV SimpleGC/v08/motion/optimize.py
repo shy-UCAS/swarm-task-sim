@@ -998,12 +998,19 @@ def _optimize_segment_intent(ctx, skeleton, key, settings, intent):
     from .layer_limits import constraints_for_task, constraints_identity
     from .skeleton import merge_semantic_lines, references_from_skeleton
     target = skeleton.witnesses["target_id"]
-    cons = constraints_for_task(ctx, TaskSpec("task0", intent, target))
+    if intent == "detour":
+        # V8-21 指令 2.3：独立 detour 约束（联合优化只用 base）；近距离带键只作语义入圈边界，真实目标仍在见证中
+        from .detour_geometry import detour_constraints
+        cons = detour_constraints(ctx, TaskSpec("task0", intent, target))
+        semantic_target = cons["near_key"]
+    else:
+        cons = constraints_for_task(ctx, TaskSpec("task0", intent, target))
+        semantic_target = target
     base = tuple(cons["base"])
     field = ctx.field(("route", intent, constraints_identity(base)), list(base))
     # V8-17 指令 2.1 第 4 步：仅把 warnings 参数换成 crossing_boundaries（上限 1 的意图两者键、顺序、几何完全相同）
     refs, lines, maps = references_from_skeleton(
-        skeleton, warnings=cons["crossing_boundaries"], target_id=target,
+        skeleton, warnings=cons["crossing_boundaries"], target_id=semantic_target,
         band_m=ctx.params["pre_entry_warning_clearance_m"], align_m=ctx.params["alignment_length_m"])
     lines_raw = lines
     lines = tuple(merge_semantic_lines(lines_raw, knot_s=float(settings["knot_s"])))

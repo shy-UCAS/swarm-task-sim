@@ -1,0 +1,17 @@
+{
+  "schema": "v08-config-v1",
+  "name": "detour",
+  "parameters": {
+    "sweep_margin_deg": {"value": 10, "kind": "engineering_margin", "source": "U C.2.3/D.2 名义弧余量 delta_Theta"},
+    "beta_max_deg": {"value": 60, "kind": "execution", "source": "U C.2.5/D.2 进出斜穿角上限"},
+    "fillet_floor_m": {"value": 80, "kind": "execution", "source": "U C.2.5 原型圆角半径下限"},
+    "fillet_span_factor": {"value": 1.5, "kind": "engineering_margin", "source": "U C.2.5 R_f=max(80,1.5(H+turn_u_min))"},
+    "tangent_straight_m": {"value": 8, "kind": "engineering_margin", "source": "U C.2.5 圆角与样条之间直线；不小于冻结 MIN_STRAIGHT_M=6"},
+    "extension_max_m": {"value": 150, "kind": "execution", "source": "U C.2.5 进出直线额外延长上限"},
+    "construction_sweep_cap_deg": {"value": 350, "kind": "engineering_margin", "source": "U C.2.3 构造扫角上限；裁定 1 Sigma_hi 与构造后车道复核上限"},
+    "nominal_sweep_margin_deg": {"value": 5, "kind": "engineering_margin", "source": "U D.2/D.4 名义预筛与构造后车道复核下限余量"},
+    "nominal_max_sweep_deg_exclusive": {"value": 355, "kind": "engineering_margin", "source": "U D.2/D.4 名义预筛扫角上限（不含）"},
+    "arc_edge_guard_deg": {"value": 2, "kind": "engineering_margin", "source": "U C.2.2-3 方位段两端保留量；裁定 1/3"},
+    "terminal_extra_m": {"value": 5, "kind": "engineering_margin", "source": "U C.2.5 构造终点离所有 warning 在冻结 50 m 上再加此值"}
+  }
+}

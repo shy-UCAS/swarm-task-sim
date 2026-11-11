@@ -136,6 +136,8 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
             from ..motion.intents.area_search import last_attempt_timing
         elif task.intent == "close_observation":
             from ..motion.intents.close_observation import last_attempt_timing
+        elif task.intent == "detour":               # V8-21：迂回遥测分派
+            from ..motion.intents.detour import last_attempt_timing
         else:
             from ..motion.intents.monitoring import last_attempt_timing
         t["skeleton_detail"] = last_attempt_timing()
@@ -172,17 +174,27 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
     tracks = stitch(results)
     release = {m: int(r.pieces[0].release_us) for m, r in zip(sorted(opt["solution"].references), results)}
     # V8-16 指令 2.1：冻结段核验按实际任务意图（监视仍为 "monitoring"）
-    if task.intent == "area_search":
+    candidate_verdict = None
+    if task.intent == "detour":
+        # V8-21 指令 4.4：迂回只走独立候选核验；冻结 verify_segments 对 detour 仍拒绝，不得把 [] 的 all() 当成功
+        from ..motion.detour_checks import verify_detour_candidate
+        candidate_verdict = verify_detour_candidate(ctx.scene, tracks, release, task.target_id)
+        verdicts = None
+        seg_ok = None
+    elif task.intent == "area_search":
         verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, "area_search", task.target_id, survey=area_task.survey)])
+        seg_ok = all(v.passed for v in verdicts)
     else:
         verdicts = verify_segments(ctx.scene, tracks, release, [SegmentTask(0, task.intent, task.target_id)])
-    seg_ok = all(v.passed for v in verdicts)
+        seg_ok = all(v.passed for v in verdicts)
     visible = [visible_track(tracks[m], release[m]) for m in sorted(tracks)]
     valid = check_validity(ctx.scene, visible)
     t["verify_s"] = time.perf_counter() - t0
     out = {"plan": plan, "opt": opt, "results": results, "tracks": tracks, "release_us": release,
            "verdicts": verdicts, "validity": valid, "timing": t, "optimization_entered": True}
-    if not seg_ok:
+    if task.intent == "detour":
+        out["candidate_verdict"] = candidate_verdict
+    if task.intent != "detour" and not seg_ok:
         return {"ok": False, "stage": "verify_segments", "code": "candidate_rejected",
                 "reason": "segment_verification", **out}
     if not valid.passed:
@@ -226,6 +238,17 @@ def attempt_chain(ctx, group, task, states, key, settings, entry_flag=None):
         if not meas["all_single"]:
             return {"ok": False, "stage": "measured_close_observation_entries", "code": "candidate_rejected",
                     "reason": "measured_close_observation_entries", **out}
+    if task.intent == "detour":
+        # V8-21 指令 4.4：实测近距离带进入次数（独立函数，与监视块并列）；次数非 1 的 stage 优先于其他候选失败
+        measured = detour_entry_counts(ctx, tracks, release, task.target_id)
+        out["measured_detour"] = measured
+        out["candidate_verdict"] = candidate_verdict
+        if not measured["all_single"]:
+            return {"ok": False, "stage": "measured_detour_entries", "code": "candidate_rejected",
+                    "reason": "measured_detour_entries", **out}
+        if not candidate_verdict["passed"]:
+            return {"ok": False, "stage": "verify_detour_candidate", "code": "candidate_rejected",
+                    "reason": "detour_candidate", **out}
     return {"ok": True, "stage": "verified", **out}
 
 
@@ -246,6 +269,32 @@ def monitoring_entry_counts(ctx, tracks, release_us, target_id):
         members[mid] = {"warning_entry_count": int(len(starts)),
                         "first_warning_entry_us": int(np.asarray(tr.tau_us)[mask][starts[0]]) if len(starts) else None}
     return {"members": members, "all_single": all(v["warning_entry_count"] == 1 for v in members.values())}
+
+
+def detour_entry_counts(ctx, tracks, release_us, target_id):
+    """V8-21 指令 4.4：每成员释放后、第 0 段实测帧上目标近距离带 (0 < sd ≤ D) 的进入次数（首帧在带内也计 1 次）。
+    sd 为场景显式 warning 的有符号距离；成员全集非空且与 release 一致，否则抛 ValueError（不让空集 all 通过）。"""
+    from ..motion.detour_config import load_detour_candidate
+    from ..scene.exact import signed_distance
+    if not tracks or set(tracks) != set(release_us):
+        raise ValueError("实测成员集为空或与 release 成员集不一致")
+    D = float(load_detour_candidate().values["near_band_width_m"])
+    W = next(e["geometry"] for e in ctx.scene["entities"]
+             if e.get("type") == "protection_zone" and e.get("facility_id") == target_id and e.get("layer") == "warning")
+    members = {}
+    for mid in sorted(tracks):
+        tr = tracks[mid]
+        mask = (np.asarray(tr.tau_us) >= release_us[mid]) & (np.asarray(tr.segment_index) == 0)
+        xy = np.asarray(tr.p, float)[mask, :2]
+        if not len(xy):
+            raise ValueError(f"成员 {mid} 的实测窗口为空")
+        sd = np.asarray(signed_distance(W, xy), float)
+        inside = (sd > 0.0) & (sd <= D)
+        prev = np.r_[False, inside[:-1]]
+        starts = np.flatnonzero(inside & ~prev)
+        members[mid] = {"near_entry_count": int(len(starts)),
+                        "first_near_entry_us": int(np.asarray(tr.tau_us)[mask][starts[0]]) if len(starts) else None}
+    return {"members": members, "all_single": all(v["near_entry_count"] == 1 for v in members.values())}
 
 
 def _attempt_summary(rec, key):
