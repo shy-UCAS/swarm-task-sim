@@ -39,3 +39,8 @@ set V8_21_ACCEPTANCE=docs/v08/V8-21/acceptance.json ; python -B -m unittest disc
 ## 只骨架修复运行补记
 
 固定基点b70d1b9，按11-11最新六条修复裁定。外置工具、完整命令/日志及R0–R2证据在run/repair_r1；R1完整预演preflight_r1，正式只骨架将用run/skeleton/r2。额外PYTHONUTF8=1仅统一日志编码，四线程变量/24或1worker及所有业务配置不变。
+
+
+## 修复最终运行索引
+
+R0–R3/原6–8完成待审。所有完整argv与UTC起止、原环境及1/24进程证据在run/repair_r1/{R3,quick,full,rerun,sweep_smoke,sweep_full}_command.json及对应日志/退出码；R1独立测试日志与预演脚本同目录。原四份预置未改，artifacts最终4/4。验收索引artifact_inputs指向full/r2和rerun/r2，frozen_files来自原snapshot/r2的201预期SHA。sweep被动资源采样未覆盖短计算，按REPORT记局限。输出均不可覆盖重用。
